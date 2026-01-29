@@ -30,24 +30,6 @@ function jcp_core_register_homepage_options_page() {
 add_action( 'acf/init', 'jcp_core_register_homepage_options_page' );
 
 /**
- * Create Early Access Form Options Page in ACF
- */
-function jcp_core_register_early_access_form_options_page() {
-    acf_add_options_page(
-        [
-            'page_title' => 'Early Access Form',
-            'menu_title' => 'Early Access Form',
-            'menu_slug'  => 'jcp-early-access-form',
-            'capability' => 'manage_options',
-            'position'   => 21,
-            'icon_url'   => 'dashicons-email-alt',
-        ]
-    );
-}
-
-add_action( 'acf/init', 'jcp_core_register_early_access_form_options_page' );
-
-/**
  * Register ACF field groups for Homepage
  * Using programmatic approach (no JSON sync needed)
  */
@@ -581,122 +563,6 @@ function jcp_core_register_acf_field_groups() {
         ]
     );
 
-    // Early Access Form Field Group (minimal: options, toggles, submission behavior)
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_early_access_form',
-            'title'    => 'Early Access Form',
-            'fields'   => [
-                [
-                    'key'          => 'ea_why_interested_options',
-                    'label'        => 'Interest intent (multi-select options)',
-                    'name'         => 'ea_why_interested_options',
-                    'type'         => 'repeater',
-                    'layout'       => 'table',
-                    'button_label' => 'Add option',
-                    'instructions' => 'Options for "Why are you interested?". If empty, defaults are used. Value = sent to GHL in Message. Tag = for future GHL tagging.',
-                    'sub_fields'   => [
-                        [
-                            'key'      => 'ea_why_option_label',
-                            'label'    => 'Label',
-                            'name'     => 'ea_why_option_label',
-                            'type'     => 'text',
-                            'required' => 1,
-                        ],
-                        [
-                            'key'   => 'ea_why_option_value',
-                            'label' => 'Value (GHL; blank = label)',
-                            'name'  => 'ea_why_option_value',
-                            'type'  => 'text',
-                        ],
-                        [
-                            'key'   => 'ea_why_option_tag',
-                            'label' => 'Tag (future GHL use)',
-                            'name'  => 'ea_why_option_tag',
-                            'type'  => 'text',
-                        ],
-                    ],
-                ],
-                [
-                    'key'          => 'ea_referral_options',
-                    'label'        => 'Referral source (attribution)',
-                    'name'         => 'ea_referral_options',
-                    'type'         => 'repeater',
-                    'layout'       => 'table',
-                    'button_label' => 'Add option',
-                    'instructions' => 'Options for "How did you hear about us?". Sent to GHL as Referral Source[]. If empty, defaults are used.',
-                    'sub_fields'   => [
-                        [
-                            'key'   => 'ea_option_label',
-                            'label' => 'Label',
-                            'name'  => 'ea_option_label',
-                            'type'  => 'text',
-                            'required' => 1,
-                        ],
-                        [
-                            'key'   => 'ea_option_value',
-                            'label' => 'Value (GHL; blank = label)',
-                            'name'  => 'ea_option_value',
-                            'type'  => 'text',
-                        ],
-                    ],
-                ],
-                [
-                    'key'     => 'ea_require_phone',
-                    'label'   => 'Require phone',
-                    'name'    => 'ea_require_phone',
-                    'type'    => 'true_false',
-                    'default' => 1,
-                ],
-                [
-                    'key'     => 'ea_require_company',
-                    'label'   => 'Require company',
-                    'name'    => 'ea_require_company',
-                    'type'    => 'true_false',
-                    'default' => 1,
-                ],
-                [
-                    'key'        => 'ea_ghl_webhook_url',
-                    'label'      => 'GHL webhook URL',
-                    'name'       => 'ea_ghl_webhook_url',
-                    'type'       => 'url',
-                    'instructions' => 'Leave blank to use the default Lead Connector webhook.',
-                ],
-                [
-                    'key'        => 'ea_success_redirect_url',
-                    'label'      => 'Success redirect URL',
-                    'name'       => 'ea_success_redirect_url',
-                    'type'       => 'url',
-                    'instructions' => 'Where to send users after submit. Leave blank for /early-access-success/.',
-                ],
-                [
-                    'key'     => 'ea_default_trade',
-                    'label'   => 'Default trade',
-                    'name'    => 'ea_default_trade',
-                    'type'    => 'text',
-                    'default' => 'General Contractor',
-                ],
-                [
-                    'key'        => 'ea_success_message',
-                    'label'      => 'Success page message',
-                    'name'       => 'ea_success_message',
-                    'type'       => 'textarea',
-                    'rows'       => 3,
-                    'default'    => "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-early-access-form',
-                    ],
-                ],
-            ],
-            'menu_order' => 0,
-        ]
-    );
 }
 
 add_action( 'acf/init', 'jcp_core_register_acf_field_groups' );
@@ -765,81 +631,17 @@ function jcp_core_early_access_default_referral_options(): array {
 }
 
 /**
- * Get Early Access form config for frontend (options, toggles, submission behavior, success message only).
+ * Get Early Access form config for frontend (hardcoded defaults; no backend options).
  *
  * @return array why_interested_options, referral_options, require_phone, require_company, success_redirect, success_message (+ rest_url set by enqueue)
  */
 function jcp_core_get_early_access_form_config(): array {
-    if ( ! function_exists( 'get_field' ) ) {
-        return [
-            'why_interested_options' => jcp_core_early_access_default_why_interested_options(),
-            'referral_options'       => jcp_core_early_access_default_referral_options(),
-            'require_phone'          => true,
-            'require_company'         => true,
-            'success_message'        => "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
-        ];
-    }
-
-    $options = get_field( 'ea_referral_options', 'option' );
-    $referral_options = [];
-    if ( ! empty( $options ) && is_array( $options ) ) {
-        foreach ( $options as $row ) {
-            $label = isset( $row['ea_option_label'] ) ? (string) $row['ea_option_label'] : '';
-            $value = isset( $row['ea_option_value'] ) && (string) $row['ea_option_value'] !== '' ? (string) $row['ea_option_value'] : $label;
-            if ( $label !== '' ) {
-                $referral_options[] = [ 'label' => $label, 'value' => $value ];
-            }
-        }
-    }
-    if ( empty( $referral_options ) ) {
-        $referral_options = jcp_core_early_access_default_referral_options();
-    }
-
-    $why_options = get_field( 'ea_why_interested_options', 'option' );
-    $why_interested_options = [];
-    if ( ! empty( $why_options ) && is_array( $why_options ) ) {
-        foreach ( $why_options as $row ) {
-            $label = isset( $row['ea_why_option_label'] ) ? (string) $row['ea_why_option_label'] : '';
-            $value = isset( $row['ea_why_option_value'] ) && (string) $row['ea_why_option_value'] !== '' ? (string) $row['ea_why_option_value'] : $label;
-            $tag   = isset( $row['ea_why_option_tag'] ) ? (string) $row['ea_why_option_tag'] : '';
-            if ( $label !== '' ) {
-                $why_interested_options[] = [ 'label' => $label, 'value' => $value, 'tag' => $tag ];
-            }
-        }
-    }
-    if ( empty( $why_interested_options ) ) {
-        $why_interested_options = jcp_core_early_access_default_why_interested_options();
-    }
-
-    $success_redirect = get_field( 'ea_success_redirect_url', 'option' );
-    if ( ! is_string( $success_redirect ) || $success_redirect === '' ) {
-        $success_redirect = home_url( '/early-access-success/' );
-    }
-
-    $success_message = get_field( 'ea_success_message', 'option' );
-    if ( ! is_string( $success_message ) || $success_message === '' ) {
-        $success_message = "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.";
-    }
-
-    $require_phone = get_field( 'ea_require_phone', 'option' );
-    $require_company = get_field( 'ea_require_company', 'option' );
-    if ( $require_phone === null || $require_phone === false ) {
-        $require_phone = true;
-    } else {
-        $require_phone = (bool) $require_phone;
-    }
-    if ( $require_company === null || $require_company === false ) {
-        $require_company = true;
-    } else {
-        $require_company = (bool) $require_company;
-    }
-
     return [
-        'why_interested_options' => $why_interested_options,
-        'referral_options'        => $referral_options,
-        'require_phone'           => $require_phone,
-        'require_company'         => $require_company,
-        'success_redirect'        => $success_redirect,
-        'success_message'         => $success_message,
+        'why_interested_options' => jcp_core_early_access_default_why_interested_options(),
+        'referral_options'       => jcp_core_early_access_default_referral_options(),
+        'require_phone'          => true,
+        'require_company'        => true,
+        'success_redirect'       => home_url( '/early-access-success/' ),
+        'success_message'       => "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
     ];
 }

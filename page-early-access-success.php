@@ -3,7 +3,7 @@
  * Template Name: Early Access Success
  *
  * Shown after successful Early Access form submission.
- * Copy (heading, message) from Early Access Form ACF options.
+ * Message comes from hardcoded config (jcp_core_get_early_access_form_config).
  * URL: /early-access-success/ (also routed via template-routes when no WP page exists).
  *
  * @package JCP_Core

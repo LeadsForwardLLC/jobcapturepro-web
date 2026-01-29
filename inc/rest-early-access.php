@@ -9,7 +9,7 @@
  */
 
 /**
- * Default GHL webhook URL (overridable via ACF ea_ghl_webhook_url).
+ * Default GHL webhook URL for Early Access form submissions.
  */
 define( 'JCP_GHL_WEBHOOK_URL_DEFAULT', 'https://services.leadconnectorhq.com/hooks/kMIwmFm9I7LJPEYo35qi/webhook-trigger/d476d7e2-286d-4201-811d-4fedfea5fdf5' );
 
@@ -132,16 +132,6 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
 
     $require_company = true;
     $require_phone   = true;
-    if ( function_exists( 'get_field' ) ) {
-        $rc = get_field( 'ea_require_company', 'option' );
-        $rp = get_field( 'ea_require_phone', 'option' );
-        if ( $rc !== null && $rc !== false ) {
-            $require_company = (bool) $rc;
-        }
-        if ( $rp !== null && $rp !== false ) {
-            $require_phone = (bool) $rp;
-        }
-    }
 
     if ( empty( $first_name ) || empty( $email ) || empty( $message ) || empty( $referral_source ) ) {
         return new \WP_REST_Response(
@@ -170,12 +160,6 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
     $referral_source = [ trim( (string) $referral_source ) ];
 
     $trade = 'General Contractor';
-    if ( function_exists( 'get_field' ) ) {
-        $t = get_field( 'ea_default_trade', 'option' );
-        if ( is_string( $t ) && $t !== '' ) {
-            $trade = $t;
-        }
-    }
 
     $body_string = jcp_core_build_ghl_body( $first_name, $email, $phone, $company, $trade, $referral_source, $message );
     $url         = jcp_core_ghl_webhook_url();
@@ -225,12 +209,6 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
  */
 function jcp_core_early_access_test_ghl( \WP_REST_Request $request ): \WP_REST_Response {
     $trade = 'General Contractor';
-    if ( function_exists( 'get_field' ) ) {
-        $t = get_field( 'ea_default_trade', 'option' );
-        if ( is_string( $t ) && $t !== '' ) {
-            $trade = $t;
-        }
-    }
 
     $body_string = jcp_core_build_ghl_body(
         'Test First',

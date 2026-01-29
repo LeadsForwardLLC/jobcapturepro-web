@@ -123,6 +123,9 @@ function jcp_core_enqueue_assets(): void {
         } else {
             jcp_core_enqueue_style( 'jcp-core-survey', 'css/pages/survey.css', [ 'jcp-core-demo' ] );
             jcp_core_enqueue_script( 'jcp-core-survey', 'js/features/survey/survey.js', [ $render_handle ] );
+            wp_localize_script( 'jcp-core-survey', 'JCP_DEMO_SURVEY', [
+                'rest_url' => rest_url( 'jcp/v1/demo-survey-submit' ),
+            ] );
         }
         return;
     }

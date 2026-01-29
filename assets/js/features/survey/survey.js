@@ -163,7 +163,7 @@
     });
   };
 
-  const launchDemo = () => {
+  const launchDemo = async () => {
     const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || [])
       .map((input) => input.value);
 
@@ -182,6 +182,31 @@
       firstName: getValue('firstName'),
       email: getValue('email'),
     }));
+
+    // Send to GoHighLevel (Demo Survey webhook) via our REST endpoint — MUST complete before redirect or browser aborts the request
+    const restUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_url) || `${baseUrl}/wp-json/jcp/v1/demo-survey-submit`;
+    try {
+      const res = await Promise.race([
+        fetch(restUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: getValue('firstName'),
+            email: getValue('email'),
+            business_name: getValue('businessName'),
+            business_type: getValue('niche'),
+            service_area: getValue('serviceArea'),
+            demo_goals: goals,
+          }),
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+      ]);
+      if (!res.ok) {
+        console.warn('JCP Demo Survey: submit returned', res.status);
+      }
+    } catch (err) {
+      console.warn('JCP Demo Survey: submit failed', err);
+    }
 
     window.location.href = `${baseUrl}/demo/?mode=run`;
   };
