@@ -1,7 +1,7 @@
 # JobCapturePro Core Theme - Master Documentation
 
 **Last Updated:** January 28, 2026  
-**Version:** 1.1  
+**Version:** 1.2  
 **For:** Project Managers, Developers, Designers
 
 ---
@@ -58,7 +58,12 @@ WordPress theme for JobCapturePro public website, directory, and estimator. The 
 - HTML templates in `assets/demo/index.html`, `assets/directory/index.html`, etc.
 - Used for: Demo, Directory, Estimate, Survey, Company Profile
 
-#### Pattern 3: PHP Templates (Design System, UI Library)
+#### Pattern 3: WordPress Content Templates (page.php, home.php, single.php)
+- **Standard page** (`page.php`): One section, one container; title and body in same block to avoid double vertical padding.
+- **Blog archive** (`home.php`): One section; blog title/tagline and post grid in same block.
+- **Single post** (`single.php`): One section; title, meta (author + avatar, date, categories), content, tags, post nav, comments in one block. Meta uses dot separators; author links to author archive with round Gravatar.
+
+#### Pattern 4: PHP Templates (Design System, UI Library)
 ```php
 // page-design-system.php
 <?php get_header(); ?>
@@ -67,6 +72,11 @@ WordPress theme for JobCapturePro public website, directory, and estimator. The 
 ```
 - Traditional WordPress PHP templates
 - Used for: Design System documentation, UI Library
+
+#### Blog & single post styling (`css/pages/blog.css`)
+- **Single post meta:** Author (round 36px avatar + name link), date, categories; dot separators; compact spacing.
+- **Comments:** One divider line before comments; reduced spacing; compact form (smaller inputs, 4-row textarea); comment list and form margins tightened.
+- **Post navigation:** No top border (single divider is comments only); reduced margin above.
 
 ---
 
@@ -214,6 +224,11 @@ WordPress template hierarchy **REQUIRES** `page-*.php`, `single-*.php`, `header.
 - **Marketing Pages** (Home, Pricing, Early Access):
   - `sections.css` (homepage sections: hero, FAQ, CTA, etc.)
   - Page-specific CSS (`home.css`, `pricing.css`, `early-access.css`)
+
+- **Standard Pages & Blog** (generic `page.php`, blog archive, single post):
+  - `layout.css` (containers, section spacing — ensures `.jcp-container` works on standard pages)
+  - `sections.css` (when loading blog/single/page styles)
+  - `blog.css` (single post, archive, comments, post cards)
 
 - **Feature Pages** (Demo, Directory, Estimate):
   - `demo.css` (imports `assets/shared/assets/demo.css`)
@@ -445,6 +460,14 @@ Located in `inc/template-routes.php`:
 - Cleaned up unused CSS files and empty stubs
 - Organized all JavaScript into clear feature/page structure
 
+#### ✅ WordPress readiness & template improvements (Jan 2026)
+- **Theme identity:** `style.css` — Text Domain `jcp-core`, Theme URI, Description; `functions.php` — `load_theme_textdomain()` for translations.
+- **Page templates:** All custom page templates have `Template Name:` and docblocks (Home, Pricing, Early Access, Demo, Directory, Estimate, Company, Design System, UI Library) so they appear in Page Attributes.
+- **Standard page / blog / single:** `page.php`, `home.php`, `single.php` use a single `<section>` so content is in one container with one block of padding (no double gap under headlines). Standard pages and blog load `layout.css` and (when needed) `sections.css` via `inc/enqueue.php`.
+- **Single post:** Author with round avatar in meta; one horizontal rule before comments; compact comment section (smaller form, tighter list). `comments.php` textarea 4 rows; `blog.css` comment and post-nav spacing updated.
+- **Escaping & i18n:** Archive dates escaped; “Read more”, “Tags:”, footer logo alt/text; comments “One Comment” fix; `page-ui-library.php` icon helper returns `esc_url()` + `sanitize_file_name()`; single post nav strings translatable.
+- **Pricing content:** Plans and feature lists in `assets/js/pages/pricing.js` (Starter $99, Scale $249, Enterprise $399); additional pricing notes in pricing section; Enterprise+ removed.
+
 ### Current File Counts
 
 | Category | Count | Status |
@@ -539,6 +562,9 @@ Located in `inc/template-routes.php`:
 | `/estimate` | `page-estimate.php` | HTML template (`assets/estimate/index.html`) |
 | `/design-system` | `page-design-system.php` | PHP template |
 | `/ui-library` | `page-ui-library.php` | PHP template |
+| Generic page (e.g. Sample page) | `page.php` | PHP template (one section, one container) |
+| Blog archive | `home.php` | PHP template (one section, post grid) |
+| Single post | `single.php` | PHP template (one section, author meta, comments) |
 
 ---
 
@@ -606,5 +632,6 @@ A: See "Adding New Pages" section above.
 ---
 
 **Last Updated:** January 28, 2026  
+**Version:** 1.2  
 **Maintained By:** Development Team  
 **Questions?** Refer to this documentation first, then consult codebase.

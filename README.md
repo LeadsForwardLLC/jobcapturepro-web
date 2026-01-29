@@ -42,6 +42,8 @@ The master documentation includes:
 
 ✅ **All refactoring complete** - Clean, organized structure  
 ✅ **No duplicate files** - Single source of truth for all components  
+✅ **WordPress-ready** - Template Name headers, text domain, escaping, layout for standard pages  
+✅ **Blog & single post** - Single-section layout (no double gaps), author + avatar in meta, compact comments  
 ✅ **Fully documented** - See DOCUMENTATION.md for details
 
 For detailed information, see [DOCUMENTATION.md](./DOCUMENTATION.md).

@@ -20,6 +20,11 @@ get_header();
       <div class="rankings-header">
         <h1><?php the_title(); ?></h1>
         <div class="jcp-post-meta">
+          <a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>" class="jcp-post-meta-author" rel="author">
+            <?php echo get_avatar( get_the_author_meta( 'ID' ), 36, '', get_the_author(), [ 'class' => 'jcp-post-meta-avatar' ] ); ?>
+            <span class="jcp-post-meta-author-name"><?php the_author(); ?></span>
+          </a>
+          <span class="jcp-post-meta-sep" aria-hidden="true">·</span>
           <time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>" class="jcp-post-date">
             <?php echo esc_html( get_the_date() ); ?>
           </time>
@@ -27,6 +32,7 @@ get_header();
           $categories = get_the_category();
           if ( ! empty( $categories ) ) :
             ?>
+            <span class="jcp-post-meta-sep" aria-hidden="true">·</span>
             <span class="jcp-post-categories">
               <?php
               foreach ( $categories as $category ) {
