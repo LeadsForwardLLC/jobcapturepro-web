@@ -61,10 +61,25 @@
   margin: 0 !important;
 }
 
-/* Reduce size of "no signup required" reassurance text */
-.jcp-home .jcp-hero-reassurance {
-  font-size: 9px !important;
+/* Reassurance line under buttons: same size as other supporting text, snug to button */
+.jcp-home .directory-hero p.jcp-hero-reassurance {
+  font-size: var(--jcp-font-size-sm) !important;
   line-height: 1.4 !important;
+  color: var(--jcp-color-text-secondary) !important;
+  margin: -12px 0 0 0 !important;
+  font-weight: var(--jcp-font-weight-normal) !important;
+  max-width: none !important;
+}
+
+/* Hero meta stats: three distinct theme colors */
+.jcp-home .meta-stat-photo .meta-label strong {
+  color: var(--jcp-color-primary);
+}
+.jcp-home .meta-stat-channels .meta-label strong {
+  color: var(--jcp-color-info);
+}
+.jcp-home .meta-stat-busywork .meta-label strong {
+  color: var(--jcp-color-success);
 }
 
 /* Alias hero-copy and hero-visual to jcp-hero-* styles */

@@ -21,36 +21,35 @@
           <div class="jcp-container">
             <div class="jcp-hero-grid">
               <div class="jcp-hero-copy hero-copy">
-                <h1 class="jcp-hero-title">Turn completed jobs into new jobs automatically</h1>
+                <h1 class="jcp-hero-title">Turn completed jobs into new jobs—automatically</h1>
                 <p class="jcp-hero-subtitle">
-                  JobCapturePro turns real job activity into visibility across Google, your website, social channels, reviews, and the public directory so your work keeps driving demand automatically.
+                  Your crew already takes job photos. JobCapturePro turns those into visibility on Google, your website, the directory, and review requests—no extra work from you.
                 </p>
                 <div class="jcp-actions directory-cta-row">
                   <a class="btn btn-primary" href="/demo">See your business in the live demo</a>
-                  <a class="btn btn-secondary" href="#how-it-works">Learn how it works</a>
                 </div>
                 <p class="jcp-hero-reassurance">No signup required. Takes two minutes.</p>
                 <div class="directory-meta">
-                  <div class="meta-item">
+                  <div class="meta-item meta-stat-photo">
                     <div class="meta-label">
                       <img src="${icon('camera')}" class="meta-icon" alt="">
                       <strong>1 photo</strong>
                     </div>
                     <span>proof everywhere</span>
                   </div>
-                  <div class="meta-item">
+                  <div class="meta-item meta-stat-channels">
                     <div class="meta-label">
                       <img src="${icon('map')}" class="meta-icon" alt="">
                       <strong>4 channels</strong>
                     </div>
-                    <span>website, directory, GBP, social</span>
+                    <span>live on website, directory, GBP, social</span>
                   </div>
-                  <div class="meta-item">
+                  <div class="meta-item meta-stat-busywork">
                     <div class="meta-label">
                       <img src="${icon('clock')}" class="meta-icon" alt="">
                       <strong>0 busywork</strong>
                     </div>
-                    <span>zero admin work</span>
+                    <span>no extra work from you</span>
                   </div>
                 </div>
               </div>
@@ -62,24 +61,24 @@
                     <img class="hero-media-image" src="http://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg" alt="Contractor capturing a job photo with JobCapturePro">
                     <div class="hero-media-shade" aria-hidden="true"></div>
                     <div class="hero-media-badge">
-                      <span class="hero-media-pill">Verified</span>
+                      <span class="hero-media-pill">Verified job proof</span>
                     </div>
                     <div class="hero-media-content">
-                      <div class="hero-media-title">Job proof published instantly</div>
-                      <div class="hero-media-subtitle">Photo → AI check-in → Live everywhere</div>
+                      <div class="hero-media-title">One photo → live everywhere</div>
+                      <div class="hero-media-subtitle">Photo → AI check-in → Live on all channels</div>
                     </div>
                     <div class="hero-media-stats">
                       <div class="hero-stat">
                         <img src="${icon('map-pin')}" class="hero-stat-icon" alt="">
-                        <span class="hero-stat-label">Google Maps</span>
+                        <span class="hero-stat-label">Publish to Google Maps</span>
                       </div>
                       <div class="hero-stat">
                         <img src="${icon('globe')}" class="hero-stat-icon" alt="">
-                        <span class="hero-stat-label">Your website</span>
+                        <span class="hero-stat-label">Go live on your website</span>
                       </div>
                       <div class="hero-stat">
                         <img src="${icon('star')}" class="hero-stat-icon" alt="">
-                        <span class="hero-stat-label">Review request</span>
+                        <span class="hero-stat-label">Request a review</span>
                       </div>
                     </div>
                   </div>
