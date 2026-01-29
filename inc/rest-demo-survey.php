@@ -11,6 +11,7 @@
 
 /**
  * GHL webhook URL for Demo Survey submissions only.
+ * Do not use for Early Access; see inc/rest-early-access.php for Early Access webhook.
  */
 define( 'JCP_GHL_DEMO_SURVEY_WEBHOOK_URL', 'https://services.leadconnectorhq.com/hooks/kMIwmFm9I7LJPEYo35qi/webhook-trigger/zYfSsYRsSdSdHlD5vqUv' );
 

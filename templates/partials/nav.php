@@ -18,7 +18,7 @@ $is_demo = $pages['is_demo'];
         class="logo-image"
       />
     </a>
-    <span class="demo-indicator is-hidden" id="jcpHeaderIndicator"><?php echo $is_company ? 'Contractor Profile' : ( $is_directory ? 'Directory' : ( $is_demo ? 'Interactive Demo' : 'Live Demo' ) ); ?></span>
+    <span class="demo-indicator is-hidden" id="jcpHeaderIndicator"><?php echo esc_html( $is_company ? 'Contractor Profile' : ( $is_directory ? 'Directory' : ( $is_demo ? 'Interactive Demo' : 'Live Demo' ) ) ); ?></span>
   </div>
 
   <nav class="header-nav" id="headerNav">
@@ -200,28 +200,5 @@ $is_demo = $pages['is_demo'];
         </a>
       <?php endif; ?>
     </nav>
-
-    <div class="mobile-menu-actions">
-      <?php if ( $is_demo ) : ?>
-        <button class="mobile-btn mobile-btn-secondary" id="mobileBtnReset">↺ Reset</button>
-        <button class="mobile-btn mobile-btn-primary" id="mobileBtnNext">Run Guided Demo →</button>
-      <?php elseif ( $is_company ) : ?>
-        <a href="/directory" class="mobile-btn mobile-btn-secondary" id="mobileDynamicBackBtn">
-          <svg id="mobileDynamicBackIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          <span>Back to Directory</span>
-        </a>
-        <a href="/early-access" class="mobile-btn mobile-btn-primary" target="_blank" rel="noopener">Get Listed</a>
-      <?php else : ?>
-        <a href="/demo" class="mobile-btn mobile-btn-secondary" id="mobileDynamicBackBtn">
-          <span>Online Demo</span>
-          <svg id="mobileDynamicBackIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M13 5l7 7-7 7"/>
-          </svg>
-        </a>
-        <a href="/early-access" class="mobile-btn mobile-btn-primary" target="_blank" rel="noopener"><?php echo $is_directory ? 'Get Listed' : 'Get Started'; ?></a>
-      <?php endif; ?>
-    </div>
   </div>
 </div>

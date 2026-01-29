@@ -16,6 +16,7 @@
 6. [Development Guidelines](#development-guidelines)
 7. [Current Status](#current-status)
 8. [Quick Reference](#quick-reference)
+9. [Setup & Integrations](#setup--integrations)
 
 ---
 
@@ -565,6 +566,37 @@ Located in `inc/template-routes.php`:
 | Generic page (e.g. Sample page) | `page.php` | PHP template (one section, one container) |
 | Blog archive | `home.php` | PHP template (one section, post grid) |
 | Single post | `single.php` | PHP template (one section, author meta, comments) |
+
+---
+
+## 🔌 SETUP & INTEGRATIONS
+
+### Local Development
+
+- Run WordPress locally (e.g. [Local](https://localwp.com/) by Flywheel, MAMP, or similar).
+- Point the site at the theme directory; ensure PHP and MySQL meet WordPress requirements.
+- For GHL webhook testing, use a tunnel (e.g. ngrok) so GoHighLevel can reach your local REST endpoints, or test on a staging URL.
+
+### GoHighLevel Webhooks
+
+The theme posts form submissions to **two separate** GoHighLevel inbound webhooks. Do not mix them.
+
+| Form | Purpose | Webhook URL constant | File |
+|------|---------|----------------------|------|
+| **Early Access** | Founding crew signup → Early Access automation | `JCP_GHL_WEBHOOK_URL_DEFAULT` | `inc/rest-early-access.php` |
+| **Demo Survey** | Demo signup → Demo Follow-Up automation | `JCP_GHL_DEMO_SURVEY_WEBHOOK_URL` | `inc/rest-demo-survey.php` |
+
+- **Early Access:** REST route `POST /wp-json/jcp/v1/early-access-submit`; payload is `application/x-www-form-urlencoded` with contact + referral fields.
+- **Demo Survey:** REST route `POST /wp-json/jcp/v1/demo-survey-submit`; payload includes contact + demo-specific fields and tags (e.g. `demo-completed`, `demo-interest`). Do not apply early-access tags from the Demo Survey.
+
+### ACF (Advanced Custom Fields)
+
+- **Homepage Settings:** ACF is required for the **Homepage** options page (hero, how it works, FAQ, pricing, features, footer, section visibility). All homepage content is driven from ACF options.
+- **Early Access:** Has **no** backend options in this theme. Form behavior (required fields, success redirect, options lists) is hardcoded in `inc/acf-config.php` and `inc/rest-early-access.php`.
+
+### Debug Logging
+
+- GHL webhook requests/responses are logged with `error_log()` only when `WP_DEBUG_LOG` is defined and true (see `inc/rest-early-access.php`). Disable in production or ensure logs are not exposed.
 
 ---
 

@@ -30,7 +30,15 @@ The master documentation includes:
 - `inc/enqueue.php` - Asset loading logic
 - `inc/helpers.php` - Utility functions and page detection
 - `inc/template-routes.php` - URL routing and 404 handling
+- `inc/rest-early-access.php` - Early Access form → GHL webhook
+- `inc/rest-demo-survey.php` - Demo Survey form → GHL webhook (separate from Early Access)
 - `DOCUMENTATION.md` - Complete technical documentation
+
+### Setup & Integrations
+
+- **Local:** Run WordPress locally (e.g. Local by Flywheel). Use a tunnel for GHL webhook testing if needed.
+- **GoHighLevel:** Two webhooks—Early Access (`rest-early-access.php`) and Demo Survey (`rest-demo-survey.php`). Do not swap URLs; see DOCUMENTATION.md → Setup & Integrations.
+- **ACF:** Required for Homepage Settings only. Early Access has no backend options in this theme.
 
 ### Development
 

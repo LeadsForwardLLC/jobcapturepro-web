@@ -9,7 +9,8 @@
  */
 
 /**
- * Default GHL webhook URL for Early Access form submissions.
+ * GHL webhook URL for Early Access form submissions only.
+ * Do not use for Demo Survey; see inc/rest-demo-survey.php for Demo webhook.
  */
 define( 'JCP_GHL_WEBHOOK_URL_DEFAULT', 'https://services.leadconnectorhq.com/hooks/kMIwmFm9I7LJPEYo35qi/webhook-trigger/d476d7e2-286d-4201-811d-4fedfea5fdf5' );
 
@@ -70,17 +71,11 @@ function jcp_core_register_early_access_rest_routes(): void {
 add_action( 'rest_api_init', 'jcp_core_register_early_access_rest_routes' );
 
 /**
- * Get GHL webhook URL (ACF or constant).
+ * Get GHL webhook URL (hardcoded default for Early Access only).
  *
  * @return string
  */
 function jcp_core_ghl_webhook_url(): string {
-    if ( function_exists( 'get_field' ) ) {
-        $url = get_field( 'ea_ghl_webhook_url', 'option' );
-        if ( is_string( $url ) && $url !== '' ) {
-            return $url;
-        }
-    }
     return JCP_GHL_WEBHOOK_URL_DEFAULT;
 }
 
@@ -164,8 +159,10 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
     $body_string = jcp_core_build_ghl_body( $first_name, $email, $phone, $company, $trade, $referral_source, $message );
     $url         = jcp_core_ghl_webhook_url();
 
-    error_log( 'JCP GHL payload: ' . $body_string );
-    error_log( 'JCP GHL URL: ' . $url );
+    if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+        error_log( 'JCP GHL payload: ' . $body_string );
+        error_log( 'JCP GHL URL: ' . $url );
+    }
 
     $response = wp_remote_post(
         $url,
@@ -181,8 +178,10 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
     $code = wp_remote_retrieve_response_code( $response );
     $body = wp_remote_retrieve_body( $response );
 
-    error_log( 'JCP GHL response code: ' . (string) $code );
-    error_log( 'JCP GHL response body: ' . (string) $body );
+    if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+        error_log( 'JCP GHL response code: ' . (string) $code );
+        error_log( 'JCP GHL response body: ' . (string) $body );
+    }
 
     $ok = $code >= 200 && $code < 300;
 
@@ -221,8 +220,10 @@ function jcp_core_early_access_test_ghl( \WP_REST_Request $request ): \WP_REST_R
     );
     $url = jcp_core_ghl_webhook_url();
 
-    error_log( 'JCP GHL TEST payload: ' . $body_string );
-    error_log( 'JCP GHL TEST URL: ' . $url );
+    if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+        error_log( 'JCP GHL TEST payload: ' . $body_string );
+        error_log( 'JCP GHL TEST URL: ' . $url );
+    }
 
     $response = wp_remote_post(
         $url,
@@ -238,8 +239,10 @@ function jcp_core_early_access_test_ghl( \WP_REST_Request $request ): \WP_REST_R
     $code = wp_remote_retrieve_response_code( $response );
     $body = wp_remote_retrieve_body( $response );
 
-    error_log( 'JCP GHL TEST response code: ' . (string) $code );
-    error_log( 'JCP GHL TEST response body: ' . (string) $body );
+    if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+        error_log( 'JCP GHL TEST response code: ' . (string) $code );
+        error_log( 'JCP GHL TEST response body: ' . (string) $body );
+    }
 
     return new \WP_REST_Response( [
         'payload_sent'   => $body_string,

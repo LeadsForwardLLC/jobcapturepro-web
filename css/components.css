@@ -679,6 +679,93 @@
   color: var(--jcp-color-primary);
 }
 
+/* Footer bottom: legal, social, powered by */
+.jcp-footer-bottom {
+  border-top: 1px solid var(--jcp-color-border);
+  margin-top: var(--jcp-space-3xl);
+  padding-top: var(--jcp-space-2xl);
+}
+
+.jcp-footer-bottom-inner {
+  max-width: var(--jcp-size-container-2xl);
+  margin: 0 auto;
+  padding: 0 var(--jcp-space-lg);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--jcp-space-lg);
+}
+
+.jcp-footer-legal {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-sm);
+}
+
+.jcp-footer-legal a {
+  color: var(--jcp-color-text-secondary);
+  font-size: var(--jcp-font-size-sm);
+  text-decoration: none;
+  padding: 0;
+  transition: color var(--jcp-transition-base);
+}
+
+.jcp-footer-legal a:hover {
+  color: var(--jcp-color-primary);
+}
+
+.jcp-footer-sep {
+  color: var(--jcp-color-text-muted, rgba(0, 0, 0, 0.35));
+  font-weight: 300;
+  user-select: none;
+}
+
+.jcp-footer-social {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jcp-footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--jcp-color-text-secondary);
+  padding: var(--jcp-space-xs);
+  border-radius: var(--jcp-radius-sm, 4px);
+  transition: color var(--jcp-transition-base), transform 0.15s ease;
+}
+
+.jcp-footer-social-link:hover {
+  color: var(--jcp-color-primary);
+}
+
+.jcp-footer-social-link:focus-visible {
+  outline: 2px solid var(--jcp-color-primary);
+  outline-offset: 2px;
+}
+
+.jcp-footer-powered {
+  margin: 0;
+  font-size: var(--jcp-font-size-xs, 0.8125rem);
+  color: var(--jcp-color-text-secondary);
+}
+
+.jcp-footer-powered a {
+  color: var(--jcp-color-text-secondary);
+  text-decoration: none;
+  font-weight: var(--jcp-font-weight-medium, 500);
+  transition: color var(--jcp-transition-base);
+}
+
+.jcp-footer-powered a:hover {
+  color: var(--jcp-color-primary);
+}
+
 @media (max-width: 768px) {
   .directory-header {
     padding: var(--jcp-space-md) var(--jcp-space-lg);
@@ -717,5 +804,19 @@
 
   .jcp-footer-brand p {
     max-width: 100%;
+  }
+
+  .jcp-footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--jcp-space-md);
+  }
+
+  .jcp-footer-legal {
+    justify-content: center;
+  }
+
+  .jcp-footer-social {
+    justify-content: center;
   }
 }

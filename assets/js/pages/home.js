@@ -21,7 +21,7 @@
           <div class="jcp-container">
             <div class="jcp-hero-grid">
               <div class="jcp-hero-copy hero-copy">
-                <h1 class="jcp-hero-title">Turn every completed job into visibility that brings in more work</h1>
+                <h1 class="jcp-hero-title">Turn every completed job into visibility that brings in more <span class="jcp-hero-rotating-word" aria-live="polite">visibility</span></h1>
                 <p class="jcp-hero-subtitle">
                   Your team already takes job photos. JobCapturePro automatically turns them into Google updates, website content, social media posts, and review requests so your work keeps marketing itself.
                 </p>
@@ -740,6 +740,23 @@
 
       </main>
     `;
+
+    // Rotating word in hero title: visibility → calls → customers → growth
+    const rotatingWordEl = root.querySelector('.jcp-hero-rotating-word');
+    if (rotatingWordEl) {
+      const words = ['visibility', 'calls', 'customers', 'growth'];
+      let index = 0;
+      const cycleMs = 2800;
+      const fadeMs = 350;
+      setInterval(() => {
+        rotatingWordEl.style.opacity = '0';
+        setTimeout(() => {
+          index = (index + 1) % words.length;
+          rotatingWordEl.textContent = words[index];
+          rotatingWordEl.style.opacity = '1';
+        }, fadeMs);
+      }, cycleMs);
+    }
 
     // Add interactive animations to hero card
     setTimeout(() => {
