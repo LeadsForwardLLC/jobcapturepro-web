@@ -21,9 +21,9 @@
           <div class="jcp-container">
             <div class="jcp-hero-grid">
               <div class="jcp-hero-copy hero-copy">
-                <h1 class="jcp-hero-title">Turn completed jobs into new jobs—automatically</h1>
+                <h1 class="jcp-hero-title">Turn every completed job into visibility that brings in more work</h1>
                 <p class="jcp-hero-subtitle">
-                  Your crew already takes job photos. JobCapturePro turns those into visibility on Google, your website, the directory, and review requests—no extra work from you.
+                  Your team already takes job photos. JobCapturePro automatically turns them into Google updates, website content, social media posts, and review requests so your work keeps marketing itself.
                 </p>
                 <div class="jcp-actions directory-cta-row">
                   <a class="btn btn-primary" href="/demo">See your business in the live demo</a>
@@ -55,34 +55,73 @@
               </div>
 
               <div class="jcp-hero-visual hero-visual">
-                <div class="hero-proof-stack">
-                  <div class="hero-media-card">
-                    <div class="hero-media-glow" aria-hidden="true"></div>
-                    <img class="hero-media-image" src="http://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg" alt="Contractor capturing a job photo with JobCapturePro">
-                    <div class="hero-media-shade" aria-hidden="true"></div>
-                    <div class="hero-media-badge">
-                      <span class="hero-media-pill">Verified job proof</span>
-                    </div>
-                    <div class="hero-media-content">
-                      <div class="hero-media-title">One photo → live everywhere</div>
-                      <div class="hero-media-subtitle">Photo → AI check-in → Live on all channels</div>
-                    </div>
-                    <div class="hero-media-stats">
-                      <div class="hero-stat">
-                        <img src="${icon('map-pin')}" class="hero-stat-icon" alt="">
-                        <span class="hero-stat-label">Publish to Google Maps</span>
-                      </div>
-                      <div class="hero-stat">
-                        <img src="${icon('globe')}" class="hero-stat-icon" alt="">
-                        <span class="hero-stat-label">Go live on your website</span>
-                      </div>
-                      <div class="hero-stat">
-                        <img src="${icon('star')}" class="hero-stat-icon" alt="">
-                        <span class="hero-stat-label">Request a review</span>
+                <a href="/demo" class="demo-phone-mockup hero-phone-mockup">
+                  <div class="phone-frame hero-phone-frame">
+                    <div class="phone-screen">
+                      <div class="phone-content">
+                        <div class="phone-header">
+                          <div class="phone-status-bar">
+                            <span>9:41</span>
+                            <svg class="phone-battery-icon" width="24" height="12" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                              <rect x="1" y="3" width="18" height="6" rx="1.5" fill="currentColor" fill-opacity="1"/>
+                              <rect x="1" y="3" width="18" height="6" rx="1.5" stroke="currentColor"/>
+                              <path d="M20 5v2h2v-2z" fill="currentColor"/>
+                            </svg>
+                          </div>
+                          <div class="phone-nav">
+                          </div>
+                        </div>
+                        <div class="phone-body hero-phone-body">
+                          <span class="hero-phone-live-badge">Live</span>
+                          <div class="demo-preview-item hero-phone-card hero-phone-card-1">
+                            <div class="demo-item-icon">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                <circle cx="12" cy="13" r="4"/>
+                              </svg>
+                            </div>
+                            <div class="demo-item-content">
+                              <div class="demo-item-title">New job captured</div>
+                              <div class="demo-item-subtitle">Photo uploaded</div>
+                            </div>
+                          </div>
+                          <div class="demo-preview-item hero-phone-card hero-phone-card-2">
+                            <div class="demo-item-icon">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                              </svg>
+                            </div>
+                            <div class="demo-item-content">
+                              <div class="demo-item-title">AI check-in complete</div>
+                              <div class="demo-item-subtitle">Verified proof ready</div>
+                            </div>
+                          </div>
+                          <div class="demo-preview-item hero-phone-card hero-phone-card-3">
+                            <div class="demo-item-icon">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                              </svg>
+                            </div>
+                            <div class="demo-item-content">
+                              <div class="demo-item-title">Published everywhere</div>
+                              <div class="demo-item-subtitle">Google Maps • Website • Directory</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="phone-click-hint hero-phone-cta">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M13 5l7 7-7 7"/>
+                          </svg>
+                          <span>Try the demo</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </a>
               </div>
             </div>
           </div>
