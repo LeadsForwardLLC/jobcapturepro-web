@@ -9,13 +9,13 @@
   function escAttr(str) {
     if (str == null) return '';
     const s = String(str);
-    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/`/g, '&#96;');
   }
 
   function escText(str) {
     if (str == null) return '';
     const s = String(str);
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/`/g, '&#96;');
   }
 
   window.renderEarlyAccess = () => {
@@ -23,9 +23,14 @@
     if (!root) return;
 
     const c = window.JCP_EARLY_ACCESS_FORM || {};
-    const options = (c.referral_options || []).map(
+    const referralOptions = (c.referral_options || []).map(
       (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
     ).join('');
+    const whyOptions = (c.why_interested_options || []).map(
+      (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
+    ).join('');
+    const requirePhone = c.require_phone !== false;
+    const requireCompany = c.require_company !== false;
 
     root.innerHTML = `
       <main class="jcp-marketing jcp-early-access-page">
@@ -43,76 +48,79 @@
         <section class="jcp-section jcp-form-section">
           <div class="jcp-container">
             <div class="jcp-form-wrapper">
-              <form class="jcp-founding-form" id="foundingCrewForm" novalidate>
+              <form class="jcp-founding-form" id="foundingCrewForm" novalidate data-require-phone="${requirePhone ? '1' : '0'}" data-require-company="${requireCompany ? '1' : '0'}">
                 <div class="jcp-form-error" id="earlyAccessFormError" role="alert" aria-live="polite" style="display: none;"></div>
                 <div class="jcp-form-grid">
                   <div class="jcp-form-field">
-                    <label for="founding-name">${escText(c.label_full_name)}</label>
+                    <label for="founding-name">Full Name</label>
                     <input
                       type="text"
                       id="founding-name"
                       name="first_name"
-                      placeholder="${escAttr(c.placeholder_full_name)}"
+                      placeholder="John Smith"
                       required
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-email">${escText(c.label_email)}</label>
+                    <label for="founding-email">Email</label>
                     <input
                       type="email"
                       id="founding-email"
                       name="email"
-                      placeholder="${escAttr(c.placeholder_email)}"
+                      placeholder="john@example.com"
                       required
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-company">${escText(c.label_company)}</label>
+                    <label for="founding-company">Company</label>
                     <input
                       type="text"
                       id="founding-company"
                       name="company"
-                      placeholder="${escAttr(c.placeholder_company)}"
-                      required
+                      placeholder="Summit Plumbing"
+                      ${requireCompany ? 'required' : ''}
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-phone">${escText(c.label_phone)}</label>
+                    <label for="founding-phone">Phone</label>
                     <input
                       type="tel"
                       id="founding-phone"
                       name="phone"
-                      placeholder="${escAttr(c.placeholder_phone)}"
-                      required
+                      placeholder="(555) 123-4567"
+                      ${requirePhone ? 'required' : ''}
                     />
                   </div>
                 </div>
                 <div class="jcp-form-field jcp-form-field-full">
-                  <label for="founding-message">${escText(c.label_message)}</label>
-                  <textarea
+                  <label for="founding-message">Why are you interested in JobCapturePro?</label>
+                  <p class="jcp-form-field-helper" id="founding-message-helper">Select all that apply</p>
+                  <select
                     id="founding-message"
                     name="message"
-                    placeholder="${escAttr(c.placeholder_message)}"
-                    rows="4"
+                    multiple
                     required
-                  ></textarea>
+                    aria-describedby="founding-message-helper"
+                  >
+                    ${whyOptions}
+                  </select>
                 </div>
                 <div class="jcp-form-field jcp-form-field-full">
-                  <label for="founding-referral">${escText(c.label_referral)}</label>
+                  <label for="founding-referral">How did you hear about us?</label>
                   <select id="founding-referral" name="referral_source" required>
-                    <option value="">${escText(c.placeholder_referral)}</option>
-                    ${options}
+                    <option value="">Select one</option>
+                    ${referralOptions}
                   </select>
                 </div>
                 <div class="jcp-form-field jcp-form-field-full jcp-form-field-consent">
                   <label class="jcp-form-consent-label">
                     <input type="checkbox" name="consent" id="founding-consent" required />
-                    <span>${escText(c.label_consent)}</span>
+                    <span>I agree to receive marketing emails from JobCapturePro. I can unsubscribe at any time.</span>
                   </label>
                 </div>
                 <div class="jcp-form-actions">
                   <button type="submit" class="btn btn-primary" id="earlyAccessSubmitBtn">
-                    ${escText(c.submit_button_text)}
+                    Join Early Access
                   </button>
                 </div>
               </form>
@@ -207,11 +215,25 @@
       const company = (form.querySelector('[name="company"]') || {}).value || '';
       const email = (form.querySelector('[name="email"]') || {}).value || '';
       const phone = (form.querySelector('[name="phone"]') || {}).value || '';
-      const message = (form.querySelector('[name="message"]') || {}).value || '';
+      const messageEl = form.querySelector('[name="message"]');
+      const selectedOpts = messageEl && messageEl.selectedOptions ? Array.from(messageEl.selectedOptions) : [];
+      const messageValues = selectedOpts.map(function (opt) { return opt.value; }).filter(Boolean);
+      const messageText = messageValues.length ? messageValues.join(', ') : '';
       const referral_source = (form.querySelector('[name="referral_source"]') || {}).value || '';
 
-      if (!first_name.trim() || !company.trim() || !email.trim() || !phone.trim() || !message.trim() || !referral_source) {
-        showError('Please fill in all required fields.');
+      const requirePhone = form.getAttribute('data-require-phone') === '1';
+      const requireCompany = form.getAttribute('data-require-company') === '1';
+
+      if (!first_name.trim() || !email.trim() || !messageText || !referral_source) {
+        showError('Please fill in all required fields, including at least one "Why are you interested" option.');
+        return;
+      }
+      if (requireCompany && !company.trim()) {
+        showError('Please enter your company.');
+        return;
+      }
+      if (requirePhone && !phone.trim()) {
+        showError('Please enter your phone number.');
         return;
       }
 
@@ -229,7 +251,7 @@
           company: company.trim(),
           email: email.trim(),
           phone: phone.trim(),
-          message: message.trim(),
+          message: messageText.trim(),
           referral_source: referral_source.trim(),
         }),
       })

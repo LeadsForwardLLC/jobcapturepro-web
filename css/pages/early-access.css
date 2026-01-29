@@ -123,6 +123,21 @@
   color: var(--jcp-color-text-tertiary);
 }
 
+.jcp-form-field select[multiple] {
+  min-height: 180px;
+  padding: var(--jcp-space-sm);
+}
+
+.jcp-form-field select[multiple] option {
+  padding: var(--jcp-space-sm) var(--jcp-space-md);
+}
+
+.jcp-form-field-helper {
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  margin: 0 0 var(--jcp-space-sm) 0;
+}
+
 .jcp-form-field-full {
   margin-bottom: var(--jcp-space-xl);
 }

@@ -12,14 +12,13 @@
 get_header();
 
 $config = function_exists( 'jcp_core_get_early_access_form_config' ) ? jcp_core_get_early_access_form_config() : [];
-$heading = isset( $config['success_page_heading'] ) ? $config['success_page_heading'] : "You're on the list";
-$message = isset( $config['success_page_message'] ) ? $config['success_page_message'] : "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.";
+$message = isset( $config['success_message'] ) ? $config['success_message'] : "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.";
 ?>
 <main class="jcp-marketing jcp-early-access-page">
   <section class="jcp-section rankings-section">
     <div class="jcp-container">
       <div class="rankings-header">
-        <h1><?php echo esc_html( $heading ); ?></h1>
+        <h1>You're on the list</h1>
         <p class="rankings-subtitle"><?php echo esc_html( $message ); ?></p>
       </div>
       <div class="jcp-form-actions" style="margin-top: var(--jcp-space-3xl);">

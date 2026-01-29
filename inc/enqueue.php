@@ -86,8 +86,7 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_script( 'jcp-core-early-access', 'js/pages/early-access.js' );
         $render_deps[] = 'jcp-core-early-access';
         $ea_config = function_exists( 'jcp_core_get_early_access_form_config' ) ? jcp_core_get_early_access_form_config() : [];
-        $ea_config['rest_url']         = rest_url( 'jcp/v1/early-access-submit' );
-        $ea_config['success_redirect'] = home_url( '/early-access-success/' );
+        $ea_config['rest_url'] = rest_url( 'jcp/v1/early-access-submit' );
         wp_localize_script( 'jcp-core-early-access', 'JCP_EARLY_ACCESS_FORM', $ea_config );
     }
 
