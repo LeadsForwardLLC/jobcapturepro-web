@@ -28,12 +28,13 @@ require_once get_template_directory() . '/inc/rest-early-access.php';
 require_once get_template_directory() . '/inc/design-system-setup.php';
 
 /**
- * Load theme text domain for translations.
+ * Theme setup: text domain and SEO-safe document title.
  */
-function jcp_core_load_textdomain(): void {
+function jcp_core_theme_setup(): void {
 	load_theme_textdomain( 'jcp-core', get_template_directory() . '/languages' );
+	add_theme_support( 'title-tag' );
 }
-add_action( 'after_setup_theme', 'jcp_core_load_textdomain' );
+add_action( 'after_setup_theme', 'jcp_core_theme_setup' );
 
 /**
  * Remove tailwind.min.css if it's being enqueued (prevents 404 errors)
