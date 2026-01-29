@@ -37,18 +37,6 @@
   animation: backgroundScroll 120s linear infinite;
 }
 
-.jcp-home .jcp-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.75);
-  z-index: 0;
-  pointer-events: none;
-}
-
 @keyframes backgroundScroll {
   0% {
     background-position: 0 50%;

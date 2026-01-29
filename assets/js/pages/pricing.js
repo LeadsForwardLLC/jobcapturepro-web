@@ -7,6 +7,7 @@
   const icon = (name) => `${assetBase()}/shared/assets/icons/lucide/${name}.svg`;
 
   // Pricing data with monthly and yearly prices
+  // Features can be strings or { text: string, tooltip: string } for items with tooltips
   const pricingData = {
     starter: {
       monthly: 99,
@@ -15,13 +16,13 @@
       description: 'Single-location companies',
       pill: 'Build trust fast',
       features: [
-        'Single-location companies',
-        'Mobile app check-ins (photo → AI content)',
-        'SEO-optimized check-ins (WebP images, filenames, schema)',
+        'Single location',
+        { text: 'Mobile app check-ins', tooltip: 'photo → AI content' },
+        { text: 'SEO-optimized check-ins', tooltip: 'WebP images, filenames, schema' },
         'WordPress plugin (1 site)',
-        'Manual review links + QR codes',
-        'Basic company dashboard',
-        'Single location included'
+        'Review links + QR codes',
+        'Company dashboard',
+        '1 location included'
       ]
     },
     scale: {
@@ -31,14 +32,13 @@
       description: 'Growing teams needing automation',
       pill: 'Automate visibility',
       features: [
-        'Growing teams needing automation',
         'Everything in Starter, plus:',
-        'CRM integrations (Housecall Pro, Workiz, QuickBooks, CompanyCam)',
-        'Automated review requests (SMS/email + follow-ups)',
-        'Auto-posting to Facebook, Instagram, and X',
+        { text: 'CRM integrations', tooltip: 'Housecall Pro, Workiz, QuickBooks, CompanyCam' },
+        { text: 'Automated review requests', tooltip: 'SMS/email + follow-ups' },
+        { text: 'Auto-posting to social', tooltip: 'Facebook, Instagram, X' },
         'Google Business Profile auto-posting',
-        'Monthly GeoGrid ranking reports (LocalFalcon)',
-        'Up to 3 locations included'
+        { text: 'Monthly GeoGrid reports', tooltip: 'LocalFalcon' },
+        'Up to 3 locations'
       ],
       featured: true
     },
@@ -49,17 +49,31 @@
       description: 'Multi-location companies, franchises, agencies',
       pill: 'Scale across locations',
       features: [
-        'Multi-location companies, franchises, agencies',
         'Everything in Scale, plus:',
         'Unlimited locations',
         'Org-level dashboard',
-        'User roles & permissions',
+        { text: 'User roles & permissions', tooltip: 'Admin, manager, and crew access levels' },
         'API access',
-        'Custom integrations & data migration',
-        'White-glove onboarding',
-        'Dedicated success manager'
+        { text: 'Custom integrations & migration', tooltip: 'API-based connectors, data migration support' },
+        { text: 'White-glove onboarding', tooltip: 'Dedicated setup, training, and go-live support' },
+        { text: 'Dedicated success manager', tooltip: 'Single point of contact for strategy and support' }
       ]
     }
+  };
+
+  // Escape HTML for tooltip content (safe for innerHTML)
+  const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Escape for HTML attribute (e.g. aria-label)
+  const escapeAttr = (s) => escapeHtml(s).replace(/"/g, '&quot;');
+
+  // Render a single feature list item (string or { text, tooltip })
+  const renderFeature = (feature) => {
+    if (typeof feature === 'string') {
+      return `<li>${feature}</li>`;
+    }
+    const tip = escapeHtml(feature.tooltip);
+    const ariaTip = escapeAttr(feature.tooltip);
+    return `<li class="jcp-plan-feature-with-tooltip"><span>${feature.text}</span> <span class="jcp-feature-tooltip-trigger" tabindex="0" role="button" aria-label="More info: ${ariaTip}"><img src="${icon('info')}" alt="" width="14" height="14" class="jcp-feature-tooltip-icon" /><span class="jcp-feature-tooltip-bubble">${tip}</span></span></li>`;
   };
 
   // Pricing-specific FAQ items
@@ -146,7 +160,7 @@
         ` : ''}
         <div class="jcp-plan-pill">${plan.pill}</div>
         <ul class="jcp-plan-list">
-          ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
+          ${plan.features.map(renderFeature).join('')}
         </ul>
         <a class="btn ${plan.featured ? 'btn-primary' : 'btn-secondary'}" href="/early-access">
           ${hasPricing ? 'Join Early Access' : 'Contact sales'}
@@ -200,10 +214,20 @@
               </div>
             </div>
             <div class="jcp-pricing-notes">
-              <ul class="jcp-plan-list">
-                <li>Additional locations: +$100 / month per location</li>
-                <li>Unlimited users per location</li>
-                <li>Pricing is per location, not per user</li>
+              <p class="jcp-pricing-notes-label">All plans</p>
+              <ul class="jcp-pricing-notes-list">
+                <li class="jcp-pricing-note-item">
+                  <img src="${icon('map-pin')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
+                  <span>Additional locations: +$100 / month per location</span>
+                </li>
+                <li class="jcp-pricing-note-item">
+                  <img src="${icon('users')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
+                  <span>Unlimited users per location</span>
+                </li>
+                <li class="jcp-pricing-note-item">
+                  <img src="${icon('dollar-sign')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
+                  <span>Pricing is per location, not per user</span>
+                </li>
               </ul>
             </div>
           </div>

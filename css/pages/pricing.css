@@ -94,6 +94,60 @@
   margin-top: 0;
 }
 
+/* Pricing notes: full width of plans container, centered under the 3 tiers */
+.jcp-pricing-notes {
+  margin-top: var(--jcp-space-3xl);
+  padding: var(--jcp-space-xl) var(--jcp-space-2xl);
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--jcp-color-bg-secondary, #f9fafb);
+  border-radius: var(--jcp-radius-lg);
+  border: 1px solid var(--jcp-color-border, #e5e7eb);
+}
+.jcp-pricing-notes-label {
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 var(--jcp-space-md) 0;
+}
+.jcp-pricing-notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--jcp-space-lg) var(--jcp-space-xl);
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  line-height: 1.6;
+  text-align: center;
+}
+.jcp-pricing-note-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jcp-space-sm);
+  padding-left: 0;
+}
+.jcp-pricing-note-icon {
+  flex-shrink: 0;
+  color: var(--jcp-color-primary);
+  opacity: 0.9;
+}
+.jcp-pricing-notes-list li {
+  padding-left: 0;
+}
+@media (max-width: 768px) {
+  .jcp-pricing-notes-list {
+    grid-template-columns: 1fr;
+    gap: var(--jcp-space-sm);
+  }
+}
+
 .jcp-pricing-card {
   display: flex;
   flex-direction: column;
@@ -229,6 +283,73 @@
 .jcp-plan-list li {
   font-size: var(--jcp-font-size-base);
   line-height: 1.6;
+}
+
+/* Feature with tooltip: text + small info icon + custom tooltip bubble */
+.jcp-plan-feature-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.jcp-feature-tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  color: var(--jcp-color-text-secondary);
+  opacity: 0.7;
+  flex-shrink: 0;
+  outline: none;
+}
+.jcp-feature-tooltip-trigger:hover,
+.jcp-feature-tooltip-trigger:focus {
+  opacity: 1;
+}
+.jcp-feature-tooltip-icon {
+  display: block;
+  vertical-align: middle;
+}
+
+/* Tooltip bubble: visible on hover/focus */
+.jcp-feature-tooltip-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%) translateY(-4px);
+  margin-bottom: 4px;
+  padding: 8px 12px;
+  background: #1f2937;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: var(--jcp-font-weight-normal);
+  white-space: normal;
+  max-width: 320px;
+  min-width: 200px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+.jcp-feature-tooltip-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+}
+.jcp-feature-tooltip-trigger:hover .jcp-feature-tooltip-bubble,
+.jcp-feature-tooltip-trigger:focus .jcp-feature-tooltip-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .jcp-pricing-card .btn {
