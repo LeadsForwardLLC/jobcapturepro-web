@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>JobCapturePro - Interactive Demo</title>
+    
+    <!-- Leaflet and styles loaded via WordPress enqueue (jcp-render.js strips these tags anyway) -->
+    <link rel="stylesheet" href="../../shared/assets/demo.css?v=20260118-23">
+</head>
+<body>
+    <!-- Main Demo Container -->
+    <div class="demo-container">
+        <!-- Phone Device -->
+<div class="phone-wrapper" id="focus-phone">
+
+    <!-- Tour docks here on early steps -->
+    <div id="tour-dock-left" class="tour-dock tour-dock-left"></div>
+
+    <div class="iphone-frame">
+
+                <div class="notch"></div>
+                <div class="screen">
+                    <!-- Start Demo Screen -->
+                    <div class="app-screen active" id="login-screen">
+                        <div class="app-header">
+                            <h1>JobCapturePro Demo</h1>
+                        </div>
+
+                        <div class="content-area">
+                            <div class="login-container">
+                                <h2 class="login-title">Ready?</h2>
+                                <p class="login-subtitle">Click below to run the sales demo.</p>
+                                <button class="btn btn-primary" id="btnStartDemo">
+                                    Start Demo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Home Screen -->
+                    <div class="app-screen" id="home-screen">
+                        <div class="app-header">
+                            <h1>Check-ins</h1>
+                        </div>
+                        <div class="content-area">
+
+                            <div class="greeting"></div>
+
+                            <div class="action-tiles">
+                                <div class="tile">
+                                <div class="tile-icon"><img src="../../shared/assets/icons/lucide/briefcase.svg" class="lucide-icon" alt=""></div>
+                                    <div class="tile-label">My Jobs</div>
+                                </div>
+                                <div class="tile">
+                                <div class="tile-icon"><img src="../../shared/assets/icons/lucide/users.svg" class="lucide-icon" alt=""></div>
+                                    <div class="tile-label">Team</div>
+                                </div>
+                                <div class="tile">
+                                <div class="tile-icon"><img src="../../shared/assets/icons/lucide/archive.svg" class="lucide-icon" alt=""></div>
+                                    <div class="tile-label">Archived</div>
+                                </div>
+                            </div>
+
+                            <div class="empty-state">
+                                <h3>Start capturing proof</h3>
+                                <p>Take a few photos → submit → automatically published everywhere.</p>
+                                <div class="empty-hint">
+                                    <span>Tap <strong>+</strong> to create a check-in</span>
+                                </div>
+                            </div>
+                            <div class="home-checkin-list" id="home-checkin-list"></div>
+                        </div>
+                        <div class="tab-bar">
+                            <button class="tab-item active">
+                                <div class="tab-icon"><img src="../../shared/assets/icons/lucide/clipboard-list.svg" class="lucide-icon" alt=""></div>
+                                Check-ins
+                            </button>
+                            <button class="fab" id="fabNewCheckin" onclick="goToNew()"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
+
+                            <button class="tab-item">
+                                <div class="tab-icon"><img src="../../shared/assets/icons/lucide/user.svg" class="lucide-icon" alt=""></div>
+                                Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- New Check-in Screen -->
+                    <div class="app-screen" id="new-screen">
+                        <div class="app-header">
+                            <button class="back-btn" id="btnBackToHome" onclick="goToHome()"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button>
+                            <h1>New Check-In</h1>
+                        </div>
+                        <div class="content-area">
+
+                            <div class="upload-area">
+                                <div class="upload-hint">Take photos or upload images to generate your check-in</div>
+                                <div class="upload-buttons">
+                                    <button class="upload-btn" onclick="addPhotos()"><img src="../../shared/assets/icons/lucide/camera.svg" class="lucide-icon" alt=""></button>
+                                    <button class="upload-btn" onclick="addPhotos()"><img src="../../shared/assets/icons/lucide/image.svg" class="lucide-icon" alt=""></button>
+                                </div>
+                            </div>
+
+                            <div class="photo-grid" id="photo-grid"></div>
+
+                            <button class="btn btn-primary btn-full" id="submit-btn" disabled>Submit</button>
+
+                        </div>
+                        <div class="tab-bar">
+                            <button class="tab-item" onclick="goToHome()">
+                                <div class="tab-icon"><img src="../../shared/assets/icons/lucide/clipboard-list.svg" class="lucide-icon" alt=""></div>
+                                Check-ins
+                            </button>
+                            <button class="fab is-disabled"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
+                            <button class="tab-item">
+                                <div class="tab-icon"><img src="../../shared/assets/icons/lucide/user.svg" class="lucide-icon" alt=""></div>
+                                Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Edit Check-in Screen -->
+                    <div class="app-screen" id="edit-screen">
+                        <div class="app-header">
+                            <button class="back-btn" id="btnEditBack" onclick="goToHome()"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button>
+                            <h1>Edit Check-In</h1>
+                        </div>
+                        <div class="content-area edit-content">
+                            <div class="status-pill"><img src="../../shared/assets/icons/lucide/clock.svg" class="lucide-icon lucide-icon-sm" alt=""> Not Published</div>
+                            <div class="section-title">LOCATION</div>
+                            <div class="location-card">
+                                <div class="location-header">
+                                    <div class="map-thumb">
+                                        <img src="../../shared/assets/icons/lucide/map.svg" class="lucide-icon lucide-icon-lg" alt="">
+                                    </div>
+                                    <div class="location-info">
+                                        <h3>1242 Mason Rd</h3>
+                                        <p>Austin, TX 78704</p>
+                                        <div class="change-link"><img src="../../shared/assets/icons/lucide/pencil.svg" class="lucide-icon lucide-icon-xs" alt=""> Change Location</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-title">PHOTOS</div>
+                            <div class="photo-grid" id="edit-photo-grid"></div>
+                            <button class="btn btn-ghost" style="margin-bottom: 24px;"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon lucide-icon-sm" alt=""> Add Media</button>
+
+                            <div class="section-title">DESCRIPTION</div>
+                            <div class="description-header">
+                                <p style="font-size: 13px; color: #9ca3af;"><img src="../../shared/assets/icons/lucide/zap.svg" class="lucide-icon lucide-icon-xs" alt=""> AI-generated description</p>
+                                <button class="regenerate-btn" onclick="regenerateDescription()">
+                                    <img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-xs" alt=""> Regenerate
+                                </button>
+                            </div>
+                            <textarea id="description-field">Replaced an aging water heater and brought the system up to code. We installed a new high-efficiency unit, verified proper venting, and tested temperature + pressure relief for safe operation. Customer is back to consistent hot water with improved energy performance.</textarea>
+                            <div class="auto-save-note"><img src="../../shared/assets/icons/lucide/check.svg" class="lucide-icon lucide-icon-xs" alt=""> Saved Automatically</div>
+
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" id="btnSavePublish" onclick="saveCheckin()"><img src="../../shared/assets/icons/lucide/upload.svg" class="lucide-icon lucide-icon-sm" alt=""> Publish Everywhere</button>
+                                <button class="btn btn-primary is-disabled" id="btnRequestReview" onclick="sendReviewRequest()"><img src="../../shared/assets/icons/lucide/star.svg" class="lucide-icon lucide-icon-sm" alt=""> Request Review</button>
+                                <button class="btn btn-secondary"><img src="../../shared/assets/icons/lucide/archive.svg" class="lucide-icon lucide-icon-sm" alt=""> Archive Check-In</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing Overlay -->
+                    <div class="processing-overlay" id="processing">
+                        <div class="spinner"></div>
+                        <div class="processing-title">Creating your check-in...</div>
+                        <div class="processing-steps">
+                            <div class="processing-step" id="step1">
+                                <div class="step-icon"></div>
+                                <span>Analyzing photos...</span>
+                            </div>
+                            <div class="processing-step" id="step2">
+                                <div class="step-icon"></div>
+                                <span>Detecting location...</span>
+                            </div>
+                            <div class="processing-step" id="step3">
+                                <div class="step-icon"></div>
+                                <span>Generating description...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="home-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Request Modal -->
+        <div class="modal-overlay" id="review-modal">
+            <div class="modal">
+                <h3><img src="../../shared/assets/icons/lucide/mail.svg" class="lucide-icon lucide-icon-sm" alt=""> Send Review Request</h3>
+                <p>Send an automated review request to the customer with photos from this job.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-ghost" onclick="closeReviewDialog()">Cancel</button>
+                    <button class="btn btn-primary" onclick="sendReviewRequest()"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Website Preview & Automation -->
+        <!-- Wrap the right side so it stays aligned to the top next to the phone -->
+        <div class="right-panel">
+
+        <!-- Live Preview header spans both right columns -->
+        <div id="tour-dock-right" class="tour-dock tour-dock-right tour-only">
+        <div class="panel-header preview-header">
+          <div class="preview-step">Output Preview</div>
+          <h2 class="preview-title">Public job visibility</h2>
+          <p class="preview-body">
+                    What customers see after a real job is published.
+                </p>
+            </div>
+        </div> 
+
+        <!-- Column 2: Website Preview -->
+        <div class="website-col" id="focus-website">
+            <!-- Website with Map Preview -->
+            <div class="website-preview">
+
+                <!-- Fake Browser Bar -->
+                <div class="browser-bar">
+                    <div class="browser-controls">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="browser-url">
+                        yourwebsite.com/jobs
+                    </div>
+                </div>
+
+                <!-- Website Page Content -->
+                <div class="website-content">
+
+                    <!-- Page Context -->
+                    <div class="website-header">
+                        <h1>Recent work near you</h1>
+                        <p>Verified job posts with photos, locations, and dates.</p>
+                    </div>
+
+                    <!-- Map -->
+                    <div class="map-container" id="job-map">
+                        <div class="map-pin">
+                          <img src="../../shared/assets/icons/lucide/map-pin.svg" class="lucide-icon lucide-icon-sm" alt="">
+                        </div>
+                        <div class="map-placeholder">
+                            <img src="../../shared/assets/icons/lucide/map.svg" class="lucide-icon lucide-icon-lg" alt="" style="margin-bottom: 8px;">
+                            <p style="font-size: 15px; font-weight: 700;">Recent jobs map</p>
+                            <p class="map-helper-text">
+                                Pins appear as completed jobs are published.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Check-ins -->
+                    <div class="checkin-grid" id="website-checkins">
+                        <!-- Seed checkins will be added here -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: Google + Facebook + Reviews + Dashboard -->
+        <div class="social-col" id="focus-social">
+            <!-- Google Simulator -->
+            <div class="simulator" id="sim-google">
+                <div class="sim-header">
+                    <span class="sim-title">
+                        <img src="../../shared/assets/icons/lucide/map-pin.svg" class="lucide-icon lucide-icon-sm" alt="">
+                        Local business post
+                    </span>
+                </div>
+                <div class="sim-body">
+                    <div class="feed" id="feed-google">
+                     <div class="empty-state" id="google-empty">
+                        <h3>No posts yet</h3>
+                        <p>Posts appear after a job is published.</p>
+                    </div>
+   
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facebook Simulator -->
+            <div class="simulator" id="sim-facebook">
+                <div class="sim-header">
+                    <span class="sim-title">
+                        <img src="../../shared/assets/icons/lucide/message-square.svg" class="lucide-icon lucide-icon-sm" alt="">
+                        Social update
+                    </span>
+                </div>
+                <div class="sim-body">
+                    <div class="feed" id="feed-facebook">
+                        <div class="empty-state" id="facebook-empty">
+                        <h3>No updates yet</h3>
+                        <p>Updates appear after a job is published.</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Request Simulator -->
+            <div class="simulator" id="sim-review">
+                <div class="sim-header">
+                    <span class="sim-title">
+                        <img src="../../shared/assets/icons/lucide/star.svg" class="lucide-icon lucide-icon-sm" alt="">
+                        Recent reviews
+                    </span>
+                </div>
+                <div class="sim-body">
+                    <div class="feed" id="feed-review">
+                        <div class="empty-state" id="review-empty">
+                        <h3>No reviews yet</h3>
+                        <p>Reviews appear as customers respond after a job is completed.</p>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div> <!-- /right-panel -->
+    </div>
+
+<div class="mobile-stepper" id="mobile-stepper" style="display:none;">
+<button class="btn btn-primary btn-full" id="btnMobileNext">Next →</button>
+</div>
+
+<!-- FINAL POST-DEMO SALES PANEL -->
+<div id="post-demo-panel" class="post-demo-panel">
+  <div class="post-demo-card">
+
+    <button
+      class="post-demo-x"
+      id="postDemoX"
+      type="button"
+      aria-label="Close"
+      style="position:absolute;top:14px;right:14px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#6b7280;"
+    >
+      <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
+    </button>
+
+    <div class="post-demo-hero">
+      <small>Live demo complete</small>
+      <h2>This is how JobCapturePro turns jobs into revenue</h2>
+    </div>
+
+    <ul class="post-demo-list" id="post-demo-results">
+      <li><img src="../../shared/assets/icons/lucide/camera.svg" class="lucide-icon lucide-icon-sm" alt=""> One job photo turned into live proof</li>
+      <li><img src="../../shared/assets/icons/lucide/zap.svg" class="lucide-icon lucide-icon-sm" alt=""> Website updated automatically</li>
+      <li><img src="../../shared/assets/icons/lucide/building.svg" class="lucide-icon lucide-icon-sm" alt=""> Business post published</li>
+      <li><img src="../../shared/assets/icons/lucide/message-square.svg" class="lucide-icon lucide-icon-sm" alt=""> Social post shared automatically</li>
+      <li><img src="../../shared/assets/icons/lucide/star.svg" class="lucide-icon lucide-icon-sm" alt=""> Review request sent at the right moment</li>
+      <li><img src="../../shared/assets/icons/lucide/badge-check.svg" class="lucide-icon lucide-icon-sm" alt=""> Public directory listing updated</li>
+    </ul>
+
+    <p class="post-demo-result">
+      Every completed job automatically sends local SEO signals that increase visibility, improve rankings, and generate more inbound leads, without adding any work for your team.
+    </p>
+
+    <div class="post-demo-actions">
+      <a class="btn btn-primary" href="https://jobcapturepro.com/early-access/" target="_blank">
+        Start using JobCapturePro free →
+      </a>
+
+      <button class="btn btn-secondary" id="viewDirectoryFromSales" type="button">
+        View your business in the live directory →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<button
+  class="tour-bubble is-hidden"
+  id="post-demo-bubble"
+  type="button"
+  aria-label="Open results"
+>
+  <img src="../../shared/assets/icons/lucide/trending-up.svg" class="lucide-icon lucide-icon-sm" alt="">
+  <span>Results</span>
+</button>
+
+<button
+  class="tour-bubble is-hidden"
+  id="post-demo-bubble"
+  type="button"
+  aria-label="Open results"
+>
+  <img src="../../shared/assets/icons/lucide/trending-up.svg" class="lucide-icon lucide-icon-sm" alt="">
+  <span>Results</span>
+</button>
+
+<!-- Directory micro reveal -->
+<button
+  class="tour-bubble is-hidden"
+  id="directory-hint"
+  type="button"
+>
+  <img src="../../shared/assets/icons/lucide/badge-check.svg" class="lucide-icon lucide-icon-sm" alt="">
+  <span>Directory updated</span>
+</button>
+
+
+<!-- Floating Tour Tooltip (moves to the active target) -->
+<div class="tour-float is-hidden" id="tour-float" aria-live="polite">
+  <div class="tour-float-inner">
+    <div class="tour-float-top">
+      <div class="tour-pill" id="tour-pill">Step</div>
+      <button class="tour-x" id="tour-close" type="button" aria-label="Close tour">
+        <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
+      </button>
+    </div>
+
+    <div class="tour-float-title" id="tour-float-title">Title</div>
+    <div class="tour-float-body" id="tour-float-body">Body</div>
+
+    <div class="tour-float-actions">
+        <button class="btn btn-ghost tour-min" id="tour-minimize">
+          <img src="../../shared/assets/icons/lucide/minus.svg" class="lucide-icon lucide-icon-sm" alt=""> Minimize
+        </button>
+
+        <button class="btn btn-primary tour-next" id="tour-next">
+          Next <img src="../../shared/assets/icons/lucide/arrow-right.svg" class="lucide-icon lucide-icon-sm" alt="">
+        </button>
+    </div>
+  </div>
+  <div class="tour-arrow" id="tour-arrow"></div>
+</div>
+
+<!-- Collapsed bubble -->
+<button class="tour-bubble is-hidden" id="tour-bubble" type="button" aria-label="Open tour">
+  <img src="../../shared/assets/icons/lucide/message-circle.svg" class="lucide-icon lucide-icon-sm" alt="">
+  <span>Tour</span>
+</button>
+
+<!-- JS loaded via WordPress enqueue (jcp-render.js strips script tags anyway) -->
+
+</body>
+</html>

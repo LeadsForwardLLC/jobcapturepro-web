@@ -1,0 +1,420 @@
+(() => {
+  const scriptSrc = document.currentScript && document.currentScript.src ? document.currentScript.src : '';
+  const fallbackBase = scriptSrc.includes('/core/')
+    ? scriptSrc.split('/core/')[0]
+    : '';
+  const assetBase = () => window.JCP_ASSET_BASE || fallbackBase;
+  const icon = (name) => `${assetBase()}/shared/assets/icons/lucide/${name}.svg`;
+
+  // Pricing data with monthly and yearly prices
+  const pricingData = {
+    starter: {
+      monthly: 99,
+      yearly: 79, // 20% discount
+      name: 'Starter',
+      description: 'Single-location companies',
+      pill: 'Build trust fast',
+      features: [
+        'Single-location companies',
+        'Mobile app check-ins (photo → AI content)',
+        'SEO-optimized check-ins (WebP images, filenames, schema)',
+        'WordPress plugin (1 site)',
+        'Manual review links + QR codes',
+        'Basic company dashboard',
+        'Single location included'
+      ]
+    },
+    scale: {
+      monthly: 249,
+      yearly: 199, // 20% discount
+      name: 'Scale',
+      description: 'Growing teams needing automation',
+      pill: 'Automate visibility',
+      features: [
+        'Growing teams needing automation',
+        'Everything in Starter, plus:',
+        'CRM integrations (Housecall Pro, Workiz, QuickBooks, CompanyCam)',
+        'Automated review requests (SMS/email + follow-ups)',
+        'Auto-posting to Facebook, Instagram, and X',
+        'Google Business Profile auto-posting',
+        'Monthly GeoGrid ranking reports (LocalFalcon)',
+        'Up to 3 locations included'
+      ],
+      featured: true
+    },
+    enterprise: {
+      monthly: 399,
+      yearly: 319, // 20% discount
+      name: 'Enterprise',
+      description: 'Multi-location companies, franchises, agencies',
+      pill: 'Scale across locations',
+      features: [
+        'Multi-location companies, franchises, agencies',
+        'Everything in Scale, plus:',
+        'Unlimited locations',
+        'Org-level dashboard',
+        'User roles & permissions',
+        'API access',
+        'Custom integrations & data migration',
+        'White-glove onboarding',
+        'Dedicated success manager'
+      ]
+    }
+  };
+
+  // Pricing-specific FAQ items
+  const pricingFAQItems = [
+    {
+      id: 'faq-pricing-setup',
+      question: 'How fast can we launch?',
+      answer: 'Most companies are live within a few days. We connect your website, set up your locations, and turn on the channels you want so job activity can start publishing immediately.'
+    },
+    {
+      id: 'faq-pricing-integrations',
+      question: 'What integrations do you support?',
+      answer: 'JobCapturePro supports HouseCall Pro, CompanyCam, Workiz, and QuickBooks today. If you use a different system and it has an API, we can evaluate a custom integration for higher tier plans.'
+    },
+    {
+      id: 'faq-pricing-locations',
+      question: 'Can we use JobCapturePro for multiple locations?',
+      answer: 'Yes. Each location can have its own Google Business Profile and connected social accounts, with organization level management for multi location teams.'
+    },
+    {
+      id: 'faq-pricing-pricing',
+      question: 'What is included in each plan?',
+      answer: 'All plans include core features like photo capture, proof generation, and basic publishing. Higher tiers add CRM integrations, automated reviews, social automation, and advanced reporting. See the comparison table above for details.'
+    },
+    {
+      id: 'faq-pricing-trial',
+      question: 'Is there a free trial?',
+      answer: 'We offer early access pricing for founding members. Contact us to learn more about current offers and see if you qualify for special pricing.'
+    },
+    {
+      id: 'faq-pricing-cancel',
+      question: 'Can I change plans or cancel?',
+      answer: 'Yes, you can upgrade, downgrade, or cancel your plan at any time. Changes take effect at your next billing cycle.'
+    }
+  ];
+
+  // Format price for display
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  // Calculate discount percentage
+  const calculateDiscount = (monthly, yearly) => {
+    return Math.round(((monthly * 12 - yearly * 12) / (monthly * 12)) * 100);
+  };
+
+  // Billing period state (module-level)
+  let isYearly = false;
+
+  // Render pricing card
+  const renderPricingCard = (plan, isYearly) => {
+    const hasPricing = plan.monthly !== undefined;
+    const currentPrice = isYearly ? plan.yearly : plan.monthly;
+    const discount = hasPricing ? calculateDiscount(plan.monthly, plan.yearly) : 0;
+    const featuredClass = plan.featured ? ' jcp-pricing-featured' : '';
+    const tagHTML = plan.featured ? '<div class="jcp-plan-tag">Most popular</div>' : '';
+    
+    return `
+      <article class="jcp-pricing-card${featuredClass}" data-plan="${plan.name.toLowerCase()}">
+        ${tagHTML}
+        <div class="jcp-plan-head">
+          <h3>${plan.name}</h3>
+          <p>${plan.description}</p>
+        </div>
+        ${hasPricing ? `
+          <div class="jcp-plan-pricing">
+            <div class="jcp-plan-price">
+              <span class="jcp-price-amount">${formatPrice(currentPrice)}</span>
+              <span class="jcp-price-period">/${isYearly ? 'month' : 'month'}</span>
+            </div>
+            ${isYearly && discount > 0 ? `
+              <div class="jcp-plan-discount">
+                <span class="jcp-discount-badge">Save ${discount}%</span>
+                <span class="jcp-original-price">${formatPrice(plan.monthly)}/month</span>
+              </div>
+            ` : ''}
+            ${isYearly ? '<p class="jcp-billing-note">Billed annually</p>' : ''}
+          </div>
+        ` : ''}
+        <div class="jcp-plan-pill">${plan.pill}</div>
+        <ul class="jcp-plan-list">
+          ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
+        </ul>
+        <a class="btn ${plan.featured ? 'btn-primary' : 'btn-secondary'}" href="/early-access">
+          ${hasPricing ? 'Join Early Access' : 'Contact sales'}
+        </a>
+      </article>
+    `;
+  };
+
+  window.renderPricing = () => {
+    const root = document.getElementById('jcp-app');
+    if (!root) return;
+
+    // Load FAQ component if available
+    const faqHTML = typeof window.renderFAQ === 'function' 
+      ? window.renderFAQ({
+          title: 'Pricing FAQ',
+          subtitle: 'Common questions about plans, pricing, and getting started.',
+          items: pricingFAQItems,
+          id: 'pricing-faq'
+        })
+      : '';
+
+
+    root.innerHTML = `
+      <main class="jcp-marketing jcp-pricing-page">
+        <section class="jcp-section rankings-section">
+          <div class="jcp-container">
+            <div class="rankings-header">
+              <h1>Choose the plan that matches your growth</h1>
+              <p class="rankings-subtitle">Each tier aligns to business maturity and visibility goals. Get early bird pricing and unlock the benefits of turning real work into reviews, visibility, and trust that drives inbound demand.</p>
+            </div>
+            
+            <!-- Billing Toggle -->
+            <div class="jcp-billing-toggle-wrapper">
+              <div class="jcp-billing-toggle">
+                <button class="jcp-toggle-option ${!isYearly ? 'active' : ''}" data-period="monthly">
+                  Monthly
+                </button>
+                <button class="jcp-toggle-option ${isYearly ? 'active' : ''}" data-period="yearly">
+                  Yearly
+                  <span class="jcp-toggle-badge">Save up to 20%</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="jcp-pricing-grid-container">
+              <div class="jcp-pricing-grid">
+                ${renderPricingCard(pricingData.starter, isYearly)}
+                ${renderPricingCard(pricingData.scale, isYearly)}
+                ${renderPricingCard(pricingData.enterprise, isYearly)}
+              </div>
+            </div>
+            <div class="jcp-pricing-notes">
+              <ul class="jcp-plan-list">
+                <li>Additional locations: +$100 / month per location</li>
+                <li>Unlimited users per location</li>
+                <li>Pricing is per location, not per user</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="jcp-section rankings-section">
+          <div class="jcp-container">
+            <div class="rankings-header">
+              <h2>Compare plans by outcome</h2>
+              <p class="rankings-subtitle">Capture, publish, reviews, visibility, and reporting—organized for quick decisions.</p>
+            </div>
+            <div class="jcp-compare-table">
+              <div class="jcp-compare-row jcp-compare-head">
+                <div>Feature</div>
+                <div>Starter</div>
+                <div>Scale</div>
+                <div>Enterprise</div>
+              </div>
+
+              <!-- Capture -->
+              <div class="jcp-compare-row jcp-compare-group">
+                <div>Photo capture</div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>CRM integration</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Multi-location capture</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+
+              <!-- Publish -->
+              <div class="jcp-compare-row jcp-compare-group">
+                <div>Website publishing</div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Social publishing</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Google Business Profile automation</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>White-label publishing</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+
+              <!-- Reviews -->
+              <div class="jcp-compare-row jcp-compare-group">
+                <div>Manual review requests</div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Automated review sequences</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Custom review workflows</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+
+              <!-- Visibility -->
+              <div class="jcp-compare-row jcp-compare-group">
+                <div>Directory listings</div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Job map visibility</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Rank tracking</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Advanced visibility reporting</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+
+              <!-- Reporting -->
+              <div class="jcp-compare-row jcp-compare-group">
+                <div>Email summaries</div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Local reporting dashboards</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+              <div class="jcp-compare-row">
+                <div>Multi-location dashboards</div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+              </div>
+            </div>
+            <div class="jcp-actions jcp-compare-actions">
+              <a class="btn btn-primary" href="/early-access">Join Early Access</a>
+              <a class="btn btn-secondary" href="/demo">See the Demo</a>
+            </div>
+          </div>
+        </section>
+
+        ${faqHTML}
+      </main>
+    `;
+
+    initMarketingNav();
+    initPricingToggle();
+  };
+
+  function initPricingToggle() {
+    const root = document.getElementById('jcp-app');
+    if (!root) return;
+
+    const toggleOptions = root.querySelectorAll('.jcp-toggle-option');
+    const pricingGridContainer = root.querySelector('.jcp-pricing-grid-container');
+    
+    if (!toggleOptions.length || !pricingGridContainer) return;
+
+    toggleOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const period = option.dataset.period;
+        isYearly = period === 'yearly';
+        
+        // Update toggle active states
+        toggleOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        
+        // Re-render pricing cards
+        const grid = pricingGridContainer.querySelector('.jcp-pricing-grid');
+        if (grid) {
+          grid.innerHTML = `
+            ${renderPricingCard(pricingData.starter, isYearly)}
+            ${renderPricingCard(pricingData.scale, isYearly)}
+            ${renderPricingCard(pricingData.enterprise, isYearly)}
+          `;
+        }
+      });
+    });
+  }
+
+  function initMarketingNav() {
+    const menuToggle = document.getElementById('mobileMenuToggle');
+    const menuClose = document.getElementById('mobileMenuClose');
+    const menuOverlay = document.getElementById('mobileMenuOverlay');
+
+    if (!menuToggle || !menuClose || !menuOverlay) return;
+
+    menuToggle.addEventListener('click', () => {
+      menuOverlay.classList.add('active');
+      menuToggle.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    const closeMenu = () => {
+      menuOverlay.classList.remove('active');
+      menuToggle.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+
+    menuClose.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', (e) => {
+      if (e.target === menuOverlay) {
+        closeMenu();
+      }
+    });
+
+    document.querySelectorAll('.mobile-nav-link').forEach((link) => {
+      link.addEventListener('click', () => closeMenu());
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+        closeMenu();
+      }
+    });
+  }
+})();

@@ -1,0 +1,204 @@
+/**
+ * Utility Classes & Design System Overrides
+ *
+ * This file provides utility classes and ensures design system consistency
+ * across all pages. Values are extracted from design-system.css variables.
+ *
+ * @package JCP_Core
+ */
+
+/* ============================================================
+   LEGACY COMPATIBILITY (converted to new variables)
+   ============================================================ */
+
+.u-muted { color: var(--jcp-color-text-secondary); }
+.u-center { text-align: center; }
+.u-stack { display: grid; gap: var(--jcp-space-md); }
+.u-hidden { display: none !important; }
+
+/* ============================================================
+   COLOR UTILITIES
+   ============================================================ */
+
+.text-primary {
+  color: var(--jcp-color-text-primary);
+}
+
+.text-secondary {
+  color: var(--jcp-color-text-secondary);
+}
+
+.text-tertiary {
+  color: var(--jcp-color-text-tertiary);
+}
+
+.text-light {
+  color: var(--jcp-color-text-light);
+}
+
+.text-success {
+  color: var(--jcp-color-success);
+}
+
+.text-error {
+  color: var(--jcp-color-error);
+}
+
+.text-warning {
+  color: var(--jcp-color-warning);
+}
+
+.bg-primary {
+  background-color: var(--jcp-color-bg-primary);
+}
+
+.bg-secondary {
+  background-color: var(--jcp-color-bg-secondary);
+}
+
+.bg-tertiary {
+  background-color: var(--jcp-color-bg-tertiary);
+}
+
+/* ============================================================
+   SPACING UTILITIES
+   ============================================================ */
+
+.p-xs { padding: var(--jcp-space-xs); }
+.p-sm { padding: var(--jcp-space-sm); }
+.p-md { padding: var(--jcp-space-md); }
+.p-lg { padding: var(--jcp-space-lg); }
+.p-xl { padding: var(--jcp-space-xl); }
+.p-2xl { padding: var(--jcp-space-2xl); }
+
+.m-xs { margin: var(--jcp-space-xs); }
+.m-sm { margin: var(--jcp-space-sm); }
+.m-md { margin: var(--jcp-space-md); }
+.m-lg { margin: var(--jcp-space-lg); }
+.m-xl { margin: var(--jcp-space-xl); }
+.m-2xl { margin: var(--jcp-space-2xl); }
+
+.mt-xs { margin-top: var(--jcp-space-xs); }
+.mt-sm { margin-top: var(--jcp-space-sm); }
+.mt-md { margin-top: var(--jcp-space-md); }
+.mt-lg { margin-top: var(--jcp-space-lg); }
+.mt-xl { margin-top: var(--jcp-space-xl); }
+.mt-2xl { margin-top: var(--jcp-space-2xl); }
+.mt-3xl { margin-top: var(--jcp-space-3xl); }
+.mt-5xl { margin-top: var(--jcp-space-5xl); }
+
+.mb-xs { margin-bottom: var(--jcp-space-xs); }
+.mb-sm { margin-bottom: var(--jcp-space-sm); }
+.mb-md { margin-bottom: var(--jcp-space-md); }
+.mb-lg { margin-bottom: var(--jcp-space-lg); }
+.mb-xl { margin-bottom: var(--jcp-space-xl); }
+.mb-2xl { margin-bottom: var(--jcp-space-2xl); }
+.mb-3xl { margin-bottom: var(--jcp-space-3xl); }
+.mb-5xl { margin-bottom: var(--jcp-space-5xl); }
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+
+.text-xs { font-size: var(--jcp-font-size-xs); }
+.text-sm { font-size: var(--jcp-font-size-sm); }
+.text-base { font-size: var(--jcp-font-size-base); }
+.text-lg { font-size: var(--jcp-font-size-lg); }
+.text-xl { font-size: var(--jcp-font-size-xl); }
+.text-2xl { font-size: var(--jcp-font-size-2xl); }
+.text-3xl { font-size: var(--jcp-font-size-3xl); }
+.text-4xl { font-size: var(--jcp-font-size-4xl); }
+
+.font-normal { font-weight: var(--jcp-font-weight-normal); }
+.font-medium { font-weight: var(--jcp-font-weight-medium); }
+.font-semibold { font-weight: var(--jcp-font-weight-semibold); }
+.font-bold { font-weight: var(--jcp-font-weight-bold); }
+.font-extrabold { font-weight: var(--jcp-font-weight-extrabold); }
+
+/* ============================================================
+   BORDER RADIUS UTILITIES
+   ============================================================ */
+
+.rounded-sm { border-radius: var(--jcp-radius-sm); }
+.rounded-md { border-radius: var(--jcp-radius-md); }
+.rounded-lg { border-radius: var(--jcp-radius-lg); }
+.rounded-xl { border-radius: var(--jcp-radius-xl); }
+.rounded-2xl { border-radius: var(--jcp-radius-2xl); }
+.rounded-full { border-radius: var(--jcp-radius-full); }
+
+/* ============================================================
+   SHADOW UTILITIES
+   ============================================================ */
+
+.shadow-xs { box-shadow: var(--jcp-shadow-xs); }
+.shadow-sm { box-shadow: var(--jcp-shadow-sm); }
+.shadow-md { box-shadow: var(--jcp-shadow-md); }
+.shadow-lg { box-shadow: var(--jcp-shadow-lg); }
+.shadow-xl { box-shadow: var(--jcp-shadow-xl); }
+
+/* ============================================================
+   LAYOUT UTILITIES
+   ============================================================ */
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+.gap-md { gap: var(--jcp-space-md); }
+.gap-lg { gap: var(--jcp-space-lg); }
+
+/* ============================================================
+   VISIBILITY & DISPLAY
+   ============================================================ */
+
+.hidden { display: none; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+
+@media (max-width: 768px) {
+  .hide-mobile { display: none; }
+}
+
+@media (min-width: 769px) {
+  .show-mobile { display: none; }
+}
+
+/* ============================================================
+   CONTAINER & GRID UTILITIES
+   ============================================================ */
+
+.container {
+  width: var(--jcp-container-width);
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--jcp-space-lg);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--jcp-space-lg);
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--jcp-space-lg);
+}
+
+@media (max-width: 768px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

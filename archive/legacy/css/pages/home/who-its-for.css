@@ -1,0 +1,71 @@
+/**
+ * Who It's For Section Styles
+ * @package JCP_Core
+ */
+
+.section-who-its-for {
+  padding: var(--jcp-space-5xl) 0;
+  background: var(--jcp-color-bg-secondary);
+}
+
+.section-who-its-for .section-header {
+  margin-bottom: var(--jcp-space-5xl);
+}
+
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--jcp-space-2xl);
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+/* Reuse card styles from features */
+.audience-grid .card {
+  background: var(--jcp-color-bg-primary);
+  border-radius: var(--jcp-radius-2xl);
+  padding: var(--jcp-space-2xl);
+  transition: all var(--jcp-transition-base);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--jcp-color-border);
+}
+
+.audience-grid .card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--jcp-shadow-lg);
+}
+
+.audience-card {
+  background: var(--jcp-color-bg-primary);
+  border-radius: var(--jcp-radius-2xl);
+  padding: var(--jcp-space-2xl);
+  transition: all var(--jcp-transition-base);
+}
+
+.audience-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--jcp-shadow-lg);
+}
+
+@media (max-width: 768px) {
+  .section-who-its-for {
+    padding: var(--jcp-space-3xl) 0;
+  }
+
+  .audience-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--jcp-space-lg);
+  }
+
+  .audience-grid .card,
+  .audience-card {
+    padding: var(--jcp-space-lg);
+  }
+}
+
+@media (max-width: 640px) {
+  .audience-grid {
+    grid-template-columns: 1fr;
+  }
+}

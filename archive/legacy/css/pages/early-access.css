@@ -1,0 +1,71 @@
+.jcp-early-access-page .jcp-preview {
+  background: #fff7f5;
+}
+
+.jcp-early-access-page .jcp-card {
+  height: 100%;
+}
+
+.jcp-hero {
+  position: relative;
+  background: radial-gradient(circle at 10% 10%, #fff6f3 0%, #ffffff 45%);
+  border-bottom: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.jcp-hero-glow {
+  position: absolute;
+  inset: -120px auto auto -160px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(255, 80, 62, 0.35), transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.jcp-hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.jcp-metric {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.jcp-metric-label {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.jcp-trust {
+  padding-top: 40px;
+}
+
+.jcp-trust-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.jcp-trust-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+}
+
+.jcp-grid-tight {
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .jcp-hero-metrics {
+    grid-template-columns: 1fr;
+  }
+}

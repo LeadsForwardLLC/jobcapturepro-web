@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Online Quote Builder</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../shared/assets/demo.css?v=20260118-23" />
+    <link rel="stylesheet" href="estimate-builder.css?v=20260121-01" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="quote-stage">
+        <div class="stage-card">
+          <div class="software-bar">
+            <div class="software-context" id="softwareContext">Home estimate</div>
+            <div class="software-progress">
+              <span id="softwareStep">Step 1 of 5</span>
+              <div class="software-track">
+                <span class="software-fill" id="softwareFill"></span>
+              </div>
+            </div>
+          </div>
+          <div class="software-helper" id="softwareHelper">About 1 minute left</div>
+          <div class="stage-header">
+            <div class="stage-eyebrow" id="stageEyebrow">Step 1 of 5</div>
+            <h2 id="stageTitle">Address</h2>
+            <p id="stageSummary">Find your address to load a quick property view.</p>
+            <div class="stage-status is-hidden" id="stageStatus"></div>
+            <div class="mobile-stepper" id="mobileStepper">
+              <div class="mobile-steps" id="mobileSteps">
+                <button class="mobile-step is-active" data-step="0" type="button"></button>
+                <button class="mobile-step" data-step="1" type="button"></button>
+                <button class="mobile-step" data-step="2" type="button"></button>
+                <button class="mobile-step" data-step="3" type="button"></button>
+                <button class="mobile-step" data-step="4" type="button"></button>
+                <button class="mobile-step" data-step="5" type="button"></button>
+              </div>
+              <div class="mobile-hint">Swipe to move between steps</div>
+            </div>
+          </div>
+
+            <div class="stage-body">
+              <!-- STEP 0: VISUAL INTAKE -->
+              <div class="step-panel is-active" data-step="0">
+                <div class="visual-intake-section">
+                  <div class="intake-upload-area">
+                    <div class="upload-dropzone" id="uploadDropzone">
+                      <input
+                        type="file"
+                        id="visualIntakeInput"
+                        accept="image/*"
+                        multiple
+                        class="upload-input"
+                      />
+                      <div class="upload-prompt">
+                        <div class="upload-icon">📷</div>
+                        <p class="upload-title">Upload photos of the work you need done</p>
+                        <p class="upload-subtitle">We'll use these to prepare a starting description</p>
+                        <button type="button" class="btn btn-secondary" id="uploadTriggerBtn">
+                          Choose photos
+                        </button>
+                        <p class="upload-hint">or drag and drop • 1-5 photos</p>
+                      </div>
+                    </div>
+
+                    <div class="intake-photo-grid is-hidden" id="intakePhotoGrid"></div>
+
+                    <div class="intake-analyzing is-hidden" id="intakeAnalyzing">
+                      <div class="analyzing-spinner"></div>
+                      <p>Analyzing photos...</p>
+                    </div>
+
+                    <div class="intake-review is-hidden" id="intakeReview">
+                      <div class="review-header">
+                        <div class="review-title">Based on your photos</div>
+                        <button type="button" class="btn btn-ghost btn-sm" id="reAnalyzeBtn">
+                          Re-analyze
+                        </button>
+                      </div>
+                      <div class="review-content">
+                        <div class="review-field">
+                          <label class="review-label">Service type</label>
+                          <div class="review-value" id="reviewServiceType">HVAC</div>
+                        </div>
+                        <div class="review-field">
+                          <label class="review-label">Project description</label>
+                          <textarea
+                            class="review-textarea"
+                            id="reviewDescription"
+                            rows="4"
+                          ></textarea>
+                        </div>
+                        <div class="review-note" id="reviewConfidence">
+                          Based on 3 photos of your project
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="intake-actions">
+                    <button type="button" class="btn btn-ghost" id="skipVisualIntakeBtn">
+                      Skip this step
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 1 -->
+              <div class="step-panel" data-step="1">
+                <div class="input-stack">
+                  <label for="addressInput" class="field-label">Address</label>
+                  <div class="autocomplete">
+                    <input
+                      id="addressInput"
+                      class="input-field"
+                      placeholder="Start typing your address"
+                      autocomplete="off"
+                    />
+                    <div class="suggestions is-hidden" id="addressSuggestions"></div>
+                  </div>
+                  <div class="helper-text">We keep this only for your estimate.</div>
+                </div>
+
+                <div class="property-preview is-hidden" id="propertyPreview">
+                  <div class="property-card">
+                    <div class="property-header">
+                      <div>
+                        <div class="property-label">Property details</div>
+                        <div class="property-address" id="propertyAddress">
+                          1242 Mason Rd
+                        </div>
+                        <div class="property-city" id="propertyCity">Austin TX</div>
+                        <div class="property-note">Used to build your estimate</div>
+                      </div>
+                      <span class="property-pill">Matched</span>
+                    </div>
+                    <div class="property-facts" id="propertyFacts"></div>
+                  </div>
+                  <div class="property-skeleton is-hidden" id="propertySkeleton">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 2 -->
+              <div class="step-panel" data-step="2">
+                <div class="measure-grid">
+                  <!-- Property Snapshot Panel -->
+                  <div class="property-snapshot-panel is-hidden" id="propertySnapshotPanel">
+                    <div class="snapshot-header">Property snapshot</div>
+                    <div class="snapshot-images">
+                      <div class="snapshot-image-item">
+                        <img class="snapshot-thumb" id="snapshotStreetView" src="" alt="Street view" />
+                        <div class="snapshot-label">Street</div>
+                      </div>
+                      <div class="snapshot-image-item">
+                        <img class="snapshot-thumb" id="snapshotSatellite" src="" alt="Satellite view" />
+                        <div class="snapshot-label">Satellite</div>
+                      </div>
+                      <div class="snapshot-image-item is-hidden" id="snapshotHomeownerItem">
+                        <img class="snapshot-thumb" id="snapshotHomeowner" src="" alt="Interior" />
+                        <div class="snapshot-label">Interior</div>
+                      </div>
+                    </div>
+                    <div class="snapshot-content is-hidden" id="snapshotContent">
+                      <div class="snapshot-summary" id="snapshotSummary">
+                        Analyzing property context...
+                      </div>
+                      <div class="snapshot-confirm" id="snapshotConfirm">
+                        Need to confirm: Loading...
+                      </div>
+                    </div>
+                    <div class="snapshot-fallback is-hidden" id="snapshotFallback">
+                      Property images unavailable. Measurements still work.
+                    </div>
+                  </div>
+
+                  <!-- EXTERIOR MEASUREMENT (Satellite Map) -->
+                  <div class="measurement-section" id="exteriorMeasurement">
+                    <div class="map-card">
+                      <div class="map-header">
+                        <div>
+                          <div class="map-title">Property view</div>
+                          <div class="map-sub">
+                            Use auto measurements or draw a simple outline.
+                          </div>
+                        </div>
+                      </div>
+                      <div class="map-view" id="mapView">
+                        <div class="map-canvas" id="mapCanvas"></div>
+                        <div class="map-fallback is-hidden" id="mapFallback">
+                          Property view unavailable. Measurements still work.
+                        </div>
+                        <div class="map-pins">
+                          <span class="map-pin"></span>
+                          <span class="map-pin"></span>
+                          <span class="map-pin"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- INTERIOR MEASUREMENT (Room-based Form) -->
+                  <div class="measurement-section is-hidden" id="interiorMeasurement">
+                    <div class="interior-form-card">
+                      <div class="form-header">
+                        <div class="form-title">Interior measurements</div>
+                        <div class="form-sub">Provide area details for accurate pricing</div>
+                      </div>
+                      
+                      <div class="ai-suggestion" id="interiorAiSuggestion">
+                        <div class="ai-icon">✨</div>
+                        <div class="ai-text">
+                          <div class="ai-title">AI detected from your photos:</div>
+                          <div class="ai-detail" id="aiInteriorDetail">Loading...</div>
+                        </div>
+                      </div>
+                      
+                      <div class="field-group">
+                        <label class="field-label" for="roomCount">Number of rooms</label>
+                        <input type="number" id="roomCount" class="input-field" placeholder="e.g., 3" min="1" />
+                        <div class="helper-text">How many rooms need work?</div>
+                      </div>
+                      
+                      <div class="field-group">
+                        <label class="field-label" for="totalArea">Total area (sq ft)</label>
+                        <input type="number" id="totalArea" class="input-field" placeholder="e.g., 450" min="1" />
+                        <div class="helper-text">Approximate total square footage</div>
+                      </div>
+                      
+                      <div class="field-group">
+                        <label class="field-label" for="roomNotes">Additional details (optional)</label>
+                        <textarea id="roomNotes" class="input-field" rows="2" placeholder="e.g., Master bedroom 15x12, Living room 20x18"></textarea>
+                        <div class="helper-text">Helps confirm final pricing</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- UNIT-BASED MEASUREMENT (Quantity Form) -->
+                  <div class="measurement-section is-hidden" id="unitMeasurement">
+                    <div class="unit-form-card">
+                      <div class="form-header">
+                        <div class="form-title">Quantity details</div>
+                        <div class="form-sub">How many units need work?</div>
+                      </div>
+                      
+                      <div class="ai-suggestion" id="unitAiSuggestion">
+                        <div class="ai-icon">✨</div>
+                        <div class="ai-text">
+                          <div class="ai-title">AI detected from your photos:</div>
+                          <div class="ai-detail" id="aiUnitDetail">Loading...</div>
+                        </div>
+                      </div>
+                      
+                      <div class="field-group">
+                        <label class="field-label" for="unitCount">Number of units</label>
+                        <input type="number" id="unitCount" class="input-field" placeholder="e.g., 2" min="1" />
+                        <div class="helper-text" id="unitHelper">How many fixtures/units need service?</div>
+                      </div>
+                      
+                      <div class="field-group">
+                        <label class="field-label" for="unitType">Unit type (optional)</label>
+                        <input type="text" id="unitType" class="input-field" placeholder="e.g., Standard toilet, LED recessed lights" />
+                        <div class="helper-text">Helps confirm final pricing</div>
+                      </div>
+                      
+                      <div class="field-group">
+                        <label class="field-label" for="unitNotes">Additional details (optional)</label>
+                        <textarea id="unitNotes" class="input-field" rows="2" placeholder="e.g., Located on second floor, requires ladder access"></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="measure-summary">
+                    <div class="summary-card">
+                      <div class="summary-title">Measurement summary</div>
+                      <div class="summary-row">
+                        <span>Estimated area</span>
+                        <strong id="summaryArea">2,240 sq ft</strong>
+                      </div>
+                      <div class="summary-row">
+                        <span>Estimated perimeter</span>
+                        <strong id="summaryPerimeter">196 ft</strong>
+                      </div>
+                      <div class="summary-row">
+                        <span>Confidence level</span>
+                        <strong id="summaryConfidence">High</strong>
+                      </div>
+                      <div class="summary-note">
+                        Auto-detected from satellite view.
+                      </div>
+                      
+                      <!-- Manual Override -->
+                      <div class="manual-override">
+                        <button class="btn-link" id="toggleManualBtn" type="button">
+                          Not accurate? Adjust manually ↓
+                        </button>
+                        <div class="manual-inputs is-hidden" id="manualInputs">
+                          <div class="field-group-compact">
+                            <label class="field-label-small" for="manualArea">Area (sq ft)</label>
+                            <input type="number" id="manualArea" class="input-field-small" placeholder="2,240" />
+                          </div>
+                          <div class="field-group-compact">
+                            <label class="field-label-small" for="manualPerimeter">Perimeter (ft)</label>
+                            <input type="number" id="manualPerimeter" class="input-field-small" placeholder="196" />
+                          </div>
+                          <button class="btn btn-sm btn-primary" id="applyManualBtn" type="button">
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="summary-card">
+                      <div class="summary-title">What this includes</div>
+                      <ul class="summary-list">
+                        <li>Roof or system footprint</li>
+                        <li>Typical access points</li>
+                        <li>Local labor ranges</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 3 -->
+              <div class="step-panel" data-step="3">
+                <div class="form-grid">
+                  <div class="form-card">
+                    <div class="field-group">
+                      <label class="field-label" for="serviceType">Service type</label>
+                      <select id="serviceType" class="input-field">
+                        <optgroup label="Roofing">
+                          <option value="roof-repair">Roof Repair</option>
+                          <option value="roof-replacement">Roof Replacement</option>
+                          <option value="gutter-cleaning">Gutter Cleaning</option>
+                          <option value="gutter-repair">Gutter Repair</option>
+                          <option value="chimney-repair">Chimney Repair</option>
+                        </optgroup>
+                        <optgroup label="HVAC">
+                          <option value="hvac-repair">HVAC Repair</option>
+                          <option value="hvac-installation">HVAC Installation</option>
+                          <option value="hvac-maintenance">HVAC Maintenance</option>
+                          <option value="duct-cleaning">Duct Cleaning</option>
+                        </optgroup>
+                        <optgroup label="Plumbing">
+                          <option value="plumbing-repair">Plumbing Repair</option>
+                          <option value="plumbing-installation">Plumbing Installation</option>
+                          <option value="water-heater">Water Heater Service</option>
+                          <option value="drain-cleaning">Drain Cleaning</option>
+                          <option value="leak-repair">Leak Repair</option>
+                        </optgroup>
+                        <optgroup label="Electrical">
+                          <option value="electrical-repair">Electrical Repair</option>
+                          <option value="electrical-installation">Electrical Installation</option>
+                          <option value="panel-upgrade">Panel Upgrade</option>
+                          <option value="lighting-installation">Lighting Installation</option>
+                        </optgroup>
+                        <optgroup label="Flooring & Carpet">
+                          <option value="carpet-cleaning">Carpet Cleaning</option>
+                          <option value="carpet-replacement">Carpet Replacement</option>
+                          <option value="flooring-installation">Flooring Installation</option>
+                          <option value="flooring-repair">Flooring Repair</option>
+                          <option value="tile-work">Tile Work</option>
+                        </optgroup>
+                        <optgroup label="Painting & Drywall">
+                          <option value="interior-painting">Interior Painting</option>
+                          <option value="exterior-painting">Exterior Painting</option>
+                          <option value="drywall-repair">Drywall Repair</option>
+                          <option value="texture-repair">Texture Repair</option>
+                        </optgroup>
+                        <optgroup label="Exterior">
+                          <option value="siding-repair">Siding Repair</option>
+                          <option value="siding-installation">Siding Installation</option>
+                          <option value="window-replacement">Window Replacement</option>
+                          <option value="door-installation">Door Installation</option>
+                          <option value="fence-repair">Fence Repair</option>
+                          <option value="deck-repair">Deck Repair</option>
+                        </optgroup>
+                        <optgroup label="Remediation">
+                          <option value="mold-remediation">Mold Remediation</option>
+                          <option value="water-damage">Water Damage Restoration</option>
+                          <option value="air-quality">Air Quality Testing</option>
+                          <option value="insulation">Insulation</option>
+                        </optgroup>
+                        <optgroup label="Outdoor">
+                          <option value="landscaping">Landscaping</option>
+                          <option value="tree-removal">Tree Removal</option>
+                          <option value="concrete-work">Concrete Work</option>
+                          <option value="foundation-repair">Foundation Repair</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                          <option value="appliance-installation">Appliance Installation</option>
+                          <option value="general-repair">General Repair</option>
+                          <option value="handyman">Handyman Service</option>
+                        </optgroup>
+                      </select>
+                    </div>
+
+                    <div class="field-group">
+                      <div class="field-label">Urgency</div>
+                      <div class="choice-row" id="urgencyChoices">
+                        <button class="choice-chip is-active" data-value="soon">
+                          ASAP
+                        </button>
+                        <button class="choice-chip" data-value="this-week">
+                          This week
+                        </button>
+                        <button class="choice-chip" data-value="flexible">
+                          Flexible
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="field-group">
+                      <label class="field-label" for="scopeType">Scope</label>
+                      <select id="scopeType" class="input-field">
+                        <option value="service">Service / Maintenance</option>
+                        <option value="repair">Repair</option>
+                        <option value="replace">Replace</option>
+                        <option value="install">New install</option>
+                      </select>
+                    </div>
+
+                    <div class="field-group">
+                      <label class="field-label" for="scopeLevel">Complexity</label>
+                      <select id="scopeLevel" class="input-field">
+                        <option value="standard">Standard</option>
+                        <option value="elevated">Elevated</option>
+                        <option value="premium">Premium</option>
+                      </select>
+                    </div>
+
+                    <div class="field-group">
+                      <label class="field-label" for="notes">Notes</label>
+                      <textarea id="notes" placeholder="Anything we should know?"></textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-card">
+                    <div class="field-label">Photos for your estimate</div>
+                    
+                    <!-- Existing Photos Grid -->
+                    <div class="existing-photos" id="existingPhotos">
+                      <!-- Will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Add More Photos (Collapsible) -->
+                    <button class="btn-link" id="togglePhotoUploadBtn" type="button">
+                      + Add more photos (optional)
+                    </button>
+                    
+                    <div class="upload-section is-hidden" id="uploadSection">
+                      <div class="upload-drop" id="photoDrop">
+                        <input type="file" id="photoInput" multiple accept="image/*" />
+                        <div class="drop-copy">
+                          <div class="drop-title">Drag and drop photos</div>
+                          <div class="drop-sub">Or click to upload</div>
+                        </div>
+                      </div>
+                      <div class="photo-thumbs" id="photoThumbs"></div>
+                    </div>
+                    
+                    <div class="helper-text">
+                      These photos help confirm scope and pricing.
+                    </div>
+                  </div>
+                </div>
+                <div class="trust-line" id="trustLine">
+                  Your estimate will be reviewed by our team.
+                </div>
+              </div>
+
+              <!-- STEP 4 -->
+              <div class="step-panel" data-step="4">
+                <div class="estimate-skeleton is-hidden" id="estimateSkeleton">
+                  <div class="skeleton-block"></div>
+                  <div class="skeleton-block"></div>
+                  <div class="skeleton-block"></div>
+                </div>
+                <div class="estimate-context">
+                  <div class="note-card">
+                    <div class="note-title">Based on the details available</div>
+                    <p id="estimateBasedOn">
+                      Property size, local labor ranges, and scope details you provided.
+                    </p>
+                  </div>
+                  <div class="note-card">
+                    <div class="note-title">Confidence level</div>
+                    <p id="estimateConfidence">Based on available details</p>
+                  </div>
+                  <div class="note-card">
+                    <div class="note-title">Factors that may adjust this</div>
+                    <p id="estimateChanges">Access conditions, material choices, or hidden issues.</p>
+                  </div>
+                </div>
+                <div class="estimate-grid" id="estimateGrid">
+                  <div class="estimate-card">
+                    <div class="estimate-tier">Good</div>
+                    <div class="estimate-price" id="priceGood">$6,400 to $7,600</div>
+                    <div class="estimate-meta">Most projects like this</div>
+                    <ul class="estimate-list">
+                      <li>Core materials</li>
+                      <li>Standard warranty</li>
+                      <li>Timeline 2 to 3 days</li>
+                    </ul>
+                  </div>
+                  <div class="estimate-card is-recommended">
+                    <div class="estimate-pill">Recommended</div>
+                    <div class="estimate-tier">Better</div>
+                    <div class="estimate-price" id="priceBetter">$7,600 to $9,200</div>
+                    <div class="estimate-meta">Most projects like this</div>
+                    <ul class="estimate-list">
+                      <li>Upgraded materials</li>
+                      <li>Extended warranty</li>
+                      <li>Timeline 2 to 4 days</li>
+                    </ul>
+                  </div>
+                  <div class="estimate-card">
+                    <div class="estimate-tier">Best</div>
+                    <div class="estimate-price" id="priceBest">$9,400 to $11,400</div>
+                    <div class="estimate-meta">Most projects like this</div>
+                    <ul class="estimate-list">
+                      <li>Premium materials</li>
+                      <li>Priority scheduling</li>
+                      <li>Timeline 3 to 5 days</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <!-- Similar Jobs Social Proof -->
+                <div class="similar-jobs-section">
+                  <div class="similar-jobs-header">
+                    <h3 class="similar-jobs-title">Similar jobs near you</h3>
+                    <div class="similar-jobs-stat">127 homeowners in Austin got estimates this week</div>
+                  </div>
+                  
+                  <div class="similar-jobs-grid">
+                    <div class="similar-job-card">
+                      <div class="similar-job-image">
+                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop" alt="Completed job" />
+                        <div class="similar-job-badge">Completed</div>
+                      </div>
+                      <div class="similar-job-content">
+                        <div class="similar-job-meta">
+                          <span class="similar-job-time">2 weeks ago</span>
+                          <span class="similar-job-separator">•</span>
+                          <span class="similar-job-distance">0.8 miles away</span>
+                        </div>
+                        <div class="similar-job-title">Roof repair • Premium</div>
+                        <div class="similar-job-price">$4,850</div>
+                        <div class="similar-job-rating">
+                          <span class="stars">★★★★★</span>
+                          <span class="rating-text">5.0</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="similar-job-card">
+                      <div class="similar-job-image">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop" alt="Completed job" />
+                        <div class="similar-job-badge">Completed</div>
+                      </div>
+                      <div class="similar-job-content">
+                        <div class="similar-job-meta">
+                          <span class="similar-job-time">3 weeks ago</span>
+                          <span class="similar-job-separator">•</span>
+                          <span class="similar-job-distance">1.2 miles away</span>
+                        </div>
+                        <div class="similar-job-title">HVAC service • Standard</div>
+                        <div class="similar-job-price">$2,400</div>
+                        <div class="similar-job-rating">
+                          <span class="stars">★★★★★</span>
+                          <span class="rating-text">5.0</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="similar-job-card">
+                      <div class="similar-job-image">
+                        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop" alt="Completed job" />
+                        <div class="similar-job-badge">Completed</div>
+                      </div>
+                      <div class="similar-job-content">
+                        <div class="similar-job-meta">
+                          <span class="similar-job-time">Last month</span>
+                          <span class="similar-job-separator">•</span>
+                          <span class="similar-job-distance">2.1 miles away</span>
+                        </div>
+                        <div class="similar-job-title">Plumbing repair • Standard</div>
+                        <div class="similar-job-price">$1,850</div>
+                        <div class="similar-job-rating">
+                          <span class="stars">★★★★★</span>
+                          <span class="rating-text">4.9</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 5 -->
+              <div class="step-panel" data-step="5">
+                <!-- Estimate Delivery Section -->
+                <div class="estimate-delivery-card">
+                  <div class="delivery-header">
+                    <div class="delivery-icon">✓</div>
+                    <div>
+                      <div class="delivery-title">Your estimate is ready</div>
+                      <div class="delivery-subtitle">Sent to <span id="deliveryEmail">your email</span></div>
+                    </div>
+                  </div>
+                  
+                  <div class="delivery-actions">
+                    <button class="btn btn-secondary btn-sm" id="downloadPdfBtn" type="button">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      Download PDF
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="shareLinkBtn" type="button">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                      </svg>
+                      Share Link
+                    </button>
+                  </div>
+                  
+                  <div class="delivery-note">Valid for 30 days • Quote #<span id="quoteNumber">EST-2026-0001</span></div>
+                </div>
+                
+                <!-- Job Tracker -->
+                <div class="job-tracker-card">
+                  <div class="tracker-title">Track your job</div>
+                  <div class="tracker-steps">
+                    <div class="tracker-step is-complete">
+                      <div class="tracker-icon">✓</div>
+                      <div class="tracker-label">Estimate complete</div>
+                    </div>
+                    <div class="tracker-step is-active">
+                      <div class="tracker-icon">⏰</div>
+                      <div class="tracker-label">Awaiting your approval</div>
+                    </div>
+                    <div class="tracker-step">
+                      <div class="tracker-icon">📅</div>
+                      <div class="tracker-label">Schedule confirmation</div>
+                    </div>
+                    <div class="tracker-step">
+                      <div class="tracker-icon">🔨</div>
+                      <div class="tracker-label">Work completed</div>
+                    </div>
+                    <div class="tracker-step">
+                      <div class="tracker-icon">✨</div>
+                      <div class="tracker-label">Proof published</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="schedule-card">
+                  <div class="schedule-title">Choose a time if you would like us to verify this onsite</div>
+                  <div class="crm-indicator" id="crmIndicator">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Based on contractor's calendar availability
+                  </div>
+                  <div class="chip-row" id="timeChips"></div>
+                  
+                  <!-- Custom Date/Time Picker -->
+                  <button class="btn-link" id="toggleCustomTimeBtn" type="button">
+                    or choose a different date/time →
+                  </button>
+                  
+                  <div class="custom-time-section is-hidden" id="customTimeSection">
+                    <div class="custom-time-grid">
+                      <div class="field-group">
+                        <label class="field-label-small" for="customDate">Preferred Date</label>
+                        <input type="date" id="customDate" class="input-field-small" />
+                      </div>
+                      <div class="field-group">
+                        <label class="field-label-small" for="customTime">Preferred Time</label>
+                        <select id="customTime" class="input-field-small">
+                          <option value="">Select time</option>
+                          <option value="08:00">8:00 AM</option>
+                          <option value="09:00">9:00 AM</option>
+                          <option value="10:00">10:00 AM</option>
+                          <option value="11:00">11:00 AM</option>
+                          <option value="12:00">12:00 PM</option>
+                          <option value="13:00">1:00 PM</option>
+                          <option value="14:00">2:00 PM</option>
+                          <option value="15:00">3:00 PM</option>
+                          <option value="16:00">4:00 PM</option>
+                          <option value="17:00">5:00 PM</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="helper-text">We'll confirm if this time works with the contractor's schedule.</div>
+                  </div>
+                </div>
+
+                <div class="form-grid schedule-grid">
+                  <div class="form-card">
+                    <div class="field-group">
+                      <label class="field-label" for="contactName">Name</label>
+                      <input id="contactName" class="input-field" placeholder="Jane Doe" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="contactPhone">Phone</label>
+                      <input id="contactPhone" class="input-field" placeholder="(555) 555 0123" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="contactEmail">Email</label>
+                      <input id="contactEmail" class="input-field" placeholder="you@email.com" />
+                    </div>
+                  </div>
+                  <div class="schedule-right-col">
+                    <div class="form-card confirm-card">
+                      <div class="confirm-title">Next, we review and confirm</div>
+                      <p>
+                        We will confirm scope and finalize pricing after reviewing the property details.
+                      </p>
+                      <div class="confirm-pill">No commitment required</div>
+                    </div>
+                    
+                    <!-- Compact Project Recap -->
+                    <div class="project-recap-compact" id="projectRecapCard">
+                      <div class="recap-compact-row">
+                        <img class="recap-compact-photo" id="recapPhoto" src="" alt="" />
+                        <div class="recap-compact-info">
+                          <div class="recap-compact-service" id="recapService">Carpet Cleaning</div>
+                          <div class="recap-compact-meta">
+                            <span id="recapScope">Service</span> • <span id="recapComplexity">Premium</span>
+                          </div>
+                        </div>
+                        <button type="button" class="recap-edit-icon" id="editProjectBtn" title="Edit details">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CONFIRM SCREEN -->
+              <div class="step-panel" data-step="6">
+                <div class="final-card">
+                  <div class="final-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                  </div>
+                  <h3>This job is now prepared</h3>
+                  <p>
+                    Details are saved so the work can be completed efficiently. Once the job is done, proof is published automatically.
+                  </p>
+                  <div class="final-note">
+                    Jobs completed through this process earn visibility in the directory.
+                  </div>
+                  <button class="btn btn-secondary" id="startOverBtn">Start over</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="stage-actions">
+              <button class="btn btn-secondary back-link" id="backBtn">Back</button>
+              <button class="btn btn-primary" id="nextBtn">Next</button>
+              <div class="mobile-footer-steps" id="mobileFooterSteps">
+                <button class="mobile-step is-active" data-step="0" type="button"></button>
+                <button class="mobile-step" data-step="1" type="button"></button>
+                <button class="mobile-step" data-step="2" type="button"></button>
+                <button class="mobile-step" data-step="3" type="button"></button>
+                <button class="mobile-step" data-step="4" type="button"></button>
+                <button class="mobile-step" data-step="5" type="button"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Global Close Button -->
+        <button class="global-close-btn" id="globalCloseBtn" type="button" title="Close estimator">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        
+      </section>
+    </main>
+
+    <!-- Directory Takeover Container (hidden by default) -->
+    <div class="estimate-takeover is-hidden" id="estimateTakeover">
+      <div class="takeover-backdrop"></div>
+      <div class="takeover-frame">
+        <button class="takeover-close" id="takeoverClose" type="button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <iframe id="takeoverIframe" class="takeover-iframe"></iframe>
+      </div>
+    </div>
+
+    <!-- Clear Data Button (dev/testing only) -->
+    <button type="button" class="clear-data-btn" id="clearDataBtn" title="Clear all saved estimate data">
+      Clear data
+    </button>
+
+    <link rel="stylesheet" href="estimate-builder.css?v=20260119-35" />
+    
+    <!-- JS loaded via WordPress enqueue (jcp-render.js strips script tags anyway) -->
+  </body>
+</html>

@@ -1,0 +1,202 @@
+/**
+ * Early Access Page Styles
+ *
+ * Early access sign-up and preview page.
+ * All values use design system variables.
+ *
+ * @package JCP_Core
+ */
+
+/* ============================================================
+   FORM SECTION
+   ============================================================ */
+
+.jcp-form-section {
+  background: var(--jcp-color-bg-primary);
+  border-bottom: 1px solid var(--jcp-color-border);
+  padding: var(--jcp-space-6xl) 0;
+}
+
+.jcp-form-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.jcp-form-header {
+  text-align: center;
+  margin-bottom: var(--jcp-space-4xl);
+}
+
+.jcp-form-header h2 {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: var(--jcp-font-weight-extrabold);
+  line-height: var(--jcp-line-height-tight);
+  color: var(--jcp-color-text-primary);
+  margin: 0 0 var(--jcp-space-md) 0;
+  letter-spacing: -0.02em;
+}
+
+.jcp-form-subtitle {
+  font-size: var(--jcp-font-size-lg);
+  color: var(--jcp-color-text-secondary);
+  line-height: var(--jcp-line-height-relaxed);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.jcp-founding-form {
+  background: var(--jcp-color-bg-primary);
+  border: 2px solid var(--jcp-color-border);
+  border-radius: var(--jcp-radius-xl);
+  padding: var(--jcp-space-4xl);
+  box-shadow: var(--jcp-shadow-md);
+}
+
+.jcp-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--jcp-space-lg);
+  margin-bottom: var(--jcp-space-xl);
+}
+
+.jcp-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-sm);
+}
+
+.jcp-form-field label {
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-primary);
+}
+
+.jcp-form-field input {
+  width: 100%;
+  padding: var(--jcp-space-md);
+  border-radius: var(--jcp-radius-md);
+  border: 2px solid var(--jcp-color-border);
+  font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-primary);
+  background: var(--jcp-color-bg-primary);
+  transition: all var(--jcp-transition-base);
+  font-family: var(--jcp-font-family-base);
+}
+
+.jcp-form-field input:focus {
+  outline: none;
+  border-color: var(--jcp-color-primary);
+  box-shadow: 0 0 0 3px rgba(255, 80, 62, 0.1);
+}
+
+.jcp-form-field input::placeholder {
+  color: var(--jcp-color-text-tertiary);
+}
+
+.jcp-form-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--jcp-space-md);
+}
+
+.jcp-form-actions .btn {
+  width: 100%;
+  max-width: 400px;
+  justify-content: center;
+}
+
+.jcp-form-note {
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+/* ============================================================
+   EARLY ACCESS PAGE SPECIFIC STYLES
+   ============================================================ */
+
+/* CTA Form Input Styling */
+.rankings-cta .jcp-founding-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rankings-cta .jcp-founding-form input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* First rankings-section on early access page needs top padding for header */
+.jcp-early-access-page > .rankings-section:first-of-type {
+  padding-top: calc(var(--jcp-space-5xl) + 100px) !important;
+}
+
+/* Ensure rankings-header h1 matches pricing page styling */
+.jcp-early-access-page .rankings-header h1 {
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: var(--jcp-font-weight-extrabold);
+  line-height: var(--jcp-line-height-tight);
+  color: var(--jcp-color-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--jcp-space-xl) 0;
+}
+
+/* Reduce spacing between hero text and form */
+.jcp-early-access-page .rankings-header {
+  margin-bottom: var(--jcp-space-xl) !important;
+}
+
+/* Reduce form section top padding to tighten spacing */
+.jcp-early-access-page .jcp-form-section {
+  padding-top: 0 !important;
+  padding-bottom: var(--jcp-space-6xl);
+}
+
+/* Remove bottom padding from first rankings-section to bring form closer */
+.jcp-early-access-page > .rankings-section:first-of-type {
+  padding-bottom: 0 !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .jcp-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack "Who It's For" columns on tablet */
+  .jcp-early-access-page .jcp-grid[style*="grid-template-columns: repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .jcp-founding-form {
+    padding: var(--jcp-space-2xl);
+  }
+
+  /* Ensure CTA form is full width on mobile */
+  .rankings-cta .jcp-founding-form {
+    min-width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .jcp-form-header h2 {
+    font-size: 28px;
+  }
+
+  .jcp-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .jcp-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

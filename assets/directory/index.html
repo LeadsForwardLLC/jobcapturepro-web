@@ -1,0 +1,285 @@
+<!-- Directory page content - loaded into jcp-app div -->
+<!-- Navigation is handled by global nav template -->
+
+<main class="jcp-marketing directory-shell">
+
+  <!-- HERO -->
+  <section class="jcp-section jcp-hero">
+    <div class="jcp-container">
+      <div class="jcp-hero-grid">
+        <div class="jcp-hero-copy">
+          <h1 class="jcp-hero-title">Real contractors. Ranked by real work.</h1>
+          <p class="jcp-hero-subtitle">
+            Discover contractors whose rankings are earned through verified completed jobs. Every listing is built from real photos, locations, and ongoing work activity.
+          </p>
+        </div>
+        <div class="jcp-hero-visual">
+          <div class="directory-hero-images">
+            <div class="hero-image-main">
+              <img src="http://jobcapturepro.com/wp-content/uploads/2025/11/confident-foreman.jpg" alt="Confident foreman" />
+            </div>
+            <div class="hero-image-stack">
+              <div class="hero-image-item">
+                <img src="http://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg" alt="Contractor using JobCapturePro" />
+              </div>
+              <div class="hero-image-item">
+                <img src="http://jobcapturepro.com/wp-content/uploads/2025/11/crew.jpg" alt="Contractor crew" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="rankings-section">
+    <div class="jcp-container">
+      <!-- Search bar moved here to match listings container width -->
+      <div class="directory-search-wrapper" id="search">
+        <div class="directory-search">
+          <div class="search-box">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search contractor, service, or keyword"
+            />
+            <button id="clearSearch" class="clear-search-btn is-hidden" aria-label="Clear search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m15 9-6 6m0-6 6 6"/>
+              </svg>
+            </button>
+          </div>
+
+          <select id="cityFilter" class="filter-select">
+            <option value="">All Cities</option>
+            <option value="Houston, TX">Houston, TX</option>
+            <option value="Dallas, TX">Dallas, TX</option>
+            <option value="Austin, TX">Austin, TX</option>
+            <option value="San Antonio, TX">San Antonio, TX</option>
+          </select>
+
+          <select id="serviceFilter" class="filter-select">
+            <option value="">All Services</option>
+            <option value="Roofing">Roofing</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="General">General Contractor</option>
+            <option value="HVAC">HVAC</option>
+            <option value="Electrical">Electrical</option>
+          </select>
+
+          <select id="sortBy" class="filter-select">
+            <option value="activity">Recent activity</option>
+            <option value="jobs">Most jobs</option>
+            <option value="rating">Highest rating</option>
+          </select>
+
+          <label class="verified-toggle">
+            <input type="checkbox" id="verifiedOnly" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Verified only</span>
+          </label>
+          <div class="view-toggle">
+            <button id="listView" class="view-btn" aria-label="List view">
+              <img src="../../shared/assets/icons/lucide/list.svg" class="lucide-icon lucide-icon-sm" alt="">
+            </button>
+            <button id="gridView" class="view-btn active" aria-label="Grid view">
+              <img src="../../shared/assets/icons/lucide/grid-3x3.svg" class="lucide-icon lucide-icon-sm" alt="">
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-bar" id="resultsBar">
+        <div class="results-count" id="resultsCount">
+          <span class="count-number">36</span> contractors found
+        </div>
+        <button class="clear-filters-btn is-hidden" id="clearFiltersBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Clear filters
+        </button>
+      </div>
+      <div class="directory-grid" id="directoryGrid"></div>
+    </div>
+  </section>
+
+  <section class="rankings-section">
+    <div class="jcp-container" style="text-align: center;">
+      <button id="loadMore" class="btn btn-secondary load-more">
+        Load more contractors
+      </button>
+    </div>
+  </section>
+
+  <!-- HOW RANKINGS WORK -->
+  <section class="rankings-section" id="how-it-works">
+    <div class="jcp-container">
+      <div class="rankings-header">
+      <h2>How rankings are earned</h2>
+      <p class="rankings-subtitle">
+        Every contractor's position is determined by real, verified work activity?not paid advertising or manual reviews. Here's exactly how it works.
+      </p>
+    </div>
+
+    <!-- Main Ranking Factors -->
+    <div class="ranking-factors-grid">
+      <div class="ranking-factor-card">
+        <div class="factor-icon-wrapper">
+          <svg class="factor-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </div>
+        <h3 class="factor-title">Real Job Activity</h3>
+        <p class="factor-description">
+          Every check-in, photo, and job completion is logged in real-time. Contractors earn higher rankings by consistently documenting their work.
+        </p>
+        <div class="factor-stat">
+          <span class="stat-value">12,483</span>
+          <span class="stat-label">jobs verified</span>
+        </div>
+      </div>
+
+      <div class="ranking-factor-card">
+        <div class="factor-icon-wrapper">
+          <svg class="factor-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h3 class="factor-title">Verified Locations</h3>
+        <p class="factor-description">
+          GPS-verified job sites ensure contractors are actually working in your area. Local relevance is a key factor in ranking.
+        </p>
+        <div class="factor-stat">
+          <span class="stat-value">100%</span>
+          <span class="stat-label">location verified</span>
+        </div>
+      </div>
+
+      <div class="ranking-factor-card">
+        <div class="factor-icon-wrapper">
+          <svg class="factor-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <h3 class="factor-title">Photo Verification</h3>
+        <p class="factor-description">
+          Every job includes timestamped, location-stamped photos. This prevents fake listings and ensures transparency.
+        </p>
+        <div class="factor-stat">
+          <span class="stat-value">48K+</span>
+          <span class="stat-label">verified photos</span>
+        </div>
+      </div>
+
+      <div class="ranking-factor-card">
+        <div class="factor-icon-wrapper">
+          <svg class="factor-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+            <polyline points="17 6 23 6 23 12"/>
+          </svg>
+        </div>
+        <h3 class="factor-title">Consistency & Recency</h3>
+        <p class="factor-description">
+          Recent activity is weighted more heavily than old work. Contractors who stay active and consistent rank higher.
+        </p>
+        <div class="factor-stat">
+          <span class="stat-value">Daily</span>
+          <span class="stat-label">ranking updates</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust Guarantees -->
+    <div class="trust-guarantees">
+      <h3 class="guarantees-title">What makes this trustworthy</h3>
+      <div class="guarantees-grid">
+        <div class="jcp-card guarantee-item">
+          <svg class="guarantee-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div class="guarantee-content">
+            <strong>No paid placement</strong>
+            <p>Rankings cannot be bought. Every position is earned through real work.</p>
+          </div>
+        </div>
+        <div class="jcp-card guarantee-item">
+          <svg class="guarantee-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          <div class="guarantee-content">
+            <strong>Real-time updates</strong>
+            <p>Rankings refresh daily based on the latest verified activity.</p>
+          </div>
+        </div>
+        <div class="jcp-card guarantee-item">
+          <svg class="guarantee-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <div class="guarantee-content">
+            <strong>Tamper-proof</strong>
+            <p>GPS, timestamps, and photos are automatically verified?no gaming the system.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="jcp-footer">
+  <div class="jcp-container jcp-footer-grid">
+    <div class="jcp-footer-brand">
+      <img src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png" alt="JobCapturePro" />
+      <p>Turn real job photos into proof, visibility, reviews, and more jobs.</p>
+    </div>
+    <div class="jcp-footer-col">
+      <h4>Product</h4>
+      <a href="/demo">Live demo</a>
+      <a href="/directory">Directory</a>
+    </div>
+    <div class="jcp-footer-col">
+      <h4>Company</h4>
+      <a href="/pricing">Pricing</a>
+      <a href="/early-access">Founding crew</a>
+      <a href="/#how-it-works">How it works</a>
+    </div>
+  </div>
+</footer>
+
+  <!-- JS loaded via WordPress enqueue (jcp-render.js strips script tags anyway) -->
+<script>
+  const ctaSearchContractors = document.getElementById('ctaSearchContractors');
+  const searchSection = document.querySelector('.directory-search');
+  const searchTrigger = document.createElement('div');
+  searchTrigger.className = 'search-sticky-trigger';
+  searchSection?.parentElement?.insertBefore(searchTrigger, searchSection);
+
+  if (searchSection && searchTrigger) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        searchSection.classList.toggle('is-sticky', entry.isIntersecting === false);
+      },
+      { rootMargin: '-1px 0px 0px 0px', threshold: 0 }
+    );
+    observer.observe(searchTrigger);
+  }
+
+  ctaSearchContractors?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!searchSection) return;
+    const y = searchSection.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  });
+</script>

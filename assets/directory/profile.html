@@ -1,0 +1,284 @@
+<!-- Profile page content - loaded into jcp-app div -->
+<!-- Navigation is handled by global nav template -->
+
+<main class="jcp-marketing profile-shell">
+
+  <!-- ===== PROFILE HERO ===== -->
+  <section class="jcp-section jcp-hero profile-hero-section">
+    <div class="jcp-container">
+      <div class="jcp-hero-grid">
+        <div class="jcp-hero-copy profile-hero-copy">
+          <div class="hero-top">
+            <span class="directory-badge trusted">Trusted Pro</span>
+            <span class="status-dot"></span>
+          </div>
+
+          <h1 class="jcp-hero-title">Summit Roofing</h1>
+          <p class="jcp-hero-subtitle">
+            Roofing · Houston, TX
+          </p>
+          
+          <p class="owner-line is-hidden" id="profile-owner"></p>
+          <div class="verified-live is-hidden" id="profile-verified">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Verified via Live Jobs
+          </div>
+
+          <div class="directory-rating">
+            <div class="stars">★★★★★</div>
+            <div class="review-count">4.9 (126 reviews)</div>
+          </div>
+
+          <p class="rank-note">
+            Ranked highly for real job activity and consistency in this area
+          </p>
+
+          <p class="recency-note">Last verified job: 2 days ago</p>
+
+          <div class="stats">
+            <span class="stat">Very Active</span>
+            <span class="stat">42 jobs captured</span>
+            <span class="stat">Active this week</span>
+          </div>
+
+          <details class="profile-build">
+            <summary>How is this profile built?</summary>
+            <ul>
+              <li>Jobs are logged in real time by the contractor</li>
+              <li>Photos and locations are verified</li>
+              <li>Activity updates automatically</li>
+            </ul>
+          </details>
+        </div>
+
+        <div class="jcp-hero-visual profile-hero-gallery">
+          <div class="profile-gallery-container">
+            <div class="profile-gallery-header">
+              <h3>Recent Work</h3>
+              <div class="gallery-nav">
+                <button class="gallery-nav-btn gallery-prev" aria-label="Previous image">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+                <button class="gallery-nav-btn gallery-next" aria-label="Next image">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="profile-gallery-scroll" id="profileGallery" tabindex="0" role="region" aria-label="Recent work gallery">
+              <div class="profile-gallery-track">
+                <div class="profile-gallery-item">
+                  <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" alt="Roof Replacement" />
+                  <div class="gallery-item-overlay">
+                    <h4>Roof Replacement</h4>
+                    <p>Near Houston, TX · 2 days ago</p>
+                  </div>
+                </div>
+                <div class="profile-gallery-item">
+                  <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952" alt="Storm Damage Repair" />
+                  <div class="gallery-item-overlay">
+                    <h4>Storm Damage Repair</h4>
+                    <p>Near Houston, TX · 5 days ago</p>
+                  </div>
+                </div>
+                <div class="profile-gallery-item">
+                  <img src="https://images.unsplash.com/photo-1597047084897-51e81819a499" alt="Roof Inspection" />
+                  <div class="gallery-item-overlay">
+                    <h4>Roof Inspection</h4>
+                    <p>Near Houston, TX · 1 week ago</p>
+                  </div>
+                </div>
+                <div class="profile-gallery-item">
+                  <img src="https://images.unsplash.com/photo-1618220179428-22790b461013" alt="Leak Mitigation" />
+                  <div class="gallery-item-overlay">
+                    <h4>Leak Mitigation</h4>
+                    <p>Near Houston, TX · 2 weeks ago</p>
+                  </div>
+                </div>
+                <div class="profile-gallery-item">
+                  <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6" alt="Vent Replacement" />
+                  <div class="gallery-item-overlay">
+                    <h4>Vent Replacement</h4>
+                    <p>Near Houston, TX · 3 weeks ago</p>
+                  </div>
+                </div>
+                <div class="profile-gallery-item">
+                  <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c" alt="Preventative Maintenance" />
+                  <div class="gallery-item-overlay">
+                    <h4>Preventative Maintenance</h4>
+                    <p>Near Houston, TX · 1 month ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-dots" id="galleryDots"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACTIVITY MAP ===== -->
+  <section class="rankings-section">
+    <div class="jcp-container">
+      <div class="rankings-header">
+        <h2>Job Activity Map</h2>
+      </div>
+      <div class="jcp-card map-card">
+        <iframe
+          width="100%"
+          height="420"
+          frameborder="0"
+          style="border:0; border-radius:14px"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3544.1930916554606!2d-82.5389798236301!3d27.338431176396114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e44584b0eed4ef%3A0x84485a1ecea67918!2sLeadsForward!5e0!3m2!1sen!2ses!4v1768656625463!5m2!1sen!2ses">
+        </iframe>
+
+        <p class="map-note">
+          Jobs automatically plotted based on verified check-ins.
+        </p>
+        <p class="map-coverage">
+          Most recent jobs within ~25 miles of Houston
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RECENT WORK ===== -->
+  <section class="rankings-section">
+    <div class="jcp-container">
+      <div class="rankings-header">
+        <h2>Recent Work</h2>
+      </div>
+
+      <div class="work-grid">
+
+      <!-- CARD -->
+      <div class="jcp-card work-card">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c" />
+        <div class="work-body">
+          <h3>Roof Replacement</h3>
+          <p>
+            Completed a full residential roof replacement using architectural
+            shingles designed for long-term durability.
+          </p>
+          <span class="meta">Near Houston, TX · 2 days ago</span>
+        </div>
+      </div>
+
+      <div class="jcp-card work-card">
+        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952" />
+        <div class="work-body">
+          <h3>Storm Damage Repair</h3>
+          <p>
+            Reinforced flashing and repaired storm-damaged sections following
+            heavy rainfall.
+          </p>
+          <span class="meta">Near Houston, TX · 5 days ago</span>
+        </div>
+      </div>
+
+      <div class="jcp-card work-card">
+        <img src="https://images.unsplash.com/photo-1597047084897-51e81819a499" />
+        <div class="work-body">
+          <h3>Roof Inspection</h3>
+          <p>
+            Performed a full inspection and documented potential issues before
+            seasonal weather changes.
+          </p>
+          <span class="meta">Near Houston, TX · 1 week ago</span>
+        </div>
+      </div>
+
+      <div class="jcp-card work-card">
+        <img src="https://images.unsplash.com/photo-1618220179428-22790b461013" />
+        <div class="work-body">
+          <h3>Leak Mitigation</h3>
+          <p>
+            Identified and sealed active leaks to prevent interior water damage.
+          </p>
+          <span class="meta">Near Houston, TX · 2 weeks ago</span>
+        </div>
+      </div>
+
+      <div class="jcp-card work-card">
+        <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6" />
+        <div class="work-body">
+          <h3>Vent Replacement</h3>
+          <p>
+            Replaced aging roof vents and improved airflow efficiency.
+          </p>
+          <span class="meta">Near Houston, TX · 3 weeks ago</span>
+        </div>
+      </div>
+
+      <div class="jcp-card work-card">
+        <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c" />
+        <div class="work-body">
+          <h3>Preventative Maintenance</h3>
+          <p>
+            Routine maintenance performed to extend roof lifespan.
+          </p>
+          <span class="meta">Near Houston, TX · 1 month ago</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="rankings-section">
+    <div class="jcp-container">
+      <div class="rankings-cta">
+        <div class="cta-content">
+          <h3>Looking for a contractor you can trust?</h3>
+          <p class="cta-paragraph">This business consistently documents completed jobs with photos, locations, and verified activity — giving homeowners confidence based on real work, not promises.</p>
+        </div>
+        <div class="cta-button-wrapper">
+          <button class="btn btn-primary rankings-cta-btn" id="requestContractorBtn">
+            Request this contractor
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="jcp-footer">
+  <div class="jcp-container jcp-footer-grid">
+    <div class="jcp-footer-brand">
+      <img src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png" alt="JobCapturePro" />
+      <p>Turn real job photos into proof, visibility, reviews, and more jobs.</p>
+    </div>
+    <div class="jcp-footer-col">
+      <h4>Product</h4>
+      <a href="/demo">Live demo</a>
+      <a href="/directory">Directory</a>
+    </div>
+    <div class="jcp-footer-col">
+      <h4>Company</h4>
+      <a href="/pricing">Pricing</a>
+      <a href="/early-access">Founding crew</a>
+      <a href="/#how-it-works">How it works</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Estimate Builder Takeover Container -->
+<div class="estimate-takeover is-hidden" id="estimateTakeover">
+  <div class="takeover-backdrop"></div>
+  <div class="takeover-frame">
+    <button class="takeover-close" id="takeoverClose" type="button" aria-label="Close">
+      ×
+    </button>
+    <iframe id="takeoverIframe" class="takeover-iframe"></iframe>
+  </div>
+</div>

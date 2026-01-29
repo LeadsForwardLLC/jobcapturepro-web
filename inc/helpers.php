@@ -1,0 +1,172 @@
+<?php
+/**
+ * Helper Functions
+ * Asset path/URL/version utilities and template helpers
+ *
+ * @package JCP_Core
+ */
+
+/**
+ * Get the full file path for a theme asset
+ *
+ * @param string $relative_path Path relative to theme root (e.g., 'assets/css/base.css')
+ * @return string Full file path
+ */
+function jcp_core_asset_path( string $relative_path ): string {
+    $clean = ltrim( $relative_path, '/' );
+    $theme_path = trailingslashit( get_stylesheet_directory() ) . $clean;
+    if ( file_exists( $theme_path ) ) {
+        return $theme_path;
+    }
+    return trailingslashit( get_stylesheet_directory() ) . 'assets/' . $clean;
+}
+
+/**
+ * Get the URL for a theme asset
+ *
+ * @param string $relative_path Path relative to theme root
+ * @return string Asset URL
+ */
+function jcp_core_asset_url( string $relative_path ): string {
+    $clean = ltrim( $relative_path, '/' );
+    $theme_path = trailingslashit( get_stylesheet_directory() ) . $clean;
+    if ( file_exists( $theme_path ) ) {
+        return trailingslashit( get_stylesheet_directory_uri() ) . $clean;
+    }
+    return trailingslashit( get_stylesheet_directory_uri() ) . 'assets/' . $clean;
+}
+
+/**
+ * Get the version (filemtime) for cache busting
+ *
+ * @param string $relative_path Path relative to theme root
+ * @return string|null File modification time or null if file doesn't exist
+ */
+function jcp_core_asset_version( string $relative_path ): ?string {
+    $path = jcp_core_asset_path( $relative_path );
+
+    if ( file_exists( $path ) ) {
+        return (string) filemtime( $path );
+    }
+
+    return null;
+}
+
+/**
+ * Register a stylesheet with asset helpers
+ *
+ * @param string $handle Stylesheet handle
+ * @param string $relative_path Relative path to CSS file
+ * @param array  $deps Array of dependency handles
+ * @return void
+ */
+function jcp_core_enqueue_style( string $handle, string $relative_path, array $deps = [] ): void {
+    $path = jcp_core_asset_path( $relative_path );
+    $url = jcp_core_asset_url( $relative_path );
+    $version = filemtime( $path ) ? (string) filemtime( $path ) : null;
+    
+    // Always enqueue, let WordPress handle missing files
+    wp_enqueue_style( $handle, $url, $deps, $version );
+}
+
+/**
+ * Register a script with asset helpers
+ *
+ * @param string $handle Script handle
+ * @param string $relative_path Relative path to JS file
+ * @param array  $deps Array of dependency handles
+ * @return void
+ */
+function jcp_core_enqueue_script( string $handle, string $relative_path, array $deps = [] ): void {
+    $path = jcp_core_asset_path( $relative_path );
+    $url = jcp_core_asset_url( $relative_path );
+    $version = filemtime( $path ) ? (string) filemtime( $path ) : null;
+    
+    // Always enqueue, let WordPress handle missing files
+    wp_enqueue_script( $handle, $url, $deps, $version, true );
+}
+
+/**
+ * Get a Lucide icon SVG URL
+ *
+ * @param string $icon_name Icon name without extension (e.g., 'camera', 'map-pin')
+ * @return string Icon SVG URL
+ */
+function jcp_core_icon( string $icon_name ): string {
+    return jcp_core_asset_url( 'shared/assets/icons/lucide/' . $icon_name . '.svg' );
+}
+
+/**
+ * Safely get an ACF field value with fallback
+ *
+ * @param string $field_name ACF field name
+ * @param mixed  $default Default value if field is empty
+ * @param string $post_id Post ID (defaults to 'options' for options pages)
+ * @return mixed Field value or default
+ */
+function jcp_core_get_acf_field( string $field_name, $default = '', string $post_id = 'options' ) {
+    if ( ! function_exists( 'get_field' ) ) {
+        return $default;
+    }
+
+    $value = get_field( $field_name, $post_id );
+    return ! empty( $value ) ? $value : $default;
+}
+
+/**
+ * Check if a homepage section is enabled
+ *
+ * @param string $section Section name (e.g., 'how_it_works', 'faq')
+ * @return bool True if section is enabled
+ */
+function jcp_core_is_section_enabled( string $section ): bool {
+    if ( ! function_exists( 'get_field' ) ) {
+        return true; // Default to enabled if ACF not available
+    }
+
+    $field_name = 'enable_' . $section;
+    $value = get_field( $field_name, 'options' );
+
+    return ! empty( $value ) && true === $value;
+}
+
+/**
+ * Get page detection for conditional enqueuing
+ *
+ * @return array Associative array of page booleans
+ */
+function jcp_core_get_page_detection(): array {
+    $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+
+    return [
+        'is_home'         => is_front_page() || $path === '' || $path === 'home',
+        'is_demo'         => is_page_template( 'page-demo.php' ) || is_page( 'demo' ) || $path === 'demo',
+        'is_pricing'      => is_page_template( 'page-pricing.php' ) || is_page( 'pricing' ) || $path === 'pricing',
+        'is_early_access' => is_page_template( 'page-early-access.php' ) || is_page( 'early-access' ) || $path === 'early-access',
+        'is_directory'    => is_page_template( 'page-directory.php' ) || is_page( 'directory' ) || $path === 'directory',
+        'is_estimate'     => is_page_template( 'page-estimate.php' ) || is_page( 'estimate' ) || $path === 'estimate',
+        'is_company'      => is_singular( 'jcp_company' ) || is_page( 'company' ) || $path === 'company',
+        'is_design_system' => is_page_template( 'page-design-system.php' ) || is_page( 'design-system' ) || $path === 'design-system',
+        'is_ui_library'   => is_page_template( 'page-ui-library.php' ) || is_page( 'ui-library' ) || $path === 'ui-library',
+        'is_blog'         => is_home() || is_archive() || is_single() || is_search(),
+        'is_single'       => is_single() && ! is_singular( 'jcp_company' ),
+        'is_page'         => is_page() && ! is_page_template(),
+    ];
+}
+
+/**
+ * Add noindex/nofollow to design system page
+ *
+ * The design system page is internal documentation and should not be indexed
+ * by search engines or publicly linked.
+ *
+ * @return void
+ */
+function jcp_core_design_system_noindex(): void {
+    $pages = jcp_core_get_page_detection();
+    if ( $pages['is_design_system'] || $pages['is_ui_library'] ) {
+        echo '<meta name="robots" content="noindex, nofollow">' . "\n";
+    }
+}
+
+add_action( 'wp_head', 'jcp_core_design_system_noindex' );

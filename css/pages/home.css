@@ -1,0 +1,122 @@
+/**
+ * Homepage - Main Aggregator
+ *
+ * Page-specific layout overrides for the homepage.
+ * Section styles (FAQ, Final CTA, etc.) are loaded via css/sections.css
+ * which is enqueued for all marketing pages.
+ *
+ * @package JCP_Core
+ */
+
+/* =========================
+   GLOBAL HOMEPAGE STYLES
+========================= */
+
+.jcp-home {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.jcp-marketing {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Override directory-hero styles when used on homepage */
+/* Note: homepage hero uses both jcp-hero and directory-hero classes */
+.jcp-home .directory-hero {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding-top: 160px !important;
+  padding-bottom: var(--jcp-space-5xl) !important;
+  background-color: #ffffff !important;
+  border-bottom: none !important;
+  background-image: url('https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-map-bg-light.jpg') !important;
+  background-size: 1920px auto !important;
+  background-position: 0 50% !important;
+  background-repeat: repeat-x !important;
+  animation: backgroundScroll 60s linear infinite !important;
+  overflow: hidden !important;
+}
+
+.jcp-home .directory-hero h1 {
+  font-size: clamp(40px, 5vw, 60px) !important;
+  font-weight: var(--jcp-font-weight-extrabold) !important;
+  line-height: var(--jcp-line-height-tight) !important;
+  color: var(--jcp-color-text-primary) !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 0 var(--jcp-space-md) 0 !important;
+}
+
+.jcp-home .directory-hero p {
+  font-size: var(--jcp-font-size-xl) !important;
+  line-height: var(--jcp-line-height-relaxed) !important;
+  color: var(--jcp-color-text-secondary) !important;
+  max-width: 560px !important;
+  margin: 0 !important;
+}
+
+/* Reduce size of "no signup required" reassurance text */
+.jcp-home .jcp-hero-reassurance {
+  font-size: 9px !important;
+  line-height: 1.4 !important;
+}
+
+/* Alias hero-copy and hero-visual to jcp-hero-* styles */
+/* Homepage HTML uses both class names */
+.jcp-home .hero-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-lg);
+}
+
+.jcp-home .hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure consistent section spacing */
+.jcp-section {
+  padding: var(--jcp-space-6xl) 0;
+}
+
+.jcp-section:first-child {
+  padding-top: var(--jcp-space-5xl);
+}
+
+/* Container spacing */
+.jcp-container {
+  padding: 0 var(--jcp-space-lg);
+}
+
+@media (max-width: 768px) {
+  .jcp-section {
+    padding: var(--jcp-space-5xl) 0;
+  }
+
+  .jcp-container {
+    padding: 0 var(--jcp-space-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .jcp-section {
+    padding: var(--jcp-space-4xl) 0;
+  }
+
+  .jcp-container {
+    padding: 0 var(--jcp-space-md);
+  }
+}
+
+

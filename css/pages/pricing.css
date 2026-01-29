@@ -1,0 +1,411 @@
+/**
+ * Pricing Page Styles
+ *
+ * Pricing page specific components and layout.
+ * All values use design system variables.
+ *
+ * @package JCP_Core
+ */
+
+/* ============================================================
+   PRICING PAGE FIRST SECTION
+   ============================================================ */
+
+/* First rankings-section on pricing page needs top padding for header */
+.jcp-pricing-page > .rankings-section:first-of-type {
+  padding-top: calc(var(--jcp-space-5xl) + 100px) !important;
+}
+
+/* Ensure rankings-header h1 uses proper styling */
+.jcp-pricing-page .rankings-header h1 {
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: var(--jcp-font-weight-extrabold);
+  line-height: var(--jcp-line-height-tight);
+  color: var(--jcp-color-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--jcp-space-xl) 0;
+}
+
+/* ============================================================
+   BILLING TOGGLE
+   ============================================================ */
+
+.jcp-billing-toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: var(--jcp-space-5xl) 0 var(--jcp-space-4xl);
+}
+
+.jcp-billing-toggle {
+  display: inline-flex;
+  background: var(--jcp-color-bg-secondary);
+  border: 2px solid var(--jcp-color-border);
+  border-radius: var(--jcp-radius-lg);
+  padding: 4px;
+  gap: 4px;
+  position: relative;
+}
+
+.jcp-toggle-option {
+  padding: var(--jcp-space-sm) var(--jcp-space-xl);
+  border: none;
+  background: transparent;
+  color: var(--jcp-color-text-secondary);
+  font-size: var(--jcp-font-size-base);
+  font-weight: var(--jcp-font-weight-semibold);
+  cursor: pointer;
+  border-radius: var(--jcp-radius-md);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
+  white-space: nowrap;
+  position: relative;
+}
+
+.jcp-toggle-option:hover {
+  color: var(--jcp-color-text-primary);
+}
+
+.jcp-toggle-option.active {
+  background: #ffffff;
+  color: var(--jcp-color-text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.jcp-toggle-badge {
+  font-size: var(--jcp-font-size-xs);
+  background: var(--jcp-color-primary);
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: var(--jcp-radius-full);
+  font-weight: var(--jcp-font-weight-bold);
+  margin-left: var(--jcp-space-xs);
+}
+
+/* ============================================================
+   PRICING GRID
+   ============================================================ */
+
+.jcp-pricing-grid {
+  display: grid;
+  gap: var(--jcp-space-xl);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top: 0;
+}
+
+.jcp-pricing-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-lg);
+}
+
+.jcp-plan-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-sm);
+}
+
+.jcp-plan-head h3 {
+  font-size: var(--jcp-font-size-2xl);
+  font-weight: var(--jcp-font-weight-extrabold);
+  color: var(--jcp-color-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.jcp-plan-head p {
+  font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   PRICING DISPLAY
+   ============================================================ */
+
+.jcp-plan-pricing {
+  margin: var(--jcp-space-lg) 0;
+}
+
+.jcp-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--jcp-space-xs);
+  margin-bottom: var(--jcp-space-sm);
+}
+
+.jcp-price-amount {
+  font-size: clamp(36px, 4vw, 48px);
+  font-weight: var(--jcp-font-weight-extrabold);
+  color: var(--jcp-color-text-primary);
+  line-height: 1;
+}
+
+.jcp-price-period {
+  font-size: var(--jcp-font-size-lg);
+  color: var(--jcp-color-text-secondary);
+  font-weight: var(--jcp-font-weight-medium);
+}
+
+.jcp-plan-discount {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-sm);
+  margin-bottom: var(--jcp-space-xs);
+  flex-wrap: wrap;
+}
+
+.jcp-discount-badge {
+  display: inline-flex;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  padding: 4px var(--jcp-space-sm);
+  border-radius: var(--jcp-radius-full);
+  font-size: var(--jcp-font-size-xs);
+  font-weight: var(--jcp-font-weight-bold);
+}
+
+.jcp-original-price {
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  text-decoration: line-through;
+}
+
+.jcp-billing-note {
+  font-size: var(--jcp-font-size-xs);
+  color: var(--jcp-color-text-secondary);
+  margin: var(--jcp-space-xs) 0 0 0;
+  font-weight: var(--jcp-font-weight-medium);
+}
+
+.jcp-pricing-featured {
+  border: 2px solid var(--jcp-color-primary) !important;
+  box-shadow: 0 18px 40px rgba(255, 80, 62, 0.18) !important;
+  position: relative;
+}
+
+.jcp-plan-tag {
+  position: absolute;
+  top: var(--jcp-space-md);
+  right: var(--jcp-space-md);
+  display: inline-flex;
+  background: rgba(255, 80, 62, 0.12);
+  color: var(--jcp-color-primary);
+  padding: var(--jcp-space-xs) var(--jcp-space-md);
+  border-radius: var(--jcp-radius-full);
+  font-size: var(--jcp-font-size-xs);
+  font-weight: var(--jcp-font-weight-extrabold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 1;
+  margin: 0;
+}
+
+.jcp-plan-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
+  font-size: var(--jcp-font-size-xs);
+  font-weight: var(--jcp-font-weight-extrabold);
+  color: var(--jcp-color-text-primary);
+  background: var(--jcp-color-bg-secondary);
+  border: 2px solid var(--jcp-color-border);
+  padding: var(--jcp-space-xs) var(--jcp-space-sm);
+  border-radius: var(--jcp-radius-full);
+  width: fit-content;
+}
+
+.jcp-plan-list {
+  margin: 0;
+  padding-left: var(--jcp-space-lg);
+  color: var(--jcp-color-text-secondary);
+  display: grid;
+  gap: var(--jcp-space-sm);
+  list-style: disc;
+}
+
+.jcp-plan-list li {
+  font-size: var(--jcp-font-size-base);
+  line-height: 1.6;
+}
+
+.jcp-pricing-card .btn {
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+}
+
+/* ============================================================
+   COMPARE TABLE
+   ============================================================ */
+
+.jcp-compare-table {
+  display: grid;
+  gap: var(--jcp-space-sm);
+  margin-top: var(--jcp-space-5xl);
+}
+
+.jcp-compare-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 1fr);
+  gap: var(--jcp-space-md);
+  padding: var(--jcp-space-lg);
+  align-items: center;
+}
+
+.jcp-compare-head {
+  background: var(--jcp-color-bg-secondary) !important;
+  font-weight: var(--jcp-font-weight-bold);
+  color: var(--jcp-color-text-primary);
+}
+
+.jcp-compare-head > div {
+  font-weight: var(--jcp-font-weight-bold);
+}
+
+.jcp-compare-group {
+  border-left: 4px solid var(--jcp-color-primary);
+}
+
+.jcp-compare-row > div {
+  font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-secondary);
+  line-height: 1.6;
+}
+
+.jcp-compare-row > div:first-child {
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-primary);
+}
+
+.jcp-compare-actions {
+  margin-top: var(--jcp-space-5xl);
+  display: flex;
+  gap: var(--jcp-space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  .jcp-pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .jcp-pricing-page > .rankings-section:first-of-type {
+    padding-top: calc(var(--jcp-space-4xl) + 80px) !important;
+  }
+
+  .jcp-billing-toggle-wrapper {
+    margin: var(--jcp-space-4xl) 0 var(--jcp-space-3xl);
+  }
+
+  .jcp-toggle-option {
+    padding: var(--jcp-space-sm) var(--jcp-space-lg);
+    font-size: var(--jcp-font-size-sm);
+  }
+
+  .jcp-price-amount {
+    font-size: 32px;
+  }
+
+  .jcp-pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Mobile: Clean card-based comparison layout */
+  .jcp-compare-table {
+    display: grid;
+    gap: var(--jcp-space-md);
+    margin-top: var(--jcp-space-4xl);
+  }
+
+  .jcp-compare-head {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .jcp-compare-row {
+    display: block;
+    padding: var(--jcp-space-lg);
+    background: #ffffff;
+    border: 2px solid var(--jcp-color-border);
+    border-radius: var(--jcp-radius-xl);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .jcp-compare-row > div:first-child {
+    font-weight: var(--jcp-font-weight-bold);
+    font-size: var(--jcp-font-size-base);
+    color: var(--jcp-color-text-primary);
+    margin: 0 0 var(--jcp-space-md) 0;
+    padding: 0 0 var(--jcp-space-md) 0;
+    border-bottom: 1px solid #e5e7eb;
+    line-height: 1.4;
+  }
+
+  .jcp-compare-row > div:not(:first-child) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--jcp-space-sm) 0;
+    margin: 0;
+    min-height: 40px;
+  }
+
+  .jcp-compare-row > div:nth-child(2) {
+    padding-top: var(--jcp-space-xs);
+  }
+
+  .jcp-compare-row > div:nth-child(2)::before {
+    content: 'Starter';
+    font-weight: var(--jcp-font-weight-semibold);
+    color: var(--jcp-color-text-primary);
+    font-size: var(--jcp-font-size-sm);
+    display: inline-block;
+  }
+
+  .jcp-compare-row > div:nth-child(3)::before {
+    content: 'Scale';
+    font-weight: var(--jcp-font-weight-semibold);
+    color: var(--jcp-color-text-primary);
+    font-size: var(--jcp-font-size-sm);
+    display: inline-block;
+  }
+
+  .jcp-compare-row > div:nth-child(4)::before {
+    content: 'Enterprise';
+    font-weight: var(--jcp-font-weight-semibold);
+    color: var(--jcp-color-text-primary);
+    font-size: var(--jcp-font-size-sm);
+    display: inline-block;
+  }
+
+  .jcp-compare-row > div:not(:first-child) img {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    opacity: 1;
+  }
+
+  .jcp-compare-group {
+    border-left: none;
+    border-top: 4px solid var(--jcp-color-primary);
+  }
+
+  .jcp-compare-group > div:first-child {
+    color: var(--jcp-color-text-primary);
+    font-weight: var(--jcp-font-weight-bold);
+  }
+}
+

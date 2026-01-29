@@ -1,0 +1,55 @@
+/**
+ * Outcomes (Social Proof) Section Styles
+ * @package JCP_Core
+ */
+
+.section-proof {
+  padding: var(--jcp-space-5xl) 0;
+  background: var(--jcp-color-bg-secondary);
+}
+
+.section-proof .section-header {
+  margin-bottom: var(--jcp-space-5xl);
+}
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--jcp-space-2xl);
+}
+
+.proof-card {
+  background: var(--jcp-color-bg-primary);
+  border-radius: var(--jcp-radius-xl);
+  padding: var(--jcp-space-2xl);
+  text-align: center;
+}
+
+.proof-metric {
+  font-size: var(--jcp-font-size-5xl);
+  font-weight: var(--jcp-font-weight-extrabold);
+  color: var(--jcp-color-primary);
+  margin-bottom: var(--jcp-space-md);
+}
+
+.proof-description {
+  font-size: var(--jcp-font-size-lg);
+  color: var(--jcp-color-text-secondary);
+  line-height: var(--jcp-line-height-relaxed);
+}
+
+@media (max-width: 768px) {
+  .proof-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .proof-metric {
+    font-size: var(--jcp-font-size-4xl);
+  }
+}
+
+@media (max-width: 640px) {
+  .proof-grid {
+    grid-template-columns: 1fr;
+  }
+}

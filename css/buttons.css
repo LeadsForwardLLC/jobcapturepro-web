@@ -1,0 +1,14 @@
+/**
+ * Button Component Styles (Legacy Shim)
+ *
+ * NOTE:
+ * - Functional .btn/.btn-primary/.btn-secondary styles now live in
+ *   `css/components.css` under the
+ *   \"BUTTON COMPONENT - SINGLE SOURCE OF TRUTH\" section.
+ * - This file is intentionally kept as an empty, non-functional shim
+ *   so the `jcp-core-buttons` handle and enqueue order remain intact.
+ *
+ * DO NOT add new button rules here. Update `css/components.css` instead.
+ *
+ * @package JCP_Core
+ */

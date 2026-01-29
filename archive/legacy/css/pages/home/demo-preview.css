@@ -1,0 +1,65 @@
+/**
+ * Demo Preview Section Styles
+ * @package JCP_Core
+ */
+
+.section-demo-preview {
+  padding: var(--jcp-space-5xl) 0;
+  background: var(--jcp-color-bg-primary);
+}
+
+.section-demo-preview .section-header {
+  margin-bottom: var(--jcp-space-5xl);
+}
+
+.demo-content {
+  display: grid;
+  gap: var(--jcp-space-3xl);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 var(--jcp-space-lg);
+}
+
+.demo-image-wrapper {
+  position: relative;
+  border-radius: var(--jcp-radius-3xl);
+  overflow: hidden;
+  box-shadow: var(--jcp-shadow-2xl);
+  transition: box-shadow var(--jcp-transition-base);
+}
+
+.demo-image-wrapper:hover {
+  box-shadow: var(--jcp-shadow-2xl);
+}
+
+.demo-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.demo-cta-wrapper {
+  margin-top: var(--jcp-space-2xl);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.demo-cta-button {
+  font-size: var(--jcp-font-size-lg);
+  padding: var(--jcp-space-lg) var(--jcp-space-3xl);
+}
+
+@media (max-width: 768px) {
+  .section-demo-preview {
+    padding: var(--jcp-space-3xl) 0;
+  }
+
+  .section-demo-preview .section-header {
+    margin-bottom: var(--jcp-space-3xl);
+  }
+
+  .demo-content {
+    padding: 0 var(--jcp-space-md);
+  }
+}

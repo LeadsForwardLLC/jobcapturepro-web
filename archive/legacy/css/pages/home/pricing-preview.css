@@ -1,0 +1,78 @@
+/**
+ * Pricing Preview Section Styles
+ * @package JCP_Core
+ */
+
+.section-pricing-preview {
+  padding: var(--jcp-space-5xl) 0;
+}
+
+.section-pricing-preview .section-header {
+  margin-bottom: var(--jcp-space-5xl);
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--jcp-space-2xl);
+  margin-bottom: var(--jcp-space-5xl);
+}
+
+.pricing-card {
+  background: var(--jcp-color-bg-primary);
+  border: 1px solid var(--jcp-color-border);
+  border-radius: var(--jcp-radius-2xl);
+  padding: var(--jcp-space-2xl);
+  text-align: center;
+  transition: all var(--jcp-transition-base);
+}
+
+.pricing-card:hover {
+  border-color: var(--jcp-color-primary);
+  box-shadow: var(--jcp-shadow-lg);
+  transform: translateY(-4px);
+}
+
+.pricing-header {
+  margin-bottom: var(--jcp-space-2xl);
+}
+
+.pricing-plan-name {
+  font-size: var(--jcp-font-size-lg);
+  font-weight: var(--jcp-font-weight-bold);
+  color: var(--jcp-color-text-primary);
+  margin-bottom: var(--jcp-space-md);
+}
+
+.pricing-amount {
+  font-size: var(--jcp-font-size-4xl);
+  font-weight: var(--jcp-font-weight-extrabold);
+  color: var(--jcp-color-primary);
+}
+
+.pricing-features {
+  list-style: none;
+  margin: var(--jcp-space-2xl) 0;
+  text-align: left;
+}
+
+.pricing-feature {
+  padding: var(--jcp-space-sm) 0;
+  border-bottom: 1px solid var(--jcp-color-border-light);
+  font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-secondary);
+}
+
+.pricing-feature:last-child {
+  border-bottom: none;
+}
+
+.pricing-cta-wrapper {
+  margin-top: var(--jcp-space-2xl);
+}
+
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
