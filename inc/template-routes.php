@@ -19,14 +19,15 @@ function jcp_core_fallback_template_routes(): void {
 
     $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
     $template_map = [
-        'demo'          => 'page-demo.php',
-        'pricing'       => 'page-pricing.php',
-        'early-access'  => 'page-early-access.php',
-        'directory'     => 'page-directory.php',
-        'estimate'      => 'page-estimate.php',
-        'company'       => 'single-jcp_company.php',
-        'design-system' => 'page-design-system.php',
-        'ui-library'   => 'page-ui-library.php',
+        'demo'                 => 'page-demo.php',
+        'pricing'              => 'page-pricing.php',
+        'early-access'         => 'page-early-access.php',
+        'early-access-success' => 'page-early-access-success.php',
+        'directory'            => 'page-directory.php',
+        'estimate'             => 'page-estimate.php',
+        'company'              => 'single-jcp_company.php',
+        'design-system'        => 'page-design-system.php',
+        'ui-library'           => 'page-ui-library.php',
     ];
 
     if ( ! isset( $template_map[ $path ] ) ) {

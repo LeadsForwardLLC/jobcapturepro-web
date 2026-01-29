@@ -30,6 +30,24 @@ function jcp_core_register_homepage_options_page() {
 add_action( 'acf/init', 'jcp_core_register_homepage_options_page' );
 
 /**
+ * Create Early Access Form Options Page in ACF
+ */
+function jcp_core_register_early_access_form_options_page() {
+    acf_add_options_page(
+        [
+            'page_title' => 'Early Access Form',
+            'menu_title' => 'Early Access Form',
+            'menu_slug'  => 'jcp-early-access-form',
+            'capability' => 'manage_options',
+            'position'   => 21,
+            'icon_url'   => 'dashicons-email-alt',
+        ]
+    );
+}
+
+add_action( 'acf/init', 'jcp_core_register_early_access_form_options_page' );
+
+/**
  * Register ACF field groups for Homepage
  * Using programmatic approach (no JSON sync needed)
  */
@@ -562,6 +580,172 @@ function jcp_core_register_acf_field_groups() {
             'menu_order' => 1,
         ]
     );
+
+    // Early Access Form Field Group
+    acf_add_local_field_group(
+        [
+            'key'      => 'jcp_early_access_form',
+            'title'    => 'Early Access Form',
+            'fields'   => [
+                [
+                    'key'        => 'ea_label_full_name',
+                    'label'      => 'Full Name – Label',
+                    'name'       => 'ea_label_full_name',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'Full Name',
+                ],
+                [
+                    'key'        => 'ea_placeholder_full_name',
+                    'label'      => 'Full Name – Placeholder',
+                    'name'       => 'ea_placeholder_full_name',
+                    'type'       => 'text',
+                    'default'    => 'John Smith',
+                ],
+                [
+                    'key'        => 'ea_label_email',
+                    'label'      => 'Email – Label',
+                    'name'       => 'ea_label_email',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'Email',
+                ],
+                [
+                    'key'        => 'ea_placeholder_email',
+                    'label'      => 'Email – Placeholder',
+                    'name'       => 'ea_placeholder_email',
+                    'type'       => 'text',
+                    'default'    => 'john@example.com',
+                ],
+                [
+                    'key'        => 'ea_label_phone',
+                    'label'      => 'Phone – Label',
+                    'name'       => 'ea_label_phone',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'Phone',
+                ],
+                [
+                    'key'        => 'ea_placeholder_phone',
+                    'label'      => 'Phone – Placeholder',
+                    'name'       => 'ea_placeholder_phone',
+                    'type'       => 'text',
+                    'default'    => '(555) 123-4567',
+                ],
+                [
+                    'key'        => 'ea_label_company',
+                    'label'      => 'Company – Label',
+                    'name'       => 'ea_label_company',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'Company',
+                ],
+                [
+                    'key'        => 'ea_placeholder_company',
+                    'label'      => 'Company – Placeholder',
+                    'name'       => 'ea_placeholder_company',
+                    'type'       => 'text',
+                    'default'    => 'Summit Plumbing',
+                ],
+                [
+                    'key'        => 'ea_label_message',
+                    'label'      => 'Why interested – Label',
+                    'name'       => 'ea_label_message',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'Why are you interested in JobCapturePro?',
+                ],
+                [
+                    'key'        => 'ea_placeholder_message',
+                    'label'      => 'Why interested – Placeholder',
+                    'name'       => 'ea_placeholder_message',
+                    'type'       => 'text',
+                    'default'    => 'Tell us a bit about your business and what you hope to get from JobCapturePro.',
+                ],
+                [
+                    'key'        => 'ea_label_referral',
+                    'label'      => 'How did you hear – Label',
+                    'name'       => 'ea_label_referral',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'How did you hear about us?',
+                ],
+                [
+                    'key'        => 'ea_placeholder_referral',
+                    'label'      => 'How did you hear – Placeholder (first option)',
+                    'name'       => 'ea_placeholder_referral',
+                    'type'       => 'text',
+                    'default'    => 'Select one',
+                ],
+                [
+                    'key'          => 'ea_referral_options',
+                    'label'        => 'How did you hear – Options',
+                    'name'         => 'ea_referral_options',
+                    'type'         => 'repeater',
+                    'layout'       => 'table',
+                    'button_label' => 'Add option',
+                    'instructions' => 'Add rows to override defaults. If empty, the form uses: Google Search, Google Maps, Facebook / Instagram, Referral (another contractor), YouTube / Video, Podcast, Industry Event, Other. Value = text sent to GHL (leave blank to use label).',
+                    'sub_fields'   => [
+                        [
+                            'key'   => 'ea_option_label',
+                            'label' => 'Label (display)',
+                            'name'  => 'ea_option_label',
+                            'type'  => 'text',
+                            'required' => 1,
+                        ],
+                        [
+                            'key'   => 'ea_option_value',
+                            'label' => 'Value (sent to GHL; leave blank = same as label)',
+                            'name'  => 'ea_option_value',
+                            'type'  => 'text',
+                        ],
+                    ],
+                ],
+                [
+                    'key'        => 'ea_label_consent',
+                    'label'      => 'Consent checkbox – Label',
+                    'name'       => 'ea_label_consent',
+                    'type'       => 'textarea',
+                    'required'  => 1,
+                    'default'    => 'I agree to receive marketing emails from JobCapturePro. I can unsubscribe at any time.',
+                    'rows'       => 2,
+                ],
+                [
+                    'key'        => 'ea_submit_button_text',
+                    'label'      => 'Submit button text',
+                    'name'       => 'ea_submit_button_text',
+                    'type'       => 'text',
+                    'required'  => 1,
+                    'default'    => 'Join Early Access',
+                ],
+                [
+                    'key'        => 'ea_success_page_heading',
+                    'label'      => 'Success page – Heading',
+                    'name'       => 'ea_success_page_heading',
+                    'type'       => 'text',
+                    'default'    => 'You\'re on the list',
+                ],
+                [
+                    'key'        => 'ea_success_page_message',
+                    'label'      => 'Success page – Message',
+                    'name'       => 'ea_success_page_message',
+                    'type'       => 'textarea',
+                    'rows'       => 3,
+                    'default'    => 'Thanks for signing up. We\'ll be in touch soon with early-bird pricing and next steps.',
+                ],
+            ],
+            'location' => [
+                [
+                    [
+                        'param'    => 'options_page',
+                        'operator' => '==',
+                        'value'    => 'jcp-early-access-form',
+                    ],
+                ],
+            ],
+            'menu_order' => 0,
+        ]
+    );
 }
 
 add_action( 'acf/init', 'jcp_core_register_acf_field_groups' );
@@ -581,4 +765,91 @@ function jcp_core_get_homepage_option( $field_name, $default = null ) {
     }
     
     return $value;
+}
+
+/**
+ * Default "How did you hear about us?" options for Early Access form (exact labels for GHL).
+ *
+ * @return array List of [ 'label' => string, 'value' => string ]
+ */
+function jcp_core_early_access_default_referral_options(): array {
+    $labels = [
+        'Google Search',
+        'Google Maps',
+        'Facebook / Instagram',
+        'Referral (another contractor)',
+        'YouTube / Video',
+        'Podcast',
+        'Industry Event',
+        'Other',
+    ];
+    $out = [];
+    foreach ( $labels as $label ) {
+        $out[] = [ 'label' => $label, 'value' => $label ];
+    }
+    return $out;
+}
+
+/**
+ * Get Early Access form config for frontend (all copy from ACF).
+ *
+ * @return array Form labels, placeholders, options, button text, success page copy
+ */
+function jcp_core_get_early_access_form_config(): array {
+    if ( ! function_exists( 'get_field' ) ) {
+        return [
+            'label_full_name'       => 'Full Name',
+            'placeholder_full_name' => 'John Smith',
+            'label_email'           => 'Email',
+            'placeholder_email'    => 'john@example.com',
+            'label_phone'          => 'Phone',
+            'placeholder_phone'     => '(555) 123-4567',
+            'label_company'        => 'Company',
+            'placeholder_company'  => 'Summit Plumbing',
+            'label_message'        => 'Why are you interested in JobCapturePro?',
+            'placeholder_message'  => 'Tell us a bit about your business and what you hope to get from JobCapturePro.',
+            'label_referral'       => 'How did you hear about us?',
+            'placeholder_referral' => 'Select one',
+            'referral_options'     => jcp_core_early_access_default_referral_options(),
+            'label_consent'        => 'I agree to receive marketing emails from JobCapturePro. I can unsubscribe at any time.',
+            'submit_button_text'   => 'Join Early Access',
+            'success_page_heading' => "You're on the list",
+            'success_page_message' => "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
+        ];
+    }
+
+    $options = get_field( 'ea_referral_options', 'option' );
+    $referral_options = [];
+    if ( ! empty( $options ) && is_array( $options ) ) {
+        foreach ( $options as $row ) {
+            $label = isset( $row['ea_option_label'] ) ? (string) $row['ea_option_label'] : '';
+            $value = isset( $row['ea_option_value'] ) && (string) $row['ea_option_value'] !== '' ? (string) $row['ea_option_value'] : $label;
+            if ( $label !== '' ) {
+                $referral_options[] = [ 'label' => $label, 'value' => $value ];
+            }
+        }
+    }
+    if ( empty( $referral_options ) ) {
+        $referral_options = jcp_core_early_access_default_referral_options();
+    }
+
+    return [
+        'label_full_name'       => (string) get_field( 'ea_label_full_name', 'option' ) ?: 'Full Name',
+        'placeholder_full_name' => (string) get_field( 'ea_placeholder_full_name', 'option' ) ?: 'John Smith',
+        'label_email'           => (string) get_field( 'ea_label_email', 'option' ) ?: 'Email',
+        'placeholder_email'    => (string) get_field( 'ea_placeholder_email', 'option' ) ?: 'john@example.com',
+        'label_phone'           => (string) get_field( 'ea_label_phone', 'option' ) ?: 'Phone',
+        'placeholder_phone'     => (string) get_field( 'ea_placeholder_phone', 'option' ) ?: '(555) 123-4567',
+        'label_company'         => (string) get_field( 'ea_label_company', 'option' ) ?: 'Company',
+        'placeholder_company'   => (string) get_field( 'ea_placeholder_company', 'option' ) ?: 'Summit Plumbing',
+        'label_message'         => (string) get_field( 'ea_label_message', 'option' ) ?: 'Why are you interested in JobCapturePro?',
+        'placeholder_message'   => (string) get_field( 'ea_placeholder_message', 'option' ) ?: '',
+        'label_referral'        => (string) get_field( 'ea_label_referral', 'option' ) ?: 'How did you hear about us?',
+        'placeholder_referral'  => (string) get_field( 'ea_placeholder_referral', 'option' ) ?: 'Select one',
+        'referral_options'      => $referral_options,
+        'label_consent'         => (string) get_field( 'ea_label_consent', 'option' ) ?: 'I agree to receive marketing emails from JobCapturePro. I can unsubscribe at any time.',
+        'submit_button_text'    => (string) get_field( 'ea_submit_button_text', 'option' ) ?: 'Join Early Access',
+        'success_page_heading'  => (string) get_field( 'ea_success_page_heading', 'option' ) ?: "You're on the list",
+        'success_page_message'  => (string) get_field( 'ea_success_page_message', 'option' ) ?: "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
+    ];
 }

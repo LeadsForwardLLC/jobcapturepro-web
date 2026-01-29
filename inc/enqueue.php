@@ -85,6 +85,15 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-early-access', 'css/pages/early-access.css', [ 'jcp-core-sections' ] );
         jcp_core_enqueue_script( 'jcp-core-early-access', 'js/pages/early-access.js' );
         $render_deps[] = 'jcp-core-early-access';
+        $ea_config = function_exists( 'jcp_core_get_early_access_form_config' ) ? jcp_core_get_early_access_form_config() : [];
+        $ea_config['rest_url']         = rest_url( 'jcp/v1/early-access-submit' );
+        $ea_config['success_redirect'] = home_url( '/early-access-success/' );
+        wp_localize_script( 'jcp-core-early-access', 'JCP_EARLY_ACCESS_FORM', $ea_config );
+    }
+
+    if ( $pages['is_early_access_success'] ) {
+        jcp_core_enqueue_style( 'jcp-core-sections', 'css/sections.css', [ 'jcp-core-components' ] );
+        jcp_core_enqueue_style( 'jcp-core-early-access', 'css/pages/early-access.css', [ 'jcp-core-sections' ] );
     }
 
     if ( $pages['is_blog'] || $pages['is_single'] || $pages['is_page'] ) {

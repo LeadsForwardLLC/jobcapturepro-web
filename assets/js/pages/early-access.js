@@ -6,13 +6,29 @@
   const assetBase = () => window.JCP_ASSET_BASE || fallbackBase;
   const icon = (name) => `${assetBase()}/shared/assets/icons/lucide/${name}.svg`;
 
+  function escAttr(str) {
+    if (str == null) return '';
+    const s = String(str);
+    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function escText(str) {
+    if (str == null) return '';
+    const s = String(str);
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   window.renderEarlyAccess = () => {
     const root = document.getElementById('jcp-app');
     if (!root) return;
 
+    const c = window.JCP_EARLY_ACCESS_FORM || {};
+    const options = (c.referral_options || []).map(
+      (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
+    ).join('');
+
     root.innerHTML = `
       <main class="jcp-marketing jcp-early-access-page">
-        <!-- Simple Hero -->
         <section class="jcp-section rankings-section">
           <div class="jcp-container">
             <div class="rankings-header">
@@ -24,66 +40,86 @@
           </div>
         </section>
 
-        <!-- Founding Crew Form -->
         <section class="jcp-section jcp-form-section">
           <div class="jcp-container">
             <div class="jcp-form-wrapper">
-              <form class="jcp-founding-form" id="foundingCrewForm">
+              <form class="jcp-founding-form" id="foundingCrewForm" novalidate>
+                <div class="jcp-form-error" id="earlyAccessFormError" role="alert" aria-live="polite" style="display: none;"></div>
                 <div class="jcp-form-grid">
                   <div class="jcp-form-field">
-                    <label for="founding-name">Full Name</label>
-                    <input 
-                      type="text" 
-                      id="founding-name" 
-                      name="name" 
-                      placeholder="John Smith" 
-                      required 
+                    <label for="founding-name">${escText(c.label_full_name)}</label>
+                    <input
+                      type="text"
+                      id="founding-name"
+                      name="first_name"
+                      placeholder="${escAttr(c.placeholder_full_name)}"
+                      required
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-email">Email Address</label>
-                    <input 
-                      type="email" 
-                      id="founding-email" 
-                      name="email" 
-                      placeholder="john@example.com" 
-                      required 
+                    <label for="founding-email">${escText(c.label_email)}</label>
+                    <input
+                      type="email"
+                      id="founding-email"
+                      name="email"
+                      placeholder="${escAttr(c.placeholder_email)}"
+                      required
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-company">Company Name</label>
-                    <input 
-                      type="text" 
-                      id="founding-company" 
-                      name="company" 
-                      placeholder="Summit Plumbing" 
-                      required 
+                    <label for="founding-company">${escText(c.label_company)}</label>
+                    <input
+                      type="text"
+                      id="founding-company"
+                      name="company"
+                      placeholder="${escAttr(c.placeholder_company)}"
+                      required
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-phone">Phone Number</label>
-                    <input 
-                      type="tel" 
-                      id="founding-phone" 
-                      name="phone" 
-                      placeholder="(555) 123-4567" 
+                    <label for="founding-phone">${escText(c.label_phone)}</label>
+                    <input
+                      type="tel"
+                      id="founding-phone"
+                      name="phone"
+                      placeholder="${escAttr(c.placeholder_phone)}"
+                      required
                     />
                   </div>
                 </div>
+                <div class="jcp-form-field jcp-form-field-full">
+                  <label for="founding-message">${escText(c.label_message)}</label>
+                  <textarea
+                    id="founding-message"
+                    name="message"
+                    placeholder="${escAttr(c.placeholder_message)}"
+                    rows="4"
+                    required
+                  ></textarea>
+                </div>
+                <div class="jcp-form-field jcp-form-field-full">
+                  <label for="founding-referral">${escText(c.label_referral)}</label>
+                  <select id="founding-referral" name="referral_source" required>
+                    <option value="">${escText(c.placeholder_referral)}</option>
+                    ${options}
+                  </select>
+                </div>
+                <div class="jcp-form-field jcp-form-field-full jcp-form-field-consent">
+                  <label class="jcp-form-consent-label">
+                    <input type="checkbox" name="consent" id="founding-consent" required />
+                    <span>${escText(c.label_consent)}</span>
+                  </label>
+                </div>
                 <div class="jcp-form-actions">
-                  <button type="submit" class="btn btn-primary">
-                    Join Early Access
+                  <button type="submit" class="btn btn-primary" id="earlyAccessSubmitBtn">
+                    ${escText(c.submit_button_text)}
                   </button>
-                  <p class="jcp-form-note">
-                    No commitment required. We'll reach out with early-bird pricing details.
-                  </p>
                 </div>
               </form>
             </div>
           </div>
         </section>
 
-        <!-- Benefits -->
         <section class="jcp-section rankings-section">
           <div class="jcp-container">
             <div class="rankings-header">
@@ -115,7 +151,6 @@
           </div>
         </section>
 
-        <!-- Global CTA to Demo -->
         <section class="jcp-section rankings-section">
           <div class="jcp-container">
             <div class="rankings-cta">
@@ -141,27 +176,80 @@
     const form = document.getElementById('foundingCrewForm');
     if (!form) return;
 
+    const errorEl = document.getElementById('earlyAccessFormError');
+    const submitBtn = document.getElementById('earlyAccessSubmitBtn');
+
+    function showError(msg) {
+      if (errorEl) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function hideError() {
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+      }
+    }
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-      
-      // TODO: Replace with actual form submission endpoint
-      console.log('Form submission:', data);
-      
-      // Show success message
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = 'Submitted! We\'ll be in touch soon.';
+      hideError();
+
+      const consent = form.querySelector('#founding-consent');
+      if (!consent || !consent.checked) {
+        showError('Please agree to the marketing consent to continue.');
+        return;
+      }
+
+      const first_name = (form.querySelector('[name="first_name"]') || {}).value || '';
+      const company = (form.querySelector('[name="company"]') || {}).value || '';
+      const email = (form.querySelector('[name="email"]') || {}).value || '';
+      const phone = (form.querySelector('[name="phone"]') || {}).value || '';
+      const message = (form.querySelector('[name="message"]') || {}).value || '';
+      const referral_source = (form.querySelector('[name="referral_source"]') || {}).value || '';
+
+      if (!first_name.trim() || !company.trim() || !email.trim() || !phone.trim() || !message.trim() || !referral_source) {
+        showError('Please fill in all required fields.');
+        return;
+      }
+
+      if (!submitBtn) return;
       submitBtn.disabled = true;
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        form.reset();
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }, 3000);
+
+      const c = window.JCP_EARLY_ACCESS_FORM || {};
+      const restUrl = c.rest_url || (window.JCP_CONFIG && window.JCP_CONFIG.baseUrl ? window.JCP_CONFIG.baseUrl.replace(/\/?$/, '') + '/wp-json/jcp/v1/early-access-submit' : '/wp-json/jcp/v1/early-access-submit');
+
+      fetch(restUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: first_name.trim(),
+          company: company.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          message: message.trim(),
+          referral_source: referral_source.trim(),
+        }),
+      })
+        .then((res) => {
+          const ok = res.status === 200 || res.status === 201;
+          return res.json().then((data) => ({ ok, data })).catch(() => ({ ok, data: {} }));
+        })
+        .then(({ ok, data }) => {
+          if (ok) {
+            const redirect = (window.JCP_EARLY_ACCESS_FORM || {}).success_redirect || '/early-access-success/';
+            window.location.href = redirect;
+            return;
+          }
+          submitBtn.disabled = false;
+          showError(data.message || 'Something went wrong. Please try again.');
+        })
+        .catch(() => {
+          submitBtn.disabled = false;
+          showError('Something went wrong. Please try again.');
+        });
     });
   }
 
