@@ -138,6 +138,49 @@
   margin: 0 0 var(--jcp-space-sm) 0;
 }
 
+.jcp-form-label {
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-primary);
+  display: block;
+}
+
+/* Why interested – checkbox grid (matches Demo Survey "What should this demo prove?") */
+.jcp-form-goals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+  margin-top: 4px;
+}
+
+.jcp-form-goal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px;
+  border: 2px solid var(--jcp-color-border);
+  border-radius: 14px;
+  background: var(--jcp-color-bg-primary);
+  cursor: pointer;
+}
+
+.jcp-form-goal input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.jcp-form-goal span {
+  font-weight: var(--jcp-font-weight-extrabold);
+  color: var(--jcp-color-text-primary);
+}
+
+@media (max-width: 820px) {
+  .jcp-form-goals {
+    grid-template-columns: 1fr;
+  }
+}
+
 .jcp-form-field-full {
   margin-bottom: var(--jcp-space-xl);
 }

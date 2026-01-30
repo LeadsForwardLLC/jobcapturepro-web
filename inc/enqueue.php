@@ -122,9 +122,10 @@ function jcp_core_enqueue_assets(): void {
             jcp_core_enqueue_script( 'jcp-core-demo', 'js/features/demo/jcp-demo.js', [ 'jcp-core-leaflet' ] );
         } else {
             jcp_core_enqueue_style( 'jcp-core-survey', 'css/pages/survey.css', [ 'jcp-core-demo' ] );
-            jcp_core_enqueue_script( 'jcp-core-survey', 'js/features/survey/survey.js', [ $render_handle ] );
+            jcp_core_enqueue_script( 'jcp-core-survey', 'js/pages/survey.js', [ $render_handle ] );
             wp_localize_script( 'jcp-core-survey', 'JCP_DEMO_SURVEY', [
-                'rest_url' => rest_url( 'jcp/v1/demo-survey-submit' ),
+                'rest_url'       => rest_url( 'jcp/v1/demo-survey-submit' ),
+                'rest_viewed_url' => rest_url( 'jcp/v1/demo-viewed-submit' ),
             ] );
         }
         return;

@@ -10,13 +10,14 @@
  */
 
 /**
- * GHL webhook URL for Demo Survey submissions only.
- * Do not use for Early Access; see inc/rest-early-access.php for Early Access webhook.
+ * GHL webhook URL for Demo Survey (single workflow).
+ * Fired for both: "Continue to preview" (Event=opt-in) and "Skip to demo" / "Launch the live demo" (Event=viewed-demo).
+ * In GHL use an if/then: if Event = "demo-viewed" → Find Contact by Email → Add Tag "viewed-demo"; else (Event = "demo-opt-in") → Create Contact → Add tag (e.g. demo-opt-in).
  */
 define( 'JCP_GHL_DEMO_SURVEY_WEBHOOK_URL', 'https://services.leadconnectorhq.com/hooks/kMIwmFm9I7LJPEYo35qi/webhook-trigger/zYfSsYRsSdSdHlD5vqUv' );
 
 /**
- * Register REST route for Demo Survey.
+ * Register REST routes for Demo Survey.
  */
 function jcp_core_register_demo_survey_rest_routes(): void {
     register_rest_route( 'jcp/v1', '/demo-survey-submit', [
@@ -69,6 +70,27 @@ function jcp_core_register_demo_survey_rest_routes(): void {
             ],
         ],
     ] );
+
+    register_rest_route( 'jcp/v1', '/demo-viewed-submit', [
+        'methods'             => 'POST',
+        'permission_callback' => '__return_true',
+        'callback'            => 'jcp_core_demo_viewed_submit_handler',
+        'args'                => [
+            'first_name' => [
+                'required'          => true,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'email'      => [
+                'required'          => true,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_email',
+                'validate_callback' => function ( $value ) {
+                    return is_email( $value );
+                },
+            ],
+        ],
+    ] );
 }
 
 add_action( 'rest_api_init', 'jcp_core_register_demo_survey_rest_routes' );
@@ -93,6 +115,7 @@ function jcp_core_build_demo_survey_ghl_body( array $params ): string {
         : [];
 
     $scalar = [
+        'Event'          => 'demo-opt-in',
         'First Name'     => $first_name,
         'Last Name'      => $last_name,
         'Email'          => $email,
@@ -141,6 +164,74 @@ function jcp_core_demo_survey_submit_handler( \WP_REST_Request $request ): \WP_R
     ];
 
     $body_string = jcp_core_build_demo_survey_ghl_body( $params );
+
+    $response = wp_remote_post(
+        JCP_GHL_DEMO_SURVEY_WEBHOOK_URL,
+        [
+            'timeout' => 15,
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
+            'body'    => $body_string,
+        ]
+    );
+
+    $code = wp_remote_retrieve_response_code( $response );
+    $res_body = wp_remote_retrieve_body( $response );
+    $ok = $code >= 200 && $code < 300;
+
+    if ( $ok ) {
+        return new \WP_REST_Response( [ 'success' => true ], 200 );
+    }
+
+    $msg = __( 'Something went wrong. Please try again.', 'jcp-core' );
+    if ( $res_body !== '' ) {
+        $decoded = json_decode( $res_body, true );
+        if ( is_array( $decoded ) && isset( $decoded['message'] ) && is_string( $decoded['message'] ) ) {
+            $msg = $decoded['message'];
+        }
+    }
+
+    return new \WP_REST_Response( [ 'success' => false, 'message' => $msg ], 400 );
+}
+
+/**
+ * Build application/x-www-form-urlencoded body for "viewed demo" hit (same webhook, Event=demo-viewed).
+ * GHL can branch on Event: if "demo-viewed" → Find Contact by Email → Add Tag "viewed-demo".
+ *
+ * @param string $first_name First name.
+ * @param string $email Email.
+ * @return string
+ */
+function jcp_core_build_demo_viewed_ghl_body( string $first_name, string $email ): string {
+    $scalar = [
+        'Event'      => 'demo-viewed',
+        'First Name' => $first_name,
+        'Email'      => $email,
+    ];
+    $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
+    $body .= '&Tags%5B%5D=' . rawurlencode( 'viewed-demo' );
+    return $body;
+}
+
+/**
+ * Handle Demo Viewed POST: forward to same GHL webhook with Event=viewed-demo for if/then branching.
+ *
+ * @param \WP_REST_Request $request Request.
+ * @return \WP_REST_Response
+ */
+function jcp_core_demo_viewed_submit_handler( \WP_REST_Request $request ): \WP_REST_Response {
+    $first_name = trim( (string) $request->get_param( 'first_name' ) );
+    $email      = trim( (string) $request->get_param( 'email' ) );
+
+    if ( $first_name === '' || $email === '' || ! is_email( $email ) ) {
+        return new \WP_REST_Response(
+            [ 'success' => false, 'message' => __( 'First name and email are required.', 'jcp-core' ) ],
+            400
+        );
+    }
+
+    $body_string = jcp_core_build_demo_viewed_ghl_body( $first_name, $email );
 
     $response = wp_remote_post(
         JCP_GHL_DEMO_SURVEY_WEBHOOK_URL,

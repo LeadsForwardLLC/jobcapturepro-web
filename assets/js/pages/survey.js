@@ -163,6 +163,32 @@
     });
   };
 
+  // Submit opt-in when user clicks "Continue to preview" — sends full form to first webhook (Create Contact + tag demo-opt-in).
+  const submitDemoOptIn = async () => {
+    const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || [])
+      .map((input) => input.value);
+    const restUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_url) || `${baseUrl}/wp-json/jcp/v1/demo-survey-submit`;
+    try {
+      await Promise.race([
+        fetch(restUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: getValue('firstName'),
+            email: getValue('email'),
+            business_name: getValue('businessName'),
+            business_type: getValue('niche'),
+            demo_goals: goals,
+          }),
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+      ]);
+    } catch (err) {
+      console.warn('JCP Demo Survey: opt-in submit failed', err);
+    }
+  };
+
+  // When user clicks "Skip to demo" or "Launch the live demo" — send to second webhook so GHL can add tag "viewed-demo".
   const launchDemo = async () => {
     const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || [])
       .map((input) => input.value);
@@ -174,38 +200,28 @@
       // no-op
     }
 
+    const firstName = getValue('firstName');
+    const email = getValue('email');
     localStorage.setItem('demoUser', JSON.stringify({
       businessName: getValue('businessName'),
       niche: getValue('niche'),
-      serviceArea: getValue('serviceArea'),
       goals,
-      firstName: getValue('firstName'),
-      email: getValue('email'),
+      firstName,
+      email,
     }));
 
-    // Send to GoHighLevel (Demo Survey webhook) via our REST endpoint — MUST complete before redirect or browser aborts the request
-    const restUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_url) || `${baseUrl}/wp-json/jcp/v1/demo-survey-submit`;
+    const viewedUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_viewed_url) || `${baseUrl}/wp-json/jcp/v1/demo-viewed-submit`;
     try {
-      const res = await Promise.race([
-        fetch(restUrl, {
+      await Promise.race([
+        fetch(viewedUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            first_name: getValue('firstName'),
-            email: getValue('email'),
-            business_name: getValue('businessName'),
-            business_type: getValue('niche'),
-            service_area: getValue('serviceArea'),
-            demo_goals: goals,
-          }),
+          body: JSON.stringify({ first_name: firstName, email }),
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
       ]);
-      if (!res.ok) {
-        console.warn('JCP Demo Survey: submit returned', res.status);
-      }
     } catch (err) {
-      console.warn('JCP Demo Survey: submit failed', err);
+      console.warn('JCP Demo Survey: viewed submit failed', err);
     }
 
     window.location.href = `${baseUrl}/demo/?mode=run`;
@@ -242,10 +258,10 @@
     if (action === 'launch' && !deckActive) {
       if (!validateStep3()) return;
       if (deckSlides.length) {
-        showDeck();
+        submitDemoOptIn().then(() => showDeck());
         return;
       }
-      launchDemo();
+      submitDemoOptIn().then(() => launchDemo());
     }
 
     if ((action === 'deck-next' || (deckActive && action === 'next')) && deckIndex < deckSlides.length - 1) {

@@ -19,17 +19,54 @@ const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
   : window.location.origin;
 const assetBase = window.JCP_ASSET_BASE || '';
 
-try {
-  const stored = localStorage.getItem('demoUser');
-  if (stored) {
-    const parsed = JSON.parse(stored);
+// Optional URL params for email links: ?mode=run&name=Jane&business=ABC+Plumbing&niche=plumbing
+function getDemoUserFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name') || params.get('first_name');
+    const business = params.get('business') || params.get('company');
+    const niche = params.get('niche') || params.get('business_type');
+    const email = params.get('email');
+    if (name || business || niche || email) {
+      return {
+        firstName: decodeURIComponent(name || '').trim() || demoUser.firstName,
+        businessName: decodeURIComponent(business || '').trim() || demoUser.businessName,
+        niche: decodeURIComponent(niche || '').trim() || demoUser.niche,
+        email: decodeURIComponent(email || '').trim() || ''
+      };
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
 
+try {
+  const fromUrl = getDemoUserFromUrl();
+  if (fromUrl) {
     demoUser = {
-      firstName: parsed.firstName || demoUser.firstName,
-      businessName: parsed.businessName || demoUser.businessName,
-      niche: parsed.niche || demoUser.niche,
-      email: parsed.email || ''
+      firstName: fromUrl.firstName || demoUser.firstName,
+      businessName: fromUrl.businessName || demoUser.businessName,
+      niche: fromUrl.niche || demoUser.niche,
+      email: fromUrl.email || demoUser.email || ''
     };
+    try {
+      localStorage.setItem('demoUser', JSON.stringify(demoUser));
+    } catch (e) {
+      // ignore
+    }
+  } else {
+    const stored = localStorage.getItem('demoUser');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+
+      demoUser = {
+        firstName: parsed.firstName || demoUser.firstName,
+        businessName: parsed.businessName || demoUser.businessName,
+        niche: parsed.niche || demoUser.niche,
+        email: parsed.email || ''
+      };
+    }
   }
 } catch (e) {
   console.warn('Demo personalization fallback used');

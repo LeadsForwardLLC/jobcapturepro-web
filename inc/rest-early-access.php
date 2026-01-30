@@ -56,6 +56,11 @@ function jcp_core_register_early_access_rest_routes(): void {
                 'type'              => 'string',
                 'sanitize_callback'  => 'sanitize_text_field',
             ],
+            'business_type'   => [
+                'required'          => true,
+                'type'              => 'string',
+                'sanitize_callback'  => 'sanitize_text_field',
+            ],
         ],
     ] );
 
@@ -124,11 +129,12 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
     $phone           = $request->get_param( 'phone' );
     $message         = $request->get_param( 'message' );
     $referral_source = $request->get_param( 'referral_source' );
+    $business_type   = $request->get_param( 'business_type' );
 
     $require_company = true;
     $require_phone   = true;
 
-    if ( empty( $first_name ) || empty( $email ) || empty( $message ) || empty( $referral_source ) ) {
+    if ( empty( $first_name ) || empty( $email ) || empty( $message ) || empty( $referral_source ) || empty( $business_type ) ) {
         return new \WP_REST_Response(
             [ 'success' => false, 'message' => __( 'Required fields must be filled.', 'jcp-core' ) ],
             400
@@ -147,14 +153,20 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
         );
     }
 
-    $first_name = trim( (string) $first_name );
-    $company    = trim( (string) $company );
-    $email      = trim( (string) $email );
-    $phone      = trim( (string) $phone );
-    $message    = trim( (string) $message );
+    $first_name      = trim( (string) $first_name );
+    $company         = trim( (string) $company );
+    $email           = trim( (string) $email );
+    $phone           = trim( (string) $phone );
+    $message         = trim( (string) $message );
     $referral_source = [ trim( (string) $referral_source ) ];
+    $business_type   = trim( (string) $business_type );
 
-    $trade = 'General Contractor';
+    $trade = function_exists( 'jcp_core_early_access_business_type_label' )
+        ? jcp_core_early_access_business_type_label( $business_type )
+        : $business_type;
+    if ( $trade === '' ) {
+        $trade = $business_type;
+    }
 
     $body_string = jcp_core_build_ghl_body( $first_name, $email, $phone, $company, $trade, $referral_source, $message );
     $url         = jcp_core_ghl_webhook_url();

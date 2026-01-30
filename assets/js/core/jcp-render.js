@@ -42,11 +42,7 @@
       console.warn('JCP render: renderEarlyAccess is not available');
       return;
     case 'demo':
-      if (new URLSearchParams(window.location.search).get('mode') === 'run') {
-        templateUrl = `${assetBase}/demo/index.html`;
-      } else {
-        templateUrl = `${assetBase}/survey/index.html`;
-      }
+      templateUrl = `${assetBase}/demo/index.html`;
       break;
     case 'directory':
       templateUrl = `${assetBase}/directory/index.html`;

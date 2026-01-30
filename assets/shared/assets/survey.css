@@ -201,6 +201,12 @@ body.survey-only #jcp-app {
   font-weight:800;
   font-size:13px;
 }
+.survey-consent{
+  color:#6b7280;
+  font-size:12px;
+  margin:0;
+  line-height:1.4;
+}
 
 
 /* Center */

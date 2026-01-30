@@ -6,6 +6,16 @@
   const assetBase = () => window.JCP_ASSET_BASE || fallbackBase;
   const icon = (name) => `${assetBase()}/shared/assets/icons/lucide/${name}.svg`;
 
+  // Same as demo survey Step 1 – used when PHP config (business_type_options) is missing
+  const FALLBACK_BUSINESS_TYPE_OPTIONS = [
+    { label: 'Building & mechanical', options: [{ value: 'plumbing', label: 'Plumbing' }, { value: 'hvac', label: 'HVAC' }, { value: 'electrical', label: 'Electrical' }, { value: 'roofing', label: 'Roofing' }] },
+    { label: 'General contracting & remodeling', options: [{ value: 'general-contractor', label: 'General Contractor' }, { value: 'handyman', label: 'Handyman' }, { value: 'remodeling', label: 'Remodeling / Renovation' }] },
+    { label: 'Outdoor & property', options: [{ value: 'landscaping', label: 'Landscaping' }, { value: 'lawn-care', label: 'Lawn care' }, { value: 'tree-service', label: 'Tree service' }, { value: 'pest-control', label: 'Pest control' }, { value: 'fencing', label: 'Fencing' }] },
+    { label: 'Cleaning & restoration', options: [{ value: 'carpet-cleaning', label: 'Carpet cleaning' }, { value: 'house-cleaning', label: 'House cleaning' }, { value: 'pressure-washing', label: 'Pressure washing' }, { value: 'painting', label: 'Painting (interior / exterior)' }] },
+    { label: 'Other trades', options: [{ value: 'flooring', label: 'Flooring' }, { value: 'windows-doors', label: 'Windows & doors' }, { value: 'insulation', label: 'Insulation' }, { value: 'garage-doors', label: 'Garage doors' }, { value: 'pool-service', label: 'Pool service' }, { value: 'moving-junk', label: 'Moving / Junk removal' }] },
+    { label: 'Other', options: [{ value: 'other', label: 'Other home service' }] },
+  ];
+
   function escAttr(str) {
     if (str == null) return '';
     const s = String(str);
@@ -26,8 +36,15 @@
     const referralOptions = (c.referral_options || []).map(
       (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
     ).join('');
+    const businessTypeOpts = (c.business_type_options && c.business_type_options.length) ? c.business_type_options : FALLBACK_BUSINESS_TYPE_OPTIONS;
+    const businessTypeGroups = businessTypeOpts.map((grp) => {
+      const opts = (grp.options || []).map(
+        (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
+      ).join('');
+      return `<optgroup label="${escAttr(grp.label || '')}">${opts}</optgroup>`;
+    }).join('');
     const whyOptions = (c.why_interested_options || []).map(
-      (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
+      (o) => `<label class="jcp-form-goal"><input type="checkbox" name="message" value="${escAttr(o.value)}"><span>${escText(o.label)}</span></label>`
     ).join('');
     const requirePhone = c.require_phone !== false;
     const requireCompany = c.require_company !== false;
@@ -93,17 +110,18 @@
                   </div>
                 </div>
                 <div class="jcp-form-field jcp-form-field-full">
-                  <label for="founding-message">Why are you interested in JobCapturePro?</label>
-                  <p class="jcp-form-field-helper" id="founding-message-helper">Select all that apply</p>
-                  <select
-                    id="founding-message"
-                    name="message"
-                    multiple
-                    required
-                    aria-describedby="founding-message-helper"
-                  >
-                    ${whyOptions}
+                  <label for="founding-business-type">Business type</label>
+                  <select id="founding-business-type" name="business_type" required>
+                    <option value="">Select your business type</option>
+                    ${businessTypeGroups}
                   </select>
+                </div>
+                <div class="jcp-form-field jcp-form-field-full">
+                  <span class="jcp-form-label">Why are you interested in JobCapturePro?</span>
+                  <p class="jcp-form-field-helper" id="founding-message-helper">Select all that apply</p>
+                  <div class="jcp-form-goals" id="founding-message" aria-describedby="founding-message-helper" role="group">
+                    ${whyOptions}
+                  </div>
                 </div>
                 <div class="jcp-form-field jcp-form-field-full">
                   <label for="founding-referral">How did you hear about us?</label>
@@ -215,17 +233,17 @@
       const company = (form.querySelector('[name="company"]') || {}).value || '';
       const email = (form.querySelector('[name="email"]') || {}).value || '';
       const phone = (form.querySelector('[name="phone"]') || {}).value || '';
-      const messageEl = form.querySelector('[name="message"]');
-      const selectedOpts = messageEl && messageEl.selectedOptions ? Array.from(messageEl.selectedOptions) : [];
-      const messageValues = selectedOpts.map(function (opt) { return opt.value; }).filter(Boolean);
+      const messageCheckboxes = form.querySelectorAll('input[name="message"]:checked');
+      const messageValues = Array.from(messageCheckboxes).map(function (cb) { return cb.value; }).filter(Boolean);
       const messageText = messageValues.length ? messageValues.join(', ') : '';
       const referral_source = (form.querySelector('[name="referral_source"]') || {}).value || '';
+      const business_type = (form.querySelector('[name="business_type"]') || {}).value || '';
 
       const requirePhone = form.getAttribute('data-require-phone') === '1';
       const requireCompany = form.getAttribute('data-require-company') === '1';
 
-      if (!first_name.trim() || !email.trim() || !messageText || !referral_source) {
-        showError('Please fill in all required fields, including at least one "Why are you interested" option.');
+      if (!first_name.trim() || !email.trim() || !messageText || !referral_source || !business_type.trim()) {
+        showError('Please fill in all required fields, including at least one "Why are you interested" option and your business type.');
         return;
       }
       if (requireCompany && !company.trim()) {
@@ -251,6 +269,7 @@
           company: company.trim(),
           email: email.trim(),
           phone: phone.trim(),
+          business_type: business_type.trim(),
           message: messageText.trim(),
           referral_source: referral_source.trim(),
         }),
