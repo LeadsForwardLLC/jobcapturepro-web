@@ -17,9 +17,10 @@
   background: #ffffff;
 }
 
-/* Account for fixed header */
+/* Account for fixed header; avoid min-height so no gap above footer */
 body:has(.profile-shell) {
   padding-top: 72px !important;
+  min-height: auto !important;
 }
 
 /* =========================================================
@@ -469,7 +470,7 @@ body:has(.profile-shell) {
 
 .profile-shell .rankings-section:has(.rankings-cta) {
   padding-top: var(--jcp-space-2xl) !important;
-  padding-bottom: var(--jcp-space-2xl) !important;
+  padding-bottom: var(--jcp-space-xl) !important;
   margin-bottom: 0 !important;
 }
 
@@ -525,33 +526,20 @@ body:has(.profile-shell) {
 
 /* =========================================================
    FOOTER - GLOBAL FOOTER WITH CONTAINER
+   Use body:has() so footer is targeted (footer is not a sibling of .profile-shell)
 ========================================================= */
 
-.profile-shell ~ .jcp-footer {
+body:has(.profile-shell) .jcp-footer {
   padding: var(--jcp-space-5xl) 0 var(--jcp-space-3xl) !important;
   background: #ffffff !important;
   border-top: 2px solid var(--jcp-color-border);
   margin-top: 0 !important;
 }
 
-.profile-shell ~ .jcp-footer .jcp-container {
+body:has(.profile-shell) .jcp-footer .jcp-container {
   max-width: var(--jcp-size-container-2xl);
   margin: 0 auto;
   padding: 0 var(--jcp-space-lg);
-}
-
-/* =========================================================
-   ESTIMATE TAKEOVER (KEEP EXISTING)
-========================================================= */
-
-.estimate-takeover {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-}
-
-.estimate-takeover.is-hidden {
-  display: none;
 }
 
 .takeover-backdrop {
@@ -673,7 +661,7 @@ body:has(.profile-shell) {
 
 @media (max-width: 768px) {
   .profile-shell .profile-hero-section {
-    padding-top: 80px !important;
+    padding-top: calc(72px + var(--jcp-space-lg)) !important;
     padding-bottom: var(--jcp-space-3xl) !important;
   }
 

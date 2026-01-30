@@ -427,6 +427,12 @@
 }
 
 @media (max-width: 768px) {
+  .jcp-home .jcp-hero {
+    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+  }
+}
+
+@media (max-width: 768px) {
   .hero-media-card {
     min-height: 400px;
   }
@@ -577,6 +583,61 @@
   text-align: center;
 }
 
+/* ============================================================
+   SUCCESS PAGES (contact-success, early-access-success)
+   Equal top/bottom space, centered buttons, design consistency
+   ============================================================ */
+
+/* Override page-specific first-section rules so success pages get equal top/bottom space */
+.jcp-success-page .rankings-section.jcp-success-section {
+  padding-top: var(--jcp-space-6xl) !important;
+  padding-bottom: var(--jcp-space-6xl) !important;
+  display: flex;
+  align-items: center;
+  min-height: 50vh;
+  box-sizing: border-box;
+}
+
+.jcp-success-page .rankings-section.jcp-success-section > .jcp-container {
+  width: 100%;
+}
+
+.jcp-success-page .rankings-section.jcp-success-section .rankings-header {
+  margin-bottom: var(--jcp-space-3xl);
+}
+
+.jcp-success-page .jcp-success-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--jcp-space-md);
+  margin-top: var(--jcp-space-3xl);
+}
+
+.jcp-success-page .jcp-success-actions .btn {
+  width: auto;
+  min-width: 160px;
+  max-width: none;
+}
+
+@media (max-width: 768px) {
+  .jcp-success-page .rankings-section.jcp-success-section {
+    padding-top: calc(72px + var(--jcp-space-4xl)) !important;
+    padding-bottom: var(--jcp-space-4xl) !important;
+    min-height: 40vh;
+  }
+
+  .jcp-success-page .jcp-success-actions {
+    flex-direction: column;
+  }
+
+  .jcp-success-page .jcp-success-actions .btn {
+    width: 100%;
+    max-width: 400px;
+  }
+}
 
 /* ============================================================
    TIMELINE STEPS - WIDE CARDS WITH CONNECTORS

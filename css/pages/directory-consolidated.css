@@ -171,16 +171,16 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   border: none !important;
 }
 
+/* Match demo listing badge: pill, light red-orange bg, brand orange text, not uppercase */
 .demo-indicator {
   display: inline-flex;
   align-items: center;
-  padding: var(--jcp-space-xs) var(--jcp-space-sm);
-  background: var(--jcp-color-warning);
-  opacity: 0.2;
-  color: var(--jcp-color-text-primary);
-  font-size: var(--jcp-font-size-xs);
-  font-weight: var(--jcp-font-weight-semibold);
-  border-radius: var(--jcp-radius-sm);
+  padding: 6px 12px;
+  background: #ffe8e3;
+  color: #e55039;
+  font-size: 12px;
+  font-weight: var(--jcp-font-weight-bold);
+  border-radius: 999px;
   letter-spacing: 0.02em;
 }
 
@@ -268,7 +268,7 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 .mobile-menu-overlay {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 1100;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   opacity: 0;
@@ -295,6 +295,8 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
   will-change: transform;
+  padding-top: env(safe-area-inset-top);
+  overflow: hidden;
 }
 
 .mobile-menu-overlay.active .mobile-menu-content {
@@ -305,8 +307,9 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--jcp-space-lg);
+  padding: max(var(--jcp-space-lg), env(safe-area-inset-top)) var(--jcp-space-lg) var(--jcp-space-lg);
   border-bottom: 1px solid var(--jcp-color-border);
+  flex-shrink: 0;
 }
 
 .mobile-menu-title {
@@ -322,15 +325,13 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 
 .mobile-directory-badge {
   display: inline-flex;
-  padding: var(--jcp-space-xs) var(--jcp-space-sm);
-  background: var(--jcp-color-warning);
-  opacity: 0.2;
-  color: var(--jcp-color-text-primary);
-  font-size: 10px;
+  padding: 6px 12px;
+  background: #ffe8e3;
+  color: #e55039;
+  font-size: 12px;
   font-weight: var(--jcp-font-weight-bold);
-  border-radius: var(--jcp-radius-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
 }
 
 .mobile-menu-close {
@@ -383,10 +384,12 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 /* Mobile Menu Actions */
 .mobile-menu-actions {
   padding: var(--jcp-space-lg);
+  padding-bottom: max(var(--jcp-space-lg), env(safe-area-inset-bottom));
   border-top: 1px solid var(--jcp-color-border);
   display: flex;
   flex-direction: column;
   gap: var(--jcp-space-sm);
+  flex-shrink: 0;
 }
 
 .mobile-btn {
@@ -710,6 +713,12 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   }
 }
 
+@media (max-width: 768px) {
+  .directory-shell .jcp-hero {
+    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+  }
+}
+
 .directory-shell .jcp-hero-copy {
   position: relative;
   z-index: 1;
@@ -726,6 +735,18 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   color: var(--jcp-color-text-primary);
   letter-spacing: -0.02em;
   margin: 0;
+}
+
+/* Keep "real" + cycling word on same line; no period after word */
+.directory-shell .jcp-hero-rotating-inline {
+  white-space: nowrap;
+}
+
+/* Rotating word (work / reviews / activity) – brand orange, fade like homepage */
+.directory-shell .jcp-hero-rotating-word {
+  display: inline;
+  color: var(--jcp-color-primary);
+  transition: opacity 0.35s ease;
 }
 
 .directory-shell .jcp-hero-subtitle {

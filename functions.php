@@ -30,6 +30,9 @@ require_once get_template_directory() . '/inc/rest-early-access.php';
 // REST: Demo Survey form → GHL webhook (separate from Early Access)
 require_once get_template_directory() . '/inc/rest-demo-survey.php';
 
+// REST: Contact form → GHL webhook
+require_once get_template_directory() . '/inc/rest-contact.php';
+
 // Load design system page setup
 require_once get_template_directory() . '/inc/design-system-setup.php';
 

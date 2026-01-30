@@ -277,12 +277,24 @@
   color: var(--jcp-color-text-secondary);
   display: grid;
   gap: var(--jcp-space-sm);
-  list-style: disc;
+  list-style: none;
 }
 
 .jcp-plan-list li {
   font-size: var(--jcp-font-size-base);
   line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--jcp-space-sm);
+  flex-wrap: wrap;
+}
+
+/* Bullet for every feature (fixes missing bullets on flex/tooltip items) */
+.jcp-plan-list li::before {
+  content: '\2022';
+  color: var(--jcp-color-text-secondary);
+  flex-shrink: 0;
+  font-weight: bold;
 }
 
 /* Feature with tooltip: text + small info icon + custom tooltip bubble */
@@ -421,7 +433,7 @@
 
 @media (max-width: 768px) {
   .jcp-pricing-page > .rankings-section:first-of-type {
-    padding-top: calc(var(--jcp-space-4xl) + 80px) !important;
+    padding-top: calc(72px + var(--jcp-space-lg)) !important;
   }
 
   .jcp-billing-toggle-wrapper {

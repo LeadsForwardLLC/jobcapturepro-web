@@ -8,12 +8,18 @@
 <section class="survey-step active" data-step="0">
   <div class="survey-head">
     <div class="survey-eyebrow">Online Demo</div>
-    <h1 class="survey-title">Launch a live demo built for your business</h1>
+    <h1 class="survey-title">See a live demo built for your business</h1>
     <p class="survey-subtitle">
-      Tell us your context so the demo reflects real jobs and real outcomes.
+      Tell us a few details so the demo reflects real jobs and real outcomes.
     </p>
     <div class="survey-note">
-      <strong>Best experience on desktop or laptop.</strong>
+      <svg class="survey-note-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="2" y1="20" x2="22" y2="20"></line>
+        <line x1="16" y1="4" x2="16" y2="2"></line>
+        <line x1="8" y1="4" x2="8" y2="2"></line>
+      </svg>
+      <strong>Best viewed on desktop or laptop.</strong>
     </div>
   </div>
 
@@ -73,6 +79,6 @@
   </form>
 
   <div class="survey-actions-row">
-    <button class="survey-btn" data-action="next">Continue</button>
+    <button class="survey-btn" data-action="next">Next step</button>
   </div>
 </section>

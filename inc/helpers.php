@@ -143,6 +143,8 @@ function jcp_core_get_page_detection(): array {
         'is_demo'         => is_page_template( 'page-demo.php' ) || is_page( 'demo' ) || $path === 'demo',
         'is_pricing'      => is_page_template( 'page-pricing.php' ) || is_page( 'pricing' ) || $path === 'pricing',
         'is_early_access'         => is_page_template( 'page-early-access.php' ) || is_page( 'early-access' ) || $path === 'early-access',
+        'is_contact'      => is_page_template( 'page-contact.php' ) || is_page( 'contact' ) || $path === 'contact',
+        'is_contact_success' => $path === 'contact-success',
         'is_early_access_success' => $path === 'early-access-success',
         'is_directory'    => is_page_template( 'page-directory.php' ) || is_page( 'directory' ) || $path === 'directory',
         'is_estimate'     => is_page_template( 'page-estimate.php' ) || is_page( 'estimate' ) || $path === 'estimate',

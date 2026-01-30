@@ -41,6 +41,13 @@
       }
       console.warn('JCP render: renderEarlyAccess is not available');
       return;
+    case 'contact':
+      if (typeof window.renderContact === 'function') {
+        window.renderContact();
+        return;
+      }
+      console.warn('JCP render: renderContact is not available');
+      return;
     case 'demo':
       templateUrl = `${assetBase}/demo/index.html`;
       break;

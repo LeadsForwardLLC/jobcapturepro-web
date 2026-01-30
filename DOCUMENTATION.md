@@ -208,6 +208,10 @@ templates/
 **Why Root Files Can't Be Moved:**
 WordPress template hierarchy **REQUIRES** `page-*.php`, `single-*.php`, `header.php`, `footer.php`, and `index.php` to be in the root directory. WordPress won't find them elsewhere.
 
+#### Navigation (marketing)
+
+The main marketing nav (desktop) is defined in `templates/partials/nav.php`: **How it works**, **Features**, **Who it's for** (scroll to homepage sections; from other pages they link to `/#how-it-works`, etc.), **Pricing** (`/pricing`), **Resources** (minimal dropdown: Directory, Blog, Contact). Right-side CTAs: **Online Demo** (secondary), **Get Started** (primary). Demo, Directory, and Company profile pages use different nav sets. The Resources dropdown is click/hover on desktop, keyboard navigable (Enter/Space, Arrow keys, Escape closes). Mobile menu order: CTAs first, then How it works, Features, Who it's for, Pricing, Directory, Blog, Contact. Behavior (scroll-to-section, dropdown, mobile open/close) is in `assets/js/core/jcp-nav.js`.
+
 ---
 
 ## 📦 ASSET MANAGEMENT

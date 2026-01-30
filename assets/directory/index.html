@@ -8,7 +8,7 @@
     <div class="jcp-container">
       <div class="jcp-hero-grid">
         <div class="jcp-hero-copy">
-          <h1 class="jcp-hero-title">Real contractors. Ranked by real work.</h1>
+          <h1 class="jcp-hero-title">Real contractors. Ranked by <span class="jcp-hero-rotating-inline">real <span class="jcp-hero-rotating-word" aria-live="polite">work</span></span></h1>
           <p class="jcp-hero-subtitle">
             Discover contractors whose rankings are earned through verified completed jobs. Every listing is built from real photos, locations, and ongoing work activity.
           </p>
@@ -46,7 +46,7 @@
             <input
               type="text"
               id="searchInput"
-              placeholder="Search contractor, service, or keyword"
+              placeholder="Search contractor, service, or location (e.g. carpet cleaning Houston)"
             />
             <button id="clearSearch" class="clear-search-btn is-hidden" aria-label="Clear search">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -66,11 +66,41 @@
 
           <select id="serviceFilter" class="filter-select">
             <option value="">All Services</option>
-            <option value="Roofing">Roofing</option>
-            <option value="Plumbing">Plumbing</option>
-            <option value="General">General Contractor</option>
-            <option value="HVAC">HVAC</option>
-            <option value="Electrical">Electrical</option>
+            <optgroup label="Building &amp; mechanical">
+              <option value="Plumbing">Plumbing</option>
+              <option value="HVAC">HVAC</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Roofing">Roofing</option>
+            </optgroup>
+            <optgroup label="General contracting &amp; remodeling">
+              <option value="General Contractor">General Contractor</option>
+              <option value="Handyman">Handyman</option>
+              <option value="Remodeling / Renovation">Remodeling / Renovation</option>
+            </optgroup>
+            <optgroup label="Outdoor &amp; property">
+              <option value="Landscaping">Landscaping</option>
+              <option value="Lawn care">Lawn care</option>
+              <option value="Tree service">Tree service</option>
+              <option value="Pest control">Pest control</option>
+              <option value="Fencing">Fencing</option>
+            </optgroup>
+            <optgroup label="Cleaning &amp; restoration">
+              <option value="Carpet cleaning">Carpet cleaning</option>
+              <option value="House cleaning">House cleaning</option>
+              <option value="Pressure washing">Pressure washing</option>
+              <option value="Painting (interior / exterior)">Painting (interior / exterior)</option>
+            </optgroup>
+            <optgroup label="Other trades">
+              <option value="Flooring">Flooring</option>
+              <option value="Windows &amp; doors">Windows & doors</option>
+              <option value="Insulation">Insulation</option>
+              <option value="Garage doors">Garage doors</option>
+              <option value="Pool service">Pool service</option>
+              <option value="Moving / Junk removal">Moving / Junk removal</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="Other home service">Other home service</option>
+            </optgroup>
           </select>
 
           <select id="sortBy" class="filter-select">

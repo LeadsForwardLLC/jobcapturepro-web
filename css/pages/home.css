@@ -54,6 +54,13 @@
   overflow: hidden !important;
 }
 
+/* Mobile: less space above H1 */
+@media (max-width: 768px) {
+  .jcp-home .directory-hero {
+    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+  }
+}
+
 .jcp-home .directory-hero h1 {
   font-size: clamp(40px, 5vw, 60px) !important;
   font-weight: var(--jcp-font-weight-extrabold) !important;

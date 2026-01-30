@@ -23,6 +23,8 @@ function jcp_core_fallback_template_routes(): void {
         'pricing'              => 'page-pricing.php',
         'early-access'         => 'page-early-access.php',
         'early-access-success' => 'page-early-access-success.php',
+        'contact'              => 'page-contact.php',
+        'contact-success'     => 'page-contact-success.php',
         'directory'            => 'page-directory.php',
         'estimate'             => 'page-estimate.php',
         'company'              => 'single-jcp_company.php',

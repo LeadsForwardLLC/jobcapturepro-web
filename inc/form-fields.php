@@ -27,6 +27,9 @@ define( 'JCP_GHL_KEY_USE_CASE', 'Use Case' );
 define( 'JCP_GHL_KEY_SERVICE_AREA', 'Service Area' );
 define( 'JCP_GHL_KEY_REFERRAL_SOURCE', 'Referral Source' );
 define( 'JCP_GHL_KEY_EVENT', 'Event' );
+define( 'JCP_GHL_KEY_TOPIC', 'Topic' );
+define( 'JCP_GHL_KEY_MESSAGE', 'Message' );
+define( 'JCP_GHL_KEY_ATTACHMENT', 'Attachment' );
 
 /**
  * REST request param names (snake_case, used in JSON body from frontend).

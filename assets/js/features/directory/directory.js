@@ -127,7 +127,8 @@ if (clearFiltersBtn) {
 ========================================================= */
 
 function render() {
-  const term = searchInput.value.toLowerCase();
+  const term = (searchInput.value || "").trim();
+  const termLower = term.toLowerCase();
   const city = cityFilter.value;
   const service = serviceFilter.value;
   const verifiedOnly = verifiedOnlyToggle.checked;
@@ -135,17 +136,24 @@ function render() {
   /* ---------------------------------------------
      FILTERING
      ---------------------------------------------
+     Advanced search: when user types (e.g. "carpet cleaning houston"),
+     every word must match somewhere in name, service, or city.
+     When search is empty, use dropdown filters only.
      Future: move to API query params
   */
   filteredListings = allListings.filter(l => {
     if (verifiedOnly && (l.badge === "listed" || l.badge === "unlisted")) return false;
-    if (city && l.city !== city) return false;
-    if (service && l.service !== service) return false;
 
-    return (
-      (l.name || "").toLowerCase().includes(term) ||
-      (l.service || "").toLowerCase().includes(term)
-    );
+    if (termLower) {
+      const keywords = termLower.split(/\s+/).filter(Boolean);
+      const searchable = [l.name, l.service, l.city].filter(Boolean).join(" ").toLowerCase();
+      if (!keywords.every((kw) => searchable.includes(kw))) return false;
+    } else {
+      if (city && l.city !== city) return false;
+      if (service && l.service !== service) return false;
+    }
+
+    return true;
   });
 
   /* ---------------------------------------------
@@ -681,3 +689,20 @@ initDynamicNavigation();
 initMobileMenu();
 initShowcase();
 render();
+
+// Rotating word in directory hero: work → reviews → activity → consistency (same pattern as homepage hero)
+const rotatingWordEl = document.querySelector('.directory-shell .jcp-hero-rotating-word');
+if (rotatingWordEl) {
+  const words = ['work', 'reviews', 'activity'];
+  let index = 0;
+  const cycleMs = 2800;
+  const fadeMs = 350;
+  setInterval(() => {
+    rotatingWordEl.style.opacity = '0';
+    setTimeout(() => {
+      index = (index + 1) % words.length;
+      rotatingWordEl.textContent = words[index];
+      rotatingWordEl.style.opacity = '1';
+    }, fadeMs);
+  }, cycleMs);
+}
