@@ -275,7 +275,7 @@
   backdrop-filter: blur(12px) !important;
   border-bottom: 2px solid #e5e7eb !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  padding: var(--jcp-space-md) var(--jcp-space-4xl) !important;
+  padding: max(var(--jcp-space-md), env(safe-area-inset-top)) var(--jcp-space-4xl) var(--jcp-space-md) !important;
   margin: 0 !important;
   display: flex !important;
   align-items: center !important;
