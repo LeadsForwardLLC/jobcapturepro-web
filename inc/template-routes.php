@@ -28,7 +28,6 @@ function jcp_core_fallback_template_routes(): void {
         'directory'            => 'page-directory.php',
         'estimate'             => 'page-estimate.php',
         'company'              => 'single-jcp_company.php',
-        'design-system'        => 'page-design-system.php',
         'ui-library'           => 'page-ui-library.php',
     ];
 

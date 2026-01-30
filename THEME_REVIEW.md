@@ -88,7 +88,7 @@ This document summarizes potential improvements across security, consistency, pe
 
 ### 5.1 Console logging
 
-- **Location:** Several JS files (e.g. `assets/js/features/estimate/*.js`, `assets/js/features/directory/directory-integration.js`, `assets/core/jcp-early-access.js`) use `console.log`.
+- **Location:** Several JS files (e.g. `assets/js/features/estimate/*.js`, `assets/js/features/directory/directory-integration.js`) may use `console.log` for debugging.
 - **Suggestion:** Remove or guard with a dev flag (e.g. `if (window.JCP_DEBUG)`) so production builds don’t log to the console.
 
 ### 5.2 Permalinks in templates

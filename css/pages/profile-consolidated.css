@@ -600,7 +600,7 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
 ========================================================= */
 
 .profile-shell .profile-hero-section {
-  padding-top: 100px !important;
+  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
   padding-bottom: var(--jcp-space-3xl) !important;
   background: #ffffff !important;
   width: 100% !important;
@@ -661,7 +661,7 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
 
 @media (max-width: 768px) {
   .profile-shell .profile-hero-section {
-    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+    padding-top: calc(72px + var(--jcp-space-md)) !important;
     padding-bottom: var(--jcp-space-3xl) !important;
   }
 

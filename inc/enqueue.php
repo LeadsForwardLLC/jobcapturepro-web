@@ -21,17 +21,6 @@ function jcp_core_enqueue_assets(): void {
     // Always load navigation JS
     jcp_core_enqueue_script( 'jcp-core-nav', 'js/core/jcp-nav.js' );
 
-    // Design System page (internal documentation)
-    if ( $pages['is_design_system'] ) {
-        jcp_core_enqueue_style( 'jcp-core-base', 'css/base.css' );
-        jcp_core_enqueue_style( 'jcp-core-layout', 'css/layout.css', [ 'jcp-core-base' ] );
-        jcp_core_enqueue_style( 'jcp-core-buttons', 'css/buttons.css', [ 'jcp-core-layout' ] );
-        jcp_core_enqueue_style( 'jcp-core-components', 'css/components.css', [ 'jcp-core-buttons' ] );
-        jcp_core_enqueue_style( 'jcp-core-utilities', 'css/utilities.css', [ 'jcp-core-components' ] );
-        jcp_core_enqueue_style( 'jcp-core-design-system-page', 'css/design-system-page.css', [ 'jcp-core-utilities' ] );
-        return;
-    }
-
     // UI Library page (internal documentation - shows all components)
     if ( $pages['is_ui_library'] ) {
         jcp_core_enqueue_style( 'jcp-core-base', 'css/base.css' );
@@ -39,9 +28,10 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-buttons', 'css/buttons.css', [ 'jcp-core-layout' ] );
         jcp_core_enqueue_style( 'jcp-core-components', 'css/components.css', [ 'jcp-core-buttons' ] );
         jcp_core_enqueue_style( 'jcp-core-utilities', 'css/utilities.css', [ 'jcp-core-components' ] );
-        // Load homepage section styles to show all components
         jcp_core_enqueue_style( 'jcp-core-sections', 'css/sections.css', [ 'jcp-core-components' ] );
         jcp_core_enqueue_style( 'jcp-core-home', 'css/pages/home.css', [ 'jcp-core-sections' ] );
+        jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
+        jcp_core_enqueue_style( 'jcp-core-pricing', 'css/pages/pricing.css', [ 'jcp-core-sections' ] );
         return;
     }
 
@@ -70,6 +60,13 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-home', 'css/pages/home.css', [ 'jcp-core-sections' ] );
         jcp_core_enqueue_script( 'jcp-core-home', 'js/pages/home.js' );
         $render_deps[] = 'jcp-core-home';
+        $home_ctas = [
+            'primary_text'   => 'View the live demo',
+            'primary_url'    => '/demo',
+            'secondary_text' => 'Learn how it works',
+            'secondary_url'  => '#how-it-works',
+        ];
+        wp_localize_script( 'jcp-core-home', 'JCP_HOME_HERO_CTAS', $home_ctas );
     }
 
     if ( $pages['is_pricing'] ) {

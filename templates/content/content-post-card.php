@@ -10,7 +10,7 @@
 
 <article id="post-<?php the_ID(); ?>" <?php post_class( 'jcp-card jcp-post-card' ); ?>>
   <?php if ( has_post_thumbnail() ) : ?>
-    <a href="<?php the_permalink(); ?>" class="jcp-post-card-image">
+    <a href="<?php echo esc_url( get_permalink() ); ?>" class="jcp-post-card-image">
       <?php the_post_thumbnail( 'medium_large', [ 'alt' => get_the_title() ] ); ?>
     </a>
   <?php endif; ?>
@@ -30,7 +30,7 @@
       <?php endif; ?>
 
       <h2 class="jcp-post-card-title">
-        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+        <a href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( get_the_title() ); ?></a>
       </h2>
     </header>
 

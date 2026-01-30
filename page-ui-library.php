@@ -88,7 +88,7 @@ $icon = function( $name ) {
 		<section class="directory-hero jcp-hero jcp-hero--standard">
 			<div class="hero-split jcp-grid-2">
 				<div class="hero-copy jcp-hero-copy">
-					<h1 class="jcp-hero-title">Turn every completed job into more calls and more customers</h1>
+					<h1 class="jcp-hero-title">Automatically turn every completed job into more <span class="jcp-hero-rotating-word" aria-live="polite">visibility</span></h1>
 					<p class="jcp-hero-subtitle">
 						Your team already takes job photos. JobCapturePro automatically turns those jobs into website updates, Google visibility, social posts, directory listings, and review requests so your work keeps bringing in new business.
 					</p>
@@ -456,6 +456,141 @@ $icon = function( $name ) {
 		</section>
 
 		<!-- ============================================================
+		     SINGLE POST (BLOG)
+		     ============================================================ -->
+		<section class="jcp-section rankings-section">
+			<div class="jcp-container">
+				<h2 style="margin-bottom: var(--jcp-space-3xl);">Single Post (Blog)</h2>
+			</div>
+		</section>
+
+		<section class="jcp-section rankings-section">
+			<div class="jcp-container">
+				<div class="rankings-header">
+					<h1>Example blog post title</h1>
+					<div class="jcp-post-meta jcp-single-hero-meta">
+						<div class="jcp-post-meta-line jcp-post-meta-author-line">
+							<a href="#" class="jcp-post-meta-author" rel="author">
+								<img src="<?php echo esc_url( get_avatar_url( 1, [ 'size' => 36 ] ) ); ?>" class="jcp-post-meta-avatar" alt="" width="36" height="36">
+								<span class="jcp-post-meta-author-name">Author Name</span>
+							</a>
+						</div>
+						<div class="jcp-post-meta-line jcp-post-meta-details">
+							<time datetime="2025-01-15" class="jcp-post-date">January 15, 2025</time>
+							<span class="jcp-post-meta-sep" aria-hidden="true">·</span>
+							<span class="jcp-post-categories">
+								<a href="#" class="jcp-post-category">Category</a>
+							</span>
+							<span class="jcp-post-meta-sep" aria-hidden="true">·</span>
+							<span class="jcp-post-reading-time">5 min read</span>
+						</div>
+					</div>
+				</div>
+				<div class="jcp-single-hero-image-wrapper">
+					<img src="https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-map-bg-light.jpg" alt="" class="jcp-single-post-featured-img" loading="eager" />
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================
+		     FORMS
+		     ============================================================ -->
+		<section class="jcp-section rankings-section">
+			<div class="jcp-container">
+				<h2 style="margin-bottom: var(--jcp-space-3xl);">Forms</h2>
+				<div class="rankings-header">
+					<h3 style="margin-bottom: var(--jcp-space-lg);">Inputs &amp; submit</h3>
+					<p class="rankings-subtitle">Used on contact, early-access, and survey flows.</p>
+				</div>
+				<div style="max-width: 480px;">
+					<div style="margin-bottom: var(--jcp-space-lg);">
+						<label for="ui-lib-name" style="display: block; font-size: var(--jcp-font-size-sm); font-weight: var(--jcp-font-weight-semibold); color: var(--jcp-color-text-primary); margin-bottom: var(--jcp-space-xs);">Name</label>
+						<input type="text" id="ui-lib-name" name="name" placeholder="Your name" style="width: 100%; padding: var(--jcp-space-sm) var(--jcp-space-md); border-radius: var(--jcp-radius-md); border: 2px solid var(--jcp-color-border); font-size: var(--jcp-font-size-base); color: var(--jcp-color-text-primary); background: var(--jcp-color-bg-primary); box-sizing: border-box;">
+					</div>
+					<div style="margin-bottom: var(--jcp-space-lg);">
+						<label for="ui-lib-email" style="display: block; font-size: var(--jcp-font-size-sm); font-weight: var(--jcp-font-weight-semibold); color: var(--jcp-color-text-primary); margin-bottom: var(--jcp-space-xs);">Email</label>
+						<input type="email" id="ui-lib-email" name="email" placeholder="you@example.com" style="width: 100%; padding: var(--jcp-space-sm) var(--jcp-space-md); border-radius: var(--jcp-radius-md); border: 2px solid var(--jcp-color-border); font-size: var(--jcp-font-size-base); color: var(--jcp-color-text-primary); background: var(--jcp-color-bg-primary); box-sizing: border-box;">
+					</div>
+					<div style="margin-bottom: var(--jcp-space-lg);">
+						<label for="ui-lib-message" style="display: block; font-size: var(--jcp-font-size-sm); font-weight: var(--jcp-font-weight-semibold); color: var(--jcp-color-text-primary); margin-bottom: var(--jcp-space-xs);">Message</label>
+						<textarea id="ui-lib-message" name="message" rows="4" placeholder="Your message…" style="width: 100%; padding: var(--jcp-space-sm) var(--jcp-space-md); border-radius: var(--jcp-radius-md); border: 2px solid var(--jcp-color-border); font-size: var(--jcp-font-size-base); color: var(--jcp-color-text-primary); background: var(--jcp-color-bg-primary); font-family: inherit; box-sizing: border-box; resize: vertical;"></textarea>
+					</div>
+					<button type="button" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================
+		     PRICING COMPARISON TABLE
+		     ============================================================ -->
+		<section class="jcp-section rankings-section">
+			<div class="jcp-container">
+				<h2 style="margin-bottom: var(--jcp-space-3xl);">Pricing Comparison Table</h2>
+			</div>
+		</section>
+
+		<section class="jcp-section rankings-section">
+			<div class="jcp-container">
+				<div class="rankings-header">
+					<h2>Plan comparison</h2>
+					<p class="rankings-subtitle">Same structure as live pricing page.</p>
+				</div>
+				<div class="jcp-compare-table">
+					<div class="jcp-compare-row jcp-compare-head">
+						<div>Feature</div>
+						<div>Starter</div>
+						<div>Scale</div>
+						<div>Enterprise</div>
+					</div>
+					<div class="jcp-compare-row jcp-compare-group">
+						<div>Photo capture</div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+					</div>
+					<div class="jcp-compare-row">
+						<div>CRM integration</div>
+						<div><img src="<?php echo $icon( 'x' ); ?>" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+					</div>
+					<div class="jcp-compare-row jcp-compare-group">
+						<div>Website publishing</div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+					</div>
+					<div class="jcp-compare-row">
+						<div>Social publishing</div>
+						<div><img src="<?php echo $icon( 'x' ); ?>" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+						<div><img src="<?php echo $icon( 'check' ); ?>" class="lucide-icon lucide-icon-xs" alt="Included"></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================
+		     ALERTS / INFO BOXES
+		     ============================================================ -->
+		<section class="jcp-section rankings-section">
+			<div class="jcp-container">
+				<h2 style="margin-bottom: var(--jcp-space-3xl);">Alerts / Info Boxes</h2>
+				<div style="display: flex; flex-direction: column; gap: var(--jcp-space-md); max-width: 560px;">
+					<div style="background: #f0f9ff; border-left: 4px solid var(--jcp-color-info); padding: var(--jcp-space-md) var(--jcp-space-lg); border-radius: var(--jcp-radius-sm);">
+						<strong>Info:</strong> This is an informational message.
+					</div>
+					<div style="background: #fef3c7; border-left: 4px solid var(--jcp-color-warning); padding: var(--jcp-space-md) var(--jcp-space-lg); border-radius: var(--jcp-radius-sm);">
+						<strong>Warning:</strong> This is a warning message.
+					</div>
+					<div style="background: #fee2e2; border-left: 4px solid var(--jcp-color-error); padding: var(--jcp-space-md) var(--jcp-space-lg); border-radius: var(--jcp-radius-sm);">
+						<strong>Error:</strong> This is an error message.
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================================
 		     BADGES & PILLS
 		     ============================================================ -->
 		<section class="jcp-section" style="background: var(--jcp-color-bg-secondary);">
@@ -539,6 +674,52 @@ $icon = function( $name ) {
 			</div>
 		</section>
 
+		<!-- ============================================================
+		     DESIGN TOKENS (Spacing, Colors, Typography)
+		     ============================================================ -->
+		<section class="jcp-section" style="background: var(--jcp-color-bg-secondary);">
+			<div class="jcp-container">
+				<h2 style="margin-bottom: var(--jcp-space-3xl);">Design Tokens</h2>
+				<div style="margin-bottom: var(--jcp-space-4xl);">
+					<h3 style="font-size: var(--jcp-font-size-lg); margin-bottom: var(--jcp-space-lg);">Spacing scale (8px base)</h3>
+					<div style="display: flex; flex-wrap: wrap; gap: var(--jcp-space-md); align-items: flex-end;">
+						<div style="text-align: center;"><div style="width: var(--jcp-space-xs); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">xs 4px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-sm); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">sm 8px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-md); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">md 16px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-lg); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">lg 24px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-xl); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">xl 32px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-2xl); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">2xl 40px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-3xl); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">3xl 48px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-5xl); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">5xl 64px</code></div>
+						<div style="text-align: center;"><div style="width: var(--jcp-space-6xl); height: 24px; background: var(--jcp-color-primary); border-radius: 2px;"></div><code style="font-size: var(--jcp-font-size-xs);">6xl 80px</code></div>
+					</div>
+				</div>
+				<div style="margin-bottom: var(--jcp-space-4xl);">
+					<h3 style="font-size: var(--jcp-font-size-lg); margin-bottom: var(--jcp-space-lg);">Colors</h3>
+					<div style="display: flex; flex-wrap: wrap; gap: var(--jcp-space-lg);">
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-primary); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">primary</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-secondary); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">secondary</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-success); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">success</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-warning); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">warning</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-error); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">error</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-info); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">info</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-text-primary); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">text-primary</code></div>
+						<div><div style="width: 64px; height: 64px; background: var(--jcp-color-bg-secondary); border: 1px solid var(--jcp-color-border); border-radius: var(--jcp-radius-md);"></div><code style="font-size: var(--jcp-font-size-xs);">bg-secondary</code></div>
+					</div>
+				</div>
+				<div>
+					<h3 style="font-size: var(--jcp-font-size-lg); margin-bottom: var(--jcp-space-lg);">Typography</h3>
+					<div style="display: flex; flex-direction: column; gap: var(--jcp-space-xl);">
+						<div><h1 style="margin: 0;">Heading 1</h1><code style="font-size: var(--jcp-font-size-xs);">H1 — page titles</code></div>
+						<div><h2 style="margin: 0;">Heading 2</h2><code style="font-size: var(--jcp-font-size-xs);">H2 — section titles</code></div>
+						<div><h3 style="margin: 0;">Heading 3</h3><code style="font-size: var(--jcp-font-size-xs);">H3 — subsection / card titles</code></div>
+						<div><h4 style="margin: 0;">Heading 4</h4><code style="font-size: var(--jcp-font-size-xs);">H4 — feature headers</code></div>
+						<div><p style="margin: 0;">Body text (16px). Default paragraph.</p><code style="font-size: var(--jcp-font-size-xs);">Body</code></div>
+						<div><p style="margin: 0; font-size: var(--jcp-font-size-sm);">Small text (14px). Subtext, labels.</p><code style="font-size: var(--jcp-font-size-xs);">Small</code></div>
+					</div>
+				</div>
+			</div>
+		</section>
 	</main>
 </div>
 

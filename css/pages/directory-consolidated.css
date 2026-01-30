@@ -682,7 +682,7 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 
 .directory-shell .jcp-hero {
   position: relative;
-  padding-top: 100px !important;
+  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
   padding-bottom: var(--jcp-space-3xl) !important;
   padding-left: 0;
   padding-right: 0;
@@ -715,7 +715,7 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 
 @media (max-width: 768px) {
   .directory-shell .jcp-hero {
-    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+    padding-top: calc(72px + var(--jcp-space-md)) !important;
   }
 }
 
@@ -1397,6 +1397,11 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   }
 
   .header-nav {
+    display: none;
+  }
+
+  /* Hide header CTAs on mobile; same as global nav—CTAs live in mobile menu only */
+  .header-actions {
     display: none;
   }
 

@@ -4,13 +4,16 @@
  *
  * @package JCP_Core
  */
+$demo_headline = 'See a live demo built for your business';
+$demo_subhead  = 'Tell us a few details so the demo reflects real jobs and real outcomes.';
+$demo_btn      = 'Next step';
 ?>
 <section class="survey-step active" data-step="0">
   <div class="survey-head">
     <div class="survey-eyebrow">Online Demo</div>
-    <h1 class="survey-title">See a live demo built for your business</h1>
+    <h1 class="survey-title"><?php echo esc_html( $demo_headline ); ?></h1>
     <p class="survey-subtitle">
-      Tell us a few details so the demo reflects real jobs and real outcomes.
+      <?php echo esc_html( $demo_subhead ); ?>
     </p>
     <div class="survey-note">
       <svg class="survey-note-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -79,6 +82,6 @@
   </form>
 
   <div class="survey-actions-row">
-    <button class="survey-btn" data-action="next">Next step</button>
+    <button class="survey-btn" data-action="next"><?php echo esc_html( $demo_btn ); ?></button>
   </div>
 </section>

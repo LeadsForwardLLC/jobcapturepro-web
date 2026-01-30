@@ -11,9 +11,9 @@
    PRICING PAGE FIRST SECTION
    ============================================================ */
 
-/* First rankings-section on pricing page needs top padding for header */
+/* First rankings-section on pricing page: compact top padding below header */
 .jcp-pricing-page > .rankings-section:first-of-type {
-  padding-top: calc(var(--jcp-space-5xl) + 100px) !important;
+  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
 }
 
 /* Ensure rankings-header h1 uses proper styling */
@@ -433,7 +433,7 @@
 
 @media (max-width: 768px) {
   .jcp-pricing-page > .rankings-section:first-of-type {
-    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+    padding-top: calc(72px + var(--jcp-space-md)) !important;
   }
 
   .jcp-billing-toggle-wrapper {

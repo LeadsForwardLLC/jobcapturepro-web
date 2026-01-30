@@ -51,13 +51,30 @@ Two critical forms submit to GoHighLevel via separate webhooks:
 
 - **Local:** Run WordPress locally (e.g. Local by Flywheel). Use a tunnel for GHL webhook testing if needed.
 - **GoHighLevel:** Two webhooks—Early Access (`rest-early-access.php`) and Demo Survey (`rest-demo-survey.php`). Do not swap URLs; see DOCUMENTATION.md → Setup & Integrations and Forms & GoHighLevel.
-- **ACF:** Required for Homepage Settings only. Early Access has no backend options in this theme.
+- **ACF:** Required for Homepage Settings, **JCP Theme Settings** (global CTAs, form copy, footer basics), and **per-page bottom CTA** on Pages. Early Access and Demo Survey copy can be overridden via Theme Settings.
 
 ### Development
 
 1. **CSS Development:** Use design tokens from `css/base.css`, add reusable components to `css/components.css`, page-specific styles to `css/pages/`
 2. **JavaScript Development:** Core behavior in `assets/js/core/`, features in `assets/js/features/`, page renderers in `assets/js/pages/`
 3. **Template Development:** WordPress-required files stay in root, reusable parts in `templates/`
+
+### Theme Settings (ACF Options)
+
+**JCP Theme Settings** (WP Admin → JCP Theme Settings) controls:
+
+- **Global CTAs:** Primary and secondary CTA labels and URLs (used in nav and CTA blocks).
+- **Early Access Form Copy:** Headline, subhead, button label, success message.
+- **Demo Survey Copy:** Headline, subhead, button label (Step 1), success message.
+- **Footer Basics:** Support email, sales email, optional address line (shown in footer when set).
+
+### Per-Page Bottom CTA
+
+On any **Page** (post type `page`), editors can enable an optional **Bottom CTA** that appears at the end of the page content. It uses the same global CTA component (`.rankings-cta`) and classes—no new design or CSS.
+
+- **Where:** Bottom of the page, after the main content (standard `page.php` template only).
+- **How to enable:** Edit the page → **Bottom CTA** meta box → turn on “Enable bottom CTA” and fill headline, supporting text (optional), button label, and button URL.
+- **Behavior:** If disabled or required fields (headline, button label, URL) are empty, nothing is output—no empty spacing.
 
 ### Current Status
 

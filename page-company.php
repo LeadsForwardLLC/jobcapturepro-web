@@ -4,12 +4,33 @@
  *
  * Renders the company profile via JavaScript (data-jcp-page="company").
  * Note: /company URLs are routed to single-jcp_company.php for CPT; this template is for a Page.
+ * Hero title/supporting: WordPress title and content when set; otherwise defaults (backup only).
+ * Passed to app via data-page-title and data-page-supporting so the app can render one hero (no duplicate).
  *
  * @package JCP_Core
  */
 
 get_header();
+
+$default_title      = __( 'Company', 'jcp-core' );
+$default_supporting = __( 'Company profile and details.', 'jcp-core' );
+$page_title         = '';
+$page_content       = '';
+$supporting         = '';
+if ( have_posts() ) {
+	while ( have_posts() ) {
+		the_post();
+		$page_title   = get_the_title();
+		$page_content = get_post_field( 'post_content', get_the_ID() );
+		$supporting   = trim( (string) $page_content );
+		break;
+	}
+	rewind_posts();
+}
+$title            = trim( (string) $page_title ) !== '' ? $page_title : $default_title;
+$subtitle         = $supporting !== '' ? $supporting : $default_supporting;
+$supporting_plain = $supporting !== '' ? wp_strip_all_tags( $page_content ) : $subtitle;
 ?>
-<div id="jcp-app" data-jcp-page="company"></div>
+<div id="jcp-app" data-jcp-page="company" data-page-title="<?php echo esc_attr( $title ); ?>" data-page-supporting="<?php echo esc_attr( $supporting_plain ); ?>"></div>
 <?php
 get_footer();

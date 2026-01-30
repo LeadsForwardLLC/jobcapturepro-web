@@ -11,8 +11,8 @@ get_header();
 ?>
 
 <main class="jcp-marketing">
-  <!-- Hero Section -->
-  <section class="jcp-section rankings-section">
+  <!-- Hero Section (same spacing as blog archive / category / author / tag) -->
+  <section class="jcp-section rankings-section jcp-archive-hero-section">
     <div class="jcp-container">
       <div class="rankings-header">
         <h1>

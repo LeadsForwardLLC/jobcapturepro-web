@@ -604,28 +604,12 @@ function updateDots(index) {
 
 /* =========================================================
    DYNAMIC NAVIGATION
+   Directory uses the same global nav CTAs as all other pages
+   (secondary = Online Demo, primary = Get Started from Theme Settings).
 ========================================================= */
 
 function initDynamicNavigation() {
-  // Check if user came from demo
-  const referrer = document.referrer;
-  const cameFromDemo = referrer.includes('/jcp-demo/') || referrer.includes('/demo/');
-  const returnState = localStorage.getItem('demoReturnState');
-  
-  const dynamicBackBtn = document.getElementById('dynamicBackBtn');
-  const mobileDynamicBackBtn = document.getElementById('mobileDynamicBackBtn');
-  
-  if (cameFromDemo || returnState) {
-    // User came from JCP demo - change button text
-    if (dynamicBackBtn) {
-      const textSpan = dynamicBackBtn.querySelector('span');
-      if (textSpan) textSpan.textContent = 'Back to Demo';
-    }
-    if (mobileDynamicBackBtn) {
-      const textSpan = mobileDynamicBackBtn.querySelector('span');
-      if (textSpan) textSpan.textContent = 'Back to Demo';
-    }
-  }
+  // No override: directory nav shows global secondary/primary CTA from PHP.
 }
 
 /* =========================================================

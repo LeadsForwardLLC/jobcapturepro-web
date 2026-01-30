@@ -1,8 +1,9 @@
 <?php
 /**
- * Category Archive Template
- * 
- * Displays category archive pages.
+ * Author Archive Template
+ *
+ * Displays author archive pages. Same hero spacing and layout as blog archive,
+ * category, and tag templates.
  *
  * @package JCP_Core
  */
@@ -11,13 +12,13 @@ get_header();
 ?>
 
 <main class="jcp-marketing">
-  <!-- Hero Section (same spacing as blog archive / author / tag) -->
+  <!-- Hero Section (same spacing as blog archive / category / tag) -->
   <section class="jcp-section rankings-section jcp-archive-hero-section">
     <div class="jcp-container">
       <div class="rankings-header">
-        <h1><?php single_cat_title(); ?></h1>
+        <h1><?php the_author(); ?></h1>
         <?php
-        $description = category_description();
+        $description = get_the_author_meta( 'description' );
         if ( $description ) :
           ?>
           <p class="rankings-subtitle"><?php echo wp_kses_post( $description ); ?></p>
@@ -26,7 +27,7 @@ get_header();
     </div>
   </section>
 
-  <!-- Category Posts Section -->
+  <!-- Author Posts Section -->
   <section class="jcp-section rankings-section">
     <div class="jcp-container">
       <?php if ( have_posts() ) : ?>

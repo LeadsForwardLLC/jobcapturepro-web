@@ -9,6 +9,9 @@
 $privacy_url = 'https://jobcapturepro.com/privacy-policy/';
 $terms_url  = 'https://jobcapturepro.com/terms-and-conditions/';
 $leadsforward_url = 'https://leadsforward.com/';
+$footer_support = '';
+$footer_sales   = '';
+$footer_address = '';
 $social_links = [
     'facebook'  => [ 'url' => 'https://www.facebook.com/profile.php?id=61574958638999', 'label' => 'Facebook' ],
     'x'        => [ 'url' => 'https://x.com/jobcapturepro', 'label' => 'X' ],
@@ -33,6 +36,20 @@ $social_links = [
         <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>">Founding crew</a>
         <a href="<?php echo esc_url( home_url( '/#how-it-works' ) ); ?>">How it works</a>
       </div>
+      <?php if ( $footer_support !== '' || $footer_sales !== '' || $footer_address !== '' ) : ?>
+      <div class="jcp-footer-col">
+        <h4><?php esc_html_e( 'Contact', 'jcp-core' ); ?></h4>
+        <?php if ( $footer_support !== '' ) : ?>
+          <a href="mailto:<?php echo esc_attr( $footer_support ); ?>"><?php esc_html_e( 'Support', 'jcp-core' ); ?></a>
+        <?php endif; ?>
+        <?php if ( $footer_sales !== '' ) : ?>
+          <a href="mailto:<?php echo esc_attr( $footer_sales ); ?>"><?php esc_html_e( 'Sales', 'jcp-core' ); ?></a>
+        <?php endif; ?>
+        <?php if ( $footer_address !== '' ) : ?>
+          <span class="jcp-footer-address"><?php echo esc_html( $footer_address ); ?></span>
+        <?php endif; ?>
+      </div>
+      <?php endif; ?>
     </div>
 
     <div class="jcp-footer-bottom">

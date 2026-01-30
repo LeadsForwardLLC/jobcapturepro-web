@@ -35,8 +35,8 @@ $is_demo = $pages['is_demo'];
       <div class="nav-dropdown" id="navResourcesDropdown">
         <button type="button" class="nav-dropdown-trigger nav-link" id="navResourcesTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="navResourcesMenu">Resources <svg class="nav-dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="nav-dropdown-menu" id="navResourcesMenu" role="menu" aria-labelledby="navResourcesTrigger" hidden>
-          <a href="/directory" class="nav-dropdown-item nav-link" role="menuitem" data-page="directory">Directory</a>
           <a href="/blog" class="nav-dropdown-item nav-link" role="menuitem" data-page="blog">Blog</a>
+          <a href="/directory" class="nav-dropdown-item nav-link" role="menuitem" data-page="directory">Directory (coming soon)</a>
           <a href="/contact" class="nav-dropdown-item nav-link" role="menuitem" data-page="contact">Contact</a>
         </div>
       </div>
@@ -49,13 +49,19 @@ $is_demo = $pages['is_demo'];
       <button class="btn btn-secondary is-hidden" id="btnViewDirectory" type="button">View Demo Directory →</button>
       <button class="btn btn-primary" id="btnNext">Run Guided Demo →</button>
     <?php else : ?>
-      <a href="/demo" class="btn btn-secondary" id="dynamicBackBtn">
-        <span>Online Demo</span>
+      <?php
+      $secondary_label = 'Online Demo';
+      $secondary_url   = '/demo';
+      $primary_label   = 'Get Started';
+      $primary_url     = '/early-access';
+      ?>
+      <a href="<?php echo esc_url( $secondary_url ); ?>" class="btn btn-secondary" id="dynamicBackBtn">
+        <span><?php echo esc_html( $secondary_label ); ?></span>
         <svg id="dynamicBackIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h14M13 5l7 7-7 7"/>
         </svg>
       </a>
-      <a href="/early-access" class="btn btn-primary">Get Started</a>
+      <a href="<?php echo esc_url( $primary_url ); ?>" class="btn btn-primary"><?php echo esc_html( $primary_label ); ?></a>
     <?php endif; ?>
   </div>
 
@@ -92,11 +98,11 @@ $is_demo = $pages['is_demo'];
         <button type="button" class="mobile-btn mobile-btn-secondary" id="mobileBtnReset">↺ Reset</button>
         <button type="button" class="mobile-btn mobile-btn-primary" id="mobileBtnNext">Run Guided Demo →</button>
       <?php else : ?>
-        <a href="/demo" class="mobile-btn mobile-btn-secondary">
-          <span>Online Demo</span>
+        <a href="<?php echo esc_url( $secondary_url ); ?>" class="mobile-btn mobile-btn-secondary">
+          <span><?php echo esc_html( $secondary_label ); ?></span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
         </a>
-        <a href="/early-access" class="mobile-btn mobile-btn-primary">Get Started</a>
+        <a href="<?php echo esc_url( $primary_url ); ?>" class="mobile-btn mobile-btn-primary"><?php echo esc_html( $primary_label ); ?></a>
       <?php endif; ?>
     </div>
 
@@ -167,13 +173,6 @@ $is_demo = $pages['is_demo'];
           </svg>
           <span>Pricing</span>
         </a>
-        <a href="/directory" class="mobile-nav-link" data-page="directory">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <span>Directory</span>
-        </a>
         <a href="/blog" class="mobile-nav-link" data-page="blog">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -182,6 +181,13 @@ $is_demo = $pages['is_demo'];
             <line x1="8" y1="10" x2="16" y2="10"></line>
           </svg>
           <span>Blog</span>
+        </a>
+        <a href="/directory" class="mobile-nav-link" data-page="directory">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Directory (coming soon)</span>
         </a>
         <a href="/contact" class="mobile-nav-link" data-page="contact">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

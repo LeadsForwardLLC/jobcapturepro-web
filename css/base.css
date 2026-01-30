@@ -88,6 +88,7 @@
   --jcp-size-icon-md: 24px;
   --jcp-size-icon-lg: 32px;
   --jcp-size-icon-xl: 48px;
+  --jcp-header-height: 72px;
   
   /* Aliases for backwards compatibility */
   --jcp-size-container-2xl: 1400px;
@@ -194,6 +195,8 @@
 
 html {
   overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--jcp-header-height);
 }
 
 body {

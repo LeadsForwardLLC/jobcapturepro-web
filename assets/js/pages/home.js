@@ -7,9 +7,30 @@
 
   const icon = (name) => `${assetBase()}/shared/assets/icons/lucide/${name}.svg`;
 
+  const defaultCtas = {
+    primaryText: 'View the live demo',
+    primaryUrl: '/demo',
+    secondaryText: 'Learn how it works',
+    secondaryUrl: '#how-it-works',
+  };
+
+  const useDefault = (val, defaultVal) => (val != null && String(val).trim() !== '' ? String(val).trim() : defaultVal);
+
+  const getHeroCtas = () => {
+    const c = typeof window.JCP_HOME_HERO_CTAS !== 'undefined' ? window.JCP_HOME_HERO_CTAS : {};
+    return {
+      primaryText: useDefault(c.primary_text, defaultCtas.primaryText),
+      primaryUrl: useDefault(c.primary_url, defaultCtas.primaryUrl),
+      secondaryText: useDefault(c.secondary_text, defaultCtas.secondaryText),
+      secondaryUrl: useDefault(c.secondary_url, defaultCtas.secondaryUrl),
+    };
+  };
+
   window.renderHome = () => {
     const root = document.getElementById('jcp-app');
     if (!root) return;
+
+    const heroCtas = getHeroCtas();
 
     root.innerHTML = `
       <main class="jcp-marketing jcp-home">
@@ -21,13 +42,13 @@
           <div class="jcp-container">
             <div class="jcp-hero-grid">
               <div class="jcp-hero-copy hero-copy">
-                <h1 class="jcp-hero-title">Turn every completed job into visibility that brings in more <span class="jcp-hero-rotating-word" aria-live="polite">visibility</span></h1>
+                <h1 class="jcp-hero-title">Automatically turn every completed job into <span class="jcp-hero-title-end">more <span class="jcp-hero-rotating-word" aria-live="polite">visibility</span></span></h1>
                 <p class="jcp-hero-subtitle">
                   Your team already takes job photos. JobCapturePro automatically turns them into Google updates, website content, social media posts, and review requests so your work keeps marketing itself.
                 </p>
                 <div class="jcp-actions directory-cta-row">
-                  <a class="btn btn-primary" href="/demo">View the live demo</a>
-                  <a class="btn btn-secondary" href="/demo">View a real job example</a>
+                  <a class="btn btn-primary" href="${heroCtas.primaryUrl}">${heroCtas.primaryText}</a>
+                  <a class="btn btn-secondary" href="${heroCtas.secondaryUrl}">${heroCtas.secondaryText}</a>
                 </div>
                 <div class="directory-meta">
                   <div class="meta-item meta-stat-photo">
@@ -642,13 +663,10 @@
             <div class="conversion-wrapper">
               <div class="conversion-content">
                 <div class="rankings-header">
-                  <h2>This works if you already do good work</h2>
+                  <h2>This works when the work is real</h2>
                   <p class="rankings-subtitle">
-                    JobCapturePro is built for contractors who already complete real jobs and want that work to quietly turn into more calls, better visibility, and long term demand.
+                    JobCapturePro is built for contractors who already complete real jobs and move on to the next one. It turns finished work into quiet, ongoing visibility so the jobs you complete today continue to bring in calls later.
                   </p>
-                </div>
-                <div class="conversion-intro">
-                  <p class="conversion-intro-text">This is a good fit if:</p>
                 </div>
                 <div class="conversion-points">
                   <div class="conversion-point">
@@ -659,7 +677,7 @@
                       </svg>
                     </div>
                     <div class="conversion-point-text">
-                      <strong>You complete jobs regularly</strong>
+                      <strong>You're already completing jobs on a regular basis</strong>
                     </div>
                   </div>
                   <div class="conversion-point">
@@ -670,7 +688,7 @@
                       </svg>
                     </div>
                     <div class="conversion-point-text">
-                      <strong>You want more calls without adding admin or marketing work</strong>
+                      <strong>You want more calls without adding admin or marketing tasks</strong>
                     </div>
                   </div>
                   <div class="conversion-point">
@@ -681,7 +699,7 @@
                       </svg>
                     </div>
                     <div class="conversion-point-text">
-                      <strong>You want today's jobs to keep bringing in future work</strong>
+                      <strong>You want past work to keep generating future work</strong>
                     </div>
                   </div>
                 </div>
@@ -689,7 +707,6 @@
                   <a href="/demo" class="btn btn-primary conversion-cta-btn">
                     See how this works for your business
                   </a>
-                  <p class="conversion-cta-secondary">See how one job turns into more jobs</p>
                 </div>
               </div>
               <div class="conversion-visual">

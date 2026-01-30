@@ -258,9 +258,9 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* First rankings-section on early access page needs top padding for header */
+/* First rankings-section on early access page: compact top padding below header */
 .jcp-early-access-page > .rankings-section:first-of-type {
-  padding-top: calc(var(--jcp-space-5xl) + 100px) !important;
+  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
 }
 
 /* Ensure rankings-header h1 matches pricing page styling */
@@ -302,7 +302,7 @@
 
 @media (max-width: 768px) {
   .jcp-early-access-page > .rankings-section:first-of-type {
-    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+    padding-top: calc(72px + var(--jcp-space-md)) !important;
   }
 
   .jcp-founding-form {

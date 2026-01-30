@@ -23,7 +23,7 @@
 
 .jcp-home .jcp-hero {
   position: relative;
-  padding-top: 160px !important;
+  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
   padding-bottom: var(--jcp-space-5xl);
   padding-left: 0;
   padding-right: 0;
@@ -407,7 +407,7 @@
   }
 
   .jcp-home .jcp-hero {
-    padding-top: 120px !important;
+    padding-top: calc(72px + var(--jcp-space-xl)) !important;
     padding-bottom: var(--jcp-space-4xl);
     padding-left: 0;
     padding-right: 0;
@@ -428,7 +428,7 @@
 
 @media (max-width: 768px) {
   .jcp-home .jcp-hero {
-    padding-top: calc(72px + var(--jcp-space-lg)) !important;
+    padding-top: calc(72px + var(--jcp-space-md)) !important;
   }
 }
 
@@ -535,6 +535,17 @@
   overflow: visible;
 }
 
+/* Standard page template: compact top padding for first section (match other page heroes) */
+.jcp-marketing > .jcp-section:first-of-type {
+  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
+}
+
+@media (max-width: 768px) {
+  .jcp-marketing > .jcp-section:first-of-type {
+    padding-top: calc(72px + var(--jcp-space-md)) !important;
+  }
+}
+
 .jcp-home .rankings-section > .jcp-container {
   position: relative;
   z-index: 1;
@@ -590,8 +601,8 @@
 
 /* Override page-specific first-section rules so success pages get equal top/bottom space */
 .jcp-success-page .rankings-section.jcp-success-section {
-  padding-top: var(--jcp-space-6xl) !important;
-  padding-bottom: var(--jcp-space-6xl) !important;
+  padding-top: var(--jcp-space-4xl) !important;
+  padding-bottom: var(--jcp-space-4xl) !important;
   display: flex;
   align-items: center;
   min-height: 50vh;
@@ -624,8 +635,8 @@
 
 @media (max-width: 768px) {
   .jcp-success-page .rankings-section.jcp-success-section {
-    padding-top: calc(72px + var(--jcp-space-4xl)) !important;
-    padding-bottom: var(--jcp-space-4xl) !important;
+    padding-top: calc(72px + var(--jcp-space-2xl)) !important;
+    padding-bottom: var(--jcp-space-2xl) !important;
     min-height: 40vh;
   }
 
@@ -1131,8 +1142,14 @@
     gap: var(--jcp-space-4xl);
   }
 
+  .demo-preview-visual {
+    justify-content: center;
+  }
+
   .demo-phone-mockup {
     max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .step-number {
@@ -1185,6 +1202,35 @@
   .step-title {
     font-size: var(--jcp-font-size-lg);
   }
+
+  .demo-preview-section {
+    margin-top: var(--jcp-space-4xl);
+  }
+
+  .demo-preview-card {
+    padding: var(--jcp-space-3xl);
+  }
+
+  .demo-preview-content {
+    gap: var(--jcp-space-3xl);
+  }
+
+  .demo-preview-title {
+    font-size: clamp(28px, 6vw, 36px);
+  }
+
+  .demo-preview-text {
+    gap: var(--jcp-space-md);
+  }
+
+  .demo-preview-description,
+  .demo-preview-cue {
+    font-size: var(--jcp-font-size-base);
+  }
+
+  .demo-phone-mockup {
+    max-width: 260px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1222,6 +1268,31 @@
 
   .step-title {
     font-size: var(--jcp-font-size-base);
+  }
+
+  .demo-preview-section {
+    margin-top: var(--jcp-space-3xl);
+  }
+
+  .demo-preview-card {
+    padding: var(--jcp-space-xl);
+  }
+
+  .demo-preview-content {
+    gap: var(--jcp-space-2xl);
+  }
+
+  .demo-preview-title {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+
+  .demo-cta-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .demo-phone-mockup {
+    max-width: 240px;
   }
 }
 
@@ -2422,6 +2493,21 @@
 @media (max-width: 768px) {
   .conversion-content {
     gap: var(--jcp-space-2xl);
+  }
+
+  .conversion-cta {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--jcp-space-sm);
+  }
+
+  .conversion-cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .conversion-cta-secondary {
+    text-align: center;
   }
 
   .conversion-points {

@@ -168,10 +168,7 @@
 
       // Handle estimate completion
       if (event.data && event.data.type === 'estimateCompleted') {
-        // Could show a success message or redirect
-        console.log('Estimate completed:', event.data.jobId);
-        
-        // Optional: Close takeover after a delay
+        // Optional: show success message or redirect; close takeover after delay
         setTimeout(() => {
           closeEstimateBuilder();
         }, 2000);

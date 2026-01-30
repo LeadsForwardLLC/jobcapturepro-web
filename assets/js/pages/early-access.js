@@ -33,6 +33,11 @@
     if (!root) return;
 
     const c = window.JCP_EARLY_ACCESS_FORM || {};
+    const pageTitle = (root.dataset.pageTitle || '').trim();
+    const pageSupporting = (root.dataset.pageSupporting || '').trim();
+    const headline = pageTitle || c.headline || 'Early Access';
+    const subhead = pageSupporting || c.subhead || "You're early. That's a good thing. Get access before public launch with early-bird pricing and help shape the platform as it grows.";
+    const buttonLabel = c.button_label || 'Join Early Access';
     const referralOptions = (c.referral_options || []).map(
       (o) => `<option value="${escAttr(o.value)}">${escText(o.label)}</option>`
     ).join('');
@@ -54,9 +59,9 @@
         <section class="jcp-section rankings-section">
           <div class="jcp-container">
             <div class="rankings-header">
-              <h1>Early Access</h1>
+              <h1>${escText(headline)}</h1>
               <p class="rankings-subtitle">
-                You're early. That's a good thing. Get access before public launch with early-bird pricing and help shape the platform as it grows.
+                ${escText(subhead)}
               </p>
             </div>
           </div>
@@ -148,7 +153,7 @@
                 </div>
                 <div class="jcp-form-actions">
                   <button type="submit" class="btn btn-primary" id="earlyAccessSubmitBtn">
-                    Join Early Access
+                    ${escText(buttonLabel)}
                   </button>
                 </div>
               </form>

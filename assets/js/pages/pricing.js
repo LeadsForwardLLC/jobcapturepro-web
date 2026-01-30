@@ -173,6 +173,11 @@
     const root = document.getElementById('jcp-app');
     if (!root) return;
 
+    const pageTitle = (root.dataset.pageTitle || '').trim();
+    const pageSupporting = (root.dataset.pageSupporting || '').trim();
+    const heroTitle = pageTitle || 'Choose the plan that matches your growth';
+    const heroSubtitle = pageSupporting || 'Each tier aligns to business maturity and visibility goals. Get early bird pricing and unlock the benefits of turning real work into reviews, visibility, and trust that drives inbound demand.';
+
     // Load FAQ component if available
     const faqHTML = typeof window.renderFAQ === 'function' 
       ? window.renderFAQ({
@@ -189,8 +194,8 @@
         <section class="jcp-section rankings-section">
           <div class="jcp-container">
             <div class="rankings-header">
-              <h1>Choose the plan that matches your growth</h1>
-              <p class="rankings-subtitle">Each tier aligns to business maturity and visibility goals. Get early bird pricing and unlock the benefits of turning real work into reviews, visibility, and trust that drives inbound demand.</p>
+              <h1>${escapeHtml(heroTitle)}</h1>
+              <p class="rankings-subtitle">${escapeHtml(heroSubtitle)}</p>
             </div>
             
             <!-- Billing Toggle -->

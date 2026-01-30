@@ -149,7 +149,6 @@ function jcp_core_get_page_detection(): array {
         'is_directory'    => is_page_template( 'page-directory.php' ) || is_page( 'directory' ) || $path === 'directory',
         'is_estimate'     => is_page_template( 'page-estimate.php' ) || is_page( 'estimate' ) || $path === 'estimate',
         'is_company'      => is_singular( 'jcp_company' ) || is_page( 'company' ) || $path === 'company',
-        'is_design_system' => is_page_template( 'page-design-system.php' ) || is_page( 'design-system' ) || $path === 'design-system',
         'is_ui_library'   => is_page_template( 'page-ui-library.php' ) || is_page( 'ui-library' ) || $path === 'ui-library',
         'is_blog'         => is_home() || is_archive() || is_single() || is_search(),
         'is_single'       => is_single() && ! is_singular( 'jcp_company' ),
@@ -158,18 +157,19 @@ function jcp_core_get_page_detection(): array {
 }
 
 /**
- * Add noindex/nofollow to design system page
+ * Add noindex/nofollow to UI library page
  *
- * The design system page is internal documentation and should not be indexed
+ * The UI library page is internal documentation and should not be indexed
  * by search engines or publicly linked.
  *
  * @return void
  */
 function jcp_core_design_system_noindex(): void {
     $pages = jcp_core_get_page_detection();
-    if ( $pages['is_design_system'] || $pages['is_ui_library'] ) {
+    if ( $pages['is_ui_library'] ) {
         echo '<meta name="robots" content="noindex, nofollow">' . "\n";
     }
 }
 
 add_action( 'wp_head', 'jcp_core_design_system_noindex' );
+

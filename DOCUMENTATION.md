@@ -595,8 +595,10 @@ The theme posts form submissions to **two separate** GoHighLevel inbound webhook
 
 ### ACF (Advanced Custom Fields)
 
-- **Homepage Settings:** ACF is required for the **Homepage** options page (hero, how it works, FAQ, pricing, features, footer, section visibility). All homepage content is driven from ACF options.
-- **Early Access:** Has **no** backend options in this theme. Form behavior (required fields, success redirect, options lists) is hardcoded in `inc/acf-config.php` and `inc/rest-early-access.php`.
+- **Theme-level settings removed:** Homepage Settings and JCP Theme Settings ACF options pages have been removed. Nav CTAs (Online Demo, Get Started), homepage hero CTAs, Early Access/Demo Survey copy, and footer contact are hardcoded in templates; can be reintroduced later.
+- **Per-page bottom CTA:** Optional CTA block at the bottom of standard Pages. ACF field group **Bottom CTA** on post type `page`. Content-level customization only (headline, supporting text, button label, URL)—no design or layout controls. Uses the existing global CTA component (`.rankings-cta`); no new CSS.
+
+**Per-page CTA field keys (ACF on post type `page`):** `enable_page_cta` (true/false), `page_cta_headline`, `page_cta_supporting_text`, `page_cta_button_label`, `page_cta_button_url`. CTA renders only when `enable_page_cta` is true and headline, button label, and button URL are non-empty. Rendered in `page.php` only; uses existing `.rankings-cta` markup.
 
 ### Debug Logging
 

@@ -23,15 +23,19 @@
     const root = document.getElementById('jcp-app');
     if (!root) return;
 
+    const pageTitle = (root.dataset.pageTitle || '').trim();
+    const pageSupporting = (root.dataset.pageSupporting || '').trim();
+    const headline = pageTitle || 'Need help or have a question?';
+    const subhead = pageSupporting || "We're happy to help with setup, troubleshooting, or just to hear your feedback. Fill out the form below, and someone from the team will get back to you within one business day.";
+
     root.innerHTML = `
       <main class="jcp-marketing jcp-contact-page">
         <section class="jcp-section rankings-section">
           <div class="jcp-container">
             <div class="rankings-header">
-              <h1>Need help or have a question?</h1>
+              <h1>${escAttr(headline)}</h1>
               <p class="rankings-subtitle">
-                We're happy to help with setup, troubleshooting, or just to hear your feedback.
-                Fill out the form below, and someone from the team will get back to you within one business day.
+                ${escAttr(subhead)}
               </p>
             </div>
           </div>

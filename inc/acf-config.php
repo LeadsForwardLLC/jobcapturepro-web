@@ -1,194 +1,47 @@
 <?php
 /**
  * ACF Configuration
- * Homepage field groups and options page setup
+ * Per-page bottom CTA only. Theme-level settings removed; rebuild later.
  *
  * @package JCP_Core
  */
 
 // Only run if ACF is active
-if ( ! function_exists( 'acf_add_options_page' ) ) {
+if ( ! function_exists( 'acf_add_local_field_group' ) ) {
     return;
 }
 
 /**
- * Create Homepage Options Page in ACF
- */
-function jcp_core_register_homepage_options_page() {
-    acf_add_options_page(
-        [
-            'page_title' => 'Homepage Settings',
-            'menu_title' => 'Homepage Settings',
-            'menu_slug'  => 'jcp-homepage',
-            'capability' => 'manage_options',
-            'position'   => 20,
-            'icon_url'   => 'dashicons-layout',
-        ]
-    );
-}
-
-add_action( 'acf/init', 'jcp_core_register_homepage_options_page' );
-
-/**
- * Register ACF field groups for Homepage
- * Using programmatic approach (no JSON sync needed)
+ * Register ACF field groups (per-page bottom CTA only).
  */
 function jcp_core_register_acf_field_groups() {
     if ( ! function_exists( 'acf_add_local_field_group' ) ) {
         return;
     }
 
-    // Hero Section Field Group
+    // Per-page bottom CTA (Pages only)
     acf_add_local_field_group(
         [
-            'key'      => 'jcp_homepage_hero',
-            'title'    => 'Hero Section',
+            'key'      => 'jcp_page_cta',
+            'title'    => 'Bottom CTA',
             'fields'   => [
                 [
-                    'key'        => 'hero_headline',
-                    'label'      => 'Headline (H1)',
-                    'name'       => 'hero_headline',
-                    'type'       => 'text',
-                    'required'   => 1,
-                    'default'    => 'Turn every completed job into more calls and more customers',
-                    'maxlength'  => 120,
+                    'key'         => 'enable_page_cta',
+                    'label'       => 'Enable bottom CTA',
+                    'name'        => 'enable_page_cta',
+                    'type'        => 'true_false',
+                    'default'     => 0,
+                    'ui'          => 1,
                 ],
                 [
-                    'key'        => 'hero_subheadline',
-                    'label'      => 'Subheadline',
-                    'name'       => 'hero_subheadline',
-                    'type'       => 'textarea',
-                    'default'    => 'Your team already takes job photos. JobCapturePro automatically turns those jobs into website updates, Google visibility, social posts, directory listings, and review requests so your work keeps bringing in new business.',
-                    'rows'       => 4,
-                ],
-                [
-                    'key'        => 'hero_image_url',
-                    'label'      => 'Hero Image URL',
-                    'name'       => 'hero_image_url',
-                    'type'       => 'url',
-                    'default'    => 'http://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg',
-                ],
-                [
-                    'key'        => 'hero_image_alt',
-                    'label'      => 'Hero Image Alt Text',
-                    'name'       => 'hero_image_alt',
-                    'type'       => 'text',
-                    'default'    => 'Contractor capturing a job photo with JobCapturePro',
-                ],
-                [
-                    'key'        => 'hero_badge_text',
-                    'label'      => 'Badge Text (top-left overlay)',
-                    'name'       => 'hero_badge_text',
-                    'type'       => 'text',
-                    'default'    => 'Real job proof',
-                ],
-                [
-                    'key'        => 'hero_content_title',
-                    'label'      => 'Bottom Content Title (e.g., "Verified instantly")',
-                    'name'       => 'hero_content_title',
-                    'type'       => 'text',
-                    'default'    => 'Verified job proof',
-                ],
-                [
-                    'key'        => 'hero_content_subtitle',
-                    'label'      => 'Bottom Content Subtitle',
-                    'name'       => 'hero_content_subtitle',
-                    'type'       => 'text',
-                    'default'    => 'AI check-ins appear in minutes',
-                ],
-                [
-                    'key'        => 'hero_cta_primary_text',
-                    'label'      => 'Primary CTA Button Text',
-                    'name'       => 'hero_cta_primary_text',
-                    'type'       => 'text',
-                    'default'    => 'Watch the Live Demo',
-                ],
-                [
-                    'key'        => 'hero_cta_primary_url',
-                    'label'      => 'Primary CTA Button URL',
-                    'name'       => 'hero_cta_primary_url',
-                    'type'       => 'url',
-                    'default'    => '/demo',
-                ],
-                [
-                    'key'        => 'hero_cta_secondary_text',
-                    'label'      => 'Secondary CTA Button Text',
-                    'name'       => 'hero_cta_secondary_text',
-                    'type'       => 'text',
-                    'default'    => 'Learn how it works',
-                ],
-                [
-                    'key'        => 'hero_cta_secondary_url',
-                    'label'      => 'Secondary CTA Button URL',
-                    'name'       => 'hero_cta_secondary_url',
-                    'type'       => 'url',
-                    'default'    => '#how-it-works',
-                ],
-                [
-                    'key'        => 'hero_stats',
-                    'label'      => 'Stats Row (bottom overlay)',
-                    'name'       => 'hero_stats',
-                    'type'       => 'repeater',
-                    'min'        => 3,
-                    'max'        => 5,
-                    'layout'     => 'block',
-                    'button_label' => 'Add Stat',
-                    'sub_fields' => [
-                        [
-                            'key'      => 'stat_icon',
-                            'label'    => 'Icon Name (Lucide)',
-                            'name'     => 'stat_icon',
-                            'type'     => 'text',
-                            'required' => 1,
-                            'default'  => 'map-pin',
-                            'instructions' => 'e.g., map-pin, globe, star. See /assets/shared/assets/icons/lucide/',
-                        ],
-                        [
-                            'key'      => 'stat_label',
-                            'label'    => 'Label Text',
-                            'name'     => 'stat_label',
-                            'type'     => 'text',
-                            'required' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 10,
-        ]
-    );
-
-    // How It Works Section Field Group
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_how_it_works',
-            'title'    => 'How It Works Section',
-            'fields'   => [
-                [
-                    'key'      => 'enable_how_it_works',
-                    'label'    => 'Enable this section',
-                    'name'     => 'enable_how_it_works',
-                    'type'     => 'true_false',
-                    'default'  => 1,
-                ],
-                [
-                    'key'        => 'how_it_works_title',
-                    'label'      => 'Section Title',
-                    'name'       => 'how_it_works_title',
-                    'type'       => 'text',
-                    'default'    => 'How JobCapturePro works',
+                    'key'               => 'page_cta_headline',
+                    'label'             => 'CTA Headline',
+                    'name'              => 'page_cta_headline',
+                    'type'              => 'text',
                     'conditional_logic' => [
                         [
                             [
-                                'field'    => 'enable_how_it_works',
+                                'field'    => 'enable_page_cta',
                                 'operator' => '==',
                                 'value'    => '1',
                             ],
@@ -196,16 +49,45 @@ function jcp_core_register_acf_field_groups() {
                     ],
                 ],
                 [
-                    'key'        => 'how_it_works_subtitle',
-                    'label'      => 'Subtitle',
-                    'name'       => 'how_it_works_subtitle',
-                    'type'       => 'textarea',
-                    'default'    => 'Every completed job becomes verified proof across every channel that matters. Here\'s the simple flow your crew already knows.',
-                    'rows'       => 3,
+                    'key'               => 'page_cta_supporting_text',
+                    'label'             => 'Supporting Text',
+                    'name'              => 'page_cta_supporting_text',
+                    'type'              => 'textarea',
+                    'rows'              => 2,
                     'conditional_logic' => [
                         [
                             [
-                                'field'    => 'enable_how_it_works',
+                                'field'    => 'enable_page_cta',
+                                'operator' => '==',
+                                'value'    => '1',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'key'               => 'page_cta_button_label',
+                    'label'             => 'Button Label',
+                    'name'              => 'page_cta_button_label',
+                    'type'              => 'text',
+                    'conditional_logic' => [
+                        [
+                            [
+                                'field'    => 'enable_page_cta',
+                                'operator' => '==',
+                                'value'    => '1',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'key'               => 'page_cta_button_url',
+                    'label'             => 'Button URL',
+                    'name'              => 'page_cta_button_url',
+                    'type'              => 'url',
+                    'conditional_logic' => [
+                        [
+                            [
+                                'field'    => 'enable_page_cta',
                                 'operator' => '==',
                                 'value'    => '1',
                             ],
@@ -216,301 +98,9 @@ function jcp_core_register_acf_field_groups() {
             'location' => [
                 [
                     [
-                        'param'    => 'options_page',
+                        'param'    => 'post_type',
                         'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 20,
-        ]
-    );
-
-    // FAQ Section Field Group
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_faq',
-            'title'    => 'FAQ Section',
-            'fields'   => [
-                [
-                    'key'      => 'enable_faq',
-                    'label'    => 'Enable this section',
-                    'name'     => 'enable_faq',
-                    'type'     => 'true_false',
-                    'default'  => 1,
-                ],
-                [
-                    'key'        => 'faq_title',
-                    'label'      => 'Section Title',
-                    'name'       => 'faq_title',
-                    'type'       => 'text',
-                    'default'    => 'FAQ',
-                    'conditional_logic' => [
-                        [
-                            [
-                                'field'    => 'enable_faq',
-                                'operator' => '==',
-                                'value'    => '1',
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'key'      => 'faq_items',
-                    'label'    => 'FAQ Items',
-                    'name'     => 'faq_items',
-                    'type'     => 'repeater',
-                    'layout'   => 'block',
-                    'button_label' => 'Add FAQ',
-                    'conditional_logic' => [
-                        [
-                            [
-                                'field'    => 'enable_faq',
-                                'operator' => '==',
-                                'value'    => '1',
-                            ],
-                        ],
-                    ],
-                    'sub_fields' => [
-                        [
-                            'key'      => 'faq_question',
-                            'label'    => 'Question',
-                            'name'     => 'faq_question',
-                            'type'     => 'text',
-                            'required' => 1,
-                        ],
-                        [
-                            'key'      => 'faq_answer',
-                            'label'    => 'Answer',
-                            'name'     => 'faq_answer',
-                            'type'     => 'textarea',
-                            'required' => 1,
-                            'rows'     => 3,
-                        ],
-                    ],
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 30,
-        ]
-    );
-
-    // Pricing Section Field Group
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_pricing',
-            'title'    => 'Pricing Section',
-            'fields'   => [
-                [
-                    'key'      => 'enable_pricing_section',
-                    'label'    => 'Enable this section',
-                    'name'     => 'enable_pricing_section',
-                    'type'     => 'true_false',
-                    'default'  => 1,
-                ],
-                [
-                    'key'        => 'pricing_section_title',
-                    'label'      => 'Section Title',
-                    'name'       => 'pricing_section_title',
-                    'type'       => 'text',
-                    'default'    => 'Pricing that grows with your business',
-                    'conditional_logic' => [
-                        [
-                            [
-                                'field'    => 'enable_pricing_section',
-                                'operator' => '==',
-                                'value'    => '1',
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'key'        => 'pricing_section_subtitle',
-                    'label'      => 'Subtitle',
-                    'name'       => 'pricing_section_subtitle',
-                    'type'       => 'textarea',
-                    'default'    => 'No setup fees. No long contracts. Scale up or down anytime.',
-                    'rows'       => 2,
-                    'conditional_logic' => [
-                        [
-                            [
-                                'field'    => 'enable_pricing_section',
-                                'operator' => '==',
-                                'value'    => '1',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 25,
-        ]
-    );
-
-    // Features Section Field Group
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_features',
-            'title'    => 'Features Section',
-            'fields'   => [
-                [
-                    'key'      => 'enable_features',
-                    'label'    => 'Enable this section',
-                    'name'     => 'enable_features',
-                    'type'     => 'true_false',
-                    'default'  => 1,
-                ],
-                [
-                    'key'        => 'features_title',
-                    'label'      => 'Section Title',
-                    'name'       => 'features_title',
-                    'type'       => 'text',
-                    'default'    => 'What you get with JobCapturePro',
-                    'conditional_logic' => [
-                        [
-                            [
-                                'field'    => 'enable_features',
-                                'operator' => '==',
-                                'value'    => '1',
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'key'        => 'features_subtitle',
-                    'label'      => 'Subtitle',
-                    'name'       => 'features_subtitle',
-                    'type'       => 'textarea',
-                    'default'    => 'Everything your business needs to turn job photos into business results.',
-                    'rows'       => 2,
-                    'conditional_logic' => [
-                        [
-                            [
-                                'field'    => 'enable_features',
-                                'operator' => '==',
-                                'value'    => '1',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 22,
-        ]
-    );
-
-    // Footer Settings Field Group
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_footer',
-            'title'    => 'Footer Settings',
-            'fields'   => [
-                [
-                    'key'        => 'footer_tagline',
-                    'label'      => 'Footer Tagline',
-                    'name'       => 'footer_tagline',
-                    'type'       => 'text',
-                    'default'    => 'Turn real job photos into proof, visibility, reviews, and more jobs.',
-                    'maxlength'  => 120,
-                ],
-                [
-                    'key'      => 'footer_links',
-                    'label'    => 'Footer Links',
-                    'name'     => 'footer_links',
-                    'type'     => 'repeater',
-                    'layout'   => 'block',
-                    'button_label' => 'Add Link',
-                    'sub_fields' => [
-                        [
-                            'key'      => 'footer_link_text',
-                            'label'    => 'Link Text',
-                            'name'     => 'footer_link_text',
-                            'type'     => 'text',
-                            'required' => 1,
-                        ],
-                        [
-                            'key'      => 'footer_link_url',
-                            'label'    => 'Link URL',
-                            'name'     => 'footer_link_url',
-                            'type'     => 'url',
-                            'required' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 40,
-        ]
-    );
-
-    // Section Visibility Field Group (Master Control)
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_visibility',
-            'title'    => 'Section Visibility & Order',
-            'fields'   => [
-                [
-                    'key'        => 'section_order_info',
-                    'label'      => 'Section Display Order',
-                    'name'       => 'section_order_info',
-                    'type'       => 'message',
-                    'message'    => 'Sections display in this order: Hero → How It Works → Features → Pricing → FAQ. Each section can be enabled/disabled individually above.',
-                ],
-                [
-                    'key'      => 'show_social_proof',
-                    'label'    => 'Show Social Proof Section',
-                    'name'     => 'show_social_proof',
-                    'type'     => 'true_false',
-                    'default'  => 1,
-                    'instructions' => 'Show customer testimonials and trust indicators',
-                ],
-                [
-                    'key'      => 'show_final_cta',
-                    'label'    => 'Show Final CTA Section',
-                    'name'     => 'show_final_cta',
-                    'type'     => 'true_false',
-                    'default'  => 1,
-                    'instructions' => 'Show the final call-to-action section at bottom',
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
+                        'value'    => 'page',
                     ],
                 ],
             ],
@@ -518,71 +108,9 @@ function jcp_core_register_acf_field_groups() {
         ]
     );
 
-    // General Settings Field Group
-    acf_add_local_field_group(
-        [
-            'key'      => 'jcp_homepage_general',
-            'title'    => 'General Settings',
-            'fields'   => [
-                [
-                    'key'        => 'site_logo_url',
-                    'label'      => 'Site Logo URL',
-                    'name'       => 'site_logo_url',
-                    'type'       => 'url',
-                    'default'    => 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png',
-                    'instructions' => 'Logo used in navigation and footer',
-                ],
-                [
-                    'key'        => 'site_primary_color',
-                    'label'      => 'Primary Brand Color',
-                    'name'       => 'site_primary_color',
-                    'type'       => 'color_picker',
-                    'default'    => '#ff503e',
-                    'instructions' => 'Used for buttons, links, and highlights',
-                ],
-                [
-                    'key'        => 'site_description',
-                    'label'      => 'Site Meta Description',
-                    'name'       => 'site_description',
-                    'type'       => 'textarea',
-                    'default'    => 'JobCapturePro turns job photos into website updates, Google visibility, social posts, and review requests.',
-                    'rows'       => 2,
-                    'instructions' => 'Used for SEO meta tags',
-                ],
-            ],
-            'location' => [
-                [
-                    [
-                        'param'    => 'options_page',
-                        'operator' => '==',
-                        'value'    => 'jcp-homepage',
-                    ],
-                ],
-            ],
-            'menu_order' => 1,
-        ]
-    );
-
 }
 
 add_action( 'acf/init', 'jcp_core_register_acf_field_groups' );
-
-/**
- * Get ACF Homepage Options with Safe Defaults
- *
- * @param string $field_name Field name to retrieve
- * @param mixed  $default Default value if field not set
- * @return mixed Field value or default
- */
-function jcp_core_get_homepage_option( $field_name, $default = null ) {
-    $value = get_field( $field_name, 'option' );
-    
-    if ( empty( $value ) && $default !== null ) {
-        return $default;
-    }
-    
-    return $value;
-}
 
 /**
  * Default "Why are you interested?" options for Early Access form (checkboxes).
@@ -710,9 +238,9 @@ function jcp_core_early_access_business_type_label( string $value ): string {
 }
 
 /**
- * Get Early Access form config for frontend (hardcoded defaults; no backend options).
+ * Get Early Access form config for frontend (hardcoded defaults).
  *
- * @return array why_interested_options, referral_options, business_type_options, require_phone, require_company, success_redirect, success_message (+ rest_url set by enqueue)
+ * @return array why_interested_options, referral_options, business_type_options, require_phone, require_company, success_redirect, success_message, headline, subhead, button_label (+ rest_url set by enqueue)
  */
 function jcp_core_get_early_access_form_config(): array {
     return [
@@ -722,6 +250,9 @@ function jcp_core_get_early_access_form_config(): array {
         'require_phone'           => true,
         'require_company'         => true,
         'success_redirect'        => home_url( '/early-access-success/' ),
-        'success_message'        => "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
+        'success_message'         => "Thanks for signing up. We'll be in touch soon with early-bird pricing and next steps.",
+        'headline'                => 'Early Access',
+        'subhead'                 => "You're early. That's a good thing. Get access before public launch with early-bird pricing and help shape the platform as it grows.",
+        'button_label'            => 'Join Early Access',
     ];
 }

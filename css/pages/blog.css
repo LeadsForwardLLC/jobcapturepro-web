@@ -155,6 +155,49 @@
 }
 
 /* ============================================================
+   ARCHIVE HERO (blog index, category, author, tag, search)
+   ============================================================ */
+
+/* Less space below title so hero feels tighter */
+.jcp-archive-hero-section .rankings-header {
+  margin-bottom: var(--jcp-space-md);
+}
+
+.jcp-archive-hero-section {
+  padding-bottom: var(--jcp-space-xl);
+}
+
+/* Tighter gap between archive hero and blog grid / content below */
+.jcp-archive-hero-section + .jcp-section {
+  padding-top: var(--jcp-space-xl);
+}
+
+/* Supporting text from WordPress (e.g. Blog page content) – only shown when present */
+.jcp-archive-intro {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: var(--jcp-space-2xl);
+  text-align: center;
+  font-size: var(--jcp-font-size-lg);
+  line-height: var(--jcp-line-height-relaxed);
+  color: var(--jcp-color-text-secondary);
+}
+
+.jcp-archive-intro > *:first-child {
+  margin-top: 0;
+}
+
+.jcp-archive-intro > *:last-child {
+  margin-bottom: 0;
+}
+
+.jcp-archive-intro p {
+  margin-bottom: var(--jcp-space-md);
+}
+
+/* ============================================================
    BLOG GRID
    ============================================================ */
 
@@ -277,6 +320,202 @@
 /* ============================================================
    SINGLE POST
    ============================================================ */
+
+/* Reading progress bar (sticky at top) */
+.jcp-read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.06);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.jcp-read-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--jcp-color-primary);
+  transition: width 0.12s ease-out;
+}
+
+/* Single post hero: title/meta left, featured image right (compact).
+   No horizontal padding so hero title/meta aligns with post content (both in 800px band). */
+.jcp-single-hero .jcp-container {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.jcp-single-hero {
+  padding-top: var(--jcp-space-3xl);
+  padding-bottom: var(--jcp-space-2xl);
+}
+
+/* Tighter gap between hero and post content (no divider line) */
+.jcp-single-content-section {
+  padding-top: var(--jcp-space-2xl);
+}
+
+.jcp-single-hero-grid {
+  gap: var(--jcp-space-2xl);
+  align-items: center;
+}
+
+.jcp-single-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-sm);
+}
+
+.jcp-single-hero-title {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: var(--jcp-font-weight-extrabold);
+  line-height: var(--jcp-line-height-tight);
+  color: var(--jcp-color-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.jcp-single-hero-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-xs);
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  margin: 0;
+}
+
+.jcp-post-meta-line {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-sm);
+  flex-wrap: wrap;
+}
+
+.jcp-post-meta-author-line {
+  margin: 0;
+}
+
+.jcp-post-meta-details {
+  margin: 0;
+}
+
+.jcp-single-hero-meta .jcp-post-meta-avatar {
+  width: 28px;
+  height: 28px;
+}
+
+.jcp-post-reading-time {
+  color: var(--jcp-color-text-secondary);
+}
+
+/* Hero image: wrapper like guarantee-image-wrapper, no shadow */
+.jcp-single-hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.jcp-single-hero-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  height: 200px;
+  border-radius: var(--jcp-radius-lg);
+  overflow: hidden;
+}
+
+.jcp-single-hero-image-wrapper .jcp-single-post-featured-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Share section at bottom of post */
+.jcp-post-share-section {
+  margin-top: var(--jcp-space-3xl);
+  padding-top: var(--jcp-space-2xl);
+  border-top: 1px solid var(--jcp-color-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--jcp-space-md);
+}
+
+.jcp-post-share-section .jcp-post-share-label {
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.jcp-post-share-section .jcp-post-share-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
+}
+
+.jcp-post-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--jcp-radius-md);
+  background: var(--jcp-color-bg-secondary);
+  color: var(--jcp-color-text-secondary);
+  cursor: pointer;
+  transition: background var(--jcp-transition-base), color var(--jcp-transition-base), transform 0.15s ease;
+  text-decoration: none;
+}
+
+.jcp-post-share-btn:hover {
+  background: var(--jcp-color-bg-tertiary);
+  color: var(--jcp-color-text-primary);
+}
+
+.jcp-post-share-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--jcp-color-primary);
+}
+
+.jcp-post-share-btn img {
+  display: block;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.jcp-post-share-btn.jcp-share-copied {
+  background: var(--jcp-color-success);
+  color: #fff;
+}
+
+/* Featured image (fallback when not in hero, e.g. legacy) */
+.jcp-single-post-featured-image {
+  max-width: 800px;
+  margin: 0 auto var(--jcp-space-3xl);
+  width: 100%;
+  border-radius: var(--jcp-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.jcp-single-post-featured-image .jcp-single-post-featured-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
 
 .jcp-single-post-wrapper {
   max-width: 800px;
@@ -689,6 +928,31 @@
   .jcp-blog-grid {
     grid-template-columns: 1fr;
     gap: var(--jcp-space-2xl);
+  }
+
+  .jcp-single-hero {
+    padding-top: var(--jcp-space-2xl);
+    padding-bottom: var(--jcp-space-2xl);
+  }
+
+  /* Restore horizontal padding on narrow viewports so hero doesn't touch edges */
+  .jcp-single-hero .jcp-container {
+    padding-left: var(--jcp-space-md);
+    padding-right: var(--jcp-space-md);
+  }
+
+  .jcp-single-hero-grid {
+    gap: var(--jcp-space-xl);
+  }
+
+  .jcp-single-hero-title {
+    font-size: clamp(22px, 5vw, 28px);
+  }
+
+  .jcp-single-hero-image-wrapper {
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .jcp-post-navigation {
