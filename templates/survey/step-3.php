@@ -1,6 +1,6 @@
 <?php
 /**
- * Survey Step 3: First name + Email
+ * Survey Step 3: First name + Last name + Email
  *
  * @package JCP_Core
  */
@@ -17,16 +17,26 @@
   <form class="survey-form" autocomplete="off">
     <div class="survey-grid-2">
       <div class="survey-field">
-        <label for="firstName">Full Name</label>
+        <label for="firstName">First name</label>
         <input
           id="firstName"
           type="text"
           class="survey-input"
-          placeholder="John Smith"
+          placeholder="John"
           required
         />
       </div>
       <div class="survey-field">
+        <label for="lastName">Last name</label>
+        <input
+          id="lastName"
+          type="text"
+          class="survey-input"
+          placeholder="Smith"
+          required
+        />
+      </div>
+      <div class="survey-field survey-field-full">
         <label for="email">Email address</label>
         <input
           id="email"

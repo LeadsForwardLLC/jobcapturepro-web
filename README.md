@@ -30,14 +30,27 @@ The master documentation includes:
 - `inc/enqueue.php` - Asset loading logic
 - `inc/helpers.php` - Utility functions and page detection
 - `inc/template-routes.php` - URL routing and 404 handling
+- `inc/form-fields.php` - Canonical REST param names and GHL payload keys (Demo Survey = source of truth)
 - `inc/rest-early-access.php` - Early Access form → GHL webhook
 - `inc/rest-demo-survey.php` - Demo Survey form → GHL webhook (separate from Early Access)
 - `DOCUMENTATION.md` - Complete technical documentation
 
+### Forms & GoHighLevel
+
+Two critical forms submit to GoHighLevel via separate webhooks:
+
+| Form | Purpose | REST endpoint |
+|------|---------|---------------|
+| **Early Access** | Founding crew signup (contact, business type, why interested, referral). One submit → one webhook. | `POST /wp-json/jcp/v1/early-access-submit` |
+| **Demo Survey** | Demo opt-in ("Continue to preview") and viewed-demo ("Skip" / "Launch"). Same webhook; GHL branches on Event (demo-opt-in vs demo-viewed). | `POST /wp-json/jcp/v1/demo-survey-submit`, `POST /wp-json/jcp/v1/demo-viewed-submit` |
+
+- **Data flow:** Frontend → REST (validate, build body) → `wp_remote_post()` to form’s GHL webhook. Payloads are `application/x-www-form-urlencoded`, flat key-value. Mapping to contact/custom fields is done in GHL workflows.
+- **Field naming:** Shared concepts (first_name, email, company, business_type) use consistent REST params; GHL payload keys are documented in DOCUMENTATION.md → Forms & GoHighLevel. Do not change webhook payload keys without updating GHL.
+
 ### Setup & Integrations
 
 - **Local:** Run WordPress locally (e.g. Local by Flywheel). Use a tunnel for GHL webhook testing if needed.
-- **GoHighLevel:** Two webhooks—Early Access (`rest-early-access.php`) and Demo Survey (`rest-demo-survey.php`). Do not swap URLs; see DOCUMENTATION.md → Setup & Integrations.
+- **GoHighLevel:** Two webhooks—Early Access (`rest-early-access.php`) and Demo Survey (`rest-demo-survey.php`). Do not swap URLs; see DOCUMENTATION.md → Setup & Integrations and Forms & GoHighLevel.
 - **ACF:** Required for Homepage Settings only. Early Access has no backend options in this theme.
 
 ### Development

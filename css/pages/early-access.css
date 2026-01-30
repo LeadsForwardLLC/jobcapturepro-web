@@ -59,6 +59,14 @@
   margin-bottom: var(--jcp-space-xl);
 }
 
+/* Stack form grid to single column on small tablets and phones for better touch targets */
+@media (max-width: 640px) {
+  .jcp-form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--jcp-space-md);
+  }
+}
+
 .jcp-form-field {
   display: flex;
   flex-direction: column;
@@ -286,10 +294,6 @@
    ============================================================ */
 
 @media (max-width: 900px) {
-  .jcp-form-grid {
-    grid-template-columns: 1fr;
-  }
-
   /* Stack "Who It's For" columns on tablet */
   .jcp-early-access-page .jcp-grid[style*="grid-template-columns: repeat(2, 1fr)"] {
     grid-template-columns: 1fr !important;
@@ -299,6 +303,15 @@
 @media (max-width: 768px) {
   .jcp-founding-form {
     padding: var(--jcp-space-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .jcp-founding-form {
+    padding: var(--jcp-space-xl);
+  }
+  .jcp-form-grid {
+    gap: var(--jcp-space-sm);
   }
 
   /* Ensure CTA form is full width on mobile */

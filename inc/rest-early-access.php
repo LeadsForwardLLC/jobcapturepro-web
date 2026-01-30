@@ -3,7 +3,7 @@
  * REST API: Early Access form submission → GoHighLevel webhook
  *
  * Sends application/x-www-form-urlencoded. Exact keys: First Name, Email, Phone,
- * Company, Trade, Referral Source[] (array), Message.
+ * Company, Business Type, Referral Source[] (array), Message. Shared keys match Demo Survey.
  *
  * @package JCP_Core
  */
@@ -28,6 +28,11 @@ function jcp_core_register_early_access_rest_routes(): void {
                 'type'              => 'string',
                 'sanitize_callback'  => 'sanitize_text_field',
             ],
+            'last_name'       => [
+                'required'          => true,
+                'type'              => 'string',
+                'sanitize_callback'  => 'sanitize_text_field',
+            ],
             'company'         => [
                 'required'          => false,
                 'type'              => 'string',
@@ -46,10 +51,10 @@ function jcp_core_register_early_access_rest_routes(): void {
                 'type'              => 'string',
                 'sanitize_callback'  => 'sanitize_text_field',
             ],
-            'message'         => [
+            'demo_goals'      => [
                 'required'          => true,
-                'type'              => 'string',
-                'sanitize_callback'  => 'sanitize_textarea_field',
+                'type'              => 'array',
+                'items'             => [ 'type' => 'string' ],
             ],
             'referral_source' => [
                 'required'          => true,
@@ -86,31 +91,33 @@ function jcp_core_ghl_webhook_url(): string {
 
 /**
  * Build application/x-www-form-urlencoded body for GHL.
- * Keys: First Name, Email, Phone, Company, Trade, Referral Source[] (array), Message.
+ * Uses canonical GHL keys from form-fields.php (same as Demo Survey).
  *
- * @param string $first_name First Name.
- * @param string $email Email.
- * @param string $phone Phone.
- * @param string $company Company.
- * @param string $trade Trade (e.g. General Contractor).
+ * @param string $first_name First name.
+ * @param string $last_name  Last name.
+ * @param string $email      Email.
+ * @param string $phone      Phone.
+ * @param string $company    Company.
+ * @param string $business_type_label Business Type (display label).
  * @param array  $referral_source Referral Source (at least one value).
- * @param string $message Message.
+ * @param string $use_case Use Case (comma-joined from demo_goals).
  * @return string
  */
-function jcp_core_build_ghl_body( string $first_name, string $email, string $phone, string $company, string $trade, array $referral_source, string $message ): string {
+function jcp_core_build_ghl_body( string $first_name, string $last_name, string $email, string $phone, string $company, string $business_type_label, array $referral_source, string $use_case ): string {
     $scalar = [
-        'First Name' => $first_name,
-        'Email'      => $email,
-        'Phone'      => $phone,
-        'Company'    => $company,
-        'Trade'      => $trade,
-        'Message'    => $message,
+        JCP_GHL_KEY_FIRST_NAME     => $first_name,
+        JCP_GHL_KEY_LAST_NAME      => $last_name,
+        JCP_GHL_KEY_EMAIL         => $email,
+        JCP_GHL_KEY_PHONE         => $phone,
+        JCP_GHL_KEY_COMPANY       => $company,
+        JCP_GHL_KEY_BUSINESS_TYPE => $business_type_label,
+        JCP_GHL_KEY_USE_CASE      => $use_case,
     ];
     $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
     foreach ( $referral_source as $v ) {
         $v = trim( (string) $v );
         if ( $v !== '' ) {
-            $body .= '&Referral+Source%5B%5D=' . rawurlencode( $v );
+            $body .= '&' . rawurlencode( JCP_GHL_KEY_REFERRAL_SOURCE . '[]' ) . '=' . rawurlencode( $v );
         }
     }
     return $body;
@@ -124,25 +131,27 @@ function jcp_core_build_ghl_body( string $first_name, string $email, string $pho
  */
 function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_REST_Response {
     $first_name      = $request->get_param( 'first_name' );
+    $last_name       = $request->get_param( 'last_name' );
     $company         = $request->get_param( 'company' );
     $email           = $request->get_param( 'email' );
     $phone           = $request->get_param( 'phone' );
-    $message         = $request->get_param( 'message' );
+    $demo_goals      = $request->get_param( 'demo_goals' );
     $referral_source = $request->get_param( 'referral_source' );
     $business_type   = $request->get_param( 'business_type' );
 
     $require_company = true;
     $require_phone   = true;
 
-    if ( empty( $first_name ) || empty( $email ) || empty( $message ) || empty( $referral_source ) || empty( $business_type ) ) {
+    $demo_goals_array = is_array( $demo_goals ) ? array_filter( array_map( 'trim', $demo_goals ) ) : [];
+    if ( empty( $first_name ) || empty( $last_name ) || empty( $email ) || empty( $demo_goals_array ) || empty( $referral_source ) || empty( $business_type ) ) {
         return new \WP_REST_Response(
-            [ 'success' => false, 'message' => __( 'Required fields must be filled.', 'jcp-core' ) ],
+            [ 'success' => false, 'message' => __( 'First name, last name, email, at least one interest, business type, and referral source are required.', 'jcp-core' ) ],
             400
         );
     }
     if ( $require_company && ( $company === null || trim( (string) $company ) === '' ) ) {
         return new \WP_REST_Response(
-            [ 'success' => false, 'message' => __( 'Company is required.', 'jcp-core' ) ],
+            [ 'success' => false, 'message' => __( 'Business name is required.', 'jcp-core' ) ],
             400
         );
     }
@@ -154,21 +163,22 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
     }
 
     $first_name      = trim( (string) $first_name );
+    $last_name       = trim( (string) $last_name );
     $company         = trim( (string) $company );
     $email           = trim( (string) $email );
     $phone           = trim( (string) $phone );
-    $message         = trim( (string) $message );
     $referral_source = [ trim( (string) $referral_source ) ];
     $business_type   = trim( (string) $business_type );
+    $use_case        = implode( ', ', $demo_goals_array );
 
-    $trade = function_exists( 'jcp_core_early_access_business_type_label' )
+    $business_type_label = function_exists( 'jcp_core_early_access_business_type_label' )
         ? jcp_core_early_access_business_type_label( $business_type )
         : $business_type;
-    if ( $trade === '' ) {
-        $trade = $business_type;
+    if ( $business_type_label === '' ) {
+        $business_type_label = $business_type;
     }
 
-    $body_string = jcp_core_build_ghl_body( $first_name, $email, $phone, $company, $trade, $referral_source, $message );
+    $body_string = jcp_core_build_ghl_body( $first_name, $last_name, $email, $phone, $company, $business_type_label, $referral_source, $use_case );
     $url         = jcp_core_ghl_webhook_url();
 
     if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
@@ -219,16 +229,17 @@ function jcp_core_early_access_submit_handler( \WP_REST_Request $request ): \WP_
  * @return \WP_REST_Response
  */
 function jcp_core_early_access_test_ghl( \WP_REST_Request $request ): \WP_REST_Response {
-    $trade = 'General Contractor';
+    $business_type_label = 'General Contractor';
 
     $body_string = jcp_core_build_ghl_body(
         'Test First',
+        'Test Last',
         'test@example.com',
         '555-000-0000',
         'Test Company',
-        $trade,
+        $business_type_label,
         [ 'Google Search' ],
-        'Test message from WP admin GHL test.'
+        'More inbound calls, Better Google visibility'
     );
     $url = jcp_core_ghl_webhook_url();
 

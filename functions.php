@@ -21,6 +21,9 @@ require_once get_template_directory() . '/inc/template-routes.php';
 // Load ACF configuration (if ACF is available)
 require_once get_template_directory() . '/inc/acf-config.php';
 
+// Canonical form field names (REST params + GHL keys); Demo Survey = source of truth
+require_once get_template_directory() . '/inc/form-fields.php';
+
 // REST: Early Access form → GHL webhook
 require_once get_template_directory() . '/inc/rest-early-access.php';
 

@@ -31,6 +31,47 @@
 
   const getValue = (id) => (document.getElementById(id)?.value || '').trim();
 
+  // Prefill survey from Early Access form submission (localStorage key: jcp_demo_survey_prefill).
+  const prefillFromEarlyAccess = () => {
+    try {
+      const raw = localStorage.getItem('jcp_demo_survey_prefill');
+      if (!raw) return;
+      const prefill = JSON.parse(raw);
+      if (!prefill || typeof prefill !== 'object') return;
+
+      const businessNameEl = document.getElementById('businessName');
+      const nicheEl = document.getElementById('niche');
+      const firstNameEl = document.getElementById('firstName');
+      const lastNameEl = document.getElementById('lastName');
+      const emailEl = document.getElementById('email');
+
+      if (businessNameEl && prefill.company != null) businessNameEl.value = prefill.company;
+      if (nicheEl && prefill.business_type != null) nicheEl.value = prefill.business_type;
+      if (firstNameEl && prefill.first_name != null) firstNameEl.value = prefill.first_name;
+      if (lastNameEl && prefill.last_name != null) lastNameEl.value = prefill.last_name;
+      if (emailEl && prefill.email != null) emailEl.value = prefill.email;
+
+      // Early Access uses full labels as values; survey uses short values (calls, google, etc.).
+      const eaToSurvey = {
+        'More inbound calls': 'calls',
+        'Better Google visibility': 'google',
+        'More customer reviews': 'reviews',
+        'Stronger website trust': 'trust',
+        'Less marketing busywork': 'busywork',
+        'Showcase my work': 'showcase',
+      };
+      const surveyValues = (prefill.demo_goals || []).map((v) => eaToSurvey[v] || v).filter(Boolean);
+      if (goalsWrap && surveyValues.length) {
+        goalsWrap.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+          cb.checked = surveyValues.indexOf(cb.value) !== -1;
+        });
+        enforceGoalLimit();
+      }
+    } catch (e) {
+      // no-op
+    }
+  };
+
   const updateProgress = () => {
     if (progressText) {
       progressText.textContent = `Step ${currentIndex + 1} of 3`;
@@ -138,10 +179,11 @@
 
   const validateStep3 = () => {
     const firstName = getValue('firstName');
+    const lastName = getValue('lastName');
     const emailInput = document.getElementById('email');
     const email = getValue('email');
-    if (!firstName) {
-      alert('Please enter your first name to continue.');
+    if (!firstName || !lastName) {
+      alert('Please enter your first and last name to continue.');
       return false;
     }
     if (!email || !emailInput?.checkValidity()) {
@@ -163,6 +205,25 @@
     });
   };
 
+  // Save current survey data so Early Access form can prefill if user visits that page later.
+  const saveSurveyPrefillForEarlyAccess = () => {
+    const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || [])
+      .map((input) => input.value);
+    const prefill = {
+      first_name: getValue('firstName'),
+      last_name: getValue('lastName'),
+      email: getValue('email'),
+      company: getValue('businessName'),
+      business_type: getValue('niche'),
+      demo_goals: goals,
+    };
+    try {
+      localStorage.setItem('jcp_early_access_prefill', JSON.stringify(prefill));
+    } catch (e) {
+      // no-op
+    }
+  };
+
   // Submit opt-in when user clicks "Continue to preview" — sends full form to first webhook (Create Contact + tag demo-opt-in).
   const submitDemoOptIn = async () => {
     const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || [])
@@ -175,8 +236,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             first_name: getValue('firstName'),
+            last_name: getValue('lastName'),
             email: getValue('email'),
-            business_name: getValue('businessName'),
+            company: getValue('businessName'),
             business_type: getValue('niche'),
             demo_goals: goals,
           }),
@@ -201,14 +263,17 @@
     }
 
     const firstName = getValue('firstName');
+    const lastName = getValue('lastName');
     const email = getValue('email');
     localStorage.setItem('demoUser', JSON.stringify({
       businessName: getValue('businessName'),
       niche: getValue('niche'),
       goals,
       firstName,
+      lastName,
       email,
     }));
+    saveSurveyPrefillForEarlyAccess();
 
     const viewedUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_viewed_url) || `${baseUrl}/wp-json/jcp/v1/demo-viewed-submit`;
     try {
@@ -216,7 +281,7 @@
         fetch(viewedUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ first_name: firstName, email }),
+          body: JSON.stringify({ first_name: firstName, last_name: lastName, email }),
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
       ]);
@@ -257,6 +322,7 @@
 
     if (action === 'launch' && !deckActive) {
       if (!validateStep3()) return;
+      saveSurveyPrefillForEarlyAccess();
       if (deckSlides.length) {
         submitDemoOptIn().then(() => showDeck());
         return;
@@ -314,5 +380,6 @@
 
   enforceGoalLimit();
   hydrateRankName();
+  prefillFromEarlyAccess();
   showStep(0);
 })();

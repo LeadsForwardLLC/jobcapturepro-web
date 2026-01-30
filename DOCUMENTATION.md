@@ -17,6 +17,7 @@
 7. [Current Status](#current-status)
 8. [Quick Reference](#quick-reference)
 9. [Setup & Integrations](#setup--integrations)
+10. [Forms & GoHighLevel](#forms--gohighlevel)
 
 ---
 
@@ -141,13 +142,12 @@ assets/js/
 │   │   ├── estimate-builder.js
 │   │   ├── analytics.js
 │   │   └── requests.js
-│   ├── survey/
-│   │   └── survey.js
 │   └── faq.js
 └── pages/
     ├── home.js          # Homepage renderer (string templates)
-    ├── pricing.js        # Pricing page renderer (string templates)
-    └── early-access.js   # Early access renderer (string templates)
+    ├── pricing.js       # Pricing page renderer (string templates)
+    ├── early-access.js  # Early access renderer (string templates)
+    └── survey.js        # Demo survey (opt-in + viewed-demo) renderer
 ```
 
 ### Assets Structure
@@ -248,7 +248,7 @@ WordPress template hierarchy **REQUIRES** `page-*.php`, `single-*.php`, `header.
   - Demo: `js/features/demo/jcp-demo.js` + Leaflet library
   - Directory: `js/features/directory/directory.js`
   - Estimate: `js/features/estimate/*.js` (3 files)
-  - Survey: `js/features/survey/survey.js`
+  - Survey: `js/pages/survey.js`
 
 #### HTML Template Loading (via `jcp-render.js`)
 - Demo page (`/demo?mode=run`): `assets/demo/index.html`
@@ -584,10 +584,10 @@ The theme posts form submissions to **two separate** GoHighLevel inbound webhook
 | Form | Purpose | Webhook URL constant | File |
 |------|---------|----------------------|------|
 | **Early Access** | Founding crew signup → Early Access automation | `JCP_GHL_WEBHOOK_URL_DEFAULT` | `inc/rest-early-access.php` |
-| **Demo Survey** | Demo signup → Demo Follow-Up automation | `JCP_GHL_DEMO_SURVEY_WEBHOOK_URL` | `inc/rest-demo-survey.php` |
+| **Demo Survey** | Demo signup (opt-in + viewed-demo) → single workflow with Event branching | `JCP_GHL_DEMO_SURVEY_WEBHOOK_URL` | `inc/rest-demo-survey.php` |
 
-- **Early Access:** REST route `POST /wp-json/jcp/v1/early-access-submit`; payload is `application/x-www-form-urlencoded` with contact + referral fields.
-- **Demo Survey:** REST route `POST /wp-json/jcp/v1/demo-survey-submit`; payload includes contact + demo-specific fields and tags (e.g. `demo-completed`, `demo-interest`). Do not apply early-access tags from the Demo Survey.
+- **Early Access:** REST route `POST /wp-json/jcp/v1/early-access-submit`. Payload: `application/x-www-form-urlencoded`, flat key-value. Keys: First Name, Email, Phone, Company, Trade, Message, Referral Source[].
+- **Demo Survey:** Two REST routes post to the **same** webhook. (1) `POST /wp-json/jcp/v1/demo-survey-submit` when user clicks "Continue to preview" — full form, Event= demo-opt-in, tags demo-completed, demo-interest. (2) `POST /wp-json/jcp/v1/demo-viewed-submit` when user clicks "Skip to demo" or "Launch the live demo" — Event= demo-viewed, tags viewed-demo. GHL workflow branches on Event (if/then).
 
 ### ACF (Advanced Custom Fields)
 
@@ -597,6 +597,78 @@ The theme posts form submissions to **two separate** GoHighLevel inbound webhook
 ### Debug Logging
 
 - GHL webhook requests/responses are logged with `error_log()` only when `WP_DEBUG_LOG` is defined and true (see `inc/rest-early-access.php`). Disable in production or ensure logs are not exposed.
+
+---
+
+## 📋 FORMS & GOHIGHLEVEL
+
+### Purpose of Each Form
+
+| Form | Page / trigger | Purpose |
+|------|----------------|---------|
+| **Early Access** | `/early-access` | Founding crew signup. Collects contact info, business type, why interested, referral source. One submission per submit; payload goes to Early Access webhook only. |
+| **Demo Survey** | `/demo` (no `mode=run`) | Demo opt-in and viewed-demo tracking. Step 3 "Continue to preview" sends full form to Demo webhook (Event= demo-opt-in). "Skip to demo" / "Launch the live demo" sends minimal payload to same webhook (Event= demo-viewed). GHL branches on Event. |
+
+### Data Flow
+
+1. **Frontend** → POST JSON to theme REST endpoint (e.g. `/wp-json/jcp/v1/early-access-submit` or `/wp-json/jcp/v1/demo-survey-submit`).
+2. **REST handler** → Validates required fields, builds `application/x-www-form-urlencoded` body (flat key-value; no nested objects).
+3. **Theme** → `wp_remote_post()` to the form’s GHL webhook URL.
+4. **GHL** → Workflow receives webhook; mapping (payload key → contact field / custom field) is done in GHL, not in the theme.
+
+### Field Naming Conventions (Single Source of Truth)
+
+- **Canonical definitions:** `inc/form-fields.php` defines REST param names and GHL payload keys. Demo Survey is the source of truth. Both Early Access and Demo Survey REST handlers use these constants when building webhook bodies so GHL receives consistent keys.
+- **REST request body (JSON):** Snake_case (e.g. `first_name`, `company`, `demo_goals`, `business_type`). Same concept uses the same param on both forms.
+- **GHL payload (form-urlencoded):** Keys come from `form-fields.php` (e.g. `JCP_GHL_KEY_FIRST_NAME` → "First Name", `JCP_GHL_KEY_USE_CASE` → "Use Case"). Both forms send the same key for the same concept (e.g. "Use Case" for why interested / demo goals, not "Message").
+
+### Shared vs Form-Specific Fields
+
+**Shared fields (identical REST param and GHL key on both forms; defined in `inc/form-fields.php`):**
+
+| Concept | Form label (Demo = source of truth) | REST param (both forms) | GHL key (both forms) | Value |
+|---------|--------------------------------------|-------------------------|----------------------|-------|
+| First name | First name | `first_name` | First Name | As entered |
+| Last name | Last name | `last_name` | Last Name | As entered |
+| Email | Email address | `email` | Email | As entered |
+| Phone | Phone | `phone` | Phone | As entered |
+| Business name / company | Business name | `company` | Company | As entered |
+| Business type | Business type | `business_type` | Business Type | Display label (e.g. Plumbing, General Contractor) |
+| Why interested / demo goals | (context-specific label) | `demo_goals` (array) | Use Case | Comma-joined labels |
+
+- **First name / Last name:** Both forms collect first name and last name in separate fields. REST params `first_name` and `last_name` map to GHL keys "First Name" and "Last Name".
+- **Labels/placeholders:** Demo Survey is the source of truth: "First name", "John"; "Last name", "Smith"; "Email address", "you@company.com"; "Business name", "Summit Plumbing"; "Business type", "Select your business type". Early Access uses the same labels and placeholders for these shared fields.
+- Both forms send **Business Type** as the display label and **Use Case** for the “why interested” / “what should this demo prove” checkboxes. GHL workflows map **Use Case** and **Business Type**.
+
+**Demo-only (exist only on Demo Survey; never sent by Early Access):**
+
+- `service_area` → Service Area  
+- `demo_goals` (array) → Use Case (comma-joined)  
+- Event, Tags (demo-completed, demo-interest, viewed-demo)
+
+**Early-Access-only (never sent by Demo Survey):**
+
+- `referral_source` → Referral Source[] (array)
+
+**GHL workflow notes:** Early Access sends **Use Case** (same key as Demo Survey) for the “why interested” checkboxes—not "Message". Early Access sends **Business Type** (same key as Demo Survey). If your Early Access workflow previously mapped **Trade** or **Message**, update it to map **Business Type** and **Use Case** instead.
+
+### Webhook Mapping Philosophy
+
+- All mapping from payload keys to GHL contact/custom fields happens in the **GHL workflow** (Create/Update Contact, etc.). The theme only sends consistent, flat key-value pairs.
+- Do not rename payload keys arbitrarily; changing a key breaks existing GHL workflows unless they are updated.
+- Adding a new optional field: add to REST args (optional), add to build-body function, add to frontend; then map in GHL.
+
+### How to Add a Future Form Without Breaking GHL
+
+1. **New form = new webhook.** Do not reuse Early Access or Demo Survey webhook URLs for a different form.
+2. **New REST route** in the appropriate `inc/rest-*.php` (or new file required from `functions.php`). Validate required fields; build `application/x-www-form-urlencoded` body; `wp_remote_post()` to the new webhook URL.
+3. **Use canonical keys from `inc/form-fields.php`** for overlapping concepts (e.g. `JCP_GHL_KEY_FIRST_NAME`, `JCP_REST_PARAM_COMPANY`, `JCP_GHL_KEY_USE_CASE`). Add new constants to `form-fields.php` only if the concept is truly new.
+4. **Form-specific fields** use new REST params and new GHL payload keys; do not inject them into Early Access or Demo payloads.
+5. **Document** in this section: form purpose, REST route, payload keys, and which webhook constant to define.
+
+### Survey Script Location
+
+- Demo Survey frontend logic lives in **`assets/js/pages/survey.js`** (not under `features/`). Enqueued on demo page when not `?mode=run`.
 
 ---
 

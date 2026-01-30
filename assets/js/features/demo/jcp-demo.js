@@ -10,6 +10,7 @@
 ========================= */
 let demoUser = {
   firstName: 'John',
+  lastName: 'Smith',
   businessName: 'Summit Plumbing',
   niche: 'service'
 };
@@ -46,6 +47,7 @@ try {
   if (fromUrl) {
     demoUser = {
       firstName: fromUrl.firstName || demoUser.firstName,
+      lastName: fromUrl.lastName || demoUser.lastName,
       businessName: fromUrl.businessName || demoUser.businessName,
       niche: fromUrl.niche || demoUser.niche,
       email: fromUrl.email || demoUser.email || ''
@@ -62,6 +64,7 @@ try {
 
       demoUser = {
         firstName: parsed.firstName || demoUser.firstName,
+        lastName: parsed.lastName || demoUser.lastName,
         businessName: parsed.businessName || demoUser.businessName,
         niche: parsed.niche || demoUser.niche,
         email: parsed.email || ''
@@ -1186,7 +1189,7 @@ async function sendReviewRequest() {
   const headerCta = document.getElementById('btnNext');
   if (headerCta) {
     headerCta.textContent = 'Get Started →';
-    headerCta.onclick = () => window.open('https://jobcapturepro.com/early-access/', '_blank');
+    headerCta.onclick = () => { window.location.href = (baseUrl || window.location.origin).replace(/\/?$/, '') + '/early-access'; };
   }
 
   // Reveal header "View Demo Directory" button AFTER demo finishes

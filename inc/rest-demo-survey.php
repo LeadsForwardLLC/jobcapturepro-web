@@ -48,7 +48,7 @@ function jcp_core_register_demo_survey_rest_routes(): void {
                 'type'              => 'string',
                 'sanitize_callback'  => 'sanitize_text_field',
             ],
-            'business_name'  => [
+            'company'        => [
                 'required'          => false,
                 'type'              => 'string',
                 'sanitize_callback'  => 'sanitize_text_field',
@@ -81,6 +81,11 @@ function jcp_core_register_demo_survey_rest_routes(): void {
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
+            'last_name'  => [
+                'required'          => false,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
             'email'      => [
                 'required'          => true,
                 'type'              => 'string',
@@ -107,23 +112,30 @@ function jcp_core_build_demo_survey_ghl_body( array $params ): string {
     $last_name     = isset( $params['last_name'] ) ? trim( (string) $params['last_name'] ) : '';
     $email         = isset( $params['email'] ) ? trim( (string) $params['email'] ) : '';
     $phone         = isset( $params['phone'] ) ? trim( (string) $params['phone'] ) : '';
-    $business_name = isset( $params['business_name'] ) ? trim( (string) $params['business_name'] ) : '';
+    $company       = isset( $params['company'] ) ? trim( (string) $params['company'] ) : '';
     $business_type = isset( $params['business_type'] ) ? trim( (string) $params['business_type'] ) : '';
     $service_area  = isset( $params['service_area'] ) ? trim( (string) $params['service_area'] ) : '';
     $demo_goals    = isset( $params['demo_goals'] ) && is_array( $params['demo_goals'] )
         ? array_filter( array_map( 'trim', $params['demo_goals'] ) )
         : [];
 
+    $business_type_label = function_exists( 'jcp_core_early_access_business_type_label' )
+        ? jcp_core_early_access_business_type_label( $business_type )
+        : $business_type;
+    if ( $business_type_label === '' ) {
+        $business_type_label = $business_type;
+    }
+
     $scalar = [
-        'Event'          => 'demo-opt-in',
-        'First Name'     => $first_name,
-        'Last Name'      => $last_name,
-        'Email'          => $email,
-        'Phone'          => $phone,
-        'Company'        => $business_name,
-        'Business Type'  => $business_type,
-        'Service Area'   => $service_area,
-        'Use Case'       => implode( ', ', $demo_goals ),
+        JCP_GHL_KEY_EVENT          => 'demo-opt-in',
+        JCP_GHL_KEY_FIRST_NAME     => $first_name,
+        JCP_GHL_KEY_LAST_NAME      => $last_name,
+        JCP_GHL_KEY_EMAIL          => $email,
+        JCP_GHL_KEY_PHONE          => $phone,
+        JCP_GHL_KEY_COMPANY        => $company,
+        JCP_GHL_KEY_BUSINESS_TYPE  => $business_type_label,
+        JCP_GHL_KEY_SERVICE_AREA   => $service_area,
+        JCP_GHL_KEY_USE_CASE       => implode( ', ', $demo_goals ),
     ];
     $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
 
@@ -147,7 +159,7 @@ function jcp_core_demo_survey_submit_handler( \WP_REST_Request $request ): \WP_R
 
     if ( empty( trim( (string) $first_name ) ) || empty( trim( (string) $email ) ) ) {
         return new \WP_REST_Response(
-            [ 'success' => false, 'message' => __( 'First name and email are required.', 'jcp-core' ) ],
+            [ 'success' => false, 'message' => __( 'First name, last name, and email are required.', 'jcp-core' ) ],
             400
         );
     }
@@ -157,7 +169,7 @@ function jcp_core_demo_survey_submit_handler( \WP_REST_Request $request ): \WP_R
         'last_name'     => $request->get_param( 'last_name' ),
         'email'         => $email,
         'phone'         => $request->get_param( 'phone' ),
-        'business_name' => $request->get_param( 'business_name' ),
+        'company'       => $request->get_param( 'company' ),
         'business_type' => $request->get_param( 'business_type' ),
         'service_area'  => $request->get_param( 'service_area' ),
         'demo_goals'    => $request->get_param( 'demo_goals' ),
@@ -200,14 +212,16 @@ function jcp_core_demo_survey_submit_handler( \WP_REST_Request $request ): \WP_R
  * GHL can branch on Event: if "demo-viewed" → Find Contact by Email → Add Tag "viewed-demo".
  *
  * @param string $first_name First name.
- * @param string $email Email.
+ * @param string $last_name  Last name.
+ * @param string $email      Email.
  * @return string
  */
-function jcp_core_build_demo_viewed_ghl_body( string $first_name, string $email ): string {
+function jcp_core_build_demo_viewed_ghl_body( string $first_name, string $last_name, string $email ): string {
     $scalar = [
-        'Event'      => 'demo-viewed',
-        'First Name' => $first_name,
-        'Email'      => $email,
+        JCP_GHL_KEY_EVENT      => 'demo-viewed',
+        JCP_GHL_KEY_FIRST_NAME => $first_name,
+        JCP_GHL_KEY_LAST_NAME  => $last_name,
+        JCP_GHL_KEY_EMAIL      => $email,
     ];
     $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
     $body .= '&Tags%5B%5D=' . rawurlencode( 'viewed-demo' );
@@ -222,16 +236,17 @@ function jcp_core_build_demo_viewed_ghl_body( string $first_name, string $email 
  */
 function jcp_core_demo_viewed_submit_handler( \WP_REST_Request $request ): \WP_REST_Response {
     $first_name = trim( (string) $request->get_param( 'first_name' ) );
+    $last_name  = trim( (string) $request->get_param( 'last_name' ) );
     $email      = trim( (string) $request->get_param( 'email' ) );
 
     if ( $first_name === '' || $email === '' || ! is_email( $email ) ) {
         return new \WP_REST_Response(
-            [ 'success' => false, 'message' => __( 'First name and email are required.', 'jcp-core' ) ],
+            [ 'success' => false, 'message' => __( 'First name, last name, and email are required.', 'jcp-core' ) ],
             400
         );
     }
 
-    $body_string = jcp_core_build_demo_viewed_ghl_body( $first_name, $email );
+    $body_string = jcp_core_build_demo_viewed_ghl_body( $first_name, $last_name, $email );
 
     $response = wp_remote_post(
         JCP_GHL_DEMO_SURVEY_WEBHOOK_URL,

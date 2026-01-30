@@ -44,7 +44,7 @@
       return `<optgroup label="${escAttr(grp.label || '')}">${opts}</optgroup>`;
     }).join('');
     const whyOptions = (c.why_interested_options || []).map(
-      (o) => `<label class="jcp-form-goal"><input type="checkbox" name="message" value="${escAttr(o.value)}"><span>${escText(o.label)}</span></label>`
+      (o) => `<label class="jcp-form-goal"><input type="checkbox" name="demo_goals" value="${escAttr(o.value)}"><span>${escText(o.label)}</span></label>`
     ).join('');
     const requirePhone = c.require_phone !== false;
     const requireCompany = c.require_company !== false;
@@ -69,33 +69,33 @@
                 <div class="jcp-form-error" id="earlyAccessFormError" role="alert" aria-live="polite" style="display: none;"></div>
                 <div class="jcp-form-grid">
                   <div class="jcp-form-field">
-                    <label for="founding-name">Full Name</label>
+                    <label for="founding-first-name">First name</label>
                     <input
+                      id="founding-first-name"
                       type="text"
-                      id="founding-name"
                       name="first_name"
-                      placeholder="John Smith"
+                      placeholder="John"
                       required
                     />
                   </div>
                   <div class="jcp-form-field">
-                    <label for="founding-email">Email</label>
+                    <label for="founding-last-name">Last name</label>
+                    <input
+                      id="founding-last-name"
+                      type="text"
+                      name="last_name"
+                      placeholder="Smith"
+                      required
+                    />
+                  </div>
+                  <div class="jcp-form-field">
+                    <label for="founding-email">Email address</label>
                     <input
                       type="email"
                       id="founding-email"
                       name="email"
-                      placeholder="john@example.com"
+                      placeholder="you@company.com"
                       required
-                    />
-                  </div>
-                  <div class="jcp-form-field">
-                    <label for="founding-company">Company</label>
-                    <input
-                      type="text"
-                      id="founding-company"
-                      name="company"
-                      placeholder="Summit Plumbing"
-                      ${requireCompany ? 'required' : ''}
                     />
                   </div>
                   <div class="jcp-form-field">
@@ -108,18 +108,28 @@
                       ${requirePhone ? 'required' : ''}
                     />
                   </div>
-                </div>
-                <div class="jcp-form-field jcp-form-field-full">
-                  <label for="founding-business-type">Business type</label>
-                  <select id="founding-business-type" name="business_type" required>
-                    <option value="">Select your business type</option>
-                    ${businessTypeGroups}
-                  </select>
+                  <div class="jcp-form-field">
+                    <label for="founding-company">Business name</label>
+                    <input
+                      type="text"
+                      id="founding-company"
+                      name="company"
+                      placeholder="Summit Plumbing"
+                      ${requireCompany ? 'required' : ''}
+                    />
+                  </div>
+                  <div class="jcp-form-field">
+                    <label for="founding-business-type">Business type</label>
+                    <select id="founding-business-type" name="business_type" required>
+                      <option value="">Select your business type</option>
+                      ${businessTypeGroups}
+                    </select>
+                  </div>
                 </div>
                 <div class="jcp-form-field jcp-form-field-full">
                   <span class="jcp-form-label">Why are you interested in JobCapturePro?</span>
-                  <p class="jcp-form-field-helper" id="founding-message-helper">Select all that apply</p>
-                  <div class="jcp-form-goals" id="founding-message" aria-describedby="founding-message-helper" role="group">
+                  <p class="jcp-form-field-helper" id="founding-demo-goals-helper">Select all that apply</p>
+                  <div class="jcp-form-goals" id="founding-demo-goals" aria-describedby="founding-demo-goals-helper" role="group">
                     ${whyOptions}
                   </div>
                 </div>
@@ -205,6 +215,44 @@
     const errorEl = document.getElementById('earlyAccessFormError');
     const submitBtn = document.getElementById('earlyAccessSubmitBtn');
 
+    // Prefill from Demo Survey submission (localStorage key: jcp_early_access_prefill).
+    try {
+      const raw = localStorage.getItem('jcp_early_access_prefill');
+      if (raw) {
+        const prefill = JSON.parse(raw);
+        if (prefill && typeof prefill === 'object') {
+          const set = (name, val) => {
+            const el = form.querySelector('[name="' + name + '"]');
+            if (el && val != null && val !== '') el.value = String(val);
+          };
+          set('first_name', prefill.first_name);
+          set('last_name', prefill.last_name);
+          set('email', prefill.email);
+          set('company', prefill.company);
+          set('business_type', prefill.business_type);
+
+          // Survey uses short values (calls, google); Early Access uses full labels.
+          const surveyToEa = {
+            calls: 'More inbound calls',
+            google: 'Better Google visibility',
+            reviews: 'More customer reviews',
+            trust: 'Stronger website trust',
+            busywork: 'Less marketing busywork',
+            showcase: 'Showcase my work',
+          };
+          const demo_goals = prefill.demo_goals || [];
+          const eaValues = demo_goals.map((v) => surveyToEa[v] || v).filter(Boolean);
+          if (eaValues.length) {
+            form.querySelectorAll('input[name="demo_goals"]').forEach((cb) => {
+              cb.checked = eaValues.indexOf(cb.value) !== -1;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // no-op
+    }
+
     function showError(msg) {
       if (errorEl) {
         errorEl.textContent = msg;
@@ -230,24 +278,24 @@
       }
 
       const first_name = (form.querySelector('[name="first_name"]') || {}).value || '';
+      const last_name = (form.querySelector('[name="last_name"]') || {}).value || '';
       const company = (form.querySelector('[name="company"]') || {}).value || '';
       const email = (form.querySelector('[name="email"]') || {}).value || '';
       const phone = (form.querySelector('[name="phone"]') || {}).value || '';
-      const messageCheckboxes = form.querySelectorAll('input[name="message"]:checked');
-      const messageValues = Array.from(messageCheckboxes).map(function (cb) { return cb.value; }).filter(Boolean);
-      const messageText = messageValues.length ? messageValues.join(', ') : '';
+      const demoGoalsCheckboxes = form.querySelectorAll('input[name="demo_goals"]:checked');
+      const demo_goals = Array.from(demoGoalsCheckboxes).map(function (cb) { return cb.value; }).filter(Boolean);
       const referral_source = (form.querySelector('[name="referral_source"]') || {}).value || '';
       const business_type = (form.querySelector('[name="business_type"]') || {}).value || '';
 
       const requirePhone = form.getAttribute('data-require-phone') === '1';
       const requireCompany = form.getAttribute('data-require-company') === '1';
 
-      if (!first_name.trim() || !email.trim() || !messageText || !referral_source || !business_type.trim()) {
-        showError('Please fill in all required fields, including at least one "Why are you interested" option and your business type.');
+      if (!first_name.trim() || !last_name.trim() || !email.trim() || !demo_goals.length || !referral_source || !business_type.trim()) {
+        showError('Please fill in all required fields, including first name, last name, at least one "Why are you interested" option, and your business type.');
         return;
       }
       if (requireCompany && !company.trim()) {
-        showError('Please enter your company.');
+        showError('Please enter your business name.');
         return;
       }
       if (requirePhone && !phone.trim()) {
@@ -266,11 +314,12 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           first_name: first_name.trim(),
+          last_name: last_name.trim(),
           company: company.trim(),
           email: email.trim(),
           phone: phone.trim(),
           business_type: business_type.trim(),
-          message: messageText.trim(),
+          demo_goals: demo_goals,
           referral_source: referral_source.trim(),
         }),
       })
@@ -280,6 +329,19 @@
         })
         .then(({ ok, data }) => {
           if (ok) {
+            try {
+              const prefill = {
+                first_name: first_name.trim(),
+                last_name: last_name.trim(),
+                email: email.trim(),
+                company: company.trim(),
+                business_type: business_type.trim(),
+                demo_goals: demo_goals,
+              };
+              localStorage.setItem('jcp_demo_survey_prefill', JSON.stringify(prefill));
+            } catch (e) {
+              // no-op
+            }
             const redirect = (window.JCP_EARLY_ACCESS_FORM || {}).success_redirect || '/early-access-success/';
             window.location.href = redirect;
             return;
