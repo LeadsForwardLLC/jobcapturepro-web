@@ -227,8 +227,10 @@ The main marketing nav (desktop) is defined in `templates/partials/nav.php`: **H
   - `utilities.css` (helper classes)
 
 - **Marketing Pages** (Home, Pricing, Early Access):
-  - `sections.css` (homepage sections: hero, FAQ, CTA, etc.)
+  - `sections.css` (homepage sections: hero, How it works, Real Job Proof, FAQ, CTA, etc.)
   - Page-specific CSS (`home.css`, `pricing.css`, `early-access.css`)
+
+**Real Job Proof section** (homepage only, in `home.js` + `sections.css`): Renders directly under the 4-step "How JobCapturePro works" flow. Purpose: make the abstract flow concrete by showing four proof outputs (Google Business Profile, Website, Directory, Reviews) with icons and one-line copy, a directory reinforcement callout ("All JobCapturePro customers are added to the verified directory"), and a soft CTA to the live demo. Uses existing components (rankings-header, factor-icon-wrapper, demo-badge, timeline-cta-link). Reinforces proof, not features; introduces the Directory as proof. No images; icons and layout only.
 
 - **Standard Pages & Blog** (generic `page.php`, blog archive, single post):
   - `layout.css` (containers, section spacing — ensures `.jcp-container` works on standard pages)

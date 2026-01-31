@@ -26,6 +26,105 @@
     };
   };
 
+  function buildWavePoints(x1, x2, centerY, amplitude, waves) {
+    const points = [];
+    const steps = 32;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const x = x1 + t * (x2 - x1);
+      const y = centerY + amplitude * Math.sin(t * Math.PI * 2 * waves);
+      points.push({ x, y });
+    }
+    return points;
+  }
+
+  function buildContinuousWavePath(centerXs, centerY, amplitude, waves, padding) {
+    if (centerXs.length < 2) return '';
+    const allPoints = [];
+    const startX = centerXs[0] - padding;
+    const endX = centerXs[centerXs.length - 1] + padding;
+    const segStarts = [startX, ...centerXs];
+    const segEnds = [...centerXs, endX];
+    for (let i = 0; i < segStarts.length; i++) {
+      const pts = buildWavePoints(segStarts[i], segEnds[i], centerY, amplitude, waves);
+      if (i === 0) {
+        allPoints.push(...pts);
+      } else {
+        allPoints.push(...pts.slice(1));
+      }
+    }
+    return 'M ' + allPoints.map((p) => p.x + ' ' + p.y).join(' L ');
+  }
+
+  let proofFlowResizeCleanup = null;
+
+  function initProofFlowLines(rootEl) {
+    const flow = rootEl && rootEl.querySelector('.proof-flow');
+    const linesEl = flow && flow.querySelector('.proof-flow-lines');
+    if (!flow || !linesEl) return;
+
+    if (proofFlowResizeCleanup) {
+      proofFlowResizeCleanup();
+      proofFlowResizeCleanup = null;
+    }
+
+    const items = flow.querySelectorAll('.proof-flow-item');
+    if (items.length < 2) return;
+
+    const flowRect = flow.getBoundingClientRect();
+    const iconCenterXs = [];
+    let iconCenterY = 32;
+    items.forEach((item) => {
+      const iconEl = item.querySelector('.factor-icon-wrapper');
+      if (iconEl) {
+        const r = iconEl.getBoundingClientRect();
+        iconCenterXs.push(r.left - flowRect.left + r.width / 2);
+        if (iconCenterXs.length === 1) {
+          iconCenterY = r.top - flowRect.top + r.height / 2;
+        }
+      }
+    });
+    if (iconCenterXs.length < 2) return;
+
+    const w = flowRect.width;
+    const h = flowRect.height;
+    const amplitude = 5;
+    const waves = 2;
+    const padding = 24;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'proof-flow-waves');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+
+    const delays = [0, 0.4, 0.8];
+    [0, -2, 2].forEach((dy, idx) => {
+      const pathD = buildContinuousWavePath(iconCenterXs, iconCenterY + dy, amplitude, waves, padding);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('class', 'proof-flow-wave');
+      path.setAttribute('d', pathD);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'currentColor');
+      path.setAttribute('stroke-width', dy === 0 ? '2' : '1.5');
+      path.setAttribute('stroke-linecap', 'round');
+      path.style.opacity = dy === 0 ? '1' : '0.5';
+      path.style.animationDelay = delays[idx] + 's';
+      svg.appendChild(path);
+    });
+
+    linesEl.innerHTML = '';
+    linesEl.appendChild(svg);
+
+    let resizeTimer = null;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => initProofFlowLines(rootEl), 150);
+    };
+    window.addEventListener('resize', onResize);
+    proofFlowResizeCleanup = () => window.removeEventListener('resize', onResize);
+  }
+
   window.renderHome = () => {
     const root = document.getElementById('jcp-app');
     if (!root) return;
@@ -302,6 +401,80 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             REAL JOB PROOF SECTION
+             ============================================================ -->
+        <section class="jcp-section rankings-section" id="real-job-proof">
+          <div class="jcp-container">
+            <div class="rankings-header">
+              <h2>Real job proof, not marketing claims</h2>
+              <p class="rankings-subtitle">
+                See how a single completed job becomes public, verifiable proof across every channel that matters.
+              </p>
+            </div>
+
+            <div class="proof-flow">
+              <div class="proof-flow-lines" aria-hidden="true"></div>
+              <div class="proof-flow-item">
+                <div class="factor-icon-wrapper">
+                  <img src="${icon('map-pin')}" class="factor-icon" alt="">
+                </div>
+                <div class="proof-flow-content">
+                  <h4 class="proof-flow-label">Google Business Profile</h4>
+                  <p class="proof-flow-copy">Published as a real job update on Google</p>
+                </div>
+              </div>
+              <div class="proof-flow-item">
+                <div class="factor-icon-wrapper">
+                  <img src="${icon('earth')}" class="factor-icon" alt="">
+                </div>
+                <div class="proof-flow-content">
+                  <h4 class="proof-flow-label">Website</h4>
+                  <p class="proof-flow-copy">Automatically added as live job content</p>
+                </div>
+              </div>
+              <div class="proof-flow-item">
+                <div class="factor-icon-wrapper">
+                  <img src="${icon('share-2')}" class="factor-icon" alt="">
+                </div>
+                <div class="proof-flow-content">
+                  <h4 class="proof-flow-label">Social Media</h4>
+                  <p class="proof-flow-copy">Shared as job proof on social channels</p>
+                </div>
+              </div>
+              <div class="proof-flow-item">
+                <div class="factor-icon-wrapper">
+                  <img src="${icon('star')}" class="factor-icon" alt="">
+                </div>
+                <div class="proof-flow-content">
+                  <h4 class="proof-flow-label">Reviews</h4>
+                  <p class="proof-flow-copy">Auto review collection</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="real-job-proof-callout">
+              <div class="real-job-proof-callout-badge demo-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Verified Job Proof</span>
+              </div>
+              <h3 class="real-job-proof-callout-title">All JobCapturePro customers are added to the verified directory</h3>
+              <p class="real-job-proof-callout-text">This isn't a demo or sample. Every listing represents a real business, real jobs, and real proof created by JobCapturePro.</p>
+            </div>
+
+            <div class="timeline-cta" style="margin-top: var(--jcp-space-3xl);">
+              <a href="#directory-preview" class="timeline-cta-link">
+                Learn more about the JobCapturePro directory
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M13 5l7 7-7 7"/>
+                </svg>
+              </a>
             </div>
           </div>
         </section>
@@ -630,6 +803,14 @@
                 <p>No. Crews simply take a photo in the JobCapturePro app, or your jobs flow in automatically through integrations. There is no extra admin work and no new process to teach.</p>
               </details>
 
+              <details class="faq-item" id="faq-already-use-tools">
+                <summary>I already use CompanyCam or Housecall Pro. Do I need this?</summary>
+                <p>Yes — and that's exactly who JobCapturePro is built for.</p>
+                <p>Tools like CompanyCam and Housecall Pro are great at capturing job photos and managing operations. JobCapturePro sits on top of the tools you already use and turns that existing job activity into public, verified proof.</p>
+                <p>We automatically take real job photos, locations, and completion signals from your workflow and transform them into Google updates, website content, directory listings, and smart review requests — without changing how your crew works.</p>
+                <p>You don't replace your current tools. You make the work you're already doing start driving visibility, trust, and new jobs.</p>
+              </details>
+
               <details class="faq-item">
                 <summary>What exactly happens after we capture a job?</summary>
                 <p>One photo or a completed job triggers an AI check in that becomes publishable proof. It can update your website, keep your Google Business Profile active, publish social content, and send a review request based on your settings.</p>
@@ -760,6 +941,10 @@
 
       </main>
     `;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => initProofFlowLines(root));
+    });
 
     // Rotating word in hero title: visibility → calls → customers → growth
     const rotatingWordEl = root.querySelector('.jcp-hero-rotating-word');

@@ -140,7 +140,7 @@ const demoGuideContent = {
   },
   step6: {
     pill: 'Final Step',
-    title: 'View your business in the live directory',
+    title: 'View your listing in the directory',
     body: 'Your completed job unlocks your verified directory listing. Click to view how customers see you.'
   }
 };

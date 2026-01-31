@@ -82,6 +82,7 @@ On any **Page** (post type `page`), editors can enable an optional **Bottom CTA*
 ✅ **No duplicate files** - Single source of truth for all components  
 ✅ **WordPress-ready** - Template Name headers, text domain, escaping, layout for standard pages  
 ✅ **Blog & single post** - Single-section layout (no double gaps), author + avatar in meta, compact comments  
+✅ **Real Job Proof section** - Homepage section under "How JobCapturePro works"; shows proof outputs (Google, Website, Directory, Reviews) and reinforces the verified directory. See DOCUMENTATION.md.  
 ✅ **Fully documented** - See DOCUMENTATION.md for details
 
 For detailed information, see [DOCUMENTATION.md](./DOCUMENTATION.md).

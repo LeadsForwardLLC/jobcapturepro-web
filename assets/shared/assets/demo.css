@@ -1879,8 +1879,8 @@ body .tour-float.final-step .tour-arrow {
     rgba(255,255,255,1)
   );
   border-radius: 18px;
-  padding: 22px 24px;
-  margin-bottom: 24px;
+  padding: 14px 20px;
+  margin-bottom: 14px;
 }
 
 .post-demo-hero small {
@@ -1890,21 +1890,14 @@ body .tour-float.final-step .tour-arrow {
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: #ff503e;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .post-demo-hero h2 {
-  font-size: 32px;
+  font-size: 35px;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.2;
   color: #0f172a;
-}
-
-.post-demo-result {
-  font-size: 14px;
-  font-weight: 700;
-  color: #374151;
-  margin-bottom: 22px;
 }
 
 .post-demo-card{
@@ -1912,16 +1905,78 @@ body .tour-float.final-step .tour-arrow {
   max-width: 560px;
   background: #ffffff;
   border-radius: 24px;
-  padding: 32px;
+  padding: 24px;
   box-shadow: 0 40px 120px rgba(0,0,0,0.35);
   text-align: left;
 }
 
 .post-demo-card h2{
-  font-size: 28px;
+  font-size: 35px;
   font-weight: 900;
-  margin-bottom: 18px;
+  margin-bottom: 0;
   color: #0f172a;
+}
+
+.post-demo-summary {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.post-demo-summary-line {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.post-demo-summary-line + .post-demo-summary-line {
+  margin-top: 6px;
+}
+
+.post-demo-result {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 14px 0;
+}
+
+.post-demo-actions{
+  display: grid;
+  gap: 6px;
+}
+
+.post-demo-primary-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.post-demo-primary-cta .post-demo-cta-main {
+  display: block;
+}
+
+.post-demo-primary-cta .post-demo-cta-note {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.9);
+  margin: 0;
+}
+
+.post-demo-social-proof {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+  margin: 12px 0 0 0;
+  padding: 0;
+  border: none;
+  text-align: center;
 }
 
 .post-demo-list{
@@ -1970,11 +2025,6 @@ body .tour-float.final-step .tour-arrow {
   align-items: center;
   justify-content: center;
   font-size: 18px;
-}
-
-.post-demo-actions{
-  display: grid;
-  gap: 12px;
 }
 
 .post-demo-list .list-icon {
