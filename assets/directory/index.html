@@ -136,6 +136,36 @@
           Clear filters
         </button>
       </div>
+
+      <div class="badge-legend" id="badgeLegend" aria-label="Badge explanations">
+        <button type="button" class="badge-legend-toggle" id="badgeLegendToggle" aria-expanded="false" aria-controls="badgeLegendPanel">
+          <span class="badge-legend-toggle-text">What do these badges mean?</span>
+          <span class="badge-legend-chevron" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </button>
+        <div class="badge-legend-panel" id="badgeLegendPanel" aria-hidden="true">
+          <div class="badge-legend-list">
+            <span class="badge-legend-item">
+              <span class="badge-legend-pill verified">Verified</span>
+              <span class="badge-legend-text">Verified on real jobs. Photos, locations, and activity are confirmed.</span>
+            </span>
+            <span class="badge-legend-item">
+              <span class="badge-legend-pill trusted">Trusted Pro</span>
+              <span class="badge-legend-text">High verified activity. Consistently documents real jobs.</span>
+            </span>
+            <span class="badge-legend-item">
+              <span class="badge-legend-pill listed">Listed</span>
+              <span class="badge-legend-text">Appears in the directory. Verification level may vary.</span>
+            </span>
+            <span class="badge-legend-item">
+              <span class="badge-legend-pill unlisted">Unlisted</span>
+              <span class="badge-legend-text">Limited visibility. Few or no verified jobs shown.</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div class="directory-grid" id="directoryGrid"></div>
     </div>
   </section>
@@ -230,7 +260,7 @@
     </div>
 
     <!-- Trust Guarantees -->
-    <div class="trust-guarantees">
+    <div class="trust-guarantees" id="trust">
       <h3 class="guarantees-title">What makes this trustworthy</h3>
       <div class="guarantees-grid">
         <div class="jcp-card guarantee-item">

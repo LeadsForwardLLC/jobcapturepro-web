@@ -1550,43 +1550,95 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 
 .badge-legend {
   display: flex;
-  gap: var(--jcp-space-2xl);
-  margin: var(--jcp-space-4xl) 0;
-  padding: var(--jcp-space-2xl);
-  background: var(--jcp-color-bg-secondary);
-  border-radius: var(--jcp-radius-lg);
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin: var(--jcp-space-sm) 0 var(--jcp-space-md) 0;
+}
+
+.badge-legend-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-medium);
+  color: var(--jcp-color-text-secondary);
+  cursor: pointer;
+  transition: color var(--jcp-transition-base);
+}
+
+.badge-legend-toggle:hover,
+.badge-legend-toggle:focus {
+  color: var(--jcp-color-primary);
+  outline: none;
+}
+
+.badge-legend-chevron {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  transition: transform var(--jcp-transition-base);
+}
+
+.badge-legend.is-expanded .badge-legend-chevron {
+  transform: rotate(180deg);
+}
+
+.badge-legend-panel {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.badge-legend.is-expanded .badge-legend-panel {
+  max-height: 160px;
+  padding: 12px 0 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.badge-legend-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
 }
 
 .badge-legend-item {
   display: flex;
-  align-items: center;
-  gap: var(--jcp-space-md);
+  align-items: flex-start;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  min-width: 0;
 }
 
 .badge-legend-pill {
   display: inline-flex;
   align-items: center;
-  padding: var(--jcp-space-xs) var(--jcp-space-md);
+  flex-shrink: 0;
+  padding: 2px 8px;
   border-radius: 999px;
-  font-size: var(--jcp-font-size-xs);
+  font-size: 10px;
   font-weight: var(--jcp-font-weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
-/* Status Badge Variants */
+/* Match directory card badge colors */
 .badge-legend-pill.verified {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--jcp-color-success);
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
   border: none;
 }
 
 .badge-legend-pill.trusted {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--jcp-color-info);
+  background: rgba(245, 158, 11, 0.22);
+  color: #92400e;
   border: none;
 }
 
@@ -1603,9 +1655,11 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 }
 
 .badge-legend-text {
-  font-size: var(--jcp-font-size-sm);
+  font-size: 12px;
+  font-weight: var(--jcp-font-weight-normal);
   color: var(--jcp-color-text-secondary);
   margin: 0;
+  line-height: 1.3;
 }
 
 /* =========================================================
@@ -1837,7 +1891,7 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  color: var(--jcp-color-success);
+  color: var(--jcp-color-primary);
 }
 
 .guarantee-content {
@@ -1894,12 +1948,20 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: none;
 }
 
 .factor-icon {
   width: 32px;
   height: 32px;
   color: var(--jcp-color-primary);
+  filter: none;
+}
+
+/* Force orange on directory (overrides any global white/invert) */
+.directory-shell .factor-icon {
+  color: var(--jcp-color-primary);
+  filter: none;
 }
 
 .factor-title {
@@ -1959,14 +2021,34 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 /* Timeline responsive handled by sections.css */
 
 @media (max-width: 768px) {
-  .badge-legend {
-    flex-direction: column;
-    gap: var(--jcp-space-lg);
+  .badge-legend-toggle {
+    padding: 8px 0;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .badge-legend.is-expanded .badge-legend-panel {
+    padding: 14px 0 0;
+    max-height: 280px;
+  }
+
+  .badge-legend-list {
+    grid-template-columns: 1fr;
+    gap: 12px 0;
   }
 
   .badge-legend-item {
-    flex-direction: column;
-    text-align: center;
+    gap: 8px;
+  }
+
+  .badge-legend-pill {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .badge-legend-text {
+    font-size: 13px;
+    line-height: 1.4;
   }
 
   .ranking-factors-grid {
@@ -1983,8 +2065,9 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
 }
 
 @media (max-width: 640px) {
-  .badge-legend {
-    padding: var(--jcp-space-lg);
+  .badge-legend.is-expanded .badge-legend-panel {
+    padding: 14px 0 0;
+    max-height: 300px;
   }
 
   .directory-card .rank-position {

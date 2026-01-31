@@ -114,12 +114,28 @@ function jcp_core_get_page_detection(): array {
         'is_early_access_success' => $path === 'early-access-success',
         'is_directory'    => is_page_template( 'page-directory.php' ) || is_page( 'directory' ) || $path === 'directory',
         'is_estimate'     => is_page_template( 'page-estimate.php' ) || is_page( 'estimate' ) || $path === 'estimate',
-        'is_company'      => is_singular( 'jcp_company' ) || is_page( 'company' ) || $path === 'company',
+        'is_company'      => is_singular( 'jcp_company' ) || is_page( 'company' ) || $path === 'company' || ( preg_match( '#^directory/[^/]+$#', $path ) === 1 ),
         'is_ui_library'   => is_page_template( 'page-ui-library.php' ) || is_page( 'ui-library' ) || $path === 'ui-library',
         'is_blog'         => is_home() || is_archive() || is_single() || is_search(),
         'is_single'       => is_single() && ! is_singular( 'jcp_company' ),
         'is_page'         => is_page() && ! is_page_template(),
     ];
+}
+
+/**
+ * Whether the current request is in Directory Mode (marketplace context).
+ * True on /directory, /directory/*, and contractor profile (/company).
+ * Used by the global header to switch nav links and CTAs.
+ *
+ * @return bool
+ */
+function jcp_is_directory_mode(): bool {
+    $pages = jcp_core_get_page_detection();
+    if ( $pages['is_directory'] || $pages['is_company'] ) {
+        return true;
+    }
+    $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+    return strpos( $path, 'directory/' ) === 0;
 }
 
 /**

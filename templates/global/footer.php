@@ -1,7 +1,8 @@
 <?php
 /**
  * Global Footer Template
- * Renders the global footer and closing body/html tags
+ * Renders the global footer and closing body/html tags.
+ * Directory Mode: same component, contextual link groups and blurb via jcp_is_directory_mode().
  *
  * @package JCP_Core
  */
@@ -18,37 +19,64 @@ $social_links = [
     'instagram'=> [ 'url' => 'https://www.instagram.com/jobcapturepro/', 'label' => 'Instagram' ],
     'tiktok'   => [ 'url' => 'https://www.tiktok.com/@jobcapturepro', 'label' => 'TikTok' ],
 ];
+
+$directory_mode = function_exists( 'jcp_is_directory_mode' ) && jcp_is_directory_mode();
+$dir_url = home_url( '/directory' );
+$dir_search = $dir_url . '#search';
+$dir_how = $dir_url . '#how-it-works';
+$dir_trust = $dir_url . '#trust';
 ?>
   <footer class="jcp-footer">
     <div class="jcp-container jcp-footer-grid">
-      <div class="jcp-footer-brand">
-        <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" />
-        <p>Turn real job photos into proof, visibility, reviews, and more jobs.</p>
-      </div>
-      <div class="jcp-footer-col">
-        <h4>Product</h4>
-        <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>">Live demo</a>
-        <a href="<?php echo esc_url( home_url( '/directory' ) ); ?>">Directory</a>
-      </div>
-      <div class="jcp-footer-col">
-        <h4>Company</h4>
-        <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>">Pricing</a>
-        <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>">Founding crew</a>
-        <a href="<?php echo esc_url( home_url( '/#how-it-works' ) ); ?>">How it works</a>
-      </div>
-      <?php if ( $footer_support !== '' || $footer_sales !== '' || $footer_address !== '' ) : ?>
-      <div class="jcp-footer-col">
-        <h4><?php esc_html_e( 'Contact', 'jcp-core' ); ?></h4>
-        <?php if ( $footer_support !== '' ) : ?>
-          <a href="mailto:<?php echo esc_attr( $footer_support ); ?>"><?php esc_html_e( 'Support', 'jcp-core' ); ?></a>
+      <?php if ( $directory_mode ) : ?>
+        <div class="jcp-footer-brand">
+          <a href="<?php echo esc_url( $dir_url ); ?>" aria-label="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>">
+            <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" />
+          </a>
+          <p><?php esc_html_e( 'Verified job proof from active contractors.', 'jcp-core' ); ?></p>
+        </div>
+        <div class="jcp-footer-col">
+          <h4><?php esc_html_e( 'For homeowners', 'jcp-core' ); ?></h4>
+          <a href="<?php echo esc_url( $dir_search ); ?>"><?php esc_html_e( 'Find contractors', 'jcp-core' ); ?></a>
+          <a href="<?php echo esc_url( $dir_how ); ?>"><?php esc_html_e( 'How rankings work', 'jcp-core' ); ?></a>
+          <span class="jcp-footer-col-item"><?php echo esc_html( __( 'Request a quote (coming soon)', 'jcp-core' ) ); ?></span>
+        </div>
+        <div class="jcp-footer-col">
+          <h4><?php esc_html_e( 'For contractors', 'jcp-core' ); ?></h4>
+          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>"><?php esc_html_e( 'Get listed', 'jcp-core' ); ?></a>
+          <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>"><?php esc_html_e( 'See the live demo', 'jcp-core' ); ?></a>
+          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>"><?php esc_html_e( 'Join early access', 'jcp-core' ); ?></a>
+        </div>
+      <?php else : ?>
+        <div class="jcp-footer-brand">
+          <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" />
+          <p>Turn real job photos into proof, visibility, reviews, and more jobs.</p>
+        </div>
+        <div class="jcp-footer-col">
+          <h4>Product</h4>
+          <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>">Live demo</a>
+          <a href="<?php echo esc_url( home_url( '/directory' ) ); ?>">Directory</a>
+        </div>
+        <div class="jcp-footer-col">
+          <h4>Company</h4>
+          <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>">Pricing</a>
+          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>">Founding crew</a>
+          <a href="<?php echo esc_url( home_url( '/#how-it-works' ) ); ?>">How it works</a>
+        </div>
+        <?php if ( $footer_support !== '' || $footer_sales !== '' || $footer_address !== '' ) : ?>
+        <div class="jcp-footer-col">
+          <h4><?php esc_html_e( 'Contact', 'jcp-core' ); ?></h4>
+          <?php if ( $footer_support !== '' ) : ?>
+            <a href="mailto:<?php echo esc_attr( $footer_support ); ?>"><?php esc_html_e( 'Support', 'jcp-core' ); ?></a>
+          <?php endif; ?>
+          <?php if ( $footer_sales !== '' ) : ?>
+            <a href="mailto:<?php echo esc_attr( $footer_sales ); ?>"><?php esc_html_e( 'Sales', 'jcp-core' ); ?></a>
+          <?php endif; ?>
+          <?php if ( $footer_address !== '' ) : ?>
+            <span class="jcp-footer-address"><?php echo esc_html( $footer_address ); ?></span>
+          <?php endif; ?>
+        </div>
         <?php endif; ?>
-        <?php if ( $footer_sales !== '' ) : ?>
-          <a href="mailto:<?php echo esc_attr( $footer_sales ); ?>"><?php esc_html_e( 'Sales', 'jcp-core' ); ?></a>
-        <?php endif; ?>
-        <?php if ( $footer_address !== '' ) : ?>
-          <span class="jcp-footer-address"><?php echo esc_html( $footer_address ); ?></span>
-        <?php endif; ?>
-      </div>
       <?php endif; ?>
     </div>
 
@@ -74,10 +102,12 @@ $social_links = [
             </a>
           <?php endforeach; ?>
         </div>
+        <?php if ( ! $directory_mode ) : ?>
         <p class="jcp-footer-powered">
           <?php esc_html_e( 'Powered by', 'jcp-core' ); ?>
           <a href="<?php echo esc_url( $leadsforward_url ); ?>" target="_blank" rel="noopener noreferrer">LeadsForward</a>
         </p>
+        <?php endif; ?>
       </div>
     </div>
   </footer>

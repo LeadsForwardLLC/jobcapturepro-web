@@ -18,6 +18,9 @@ require_once get_template_directory() . '/inc/enqueue.php';
 // Load template routing
 require_once get_template_directory() . '/inc/template-routes.php';
 
+// SEO for directory and contractor profile pages (meta description, profile titles, schema)
+require_once get_template_directory() . '/inc/seo-directory.php';
+
 // Load ACF configuration (if ACF is available)
 require_once get_template_directory() . '/inc/acf-config.php';
 

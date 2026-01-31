@@ -9,9 +9,26 @@ const assetBase = window.JCP_ASSET_BASE || '';
 
 const CONTRACTOR_DATA = {
   badges: {
-    trusted: { label: "Trusted Pro", color: "#f59e0b" },
-    verified: { label: "Verified", color: "#3b82f6" },
-    listed: { label: "Listed", color: "#6b7280" }
+    verified: {
+      label: "Verified",
+      color: "#3b82f6",
+      tooltip: "This contractor has completed verified jobs with real photos, locations, and activity."
+    },
+    trusted: {
+      label: "Trusted Pro",
+      color: "#f59e0b",
+      tooltip: "Trusted Pro contractors show consistent verified work and high ongoing activity."
+    },
+    listed: {
+      label: "Listed",
+      color: "#6b7280",
+      tooltip: "This contractor is listed in the directory but has limited verified job activity."
+    },
+    unlisted: {
+      label: "Unlisted",
+      color: "#6b7280",
+      tooltip: "This contractor has limited verified activity and reduced directory visibility."
+    }
   }
 };
 
@@ -75,13 +92,17 @@ function renderProfile(data) {
   // Update page title
   document.title = `${data.name} — Contractor Profile | JobCapturePro`;
   
-  // Update badge
-  const badgeEl = document.querySelector('.directory-badge');
+  // Update badge and tooltip
+  const badgeEl = document.getElementById('profileBadge');
+  const tooltipEl = document.getElementById('profileBadgeTooltip');
   if (badgeEl) {
     const badgeKey = data.badge && CONTRACTOR_DATA.badges[data.badge] ? data.badge : 'listed';
     const badgeInfo = CONTRACTOR_DATA.badges[badgeKey];
     badgeEl.textContent = badgeInfo.label;
     badgeEl.className = `directory-badge ${badgeKey}`;
+    if (tooltipEl && badgeInfo.tooltip) {
+      tooltipEl.textContent = badgeInfo.tooltip;
+    }
   }
   
   // Update name and meta
@@ -114,31 +135,27 @@ function renderProfile(data) {
     reviewCountEl.textContent = `${rating} (${reviews})`;
   }
   
-  // Update recency
-  const recencyEl = document.querySelector('.recency-note');
-  if (recencyEl) {
-    const days = Number.isFinite(data.lastJobDaysAgo) ? data.lastJobDaysAgo : 0;
-    const timeText = days === 0 ? 'recently' :
-                     days === 1 ? '1 day ago' :
-                     days === 2 ? '2 days ago' :
-                     `${days} days ago`;
-    recencyEl.textContent = `Last verified job: ${timeText}`;
-  }
-  
-  // Update stats
-  const statsEl = document.querySelector('.stats');
-  if (statsEl) {
-    statsEl.innerHTML = `
-      <span class="stat">${data.activity || 'Active'}</span>
-      <span class="stat">${data.jobs || 0} jobs captured</span>
-      <span class="stat">Active this week</span>
-    `;
-  }
-  
   // Update description if there's a description section
   const descEl = document.querySelector('.profile-description');
   if (descEl && data.description) {
     descEl.textContent = data.description;
+  }
+
+  // TODO: Replace static placeholder with dynamic bio when contractor bio field exists
+  const bioEl = document.querySelector('.profile-bio');
+  if (bioEl && data.description && data.description.trim()) {
+    bioEl.textContent = data.description.trim();
+  }
+
+  // Hydrate proof block with real activity signals (jobs, city)
+  const proofItems = document.querySelectorAll('.profile-proof-item');
+  if (proofItems.length >= 2 && data.jobs != null) {
+    const firstText = proofItems[0].querySelector('span:last-child');
+    if (firstText) firstText.innerHTML = `Verified on <strong>${data.jobs}</strong> real jobs`;
+  }
+  if (proofItems.length >= 2 && data.city) {
+    const secondText = proofItems[1].querySelector('span:last-child');
+    if (secondText) secondText.innerHTML = `Active weekly in <strong>${data.city}</strong>`;
   }
   
   // Render check-ins
@@ -310,6 +327,32 @@ function initGallery() {
 }
 
 /* =========================================================
+   PROFILE CTAs (Call / Request quote)
+   UI only – no backend yet. TODO: call tracking integration.
+========================================================= */
+
+function initProfileCTAs() {
+  const callBtn = document.getElementById('profileCtaCall');
+  const quoteBtn = document.getElementById('profileCtaQuote');
+
+  if (callBtn) {
+    callBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // TODO: Future call tracking integration (e.g. analytics, phone link, or modal)
+      window.dispatchEvent(new CustomEvent('jcp_profile_call_click', { detail: { source: 'banner' } }));
+    });
+  }
+
+  if (quoteBtn) {
+    quoteBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // TODO: Future homeowner quote flow – placeholder; can open modal or navigate later
+      window.dispatchEvent(new CustomEvent('jcp_profile_quote_click', { detail: { source: 'banner' } }));
+    });
+  }
+}
+
+/* =========================================================
    INIT
 ========================================================= */
 
@@ -321,6 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showError('Contractor data unavailable');
   }
   
-  // Initialize gallery
   initGallery();
+  initProfileCTAs();
 });

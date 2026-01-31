@@ -1508,7 +1508,7 @@ function openDirectoryProfileFromDemo() {
     })
   );
 
-  window.location.href = `${baseUrl}/company/?id=contractor-demo`;
+  window.location.href = `${baseUrl}/directory/contractor-demo`;
 }
 
 /* =========================================================
@@ -1528,7 +1528,7 @@ function showPostDemoPanel() {
   const navBtn = document.getElementById('dynamicBackBtn');
   if (navBtn) {
     navBtn.style.display = 'inline-flex';
-    navBtn.setAttribute('href', `${baseUrl}/company/?id=contractor-demo`);
+    navBtn.setAttribute('href', `${baseUrl}/directory/contractor-demo`);
     const label = navBtn.querySelector('span');
     if (label) {
       label.textContent = 'View Your Directory Listing';
@@ -1542,7 +1542,7 @@ function showPostDemoPanel() {
   const mobileNavBtn = document.getElementById('mobileDynamicBackBtn');
   if (mobileNavBtn) {
     mobileNavBtn.style.display = 'inline-flex';
-    mobileNavBtn.setAttribute('href', `${baseUrl}/company/?id=contractor-demo`);
+    mobileNavBtn.setAttribute('href', `${baseUrl}/directory/contractor-demo`);
     const label = mobileNavBtn.querySelector('span');
     if (label) {
       label.textContent = 'View Your Directory Listing';

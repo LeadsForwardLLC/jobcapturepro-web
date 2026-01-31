@@ -923,21 +923,6 @@
   transform: translateY(-4px) translateZ(0);
 }
 
-.factor-icon-wrapper {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.factor-icon {
-  color: #ffffff;
-}
-
 .factor-title {
   font-size: 20px;
   font-weight: 800;
@@ -1384,13 +1369,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #374151;
 }
 
 .badge-legend-pill{
@@ -1419,7 +1397,7 @@
 
 .badge-legend-text{
   color: #6b7280;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 @media (max-width: 900px){

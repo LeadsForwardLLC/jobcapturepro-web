@@ -21,15 +21,17 @@ The master documentation includes:
 - **Theme Root:** `/wp-content/themes/jobcapturepro-core/`
 - **CSS:** `/css/` (organized: base → layout → components → sections → utilities → pages)
 - **JavaScript:** `/assets/js/` (organized: core → features → pages)
-- **Templates:** Root PHP files + `/templates/global/` for header/footer/nav
+- **Templates:** Root PHP files + `/templates/global/` for header/footer/nav. The header and footer support a **Directory Mode** variant: on directory and company profile pages, the same global header and footer show contextual links and CTAs (header: Find contractors, How rankings work, Trust & verification; footer: Directory, For homeowners, For contractors link groups; logo links to `/directory`; “Powered by LeadsForward” hidden in Directory Mode). Detection: `jcp_is_directory_mode()` in `inc/helpers.php`.
 - **Assets:** `/assets/` (HTML templates, icons, images, third-party libraries)
 
 ### Key Files
 
 - `functions.php` - Theme bootstrap and initialization
 - `inc/enqueue.php` - Asset loading logic
-- `inc/helpers.php` - Utility functions and page detection
-- `inc/template-routes.php` - URL routing and 404 handling
+- `inc/helpers.php` - Utility functions, page detection, and `jcp_is_directory_mode()` (Directory Mode for header/nav)
+- `inc/template-routes.php` - URL routing (directory/company via rewrite + template_include; others via 404 fallback), 404 handling
+- `page-directory.php` - Directory listing (standard WP template; get_header/get_footer)
+- `single-jcp_company.php` - Company profile (standard WP template; get_header/get_footer)
 - `inc/form-fields.php` - Canonical REST param names and GHL payload keys (Demo Survey = source of truth)
 - `inc/rest-early-access.php` - Early Access form → GHL webhook
 - `inc/rest-demo-survey.php` - Demo Survey form → GHL webhook (separate from Early Access)

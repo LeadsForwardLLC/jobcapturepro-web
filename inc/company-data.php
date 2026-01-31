@@ -163,7 +163,84 @@ function jcp_core_company_data( WP_Post $post ): array {
         'address'          => $address,
         'lat'              => is_numeric( $lat ) ? (float) $lat : null,
         'lng'              => is_numeric( $lng ) ? (float) $lng : null,
-        'permalink'        => get_permalink( $post_id ),
+        'permalink'        => home_url( '/directory/' . get_post_field( 'post_name', $post_id ) ),
         'checkins'         => jcp_core_parse_checkins( $post_id ),
     ];
+}
+
+/**
+ * Return demo company listings with pretty permalinks (/directory/slug).
+ * Used for directory listing and profile resolution.
+ *
+ * @return array List of demo company data arrays
+ */
+function jcp_core_get_demo_companies(): array {
+    $base = [
+        [ 'id' => 'demo-1', 'wpId' => 0, 'name' => 'Summit Roofing', 'service' => 'Roofing', 'city' => 'Houston, TX', 'badge' => 'verified', 'rating' => '4.9', 'reviews' => 126, 'jobs' => 42, 'activity' => 'Very Active', 'lastJobDaysAgo' => 2, 'logo' => '' ],
+        [ 'id' => 'demo-2', 'wpId' => 0, 'name' => 'Elite Plumbing Services', 'service' => 'Plumbing', 'city' => 'Dallas, TX', 'badge' => 'trusted', 'rating' => '4.8', 'reviews' => 89, 'jobs' => 67, 'activity' => 'Very Active', 'lastJobDaysAgo' => 1, 'logo' => '' ],
+        [ 'id' => 'demo-3', 'wpId' => 0, 'name' => 'Premier HVAC Solutions', 'service' => 'HVAC', 'city' => 'Austin, TX', 'badge' => 'verified', 'rating' => '4.7', 'reviews' => 54, 'jobs' => 38, 'activity' => 'Active', 'lastJobDaysAgo' => 3, 'logo' => '' ],
+        [ 'id' => 'demo-4', 'wpId' => 0, 'name' => 'Apex Electrical Contractors', 'service' => 'Electrical', 'city' => 'San Antonio, TX', 'badge' => 'verified', 'rating' => '4.9', 'reviews' => 112, 'jobs' => 51, 'activity' => 'Very Active', 'lastJobDaysAgo' => 0, 'logo' => '' ],
+        [ 'id' => 'demo-5', 'wpId' => 0, 'name' => 'Coastal General Contractors', 'service' => 'General Contractor', 'city' => 'Houston, TX', 'badge' => 'trusted', 'rating' => '4.8', 'reviews' => 203, 'jobs' => 89, 'activity' => 'Very Active', 'lastJobDaysAgo' => 1, 'logo' => '' ],
+        [ 'id' => 'demo-6', 'wpId' => 0, 'name' => 'Precision Roofing & Repair', 'service' => 'Roofing', 'city' => 'Dallas, TX', 'badge' => 'verified', 'rating' => '4.6', 'reviews' => 45, 'jobs' => 28, 'activity' => 'Active', 'lastJobDaysAgo' => 4, 'logo' => '' ],
+        [ 'id' => 'demo-7', 'wpId' => 0, 'name' => 'Reliable Plumbing Experts', 'service' => 'Plumbing', 'city' => 'Austin, TX', 'badge' => 'unlisted', 'rating' => '4.5', 'reviews' => 23, 'jobs' => 15, 'activity' => 'Active', 'lastJobDaysAgo' => 5, 'logo' => '' ],
+        [ 'id' => 'demo-8', 'wpId' => 0, 'name' => 'Master Electricians Inc', 'service' => 'Electrical', 'city' => 'Houston, TX', 'badge' => 'verified', 'rating' => '4.7', 'reviews' => 78, 'jobs' => 34, 'activity' => 'Active', 'lastJobDaysAgo' => 2, 'logo' => '' ],
+        [ 'id' => 'demo-9', 'wpId' => 0, 'name' => 'LeadsForward', 'service' => 'General Contractor', 'city' => 'Sarasota', 'badge' => 'verified', 'rating' => '5.0', 'reviews' => 'New', 'jobs' => 1, 'activity' => 'Active recently', 'lastJobDaysAgo' => 0, 'logo' => '' ],
+        [ 'id' => 'demo-10', 'wpId' => 0, 'name' => 'Standard Builders LLC', 'service' => 'General Contractor', 'city' => 'Dallas, TX', 'badge' => 'unlisted', 'rating' => '4.4', 'reviews' => 18, 'jobs' => 12, 'activity' => 'Active', 'lastJobDaysAgo' => 6, 'logo' => '' ],
+    ];
+    $out = [];
+    foreach ( $base as $row ) {
+        $row['permalink'] = home_url( '/directory/' . $row['id'] );
+        $out[] = $row;
+    }
+    return $out;
+}
+
+/**
+ * Resolve company profile data by slug (for /directory/slug and /company?id=slug).
+ * Tries WP jcp_company post by post_name, then demo companies by id.
+ *
+ * @param string $slug Company slug or id (e.g. summit-roofing or demo-1)
+ * @return array|null Company data array or null
+ */
+function jcp_core_resolve_company_for_profile( string $slug ): ?array {
+    $slug = trim( $slug );
+    if ( $slug === '' ) {
+        return null;
+    }
+    $posts = get_posts(
+        [
+            'post_type'      => 'jcp_company',
+            'post_status'    => 'publish',
+            'name'           => $slug,
+            'posts_per_page' => 1,
+        ]
+    );
+    if ( ! empty( $posts ) ) {
+        $data = jcp_core_company_data( $posts[0] );
+        $data['permalink'] = home_url( '/directory/' . get_post_field( 'post_name', $posts[0]->ID ) );
+        return $data;
+    }
+    foreach ( jcp_core_get_demo_companies() as $row ) {
+        if ( isset( $row['id'] ) && (string) $row['id'] === $slug ) {
+            return array_merge( $row, [ 'permalink' => home_url( '/directory/' . $row['id'] ) ] );
+        }
+    }
+    if ( $slug === 'contractor-demo' ) {
+        return [
+            'id'             => 'contractor-demo',
+            'wpId'           => 0,
+            'name'           => 'Demo Listing',
+            'service'        => 'Service',
+            'city'           => 'Service Area',
+            'badge'          => 'verified',
+            'rating'          => '5.0',
+            'reviews'        => 'New',
+            'jobs'            => 1,
+            'activity'       => 'Active recently',
+            'lastJobDaysAgo' => 0,
+            'logo'           => '',
+            'permalink'      => home_url( '/directory/contractor-demo' ),
+        ];
+    }
+    return null;
 }

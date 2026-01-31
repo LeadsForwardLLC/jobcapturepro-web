@@ -2226,7 +2226,7 @@ function setupGlobalClose() {
     
     if (contractorContext.contractor) {
       // Return to contractor profile
-      window.location.href = `${baseUrl}/company/?id=${contractorContext.contractor}`;
+      window.location.href = `${baseUrl}/directory/${contractorContext.contractor}`;
     } else {
       // Return to demo or close
       if (window.history.length > 1) {

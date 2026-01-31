@@ -154,7 +154,6 @@ function jcp_core_enqueue_assets(): void {
     // Directory page
     if ( $pages['is_directory'] ) {
         jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
-        // directory-trust.css merged into directory-consolidated.css
         jcp_core_enqueue_style( 'jcp-core-directory', 'css/pages/directory-consolidated.css', [ 'jcp-core-utilities' ] );
         jcp_core_enqueue_script( 'jcp-core-directory', 'js/features/directory/directory.js', [ $render_handle ] );
 
@@ -172,163 +171,9 @@ function jcp_core_enqueue_assets(): void {
             $listings[] = jcp_core_company_data( $company );
         }
 
-        // Add demo companies if we have fewer than 10 listings
-        if ( count( $listings ) < 10 ) {
-            $demo_companies = [
-                [
-                    'id'             => 'demo-1',
-                    'wpId'           => 0,
-                    'name'           => 'Summit Roofing',
-                    'service'        => 'Roofing',
-                    'city'           => 'Houston, TX',
-                    'badge'          => 'verified',
-                    'rating'         => '4.9',
-                    'reviews'        => 126,
-                    'jobs'           => 42,
-                    'activity'       => 'Very Active',
-                    'lastJobDaysAgo' => 2,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-1',
-                ],
-                [
-                    'id'             => 'demo-2',
-                    'wpId'           => 0,
-                    'name'           => 'Elite Plumbing Services',
-                    'service'        => 'Plumbing',
-                    'city'           => 'Dallas, TX',
-                    'badge'          => 'trusted',
-                    'rating'         => '4.8',
-                    'reviews'        => 89,
-                    'jobs'           => 67,
-                    'activity'       => 'Very Active',
-                    'lastJobDaysAgo' => 1,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-2',
-                ],
-                [
-                    'id'             => 'demo-3',
-                    'wpId'           => 0,
-                    'name'           => 'Premier HVAC Solutions',
-                    'service'        => 'HVAC',
-                    'city'           => 'Austin, TX',
-                    'badge'          => 'verified',
-                    'rating'         => '4.7',
-                    'reviews'        => 54,
-                    'jobs'           => 38,
-                    'activity'       => 'Active',
-                    'lastJobDaysAgo' => 3,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-3',
-                ],
-                [
-                    'id'             => 'demo-4',
-                    'wpId'           => 0,
-                    'name'           => 'Apex Electrical Contractors',
-                    'service'        => 'Electrical',
-                    'city'           => 'San Antonio, TX',
-                    'badge'          => 'verified',
-                    'rating'         => '4.9',
-                    'reviews'        => 112,
-                    'jobs'           => 51,
-                    'activity'       => 'Very Active',
-                    'lastJobDaysAgo' => 0,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-4',
-                ],
-                [
-                    'id'             => 'demo-5',
-                    'wpId'           => 0,
-                    'name'           => 'Coastal General Contractors',
-                    'service'        => 'General Contractor',
-                    'city'           => 'Houston, TX',
-                    'badge'          => 'trusted',
-                    'rating'         => '4.8',
-                    'reviews'        => 203,
-                    'jobs'           => 89,
-                    'activity'       => 'Very Active',
-                    'lastJobDaysAgo' => 1,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-5',
-                ],
-                [
-                    'id'             => 'demo-6',
-                    'wpId'           => 0,
-                    'name'           => 'Precision Roofing & Repair',
-                    'service'        => 'Roofing',
-                    'city'           => 'Dallas, TX',
-                    'badge'          => 'verified',
-                    'rating'         => '4.6',
-                    'reviews'        => 45,
-                    'jobs'           => 28,
-                    'activity'       => 'Active',
-                    'lastJobDaysAgo' => 4,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-6',
-                ],
-                [
-                    'id'             => 'demo-7',
-                    'wpId'           => 0,
-                    'name'           => 'Reliable Plumbing Experts',
-                    'service'        => 'Plumbing',
-                    'city'           => 'Austin, TX',
-                    'badge'          => 'unlisted',
-                    'rating'         => '4.5',
-                    'reviews'        => 23,
-                    'jobs'           => 15,
-                    'activity'       => 'Active',
-                    'lastJobDaysAgo' => 5,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-7',
-                ],
-                [
-                    'id'             => 'demo-8',
-                    'wpId'           => 0,
-                    'name'           => 'Master Electricians Inc',
-                    'service'        => 'Electrical',
-                    'city'           => 'Houston, TX',
-                    'badge'          => 'verified',
-                    'rating'         => '4.7',
-                    'reviews'        => 78,
-                    'jobs'           => 34,
-                    'activity'       => 'Active',
-                    'lastJobDaysAgo' => 2,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-8',
-                ],
-                [
-                    'id'             => 'demo-9',
-                    'wpId'           => 0,
-                    'name'           => 'LeadsForward',
-                    'service'        => 'General Contractor',
-                    'city'           => 'Sarasota',
-                    'badge'          => 'verified',
-                    'rating'         => '5.0',
-                    'reviews'        => 'New',
-                    'jobs'           => 1,
-                    'activity'       => 'Active recently',
-                    'lastJobDaysAgo' => 0,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-9',
-                ],
-                [
-                    'id'             => 'demo-10',
-                    'wpId'           => 0,
-                    'name'           => 'Standard Builders LLC',
-                    'service'        => 'General Contractor',
-                    'city'           => 'Dallas, TX',
-                    'badge'          => 'unlisted',
-                    'rating'         => '4.4',
-                    'reviews'        => 18,
-                    'jobs'           => 12,
-                    'activity'       => 'Active',
-                    'lastJobDaysAgo' => 6,
-                    'logo'           => '',
-                    'permalink'      => '/company/?id=demo-10',
-                ],
-            ];
-
-            // Add demo companies to listings
-            $listings = array_merge( $listings, $demo_companies );
+        // Add demo companies if we have fewer than 10 listings (permalink /directory/slug)
+        if ( count( $listings ) < 10 && function_exists( 'jcp_core_get_demo_companies' ) ) {
+            $listings = array_merge( $listings, jcp_core_get_demo_companies() );
         }
 
         $directory_data = wp_json_encode( [ 'listings' => $listings ] );
@@ -336,19 +181,30 @@ function jcp_core_enqueue_assets(): void {
         return;
     }
 
-    // Company (single company profile)
+    // Company (single company profile): /directory/slug or /company?id=slug
     if ( $pages['is_company'] ) {
         jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
-        // directory-trust.css merged into directory-consolidated.css
         jcp_core_enqueue_style( 'jcp-core-directory', 'css/pages/directory-consolidated.css', [ 'jcp-core-utilities' ] );
         jcp_core_enqueue_style( 'jcp-core-profile', 'css/pages/profile-consolidated.css', [ 'jcp-core-directory' ] );
         jcp_core_enqueue_script( 'jcp-core-profile', 'js/features/directory/profile.js', [ $render_handle ] );
         jcp_core_enqueue_script( 'jcp-core-directory-integration', 'js/features/directory/directory-integration.js', [ 'jcp-core-profile' ] );
 
-        $post = get_post();
-        if ( $post && $post->post_type === 'jcp_company' ) {
-            $profile_data = wp_json_encode( jcp_core_company_data( $post ) );
-            wp_add_inline_script( 'jcp-core-profile', "window.JCP_PROFILE_DATA = {$profile_data};", 'before' );
+        $slug = get_query_var( 'jcp_company_slug', '' );
+        if ( $slug === '' && isset( $_GET['id'] ) && is_string( $_GET['id'] ) ) {
+            $slug = sanitize_text_field( wp_unslash( $_GET['id'] ) );
+        }
+        if ( $slug !== '' && function_exists( 'jcp_core_resolve_company_for_profile' ) ) {
+            $resolved = jcp_core_resolve_company_for_profile( $slug );
+            if ( $resolved !== null ) {
+                $profile_data = wp_json_encode( $resolved );
+                wp_add_inline_script( 'jcp-core-profile', "window.JCP_PROFILE_DATA = {$profile_data};", 'before' );
+            }
+        } else {
+            $post = get_post();
+            if ( $post && $post->post_type === 'jcp_company' ) {
+                $profile_data = wp_json_encode( jcp_core_company_data( $post ) );
+                wp_add_inline_script( 'jcp-core-profile', "window.JCP_PROFILE_DATA = {$profile_data};", 'before' );
+            }
         }
         return;
     }

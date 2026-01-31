@@ -120,8 +120,10 @@
     }
 
     if (value.startsWith('profile.html')) {
-      const query = value.includes('?') ? value.slice(value.indexOf('?')) : '';
-      return `${baseUrl}/company/${query}`;
+      const query = value.includes('?') ? value.slice(value.indexOf('?') + 1) : '';
+      const params = new URLSearchParams(query);
+      const id = params.get('id');
+      return id ? `${baseUrl}/directory/${id}` : `${baseUrl}/directory/`;
     }
 
     if (value.startsWith('../estimator-dashboard/')) {

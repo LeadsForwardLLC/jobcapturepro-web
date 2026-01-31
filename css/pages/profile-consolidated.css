@@ -56,7 +56,83 @@ body:has(.profile-shell) {
   display: flex;
   align-items: center;
   gap: var(--jcp-space-sm);
-  margin-bottom: var(--jcp-space-xs);
+  margin-bottom: 0;
+}
+
+/* Badge + tooltip so homeowners understand what the badge means */
+.profile-badge-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
+}
+
+.badge-tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--jcp-color-border);
+  border-radius: 50%;
+  background: var(--jcp-color-bg-primary);
+  color: var(--jcp-color-text-secondary);
+  cursor: help;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.badge-tooltip-trigger svg {
+  width: 14px;
+  height: 14px;
+}
+
+.badge-tooltip-trigger .badge-tooltip-trigger-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.badge-tooltip-trigger:hover,
+.badge-tooltip-trigger:focus {
+  background: var(--jcp-color-primary);
+  color: #fff;
+  border-color: var(--jcp-color-primary);
+  outline: none;
+}
+
+.badge-tooltip-trigger:hover + .badge-tooltip,
+.badge-tooltip-trigger:focus + .badge-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.badge-tooltip {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: var(--jcp-space-xs);
+  padding: var(--jcp-space-md) var(--jcp-space-lg);
+  min-width: 260px;
+  max-width: 380px;
+  font-size: var(--jcp-font-size-sm);
+  line-height: var(--jcp-line-height-relaxed);
+  color: var(--jcp-color-text-primary);
+  background: var(--jcp-color-bg-primary);
+  border: 1px solid var(--jcp-color-border);
+  border-radius: var(--jcp-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .profile-hero-copy .directory-badge {
@@ -85,32 +161,6 @@ body:has(.profile-shell) {
 .profile-hero-copy .directory-badge.listed {
   background: #f3f4f6;
   color: var(--jcp-color-text-tertiary);
-}
-
-.profile-hero-copy .status-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--jcp-color-success);
-  animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.profile-hero-copy .status-dot.verified {
-  background: var(--jcp-color-success);
-}
-
-.profile-hero-copy .status-dot.trusted {
-  background: var(--jcp-color-info);
-}
-
-@keyframes pulse-dot {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
 }
 
 .profile-hero-copy .owner-line {
@@ -143,11 +193,22 @@ body:has(.profile-shell) {
   stroke: #16a34a;
 }
 
+/* Condensed head: title, subtitle, rating grouped tightly */
+.profile-hero-copy .jcp-hero-title {
+  margin-top: var(--jcp-space-xs);
+  margin-bottom: 0;
+}
+
+.profile-hero-copy .jcp-hero-subtitle {
+  margin-top: var(--jcp-space-xs);
+  margin-bottom: 0;
+}
+
 .profile-hero-copy .directory-rating {
   display: flex;
   align-items: center;
   gap: var(--jcp-space-sm);
-  margin: var(--jcp-space-xs) 0;
+  margin: var(--jcp-space-xs) 0 0 0;
 }
 
 .profile-hero-copy .directory-rating .stars {
@@ -192,6 +253,81 @@ body:has(.profile-shell) {
   font-size: var(--jcp-font-size-sm);
   background: var(--jcp-color-bg-primary);
   color: var(--jcp-color-text-secondary);
+}
+
+/* Contractor bio (1–2 sentences under name/rating) */
+.profile-hero-copy .profile-bio {
+  font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-secondary);
+  line-height: var(--jcp-line-height-relaxed);
+  margin: var(--jcp-space-md) 0 0 0;
+}
+
+/* Why homeowners choose this pro – proof bullets */
+.profile-proof-block {
+  margin-top: var(--jcp-space-lg);
+}
+
+.profile-proof-title {
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-bold);
+  color: var(--jcp-color-text-primary);
+  margin: 0 0 var(--jcp-space-sm) 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.profile-proof-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-proof-item {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-sm);
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  line-height: var(--jcp-line-height-normal);
+  margin-bottom: var(--jcp-space-xs);
+}
+
+.profile-proof-item:last-child {
+  margin-bottom: 0;
+}
+
+.profile-proof-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--jcp-color-primary);
+}
+
+.profile-proof-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Homeowner CTAs */
+.profile-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--jcp-space-sm);
+  margin-top: var(--jcp-space-xl);
+}
+
+.profile-cta-row .btn {
+  min-width: 0;
+}
+
+.profile-cta-helper {
+  font-size: var(--jcp-font-size-xs);
+  color: var(--jcp-color-text-tertiary);
+  margin: var(--jcp-space-xs) 0 0 0;
 }
 
 .profile-hero-copy .profile-build {
@@ -242,6 +378,20 @@ body:has(.profile-shell) {
   padding: var(--jcp-space-lg);
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(12px);
+}
+
+.profile-gallery-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-xs);
+}
+
+.profile-gallery-label {
+  font-size: var(--jcp-font-size-xs);
+  font-weight: var(--jcp-font-weight-semibold);
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .profile-gallery-header h3 {
@@ -637,7 +787,12 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
 .profile-hero-copy {
   display: flex;
   flex-direction: column;
-  gap: var(--jcp-space-sm);
+  gap: var(--jcp-space-xs);
+}
+
+/* Restore breathing room after condensed head (title / subtitle / rating) */
+.profile-hero-copy .profile-bio {
+  margin-top: var(--jcp-space-md);
 }
 
 /* =========================================================
@@ -663,6 +818,14 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
   .profile-shell .profile-hero-section {
     padding-top: calc(72px + var(--jcp-space-md)) !important;
     padding-bottom: var(--jcp-space-3xl) !important;
+  }
+
+  .profile-cta-row {
+    flex-direction: column;
+  }
+
+  .profile-cta-row .btn {
+    width: 100%;
   }
 
   .work-grid {

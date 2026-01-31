@@ -54,7 +54,7 @@ function getDemoListing() {
       badge: 'verified',
       lastJobDaysAgo: 0,
       isDemo: true,
-      permalink: `${baseUrl}/company/?id=contractor-demo`
+      permalink: `${baseUrl}/directory/contractor-demo`
     };
   } catch (e) {
     return null;
@@ -320,7 +320,7 @@ function renderCards() {
       : "▼ Slowing";
 
     const card = document.createElement("a");
-    card.href = l.permalink || `${baseUrl}/company/?id=${l.id}`;
+    card.href = l.permalink || `${baseUrl}/directory/${l.id}`;
     card.className = `jcp-card directory-card${l.isDemo ? ' is-demo' : ''}`;
 
     const lastJobText =
@@ -666,6 +666,43 @@ function initMobileMenu() {
 }
 
 /* =========================================================
+   BADGE LEGEND TOGGLE (DIRECTORY INDEX ONLY)
+========================================================= */
+
+const BADGE_LEGEND_SESSION_KEY = 'jcp_badge_legend_open';
+
+function initBadgeLegendToggle() {
+  const legend = document.getElementById('badgeLegend');
+  const toggle = document.getElementById('badgeLegendToggle');
+  const panel = document.getElementById('badgeLegendPanel');
+  if (!legend || !toggle || !panel) return;
+
+  function setExpanded(open) {
+    if (open) {
+      legend.classList.add('is-expanded');
+      toggle.setAttribute('aria-expanded', 'true');
+      panel.setAttribute('aria-hidden', 'false');
+      try { sessionStorage.setItem(BADGE_LEGEND_SESSION_KEY, '1'); } catch (e) { /* ignore */ }
+    } else {
+      legend.classList.remove('is-expanded');
+      toggle.setAttribute('aria-expanded', 'false');
+      panel.setAttribute('aria-hidden', 'true');
+      try { sessionStorage.removeItem(BADGE_LEGEND_SESSION_KEY); } catch (e) { /* ignore */ }
+    }
+  }
+
+  try {
+    if (sessionStorage.getItem(BADGE_LEGEND_SESSION_KEY) === '1') {
+      setExpanded(true);
+    }
+  } catch (e) { /* ignore */ }
+
+  toggle.addEventListener('click', function () {
+    setExpanded(!legend.classList.contains('is-expanded'));
+  });
+}
+
+/* =========================================================
    INIT
 ========================================================= */
 
@@ -673,6 +710,7 @@ initDynamicNavigation();
 initMobileMenu();
 initShowcase();
 render();
+initBadgeLegendToggle();
 
 // Rotating word in directory hero: work → reviews → activity → consistency (same pattern as homepage hero)
 const rotatingWordEl = document.querySelector('.directory-shell .jcp-hero-rotating-word');

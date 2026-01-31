@@ -9,8 +9,18 @@
       <div class="jcp-hero-grid">
         <div class="jcp-hero-copy profile-hero-copy">
           <div class="hero-top">
-            <span class="directory-badge trusted">Trusted Pro</span>
-            <span class="status-dot"></span>
+            <span class="profile-badge-wrap" id="profileBadgeWrap">
+              <span class="directory-badge trusted" id="profileBadge">Trusted Pro</span>
+              <button type="button" class="badge-tooltip-trigger" aria-label="What this badge means" id="profileBadgeTrigger" title="What this badge means">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span class="badge-tooltip-trigger-label" aria-hidden="true">i</span>
+              </button>
+              <span class="badge-tooltip" role="tooltip" id="profileBadgeTooltip">Trusted Pro contractors show consistent verified work and high ongoing activity.</span>
+            </span>
           </div>
 
           <h1 class="jcp-hero-title">Summit Roofing</h1>
@@ -32,32 +42,56 @@
             <div class="review-count">4.9 (126 reviews)</div>
           </div>
 
-          <p class="rank-note">
-            Ranked highly for real job activity and consistency in this area
+          <!-- TODO: Replace with dynamic bio from JCP_PROFILE_DATA.description or contractor bio field -->
+          <p class="profile-bio">
+            Specializing in residential and light commercial electrical work with a focus on fast response and clean installs.
           </p>
 
-          <p class="recency-note">Last verified job: 2 days ago</p>
-
-          <div class="stats">
-            <span class="stat">Very Active</span>
-            <span class="stat">42 jobs captured</span>
-            <span class="stat">Active this week</span>
+          <div class="profile-proof-block">
+            <h4 class="profile-proof-title">Why homeowners choose this pro</h4>
+            <ul class="profile-proof-list">
+              <li class="profile-proof-item">
+                <span class="profile-proof-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </span>
+                <span>Verified on <strong>42</strong> real jobs</span>
+              </li>
+              <li class="profile-proof-item">
+                <span class="profile-proof-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </span>
+                <span>Active weekly in <strong>Houston, TX</strong></span>
+              </li>
+              <li class="profile-proof-item">
+                <span class="profile-proof-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </span>
+                <span>Recent verified work activity</span>
+              </li>
+              <li class="profile-proof-item">
+                <span class="profile-proof-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+                <span>Real job photos, not stock images</span>
+              </li>
+            </ul>
           </div>
 
-          <details class="profile-build">
-            <summary>How is this profile built?</summary>
-            <ul>
-              <li>Jobs are logged in real time by the contractor</li>
-              <li>Photos and locations are verified</li>
-              <li>Activity updates automatically</li>
-            </ul>
-          </details>
+          <div class="profile-cta-row">
+            <button type="button" class="btn btn-primary profile-cta-call" id="profileCtaCall">Call this contractor</button>
+            <button type="button" class="btn btn-secondary profile-cta-quote" id="profileCtaQuote">Request a quote</button>
+          </div>
+          <!-- TODO: Future call tracking integration - show after click or in analytics -->
+          <p class="profile-cta-helper">Calls are tracked to help improve response time</p>
         </div>
 
         <div class="jcp-hero-visual profile-hero-gallery">
           <div class="profile-gallery-container">
             <div class="profile-gallery-header">
-              <h3>Recent Work</h3>
+              <div class="profile-gallery-header-text">
+                <span class="profile-gallery-label">Verified recent work</span>
+                <h3>Recent Work</h3>
+              </div>
               <div class="gallery-nav">
                 <button class="gallery-nav-btn gallery-prev" aria-label="Previous image">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

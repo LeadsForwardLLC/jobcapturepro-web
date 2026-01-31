@@ -208,9 +208,15 @@ templates/
 **Why Root Files Can't Be Moved:**
 WordPress template hierarchy **REQUIRES** `page-*.php`, `single-*.php`, `header.php`, `footer.php`, and `index.php` to be in the root directory. WordPress won't find them elsewhere.
 
+**Directory and company routing:** `/directory` and `/company` are served as standard WordPress responses (200, correct document title) via rewrite rules and `template_include` in `inc/template-routes.php`. Rewrite rules map `^directory/?$` and `^company/?$` to query var `jcp_route`; `template_redirect` clears 404 and sets title; `template_include` returns `page-directory.php` or `single-jcp_company.php`. This keeps Rank Math / Yoast compatibility and avoids “Page Not Found” titles. Both templates use `get_header()` / `get_footer()` and a single `#jcp-app` container; JS (jcp-render.js) loads directory listing or profile HTML into that container. Directory Mode header/footer switching applies on these pages via `jcp_is_directory_mode()`.
+
 #### Navigation (marketing)
 
 The main marketing nav (desktop) is defined in `templates/partials/nav.php`: **How it works**, **Features**, **Who it's for** (scroll to homepage sections; from other pages they link to `/#how-it-works`, etc.), **Pricing** (`/pricing`), **Resources** (minimal dropdown: Directory, Blog, Contact). Right-side CTAs: **Online Demo** (secondary), **Get Started** (primary). Demo, Directory, and Company profile pages use different nav sets. The Resources dropdown is click/hover on desktop, keyboard navigable (Enter/Space, Arrow keys, Escape closes). Mobile menu order: CTAs first, then How it works, Features, Who it's for, Pricing, Directory, Blog, Contact. Behavior (scroll-to-section, dropdown, mobile open/close) is in `assets/js/core/jcp-nav.js`.
+
+**Directory Mode:** On directory-related pages (`/directory`, `/directory/*`, contractor profile `/company`), the same global header component switches to a contextual nav state so the directory feels like a marketplace destination. Detection: `jcp_is_directory_mode()` in `inc/helpers.php`. In Directory Mode: logo links to `/directory` and a small "Directory" label appears next to the brand; nav shows **Find contractors** → `/directory`, **How rankings work** → `/directory/#how-it-works`, **Trust & verification** → `/directory/#trust`; CTAs are **Find a contractor** (primary → `/directory`) and **Are you a contractor?** (secondary → `/`). Marketing links (Features, Pricing, Resources) are not shown in Directory Mode. Mobile menu mirrors the same mode.
+
+**Footer Directory Mode:** The same global footer (`templates/global/footer.php`) uses `jcp_is_directory_mode()` to render a directory-appropriate variant. In Directory Mode: brand blurb is “Verified job proof from active contractors.” and logo links to `/directory`; link columns are **Directory** (Find contractors, How rankings work, Trust & verification), **For homeowners** (How it works, What verified means, Request a quote — Coming soon), **For contractors** (Get listed, See the live demo, Join early access). Privacy and Terms and social icons stay; “Powered by LeadsForward” is hidden in Directory Mode only.
 
 ---
 
@@ -259,8 +265,8 @@ The main marketing nav (desktop) is defined in `templates/partials/nav.php`: **H
 #### HTML Template Loading (via `jcp-render.js`)
 - Demo page (`/demo?mode=run`): `assets/demo/index.html`
 - Survey mode (`/demo` without `mode=run`): `assets/survey/index.html`
-- Directory page (`/directory`): `assets/directory/index.html`
-- Company profile (`/company/[slug]`): `assets/directory/profile.html`
+- Directory page (`/directory`): `assets/directory/index.html`. The badge legend ("What do these badges mean?") is collapsible by default; clicking the toggle expands the panel. Once expanded, it remains open for the current session (sessionStorage).
+- Company profile (`/directory/[slug]` or legacy `/company?id=[slug]`): `assets/directory/profile.html`
 - Estimate page (`/estimate`): `assets/estimate/index.html`
 
 **Note:** HTML templates have their `<script>` and `<link>` tags stripped by `jcp-render.js` and replaced by WordPress enqueues.
@@ -565,7 +571,7 @@ Located in `inc/template-routes.php`:
 | `/demo?mode=run` | `page-demo.php` | HTML template (`assets/demo/index.html`) |
 | `/demo` | `page-demo.php` | HTML template (`assets/survey/index.html`) |
 | `/directory` | `page-directory.php` | HTML template (`assets/directory/index.html`) |
-| `/company/[slug]` | `single-jcp_company.php` | HTML template (`assets/directory/profile.html`) |
+| `/directory/[slug]` | `single-jcp_company.php` | HTML template (`assets/directory/profile.html`) |
 | `/estimate` | `page-estimate.php` | HTML template (`assets/estimate/index.html`) |
 | `/design-system` | `page-design-system.php` | PHP template |
 | `/ui-library` | `page-ui-library.php` | PHP template |
