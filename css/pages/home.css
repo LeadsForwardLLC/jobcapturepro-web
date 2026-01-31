@@ -119,6 +119,25 @@
   max-width: 100% !important;
 }
 
+/* Hero CTA row: align buttons to top so primary (with microcopy) and secondary line up */
+.jcp-home .jcp-hero .directory-cta-row {
+  align-items: flex-start;
+}
+
+/* Microcopy under primary CTA in hero */
+.jcp-hero-primary-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--jcp-space-xs);
+}
+.jcp-hero-cta-microcopy {
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
 /* Hero proof row: alignment + smaller stat text */
 .jcp-home .directory-meta {
   align-items: flex-start;

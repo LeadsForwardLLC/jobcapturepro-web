@@ -5,7 +5,7 @@
  * @package JCP_Core
  */
 $demo_headline = 'See a live demo built for your business';
-$demo_subhead  = 'Tell us a few details so the demo reflects real jobs and real outcomes.';
+$demo_subhead  = 'Just a few details so the demo reflects real jobs and real outcomes.';
 $demo_btn      = 'Next step';
 ?>
 <section class="survey-step active" data-step="0">

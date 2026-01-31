@@ -23,15 +23,19 @@ $icon_dir   = esc_url( jcp_core_icon( 'map' ) );
 
     <div class="deck-slides" id="deckSlides">
       <article class="deck-slide is-active">
-        <h2>Every completed job should help you win the next one.</h2>
+        <h2 id="deckSlide1Title">Every completed job should help you win the next one.</h2>
         <p class="deck-lead">
           Most job photos never leave a phone.
           That's missed trust, missed visibility, and missed calls.
         </p>
-        <div class="deck-list">
-          <div class="deck-bullet">More proof builds trust faster</div>
-          <div class="deck-bullet">More trust leads to more calls</div>
-          <div class="deck-bullet">More calls mean more booked jobs</div>
+        <div class="deck-compound-wrap">
+          <div class="deck-connector-line" aria-hidden="true"></div>
+          <p class="deck-compound-label">Here's how that compounds:</p>
+          <div class="deck-list">
+            <div class="deck-bullet">More proof builds trust faster</div>
+            <div class="deck-bullet">More trust leads to more calls</div>
+            <div class="deck-bullet">More calls mean more booked jobs</div>
+          </div>
         </div>
       </article>
 

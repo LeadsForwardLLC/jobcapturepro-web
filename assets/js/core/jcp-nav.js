@@ -1,4 +1,5 @@
-(() => {
+(function() {
+  function init() {
   const header = document.getElementById('jcpGlobalHeader');
   if (!header) return;
 
@@ -183,21 +184,51 @@
       }
     });
 
-    document.querySelectorAll('.nav-link').forEach((link) => {
-      link.classList.remove('is-active');
-    });
-    document.querySelectorAll('.mobile-nav-link').forEach((link) => {
-      link.classList.remove('is-active');
-    });
+    const setActiveByPage = () => {
+      document.querySelectorAll('.nav-link').forEach((link) => link.classList.remove('is-active'));
+      document.querySelectorAll('.mobile-nav-link').forEach((link) => link.classList.remove('is-active'));
+      const resourcesTrigger = document.getElementById('navResourcesTrigger');
+      if (resourcesTrigger) resourcesTrigger.classList.remove('is-active');
 
-    if (page === 'pricing') {
-      document.querySelectorAll('.nav-link[href="/pricing"]').forEach((link) => link.classList.add('is-active'));
-      document.querySelectorAll('.mobile-nav-link[href="/pricing"]').forEach((link) => link.classList.add('is-active'));
-    }
+      if (page === 'pricing') {
+        document.querySelectorAll('.nav-link[href="/pricing"]').forEach((link) => link.classList.add('is-active'));
+        document.querySelectorAll('.mobile-nav-link[href="/pricing"]').forEach((link) => link.classList.add('is-active'));
+        return;
+      }
+
+      // Resources dropdown: show active (orange) when on any dropdown page (Blog, Directory, Contact)
+      const pathname = (window.location.pathname || '/').replace(/\/$/, '') || '/';
+      const isBlogPage = page === 'blog' || pathname === '/blog' || (document.body && document.body.classList.contains('blog'));
+      const isResourcesPage = ['blog', 'directory', 'contact'].includes(page) || isBlogPage || pathname === '/contact';
+      if (isResourcesPage) {
+        if (resourcesTrigger) resourcesTrigger.classList.add('is-active');
+        return;
+      }
+
+      // Homepage: keep anchor link active when hash matches (e.g. #how-it-works)
+      if (isHome) {
+        const hash = window.location.hash || '';
+        if (hash) {
+          const selector = `[data-home-anchor="${hash}"]`;
+          document.querySelectorAll(`.nav-link${selector}`).forEach((link) => link.classList.add('is-active'));
+          document.querySelectorAll(`.mobile-nav-link${selector}`).forEach((link) => link.classList.add('is-active'));
+        }
+      }
+    };
+
+    setActiveByPage();
+    window.addEventListener('hashchange', setActiveByPage);
   };
 
   initMobileMenu();
   initScroll();
   initNavLinks();
   initResourcesDropdown();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

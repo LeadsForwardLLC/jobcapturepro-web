@@ -507,6 +507,27 @@ body.survey-only #jcp-app {
   margin-bottom: 16px;
 }
 
+/* Connector line + "Here's how that compounds:" above first-slide boxes */
+.deck-compound-wrap {
+  margin-top: 20px;
+}
+.deck-connector-line {
+  height: 1px;
+  background: linear-gradient(90deg, #e5e7eb 0%, #d1d5db 50%, #e5e7eb 100%);
+  margin-bottom: 12px;
+  max-width: 200px;
+}
+.deck-compound-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #6b7280;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.01em;
+}
+.deck-compound-wrap .deck-list {
+  margin-top: 0;
+}
+
 .deck-mini {
   margin-top: 10px;
   font-size: 13px;

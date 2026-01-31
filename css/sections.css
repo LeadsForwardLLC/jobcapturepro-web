@@ -807,6 +807,9 @@
   border-radius: var(--jcp-radius-xl);
   padding: var(--jcp-space-5xl);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .demo-preview-content {
@@ -814,12 +817,14 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--jcp-space-5xl);
   align-items: center;
+  min-width: 0;
 }
 
 .demo-preview-text {
   display: flex;
   flex-direction: column;
   gap: var(--jcp-space-lg);
+  min-width: 0;
 }
 
 .demo-badge {
@@ -878,6 +883,8 @@
   box-shadow: 0 8px 24px rgba(255, 80, 62, 0.3);
   transition: all 0.3s ease;
   width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .demo-cta-primary:hover {
@@ -1230,6 +1237,25 @@
 
   .demo-phone-mockup {
     max-width: 260px;
+  }
+
+  /* Prevent overflow: card padding + content must stay inside viewport */
+  .demo-preview-card {
+    padding: var(--jcp-space-xl);
+  }
+
+  .demo-cta-primary {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .demo-preview-title,
+  .demo-preview-description,
+  .demo-preview-cue,
+  .demo-cta-note {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
@@ -2214,12 +2240,16 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--jcp-space-6xl);
   align-items: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .conversion-content {
   display: flex;
   flex-direction: column;
   gap: var(--jcp-space-xl);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .conversion-section .rankings-header {
@@ -2503,7 +2533,16 @@
 
   .conversion-cta-btn {
     width: 100%;
+    max-width: 100%;
     justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .conversion-section .rankings-header h2,
+  .conversion-section .rankings-subtitle,
+  .conversion-point-text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .conversion-cta-secondary {

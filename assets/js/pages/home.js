@@ -47,7 +47,10 @@
                   Your team already takes job photos. JobCapturePro automatically turns them into Google updates, website content, social media posts, and review requests so your work keeps marketing itself.
                 </p>
                 <div class="jcp-actions directory-cta-row">
-                  <a class="btn btn-primary" href="${heroCtas.primaryUrl}">${heroCtas.primaryText}</a>
+                  <div class="jcp-hero-primary-cta">
+                    <a class="btn btn-primary" href="${heroCtas.primaryUrl}">${heroCtas.primaryText}</a>
+                    <span class="jcp-hero-cta-microcopy">No signup. Takes under 5 mins.</span>
+                  </div>
                   <a class="btn btn-secondary" href="${heroCtas.secondaryUrl}">${heroCtas.secondaryText}</a>
                 </div>
                 <div class="directory-meta">
@@ -140,7 +143,7 @@
                             </div>
                             <div class="demo-item-content">
                               <div class="demo-item-title">Published everywhere</div>
-                              <div class="demo-item-subtitle">Google Maps • Website • Directory</div>
+                              <div class="demo-item-subtitle">Google Maps • Website • Social</div>
                             </div>
                           </div>
                         </div>

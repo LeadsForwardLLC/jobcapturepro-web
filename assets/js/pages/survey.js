@@ -156,6 +156,17 @@
     progressWrap?.classList.add('is-hidden');
     deckIndex = 0;
     setDeckUI();
+
+    // First slide: if they selected a business type, swap "job" for "[type] job"
+    const titleEl = document.getElementById('deckSlide1Title');
+    const nicheSelect = document.getElementById('niche');
+    if (titleEl && nicheSelect && nicheSelect.value) {
+      const option = nicheSelect.options[nicheSelect.selectedIndex];
+      const label = option ? option.text.trim() : '';
+      if (label) {
+        titleEl.textContent = 'Every completed ' + label + ' job should help you win the next one.';
+      }
+    }
   };
 
   const validateStep1 = () => {
