@@ -18,6 +18,7 @@ $social_links = [
     'x'        => [ 'url' => 'https://x.com/jobcapturepro', 'label' => 'X' ],
     'instagram'=> [ 'url' => 'https://www.instagram.com/jobcapturepro/', 'label' => 'Instagram' ],
     'tiktok'   => [ 'url' => 'https://www.tiktok.com/@jobcapturepro', 'label' => 'TikTok' ],
+    'youtube'  => [ 'url' => 'https://www.youtube.com/channel/UCckc38UwNU5P8A7eI1txZAw', 'label' => 'YouTube' ],
 ];
 
 $directory_mode = function_exists( 'jcp_is_directory_mode' ) && jcp_is_directory_mode();
