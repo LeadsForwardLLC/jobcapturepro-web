@@ -51,8 +51,10 @@ body:has(#jcp-app[data-jcp-page="directory"]) {
   overflow-y: auto !important;
   height: auto !important;
   min-height: 100vh !important;
+  min-height: 100dvh !important; /* iOS Safari: visible area on load */
   position: relative !important;
   padding-top: 72px !important; /* Account for fixed global header */
+  -webkit-overflow-scrolling: touch !important;
 }
 
 /* Prevent any nested scrolling containers */

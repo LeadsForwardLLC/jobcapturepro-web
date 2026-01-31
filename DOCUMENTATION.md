@@ -721,6 +721,10 @@ The theme posts form submissions to **two separate** GoHighLevel inbound webhook
 4. **Templates are minimal** (delegate to JS or HTML files)
 5. **No duplicate files** (one source of truth per component)
 
+### Mobile & iOS (viewport / scroll)
+
+The theme uses `min-height: 100dvh` and `-webkit-overflow-scrolling: touch` so content fills the visible area on iOS Safari and scroll is not blocked. Body overflow is reset on nav init and on `pageshow` so the mobile menu never leaves scroll locked (e.g. after back/forward or cached state). If content is missing until scroll or scroll is blocked on iOS, check: (1) no plugin or inline style setting `body { overflow: hidden }` on load; (2) WP Rocket / caching: try disabling "Delay JavaScript execution" or "Optimize CSS Delivery" for the theme; (3) ensure no other script sets `document.body.style.overflow` without restoring it.
+
 ### Cleanup Checklist
 
 Before committing:

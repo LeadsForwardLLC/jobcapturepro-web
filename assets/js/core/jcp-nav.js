@@ -3,6 +3,9 @@
   const header = document.getElementById('jcpGlobalHeader');
   if (!header) return;
 
+  /* Reset body scroll on load so iOS / cached state never leaves scroll locked */
+  document.body.style.overflow = '';
+
   const menuToggle = document.getElementById('mobileMenuToggle');
   const menuClose = document.getElementById('mobileMenuClose');
   const menuOverlay = document.getElementById('mobileMenuOverlay');
@@ -46,6 +49,13 @@
       }
     });
   };
+
+  /* On pageshow (e.g. back/forward), ensure body scroll is not stuck (iOS / bfcache) */
+  window.addEventListener('pageshow', function (e) {
+    if (!menuOverlay || !menuOverlay.classList.contains('active')) {
+      document.body.style.overflow = '';
+    }
+  });
 
   const initResourcesDropdown = () => {
     const trigger = document.getElementById('navResourcesTrigger');
@@ -225,6 +235,28 @@
   initScroll();
   initNavLinks();
   initResourcesDropdown();
+
+  // Single delegated listener for CTA click tracking (Matomo)
+  document.addEventListener('click', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest('a, button') : null;
+    if (!el) return;
+    var ctaName = el.getAttribute('data-cta');
+    var href = el.getAttribute('href');
+    var isTargetHref = false;
+    if (el.tagName === 'A' && href) {
+      var path = (href.charAt(0) === '/' ? href.split('?')[0] : (function () { try { return new URL(href, window.location.href).pathname; } catch (err) { return href; } })()).replace(/\/$/, '') || '/';
+      isTargetHref = path === '/demo' || path === '/early-access';
+    }
+    if (!ctaName && !isTargetHref) return;
+    ctaName = ctaName || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) || 'CTA';
+    var pathname = (window.location.pathname || '/').replace(/\/$/, '') || '/';
+var ctaLocation = el.getAttribute('data-cta-location') || (el.closest('header') || el.closest('#jcpGlobalHeader') ? 'header' : el.closest('footer') ? 'footer' : pathname === '/' || pathname === '/home' ? 'homepage' : 'page');
+    try {
+      if (typeof _paq !== 'undefined') {
+        _paq.push(['trackEvent', 'CTA Clicked', ctaName, ctaLocation]);
+      }
+    } catch (err) {}
+  });
   }
 
   if (document.readyState === 'loading') {

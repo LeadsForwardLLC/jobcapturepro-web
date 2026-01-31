@@ -275,6 +275,13 @@
           })
           .then(function (result) {
             if (result.ok) {
+              try {
+                if (typeof _paq !== 'undefined') {
+                  var formData = { first_name: firstVal, last_name: lastVal, email: emailVal, topic: topicVal, message: messageVal };
+                  if (phoneVal) formData.phone = phoneVal;
+                  _paq.push(['trackEvent', 'Contact Submitted', 'Submitted', JSON.stringify(formData)]);
+                }
+              } catch (err) {}
               var config = window.JCP_CONTACT_FORM || {};
               var redirect = config.success_redirect || '/contact-success';
               if (result.data && result.data.attachment_omitted) {

@@ -1450,6 +1450,19 @@ function init() {
   // Tour start (after DOM paints)
   setTimeout(() => {
     jcpDemoTrack('demo_run_started');
+    // Matomo intent-threshold events (once per session)
+    try {
+      if (typeof _paq !== 'undefined') {
+        if (!sessionStorage.getItem('jcp_matomo_demo_started')) {
+          _paq.push(['trackEvent', 'Demo', 'Started']);
+          sessionStorage.setItem('jcp_matomo_demo_started', '1');
+        }
+        if (!sessionStorage.getItem('jcp_matomo_demo_run_started')) {
+          _paq.push(['trackEvent', 'Demo Run Started', 'Run Started']);
+          sessionStorage.setItem('jcp_matomo_demo_run_started', '1');
+        }
+      }
+    } catch (e) {}
     setTourStep('step1');
     showTour();
     updateTourFloating();
@@ -1524,6 +1537,13 @@ function showPostDemoPanel() {
 
   panel.classList.add('active');
   jcpDemoTrack('post_demo_modal_shown');
+  // Matomo: Demo / Completed (once per session)
+  try {
+    if (typeof _paq !== 'undefined' && !sessionStorage.getItem('jcp_matomo_demo_completed')) {
+      _paq.push(['trackEvent', 'Demo Completed', 'Completed']);
+      sessionStorage.setItem('jcp_matomo_demo_completed', '1');
+    }
+  } catch (e) {}
 
   const navBtn = document.getElementById('dynamicBackBtn');
   if (navBtn) {
@@ -1659,6 +1679,13 @@ function wirePostDemoPanel() {
     primaryCta.href = earlyAccessUrl + '?demo_session=' + encodeURIComponent(sessionId);
     primaryCta.addEventListener('click', function() {
       jcpDemoTrack('cta_clicked', null, { cta: 'early_access' });
+      // Matomo: Post Demo CTA Click (Early Access), once per session
+      try {
+        if (typeof _paq !== 'undefined' && !sessionStorage.getItem('jcp_matomo_demo_cta_early_access')) {
+          _paq.push(['trackEvent', 'Demo', 'Post Demo CTA Click (Early Access)']);
+          sessionStorage.setItem('jcp_matomo_demo_cta_early_access', '1');
+        }
+      } catch (e) {}
     });
   }
 
