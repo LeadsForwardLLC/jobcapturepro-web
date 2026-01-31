@@ -678,6 +678,14 @@ The theme posts form submissions to **two separate** GoHighLevel inbound webhook
 
 - Demo Survey frontend logic lives in **`assets/js/pages/survey.js`** (not under `features/`). Enqueued on demo page when not `?mode=run`.
 
+### Demo Analytics
+
+- **Location:** WP Admin → **JCP** → **Demo Analytics** (read-only). Uses the same storage as demo events: custom table `wp_jcp_demo_events` and REST endpoint `POST /wp-json/jcp/v1/demo-event`. A second table `wp_jcp_demo_sessions` stores session-level summaries for drill-down only.
+- **Metrics:** Total sessions (started), funnel completion and drop-off by step, CTA click counts, completion rate, average/median time to completion, primary drop-off step. **Demo → Early Access Conversion** is a separate metric. Aggregate counts are unchanged; no existing metric keys or formulas were modified.
+- **Demo → Early Access Conversion:** Counts how many demo sessions later reached the `/early-access-success/` page in the **same session**. A conversion is recorded only when (1) the user started or ran the demo (session has `demo_started` or `demo_run_started`), (2) the user reached `/early-access-success/` with the same `session_id` in the URL (passed from the post-demo CTA and preserved through the Early Access form redirect). Conversion is **session-based, not user-based**: one row per session (`demo_converted` event); no PII. Stored in the same `wp_jcp_demo_events` table; no new keys beyond the existing `event_type` value `demo_converted`.
+- **Session-level tracking (WordPress is NOT a lead system):** Session records are stored in `wp_jcp_demo_sessions` for read-only inspection only. Stored fields: `session_id` (required), `business_name` (optional), `business_type` (optional), `demo_started_at`, `demo_completed` (boolean), `demo_converted` (boolean), `conversion_at` (nullable). No phone numbers, no full emails, no editing, no export, no CRM-style actions. GoHighLevel remains the system of record for leads. Clicking **Total sessions started** or **Demo conversions** opens a modal with a table of up to 25 sessions (Session short hash, Business name, Demo completed, Converted, Started relative time); **Demo conversions** shows only sessions where `demo_converted = true`. Only users with `manage_options` can view session details; all output is escaped; logic fails silently if session data is unavailable.
+- **Reset behavior:** When **Reset Demo Analytics** is used, both `wp_jcp_demo_events` and `wp_jcp_demo_sessions` are truncated, `analytics_start_date` is set to the current time, and the session list becomes empty. No partial reset.
+
 ---
 
 ## 🔧 MAINTENANCE

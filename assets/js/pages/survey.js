@@ -1,4 +1,5 @@
 (() => {
+  function initSurvey() {
   document.body.classList.add('survey-only');
   const steps = Array.from(document.querySelectorAll('.survey-step'));
   if (!steps.length) return;
@@ -28,6 +29,36 @@
   let currentIndex = 0;
   let deckIndex = 0;
   let rankTimers = [];
+
+  function getSurveySessionId() {
+    const key = 'jcp_demo_session_id';
+    try {
+      let id = sessionStorage.getItem(key);
+      if (!id) {
+        id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+        sessionStorage.setItem(key, id);
+      }
+      return id;
+    } catch (e) {
+      return 'd_' + Date.now();
+    }
+  }
+
+  function surveyTrack(eventType, stepNumber, metadata) {
+    const restEventUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_event_url) ? window.JCP_DEMO_SURVEY.rest_event_url : baseUrl + '/wp-json/jcp/v1/demo-event';
+    try {
+      fetch(restEventUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: getSurveySessionId(),
+          event_type: eventType,
+          step_number: stepNumber != null ? stepNumber : undefined,
+          metadata: metadata || undefined
+        })
+      }).catch(function() {});
+    } catch (e) {}
+  }
 
   const getValue = (id) => (document.getElementById(id)?.value || '').trim();
 
@@ -81,7 +112,17 @@
     });
   };
 
+  const getSurveyFormMetadata = () => {
+    const meta = { company: getValue('businessName'), business_type: getValue('niche') };
+    const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || []).map((input) => input.value);
+    if (goals.length) meta.demo_goals = goals;
+    return meta;
+  };
+
   const showStep = (index) => {
+    if (index > currentIndex && currentIndex >= 0 && currentIndex < 3) {
+      surveyTrack('form_step_completed', currentIndex + 1, getSurveyFormMetadata());
+    }
     steps.forEach((step, idx) => {
       step.classList.toggle('active', idx === index);
     });
@@ -127,6 +168,7 @@
 
   const setDeckUI = () => {
     if (!deckSlides.length) return;
+    surveyTrack('slideshow_step_viewed', deckIndex + 1);
     deckSlides.forEach((slide, idx) => {
       slide.classList.toggle('is-active', idx === deckIndex);
       slide.classList.toggle('is-prev', idx < deckIndex);
@@ -320,6 +362,7 @@
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
+    e.preventDefault();
     const action = btn.dataset.action;
     const deckActive = deckSection?.classList.contains('active');
 
@@ -333,6 +376,7 @@
 
     if (action === 'launch' && !deckActive) {
       if (!validateStep3()) return;
+      surveyTrack('form_step_completed', 3, getSurveyFormMetadata());
       saveSurveyPrefillForEarlyAccess();
       if (deckSlides.length) {
         submitDemoOptIn().then(() => showDeck());
@@ -356,6 +400,9 @@
     }
 
     if (action === 'deck-launch' || (deckActive && action === 'launch')) {
+      if (e.target.closest('.deck-skip')) {
+        surveyTrack('slideshow_skipped');
+      }
       launchDemo();
     }
   });
@@ -392,5 +439,13 @@
   enforceGoalLimit();
   hydrateRankName();
   prefillFromEarlyAccess();
+  surveyTrack('demo_started', null, getSurveyFormMetadata());
   showStep(0);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSurvey);
+  } else {
+    initSurvey();
+  }
 })();

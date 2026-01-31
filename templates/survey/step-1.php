@@ -82,6 +82,6 @@ $demo_btn      = 'Next step';
   </form>
 
   <div class="survey-actions-row">
-    <button class="survey-btn" data-action="next"><?php echo esc_html( $demo_btn ); ?></button>
+    <button type="button" class="survey-btn" data-action="next"><?php echo esc_html( $demo_btn ); ?></button>
   </div>
 </section>

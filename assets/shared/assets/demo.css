@@ -1900,6 +1900,14 @@ body .tour-float.final-step .tour-arrow {
   color: #0f172a;
 }
 
+.post-demo-hero-subline {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin: 8px 0 0 0;
+  line-height: 1.4;
+}
+
 .post-demo-card{
   width: 100%;
   max-width: 560px;

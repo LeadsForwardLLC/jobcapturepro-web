@@ -1,7 +1,7 @@
 <?php
 /**
  * ACF Configuration
- * Per-page bottom CTA only. Theme-level settings removed; rebuild later.
+ * Per-page bottom CTA.
  *
  * @package JCP_Core
  */
@@ -12,7 +12,7 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 }
 
 /**
- * Register ACF field groups (per-page bottom CTA only).
+ * Register ACF field groups (per-page bottom CTA).
  */
 function jcp_core_register_acf_field_groups() {
     if ( ! function_exists( 'acf_add_local_field_group' ) ) {

@@ -347,7 +347,11 @@
             } catch (e) {
               // no-op
             }
-            const redirect = (window.JCP_EARLY_ACCESS_FORM || {}).success_redirect || '/early-access-success/';
+            let redirect = (window.JCP_EARLY_ACCESS_FORM || {}).success_redirect || '/early-access-success/';
+            const demoSession = new URLSearchParams(window.location.search).get('demo_session');
+            if (demoSession) {
+              redirect += (redirect.indexOf('?') >= 0 ? '&' : '?') + 'demo_session=' + encodeURIComponent(demoSession);
+            }
             window.location.href = redirect;
             return;
           }

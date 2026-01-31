@@ -20,6 +20,38 @@ const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
   : window.location.origin;
 const assetBase = window.JCP_ASSET_BASE || '';
 
+function getDemoSessionId() {
+  const key = 'jcp_demo_session_id';
+  try {
+    let id = sessionStorage.getItem(key);
+    if (!id) {
+      id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem(key, id);
+    }
+    return id;
+  } catch (e) {
+    return 'd_' + Date.now();
+  }
+}
+
+function jcpDemoTrack(eventType, stepNumber, metadata) {
+  const url = window.JCP_DEMO_EVENT && window.JCP_DEMO_EVENT.rest_url;
+  if (!url) return;
+  try {
+    const body = {
+      session_id: getDemoSessionId(),
+      event_type: eventType,
+      step_number: stepNumber != null ? stepNumber : undefined,
+      metadata: metadata || undefined
+    };
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).catch(function() {});
+  } catch (e) {}
+}
+
 // Optional URL params for email links: ?mode=run&name=Jane&business=ABC+Plumbing&niche=plumbing
 function getDemoUserFromUrl() {
   try {
@@ -349,6 +381,10 @@ function setTourStep(stepKey) {
       tourEl.classList.toggle('final-step', state.isFinalStep);
     }
   tour.stepKey = stepKey;
+  const stepNum = stepKey && stepKey.match(/^step(\d)$/) ? parseInt(stepKey.slice(-1), 10) : null;
+  if (stepNum >= 1 && stepNum <= 5) {
+    jcpDemoTrack('demo_step_viewed', stepNum);
+  }
   updateTourNextLabel(getNextLabelForStep(stepKey));
   // Disable back buttons during guided steps (prevents breaking the flow)
   lockBackButtons(['step2','step3','step4','step5'].includes(stepKey));
@@ -1196,7 +1232,10 @@ async function sendReviewRequest() {
   const btnViewDir = document.getElementById('btnViewDirectory');
   if (btnViewDir) {
     btnViewDir.classList.remove('is-hidden');
-    btnViewDir.onclick = openDirectoryProfileFromDemo;
+    btnViewDir.onclick = function() {
+      jcpDemoTrack('cta_clicked', null, { cta: 'view_main_directory' });
+      openDirectoryProfileFromDemo();
+    };
   }
 
   // Let them digest, then show post-demo panel
@@ -1410,6 +1449,7 @@ function init() {
 
   // Tour start (after DOM paints)
   setTimeout(() => {
+    jcpDemoTrack('demo_run_started');
     setTourStep('step1');
     showTour();
     updateTourFloating();
@@ -1483,6 +1523,7 @@ function showPostDemoPanel() {
   bubble?.classList.add('is-hidden');
 
   panel.classList.add('active');
+  jcpDemoTrack('post_demo_modal_shown');
 
   const navBtn = document.getElementById('dynamicBackBtn');
   if (navBtn) {
@@ -1611,9 +1652,22 @@ function wirePostDemoPanel() {
     .getElementById('post-demo-bubble')
     ?.addEventListener('click', showPostDemoPanel);
 
+  const primaryCta = document.querySelector('.post-demo-primary-cta');
+  if (primaryCta) {
+    const earlyAccessUrl = (baseUrl || window.location.origin).replace(/\/?$/, '') + '/early-access';
+    const sessionId = getDemoSessionId();
+    primaryCta.href = earlyAccessUrl + '?demo_session=' + encodeURIComponent(sessionId);
+    primaryCta.addEventListener('click', function() {
+      jcpDemoTrack('cta_clicked', null, { cta: 'early_access' });
+    });
+  }
+
   document
     .getElementById('viewDirectoryFromSales')
-    ?.addEventListener('click', openDirectoryProfileFromDemo);
+    ?.addEventListener('click', function() {
+      jcpDemoTrack('cta_clicked', null, { cta: 'view_directory' });
+      openDirectoryProfileFromDemo();
+    });
 }
 
 

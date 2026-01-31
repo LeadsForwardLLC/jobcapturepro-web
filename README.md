@@ -68,6 +68,10 @@ Two critical forms submit to GoHighLevel via separate webhooks:
 - **Demo Survey Copy:** Headline, subhead, button label (Step 1), success message.
 - **Footer Basics:** Support email, sales email, optional address line (shown in footer when set).
 
+### Demo Analytics
+
+**JCP → Demo Analytics** (under JCP Theme Settings) shows a read-only funnel: total sessions, completion rate, CTA click counts, and step-by-step completion and drop-off. **Demo → Early Access Conversion** counts sessions that started the demo and later reached the early-access-success page (same session); conversion is session-based, not user-based. **Data since** shows the first tracked session date or, after a reset, the reset timestamp. **Reset demo analytics** clears all stored events and sets a new “data since” date; a confirmation modal requires explicit confirmation. No charts, filters, or export. **Session-level demo analytics:** WordPress stores lightweight session records (session ID, optional business name/type, timestamps, completion/conversion flags) for drill-down only—no full emails or phone numbers, no CRM. Clicking **Total sessions started** or **Demo conversions** opens a read-only modal listing up to 25 sessions. Reset clears both event and session records.
+
 ### Per-Page Bottom CTA
 
 On any **Page** (post type `page`), editors can enable an optional **Bottom CTA** that appears at the end of the page content. It uses the same global CTA component (`.rankings-cta`) and classes—no new design or CSS.

@@ -51,7 +51,7 @@
   </form>
 
   <div class="survey-actions-row">
-    <button class="survey-btn" data-action="launch">Continue to preview</button>
+    <button type="button" class="survey-btn" data-action="launch">Continue to preview</button>
     <p class="survey-consent">By continuing you agree to receive the demo and relevant updates by email. Unsubscribe anytime.</p>
   </div>
 </section>

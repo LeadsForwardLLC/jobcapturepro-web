@@ -40,6 +40,6 @@
   </div>
 
   <div class="survey-actions-row">
-    <button class="survey-btn" data-action="next">Continue</button>
+    <button type="button" class="survey-btn" data-action="next">Continue</button>
   </div>
 </section>

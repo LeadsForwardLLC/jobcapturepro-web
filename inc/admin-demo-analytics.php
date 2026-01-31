@@ -1,0 +1,354 @@
+<?php
+/**
+ * Admin: Demo Analytics section (read-only funnel, CTA counts, completion rate).
+ * Under JCP Theme Settings. No styling controls, no export.
+ *
+ * @package JCP_Core
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * Add JCP menu and Demo Analytics page.
+ */
+function jcp_demo_analytics_admin_menu(): void {
+    add_menu_page(
+        __( 'JCP Theme Settings', 'jcp-core' ),
+        __( 'JCP', 'jcp-core' ),
+        'manage_options',
+        'jcp-theme-settings',
+        'jcp_demo_analytics_render_page',
+        'dashicons-chart-bar',
+        59
+    );
+    add_submenu_page(
+        'jcp-theme-settings',
+        __( 'Demo Analytics', 'jcp-core' ),
+        __( 'Demo Analytics', 'jcp-core' ),
+        'manage_options',
+        'jcp-demo-analytics',
+        'jcp_demo_analytics_render_page'
+    );
+}
+
+/**
+ * Render Demo Analytics page: funnel table, drop-off %, CTA counts, completion rate.
+ */
+function jcp_demo_analytics_render_page(): void {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    $stats = jcp_demo_analytics_get_stats();
+    $data_since = $stats['data_since'] ?? null;
+    $avg_seconds = isset( $stats['avg_time_to_completion_seconds'] ) ? (int) $stats['avg_time_to_completion_seconds'] : null;
+    $median_seconds = isset( $stats['median_time_to_completion_seconds'] ) ? (int) $stats['median_time_to_completion_seconds'] : null;
+    $primary_dropoff = $stats['primary_dropoff'] ?? null;
+    $total_sessions = (int) $stats['total_sessions'];
+    $reset_nonce = wp_create_nonce( 'jcp_demo_analytics_reset' );
+    $sessions_nonce = wp_create_nonce( 'jcp_demo_analytics_sessions' );
+
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e( 'Demo Analytics', 'jcp-core' ); ?></h1>
+        <p><?php esc_html_e( 'Read-only funnel and CTA metrics. No styling controls.', 'jcp-core' ); ?></p>
+
+        <p>
+            <?php
+            if ( $data_since !== null && $data_since !== '' ) {
+                echo esc_html( sprintf( __( 'Data since: %s', 'jcp-core' ), $data_since ) );
+            } else {
+                esc_html_e( 'No demo sessions recorded yet.', 'jcp-core' );
+            }
+            ?>
+        </p>
+
+        <?php if ( $total_sessions > 0 && $total_sessions < 50 ) : ?>
+        <p style="color: #646970;"><em><?php esc_html_e( 'Low sample size. Trends may not be statistically reliable.', 'jcp-core' ); ?></em></p>
+        <?php endif; ?>
+
+        <?php
+        $demo_conversions = (int) ( $stats['demo_conversions'] ?? 0 );
+        $conversion_rate  = (float) ( $stats['conversion_rate'] ?? 0 );
+        $business_type_dist = $stats['business_type_distribution'] ?? [];
+        $demo_goals_dist    = $stats['demo_goals_distribution'] ?? [];
+        ?>
+        <div class="jcp-demo-analytics-cols" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px;">
+            <div class="jcp-demo-analytics-col" style="min-width: 0; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 18px; box-shadow: 0 1px 1px rgba(0,0,0,.04); align-self: start;">
+                <h2 style="margin: 0 0 14px 0; font-size: 1.1em; color: #1d2327; font-weight: 600;"><?php esc_html_e( 'Overall', 'jcp-core' ); ?></h2>
+                <div class="jcp-demo-conversion-box" style="margin-bottom: 16px; padding: 14px 16px; border: 1px solid #2271b1; border-radius: 4px; background: #f0f6fc;">
+                    <p style="margin: 0 0 6px 0; font-size: 11px; color: #50575e; text-transform: uppercase; letter-spacing: 0.02em;"><?php esc_html_e( 'Demo → Early Access Conversion', 'jcp-core' ); ?></p>
+                    <?php if ( $total_sessions === 0 ) : ?>
+                        <p style="margin: 0; font-size: 15px; font-weight: 600; color: #1d2327;"><?php esc_html_e( 'No demo sessions yet.', 'jcp-core' ); ?></p>
+                    <?php elseif ( $demo_conversions === 0 ) : ?>
+                        <p style="margin: 0; font-size: 15px; font-weight: 600; color: #1d2327;"><?php esc_html_e( 'No conversions recorded yet.', 'jcp-core' ); ?></p>
+                    <?php else : ?>
+                        <p style="margin: 0; font-size: 18px; font-weight: 700; color: #2271b1;"><button type="button" class="button-link" id="jcp-demo-analytics-sessions-converted" data-filter="converted" style="font-size: 18px; font-weight: 700; color: #2271b1;"><?php echo esc_html( sprintf( __( '%1$d of %2$d demos converted (%3$s%%)', 'jcp-core' ), $demo_conversions, $total_sessions, (string) $conversion_rate ) ); ?></button></p>
+                    <?php endif; ?>
+                </div>
+                <table class="widefat striped" style="width: 100%; margin-bottom: 0;">
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500;"><?php esc_html_e( 'Total sessions (started)', 'jcp-core' ); ?></td>
+                            <td><button type="button" class="button-link" id="jcp-demo-analytics-sessions-all" data-filter="all"><?php echo (int) $stats['total_sessions']; ?></button></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;"><?php esc_html_e( 'Demo completion rate', 'jcp-core' ); ?></td>
+                            <td style="font-weight: 600;"><?php echo esc_html( (string) $stats['completion_rate'] ); ?>%</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;"><?php esc_html_e( 'Average time to completion', 'jcp-core' ); ?></td>
+                            <td><?php echo $avg_seconds !== null ? esc_html( jcp_demo_analytics_format_seconds( $avg_seconds ) ) : esc_html__( 'Not enough data yet', 'jcp-core' ); ?></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;"><?php esc_html_e( 'Median time to completion', 'jcp-core' ); ?></td>
+                            <td><?php echo $median_seconds !== null ? esc_html( jcp_demo_analytics_format_seconds( $median_seconds ) ) : esc_html__( 'Not enough data yet', 'jcp-core' ); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <?php if ( $primary_dropoff !== null && ! empty( $primary_dropoff['label'] ) ) : ?>
+                <div style="margin-top: 16px; padding: 12px 14px; background: #fff8e5; border-left: 4px solid #dba617; border-radius: 0 3px 3px 0;">
+                    <p style="margin: 0; font-size: 11px; color: #646970; text-transform: uppercase; letter-spacing: 0.03em;"><?php esc_html_e( 'Primary drop-off point', 'jcp-core' ); ?></p>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 700; color: #1d2327;"><?php echo esc_html( $primary_dropoff['label'] ); ?> <span style="color: #d63638;">(<?php echo esc_html( (string) $primary_dropoff['dropoff'] ); ?>%)</span></p>
+                </div>
+                <?php endif; ?>
+            </div>
+            <div class="jcp-demo-analytics-col" style="min-width: 0; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 18px; box-shadow: 0 1px 1px rgba(0,0,0,.04); align-self: start;">
+                <h2 style="margin: 0 0 14px 0; font-size: 1.1em; color: #1d2327; font-weight: 600;"><?php esc_html_e( 'CTA clicks', 'jcp-core' ); ?></h2>
+                <table class="widefat striped" style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td>Early access</td>
+                            <td><?php echo (int) $stats['cta_counts']['early_access']; ?></td>
+                        </tr>
+                        <tr>
+                            <td>View listing in directory</td>
+                            <td><?php echo (int) $stats['cta_counts']['view_directory']; ?></td>
+                        </tr>
+                        <tr>
+                            <td>View main directory</td>
+                            <td><?php echo (int) $stats['cta_counts']['view_main_directory']; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="jcp-demo-analytics-col" style="min-width: 0; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 18px; box-shadow: 0 1px 1px rgba(0,0,0,.04); align-self: start;">
+                <h2 style="margin: 0 0 14px 0; font-size: 1.1em; color: #1d2327; font-weight: 600;"><?php esc_html_e( 'Business type', 'jcp-core' ); ?></h2>
+                <?php if ( ! empty( $business_type_dist ) ) : ?>
+                <table class="widefat striped" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e( 'Business type', 'jcp-core' ); ?></th>
+                            <th><?php esc_html_e( 'Sessions', 'jcp-core' ); ?></th>
+                            <th><?php esc_html_e( '%', 'jcp-core' ); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ( $business_type_dist as $row ) : ?>
+                            <tr>
+                                <td><?php echo esc_html( $row['label'] ); ?></td>
+                                <td><?php echo (int) $row['count']; ?></td>
+                                <td><?php echo esc_html( (string) $row['pct'] ); ?>%</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php else : ?>
+                <p><em><?php esc_html_e( 'No business types recorded yet. Data appears when visitors complete the demo survey (step 1: business name and type).', 'jcp-core' ); ?></em></p>
+                <?php endif; ?>
+            </div>
+            <div class="jcp-demo-analytics-col" style="min-width: 0; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 18px; box-shadow: 0 1px 1px rgba(0,0,0,.04); align-self: start;">
+                <h2 style="margin: 0 0 14px 0; font-size: 1.1em; color: #1d2327; font-weight: 600;"><?php esc_html_e( 'What should this demo prove?', 'jcp-core' ); ?></h2>
+                <p class="description" style="margin: 0 0 10px 0; font-size: 12px; color: #646970;"><?php esc_html_e( '% of sessions per answer (step 2; up to 2 choices).', 'jcp-core' ); ?></p>
+                <?php if ( ! empty( $demo_goals_dist ) ) : ?>
+                <table class="widefat striped" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e( 'Answer', 'jcp-core' ); ?></th>
+                            <th><?php esc_html_e( 'Sessions', 'jcp-core' ); ?></th>
+                            <th><?php esc_html_e( '%', 'jcp-core' ); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ( $demo_goals_dist as $row ) : ?>
+                            <tr>
+                                <td><?php echo esc_html( $row['label'] ); ?></td>
+                                <td><?php echo (int) $row['count']; ?></td>
+                                <td><?php echo esc_html( (string) $row['pct'] ); ?>%</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php else : ?>
+                <p><em><?php esc_html_e( 'No demo goals recorded yet. Data appears when visitors complete survey step 2 ("What should this demo prove?").', 'jcp-core' ); ?></em></p>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 32px;"><?php esc_html_e( 'Funnel completion', 'jcp-core' ); ?></h2>
+        <table class="widefat striped">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e( 'Step', 'jcp-core' ); ?></th>
+                    <th><?php esc_html_e( 'Sessions', 'jcp-core' ); ?></th>
+                    <th><?php esc_html_e( 'Completion %', 'jcp-core' ); ?></th>
+                    <th><?php esc_html_e( 'Drop-off %', 'jcp-core' ); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ( $stats['funnel'] as $row ) : ?>
+                    <tr>
+                        <td><?php echo esc_html( $row['step'] ); ?></td>
+                        <td><?php echo (int) $row['count']; ?></td>
+                        <td><?php echo esc_html( (string) $row['pct'] ); ?>%</td>
+                        <td><?php echo esc_html( (string) $row['dropoff'] ); ?>%</td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 32px;">
+            <button type="button" class="button" id="jcp-demo-analytics-reset-btn"><?php esc_html_e( 'Reset demo analytics', 'jcp-core' ); ?></button>
+        </p>
+
+        <div id="jcp-demo-analytics-reset-modal" style="display: none; position: fixed; z-index: 100000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+            <div style="background: #fff; margin: 120px auto; padding: 24px; max-width: 400px; border: 1px solid #c3c4c7; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
+                <p><strong><?php esc_html_e( 'This will permanently clear all demo analytics data.', 'jcp-core' ); ?></strong></p>
+                <p><?php esc_html_e( 'This action cannot be undone.', 'jcp-core' ); ?></p>
+                <p>
+                    <button type="button" class="button button-primary" id="jcp-demo-analytics-reset-confirm"><?php esc_html_e( 'Confirm reset', 'jcp-core' ); ?></button>
+                    <button type="button" class="button" id="jcp-demo-analytics-reset-cancel"><?php esc_html_e( 'Cancel', 'jcp-core' ); ?></button>
+                </p>
+            </div>
+        </div>
+
+        <div id="jcp-demo-analytics-sessions-modal" style="display: none; position: fixed; z-index: 100001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+            <div style="background: #fff; margin: 40px auto; padding: 24px; max-width: 720px; max-height: 80vh; overflow: auto; border: 1px solid #c3c4c7; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
+                <p style="margin: 0 0 16px 0;"><strong id="jcp-demo-analytics-sessions-modal-title"><?php esc_html_e( 'Sessions', 'jcp-core' ); ?></strong></p>
+                <div id="jcp-demo-analytics-sessions-content">
+                    <p><?php esc_html_e( 'Loading…', 'jcp-core' ); ?></p>
+                </div>
+                <p style="margin-top: 16px;"><button type="button" class="button" id="jcp-demo-analytics-sessions-close"><?php esc_html_e( 'Close', 'jcp-core' ); ?></button></p>
+            </div>
+        </div>
+
+        <script>
+        (function() {
+            var resetBtn = document.getElementById('jcp-demo-analytics-reset-btn');
+            var resetModal = document.getElementById('jcp-demo-analytics-reset-modal');
+            var confirmBtn = document.getElementById('jcp-demo-analytics-reset-confirm');
+            var cancelBtn = document.getElementById('jcp-demo-analytics-reset-cancel');
+            if (resetBtn && resetModal && confirmBtn && cancelBtn) {
+                resetBtn.addEventListener('click', function() { resetModal.style.display = 'block'; });
+                cancelBtn.addEventListener('click', function() { resetModal.style.display = 'none'; });
+                resetModal.addEventListener('click', function(e) { if (e.target === resetModal) resetModal.style.display = 'none'; });
+                confirmBtn.addEventListener('click', function() {
+                    confirmBtn.disabled = true;
+                    var formData = new FormData();
+                    formData.append('action', 'jcp_demo_analytics_reset');
+                    formData.append('nonce', '<?php echo esc_js( $reset_nonce ); ?>');
+                    fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', { method: 'POST', body: formData })
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) { if (data && data.success) window.location.reload(); else confirmBtn.disabled = false; })
+                        .catch(function() { confirmBtn.disabled = false; });
+                });
+            }
+
+            var sessionsModal = document.getElementById('jcp-demo-analytics-sessions-modal');
+            var sessionsContent = document.getElementById('jcp-demo-analytics-sessions-content');
+            var sessionsTitle = document.getElementById('jcp-demo-analytics-sessions-modal-title');
+            var sessionsClose = document.getElementById('jcp-demo-analytics-sessions-close');
+            function openSessionsModal(filter) {
+                if (!sessionsModal || !sessionsContent) return;
+                sessionsContent.innerHTML = '<p><?php echo esc_js( __( 'Loading…', 'jcp-core' ) ); ?></p>';
+                if (sessionsTitle) sessionsTitle.textContent = filter === 'converted' ? '<?php echo esc_js( __( 'Demo conversions', 'jcp-core' ) ); ?>' : '<?php echo esc_js( __( 'Total sessions started', 'jcp-core' ) ); ?>';
+                sessionsModal.style.display = 'block';
+                var formData = new FormData();
+                formData.append('action', 'jcp_demo_analytics_sessions');
+                formData.append('nonce', '<?php echo esc_js( $sessions_nonce ); ?>');
+                formData.append('filter', filter === 'converted' ? 'converted' : 'all');
+                fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', { method: 'POST', body: formData })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (!sessionsContent) return;
+                        if (!data || !data.success || !Array.isArray(data.data)) {
+                            sessionsContent.innerHTML = '<p><?php echo esc_js( __( 'No demo sessions recorded yet.', 'jcp-core' ) ); ?></p>';
+                            return;
+                        }
+                        var rows = data.data;
+                        if (rows.length === 0) {
+                            sessionsContent.innerHTML = '<p><?php echo esc_js( __( 'No demo sessions recorded yet.', 'jcp-core' ) ); ?></p>';
+                            return;
+                        }
+                        function escapeHtml(s) { if (s == null) return ''; var div = document.createElement('div'); div.textContent = s; return div.innerHTML; }
+                        function shortHash(sid) { return (sid && sid.length >= 8) ? sid.substring(0, 8) : (sid || '—'); }
+                        function relativeTime(iso) {
+                            if (!iso) return '—';
+                            var d = new Date(iso); var n = new Date(); var sec = Math.floor((n - d) / 1000);
+                            if (sec < 60) return '<?php echo esc_js( __( 'Just now', 'jcp-core' ) ); ?>';
+                            if (sec < 3600) return Math.floor(sec / 60) + ' <?php echo esc_js( __( 'min ago', 'jcp-core' ) ); ?>';
+                            if (sec < 86400) return Math.floor(sec / 3600) + ' <?php echo esc_js( __( 'hours ago', 'jcp-core' ) ); ?>';
+                            return Math.floor(sec / 86400) + ' <?php echo esc_js( __( 'days ago', 'jcp-core' ) ); ?>';
+                        }
+                        var html = '<table class="widefat striped"><thead><tr><th><?php echo esc_js( __( 'Session', 'jcp-core' ) ); ?></th><th><?php echo esc_js( __( 'Business name', 'jcp-core' ) ); ?></th><th><?php echo esc_js( __( 'Business type', 'jcp-core' ) ); ?></th><th><?php echo esc_js( __( 'Demo completed', 'jcp-core' ) ); ?></th><th><?php echo esc_js( __( 'Converted', 'jcp-core' ) ); ?></th><th><?php echo esc_js( __( 'Started', 'jcp-core' ) ); ?></th></tr></thead><tbody>';
+                        for (var i = 0; i < rows.length; i++) {
+                            var r = rows[i];
+                            html += '<tr><td>' + escapeHtml(shortHash(r.session_id)) + '</td><td>' + escapeHtml(r.business_name || '—') + '</td><td>' + escapeHtml(r.business_type_display || '—') + '</td><td>' + (r.demo_completed ? '<?php echo esc_js( __( 'Yes', 'jcp-core' ) ); ?>' : '<?php echo esc_js( __( 'No', 'jcp-core' ) ); ?>') + '</td><td>' + (r.demo_converted ? '<?php echo esc_js( __( 'Yes', 'jcp-core' ) ); ?>' : '<?php echo esc_js( __( 'No', 'jcp-core' ) ); ?>') + '</td><td>' + escapeHtml(relativeTime(r.demo_started_at)) + '</td></tr>';
+                        }
+                        html += '</tbody></table>';
+                        sessionsContent.innerHTML = html;
+                    })
+                    .catch(function() {
+                        if (sessionsContent) sessionsContent.innerHTML = '<p><?php echo esc_js( __( 'No demo sessions recorded yet.', 'jcp-core' ) ); ?></p>';
+                    });
+            }
+            document.getElementById('jcp-demo-analytics-sessions-all') && document.getElementById('jcp-demo-analytics-sessions-all').addEventListener('click', function() { openSessionsModal('all'); });
+            document.getElementById('jcp-demo-analytics-sessions-converted') && document.getElementById('jcp-demo-analytics-sessions-converted').addEventListener('click', function() { openSessionsModal('converted'); });
+            if (sessionsClose) sessionsClose.addEventListener('click', function() { if (sessionsModal) sessionsModal.style.display = 'none'; });
+            if (sessionsModal) sessionsModal.addEventListener('click', function(e) { if (e.target === sessionsModal) sessionsModal.style.display = 'none'; });
+        })();
+        </script>
+    </div>
+    <?php
+}
+
+/**
+ * AJAX handler for reset demo analytics.
+ */
+function jcp_demo_analytics_ajax_reset(): void {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( [ 'message' => 'Forbidden' ], 403 );
+    }
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'jcp_demo_analytics_reset' ) ) {
+        wp_send_json_error( [ 'message' => 'Invalid nonce' ], 403 );
+    }
+    $done = jcp_demo_analytics_reset();
+    if ( $done ) {
+        wp_send_json_success();
+    }
+    wp_send_json_error( [ 'message' => 'Reset failed' ], 500 );
+}
+
+/**
+ * AJAX handler for session list (read-only). manage_options required.
+ */
+function jcp_demo_analytics_ajax_sessions(): void {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( [ 'message' => 'Forbidden' ], 403 );
+    }
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'jcp_demo_analytics_sessions' ) ) {
+        wp_send_json_error( [ 'message' => 'Invalid nonce' ], 403 );
+    }
+    $filter = isset( $_POST['filter'] ) ? sanitize_text_field( wp_unslash( $_POST['filter'] ) ) : 'all';
+    if ( $filter !== 'all' && $filter !== 'converted' ) {
+        $filter = 'all';
+    }
+    $sessions = jcp_demo_analytics_get_sessions( $filter, 25 );
+    wp_send_json_success( $sessions );
+}
+
+add_action( 'admin_menu', 'jcp_demo_analytics_admin_menu' );
+add_action( 'wp_ajax_jcp_demo_analytics_reset', 'jcp_demo_analytics_ajax_reset' );
+add_action( 'wp_ajax_jcp_demo_analytics_sessions', 'jcp_demo_analytics_ajax_sessions' );

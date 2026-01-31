@@ -33,6 +33,13 @@ require_once get_template_directory() . '/inc/rest-demo-survey.php';
 // REST: Contact form → GHL webhook
 require_once get_template_directory() . '/inc/rest-contact.php';
 
+// Demo analytics: DB table + REST endpoint
+require_once get_template_directory() . '/inc/demo-analytics.php';
+
+if ( is_admin() ) {
+    require_once get_template_directory() . '/inc/admin-demo-analytics.php';
+}
+
 /**
  * Theme setup: text domain and SEO-safe document title.
  */
