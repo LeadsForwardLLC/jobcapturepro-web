@@ -1545,6 +1545,14 @@ function showPostDemoPanel() {
     }
   } catch (e) {}
 
+  // dataLayer for GTM: Demo Completed (same moment, once per session)
+  try {
+    if (typeof window.dataLayer !== 'undefined' && !sessionStorage.getItem('jcp_datalayer_demo_completed')) {
+      window.dataLayer.push({ event: 'demo_completed', registration_type: 'demo_completed' });
+      sessionStorage.setItem('jcp_datalayer_demo_completed', '1');
+    }
+  } catch (e) {}
+
   const navBtn = document.getElementById('dynamicBackBtn');
   if (navBtn) {
     navBtn.style.display = 'inline-flex';

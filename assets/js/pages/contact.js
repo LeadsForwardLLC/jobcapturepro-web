@@ -282,6 +282,15 @@
                   _paq.push(['trackEvent', 'Contact Submitted', 'Submitted', JSON.stringify(formData)]);
                 }
               } catch (err) {}
+              try {
+                if (typeof window.dataLayer !== 'undefined') {
+                  window.dataLayer.push({
+                    event: 'contact_submitted',
+                    lead_type: 'contact',
+                    source: 'contact_page'
+                  });
+                }
+              } catch (err) {}
               var config = window.JCP_CONTACT_FORM || {};
               var redirect = config.success_redirect || '/contact-success';
               if (result.data && result.data.attachment_omitted) {
