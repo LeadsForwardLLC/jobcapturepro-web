@@ -143,7 +143,8 @@
 
   const initNavLinks = () => {
     const root = document.getElementById('jcp-app');
-    const page = root ? root.dataset.jcpPage : 'home';
+    const pathname = (window.location.pathname || '/').replace(/\/$/, '') || '/';
+    const page = root ? root.dataset.jcpPage : (pathname === '' || pathname === '/' || pathname === 'home' ? 'home' : 'page');
     const isHome = page === 'home';
     const isDirectory = page === 'directory';
     const isCompany = page === 'company';

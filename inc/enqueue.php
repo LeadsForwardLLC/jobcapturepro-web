@@ -365,3 +365,22 @@ function jcp_core_enqueue_assets(): void {
 }
 
 add_action( 'wp_enqueue_scripts', 'jcp_core_enqueue_assets' );
+
+/**
+ * Add defer to theme scripts to reduce parse-blocking and improve LCP/TBT.
+ * Scripts still run in order after DOM ready; no behavior change.
+ *
+ * @param string $tag    The script tag.
+ * @param string $handle The script handle.
+ * @return string Modified tag.
+ */
+function jcp_core_defer_theme_scripts( $tag, $handle ): string {
+    if ( strpos( $handle, 'jcp-core-' ) === 0 || strpos( $handle, 'jcp-shared-' ) === 0 ) {
+        if ( strpos( $tag, ' defer' ) === false && strpos( $tag, ' async' ) === false ) {
+            return str_replace( ' src', ' defer src', $tag );
+        }
+    }
+    return $tag;
+}
+
+add_filter( 'script_loader_tag', 'jcp_core_defer_theme_scripts', 10, 2 );
