@@ -97,40 +97,6 @@ function jcp_core_icon( string $icon_name ): string {
 }
 
 /**
- * Safely get an ACF field value with fallback
- *
- * @param string $field_name ACF field name
- * @param mixed  $default Default value if field is empty
- * @param string $post_id Post ID (defaults to 'options' for options pages)
- * @return mixed Field value or default
- */
-function jcp_core_get_acf_field( string $field_name, $default = '', string $post_id = 'options' ) {
-    if ( ! function_exists( 'get_field' ) ) {
-        return $default;
-    }
-
-    $value = get_field( $field_name, $post_id );
-    return ! empty( $value ) ? $value : $default;
-}
-
-/**
- * Check if a homepage section is enabled
- *
- * @param string $section Section name (e.g., 'how_it_works', 'faq')
- * @return bool True if section is enabled
- */
-function jcp_core_is_section_enabled( string $section ): bool {
-    if ( ! function_exists( 'get_field' ) ) {
-        return true; // Default to enabled if ACF not available
-    }
-
-    $field_name = 'enable_' . $section;
-    $value = get_field( $field_name, 'options' );
-
-    return ! empty( $value ) && true === $value;
-}
-
-/**
  * Get page detection for conditional enqueuing
  *
  * @return array Associative array of page booleans

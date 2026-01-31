@@ -202,7 +202,7 @@ templates/
 │   ├── footer.php               # Full HTML footer (called by root footer.php)
 │   └── nav.php                  # Navigation (called by header.php)
 └── partials/
-    └── nav.php                  # Nav partial (called by global/nav.php)
+    └── nav.php                  # Nav partial (called by global/header.php)
 ```
 
 **Why Root Files Can't Be Moved:**

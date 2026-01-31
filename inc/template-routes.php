@@ -43,6 +43,31 @@ function jcp_core_fallback_template_routes(): void {
     global $wp_query;
     $wp_query->is_404 = false;
     status_header( 200 );
+
+    $route_titles = [
+        'demo'                 => __( 'Demo', 'jcp-core' ),
+        'pricing'              => __( 'Pricing', 'jcp-core' ),
+        'early-access'         => __( 'Early Access', 'jcp-core' ),
+        'early-access-success' => __( 'You\'re on the list', 'jcp-core' ),
+        'contact'              => __( 'Contact', 'jcp-core' ),
+        'contact-success'      => __( 'Message sent', 'jcp-core' ),
+        'directory'            => __( 'Directory', 'jcp-core' ),
+        'estimate'             => __( 'Estimate', 'jcp-core' ),
+        'company'              => __( 'Company Profile', 'jcp-core' ),
+        'ui-library'           => __( 'UI Library', 'jcp-core' ),
+    ];
+    if ( isset( $route_titles[ $path ] ) ) {
+        add_filter(
+            'document_title_parts',
+            function ( $parts ) use ( $route_titles, $path ) {
+                $parts['title'] = $route_titles[ $path ];
+                return $parts;
+            },
+            10,
+            1
+        );
+    }
+
     include $template_path;
     exit;
 }
