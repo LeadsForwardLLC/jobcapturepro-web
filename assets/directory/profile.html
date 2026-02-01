@@ -8,76 +8,90 @@
     <div class="jcp-container">
       <div class="jcp-hero-grid">
         <div class="jcp-hero-copy profile-hero-copy">
-          <div class="hero-top">
-            <span class="profile-badge-wrap" id="profileBadgeWrap">
-              <span class="directory-badge trusted" id="profileBadge">Trusted Pro</span>
-              <button type="button" class="badge-tooltip-trigger" aria-label="What this badge means" id="profileBadgeTrigger" title="What this badge means">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="16" x2="12" y2="12"/>
-                  <line x1="12" y1="8" x2="12.01" y2="8"/>
-                </svg>
-                <span class="badge-tooltip-trigger-label" aria-hidden="true">i</span>
-              </button>
-              <span class="badge-tooltip" role="tooltip" id="profileBadgeTooltip">Trusted Pro contractors show consistent verified work and high ongoing activity.</span>
-            </span>
+          <!-- Identity: badge, company name (H1), rating — no logo in header -->
+          <header class="profile-header-identity">
+            <div class="hero-top">
+              <span class="profile-badge-wrap" id="profileBadgeWrap">
+                <span class="directory-badge trusted" id="profileBadge">Trusted Pro</span>
+                <button type="button" class="badge-tooltip-trigger" aria-label="What this badge means" id="profileBadgeTrigger" title="What this badge means">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  <span class="badge-tooltip-trigger-label" aria-hidden="true">i</span>
+                </button>
+                <span class="badge-tooltip" role="tooltip" id="profileBadgeTooltip">Trusted Pro contractors show consistent verified work and high ongoing activity.</span>
+              </span>
+            </div>
+            <h1 class="jcp-hero-title">Summit Roofing</h1>
+            <div class="directory-rating" aria-label="Rating">
+              <span class="stars" aria-hidden="true">★★★★★</span>
+              <span class="review-count">4.9 (126 reviews)</span>
+            </div>
+          </header>
+
+          <!-- Core info: primary service, address, phone + website -->
+          <div class="profile-header-core">
+            <p class="profile-primary-service" id="profilePrimaryService">
+              <span class="profile-label">Primary Service:</span> <span class="profile-value" id="profilePrimaryServiceValue">Roofing</span>
+            </p>
+            <p class="profile-address" id="profileAddress">
+              <span class="profile-value" id="profileAddressValue">Houston, TX</span>
+            </p>
+            <p class="profile-contact-line" id="profileContactLine">
+              <span class="profile-phone-wrap" id="profilePhoneWrap">
+                <span class="profile-contact-icon" id="profilePhoneIconWrap" aria-hidden="true"></span>
+                <a href="tel:" id="profilePhoneLink" class="profile-contact-link">Phone</a>
+              </span>
+              <span class="profile-contact-sep" id="profileContactSep" aria-hidden="true"> · </span>
+              <span class="profile-website-wrap" id="profileWebsiteWrap">
+                <span class="profile-contact-icon" id="profileWebsiteIconWrap" aria-hidden="true"></span>
+                <a href="#" id="profileWebsiteLink" class="profile-contact-link" target="_blank" rel="noopener noreferrer">Website</a>
+              </span>
+            </p>
+            <p class="owner-line is-hidden" id="profile-owner"></p>
+            <div class="verified-live is-hidden" id="profile-verified">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Verified via Live Jobs
+            </div>
           </div>
 
-          <h1 class="jcp-hero-title">Summit Roofing</h1>
-          <p class="profile-primary-service" id="profilePrimaryService">
-            <span class="profile-label">Primary Service:</span> <span class="profile-value" id="profilePrimaryServiceValue">Roofing</span>
-          </p>
-          <p class="profile-address" id="profileAddress">
-            <span class="profile-value" id="profileAddressValue">Houston, TX</span>
-          </p>
-          <p class="profile-contact-line" id="profileContactLine">
-            <span class="profile-phone-wrap" id="profilePhoneWrap"><a href="tel:" id="profilePhoneLink" class="profile-contact-link">Phone</a></span>
-            <span class="profile-contact-sep" id="profileContactSep" aria-hidden="true"> · </span>
-            <span class="profile-website-wrap" id="profileWebsiteWrap"><a href="#" id="profileWebsiteLink" class="profile-contact-link" target="_blank" rel="noopener noreferrer">Website</a></span>
-          </p>
-          
-          <p class="owner-line is-hidden" id="profile-owner"></p>
-          <div class="verified-live is-hidden" id="profile-verified">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            Verified via Live Jobs
-          </div>
+          <hr class="profile-header-divider" aria-hidden="true">
 
-          <div class="directory-rating">
-            <div class="stars">★★★★★</div>
-            <div class="review-count">4.9 (126 reviews)</div>
-          </div>
-
-          <!-- TODO: Replace with dynamic bio from JCP_PROFILE_DATA.description or contractor bio field -->
           <p class="profile-bio">
             Specializing in residential and light commercial electrical work with a focus on fast response and clean installs.
           </p>
 
-          <div class="profile-proof-block">
+          <!-- Proof & activity: verification + activity as labeled rows -->
+          <div class="profile-header-proof">
             <ul class="profile-proof-list">
               <li class="profile-proof-item">
                 <span class="profile-proof-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </span>
-                <span>Verified on <strong>42</strong> real jobs</span>
+                <span class="profile-proof-text">Verified on <strong>42</strong> real jobs</span>
               </li>
               <li class="profile-proof-item">
                 <span class="profile-proof-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </span>
-                <span>Active weekly in <strong>Houston, TX</strong></span>
+                <span class="profile-proof-text">Active weekly in <strong>Houston, TX</strong></span>
               </li>
             </ul>
           </div>
 
-          <div class="profile-cta-row">
-            <button type="button" class="btn btn-primary profile-cta-call" id="profileCtaCall">Call this contractor</button>
-            <button type="button" class="btn btn-secondary profile-cta-quote" id="profileCtaQuote">Request a quote</button>
+          <!-- Action: CTAs -->
+          <div class="profile-header-actions">
+            <div class="profile-cta-row">
+              <button type="button" class="btn btn-primary profile-cta-call" id="profileCtaCall">Call this contractor</button>
+              <button type="button" class="btn btn-secondary profile-cta-quote" id="profileCtaQuote">Request a quote</button>
+            </div>
+            <p class="profile-cta-helper">Calls are tracked to help improve response time</p>
           </div>
-          <!-- TODO: Future call tracking integration - show after click or in analytics -->
-          <p class="profile-cta-helper">Calls are tracked to help improve response time</p>
         </div>
 
         <div class="jcp-hero-visual profile-hero-gallery">

@@ -52,6 +52,42 @@ body:has(.profile-shell) {
 }
 
 
+/* Header copy: readable width, clear section flow */
+.profile-hero-copy {
+  max-width: 560px;
+}
+
+/* Identity: name-first hierarchy, no logo in header; compact vertical stack */
+.profile-header-identity {
+  display: block;
+  margin-bottom: var(--jcp-space-sm);
+}
+
+.profile-header-core {
+  margin-bottom: 0;
+}
+
+.profile-header-divider {
+  border: 0;
+  border-top: 1px solid var(--jcp-color-border);
+  margin: var(--jcp-space-xs) 0;
+  padding: 0;
+}
+
+.profile-hero-copy .profile-bio {
+  margin-top: 0;
+  margin-bottom: var(--jcp-space-sm);
+}
+
+.profile-header-proof {
+  margin-bottom: var(--jcp-space-sm);
+}
+
+.profile-header-actions {
+  margin-top: var(--jcp-space-sm);
+  padding-top: var(--jcp-space-xs);
+}
+
 .profile-hero-copy .hero-top {
   display: flex;
   align-items: center;
@@ -193,31 +229,83 @@ body:has(.profile-shell) {
   stroke: #16a34a;
 }
 
-/* Condensed head: title, subtitle, rating grouped tightly */
-.profile-hero-copy .jcp-hero-title {
+/* Identity: title + rating as one cluster, tight spacing */
+.profile-header-identity .jcp-hero-title {
+  margin-top: var(--jcp-space-xs);
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.profile-header-identity .directory-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-sm);
   margin-top: var(--jcp-space-xs);
   margin-bottom: 0;
 }
 
-.profile-hero-copy .jcp-hero-subtitle {
-  margin-top: var(--jcp-space-xs);
-  margin-bottom: 0;
-}
-
-/* Primary service, address, phone · website */
-.profile-hero-copy .profile-primary-service,
-.profile-hero-copy .profile-address,
-.profile-hero-copy .profile-contact-line {
-  margin-top: var(--jcp-space-sm);
-  margin-bottom: 0;
+/* Rating: muted so "no reviews" doesn’t feel like an error; aligned with name */
+.profile-header-identity .directory-rating .stars {
   font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-tertiary);
+  line-height: 1;
+  letter-spacing: 2px;
+  opacity: 0.9;
+}
+
+.profile-header-identity .directory-rating .review-count {
+  font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
-  line-height: var(--jcp-line-height-normal);
+  font-weight: var(--jcp-font-weight-normal);
+}
+
+/* Core info: secondary metadata, tight vertical spacing */
+.profile-header-core .profile-primary-service,
+.profile-header-core .profile-address,
+.profile-header-core .profile-contact-line {
+  margin: var(--jcp-space-xs) 0 0 0;
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  line-height: 1.35;
+}
+
+.profile-header-core .profile-primary-service:first-of-type {
+  margin-top: 0;
+}
+
+.profile-header-core .profile-contact-line {
+  margin-bottom: 0;
+}
+
+.profile-header-core .verified-live {
+  margin-top: var(--jcp-space-sm);
 }
 
 .profile-hero-copy .profile-label {
-  font-weight: 600;
-  color: var(--jcp-color-text-primary);
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-secondary);
+}
+
+/* Contact line: icons + links, tight spacing */
+.profile-contact-line .profile-phone-wrap,
+.profile-contact-line .profile-website-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
+}
+
+.profile-contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-contact-icon img.lucide-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  opacity: 0.9;
 }
 
 .profile-hero-copy .profile-contact-line .profile-contact-link {
@@ -227,26 +315,6 @@ body:has(.profile-shell) {
 
 .profile-hero-copy .profile-contact-line .profile-contact-link:hover {
   text-decoration: underline;
-}
-
-.profile-hero-copy .directory-rating {
-  display: flex;
-  align-items: center;
-  gap: var(--jcp-space-sm);
-  margin: var(--jcp-space-xs) 0 0 0;
-}
-
-.profile-hero-copy .directory-rating .stars {
-  font-size: var(--jcp-font-size-lg);
-  color: #fbbf24;
-  line-height: 1;
-  letter-spacing: 2px;
-}
-
-.profile-hero-copy .directory-rating .review-count {
-  font-size: var(--jcp-font-size-sm);
-  color: var(--jcp-color-text-secondary);
-  font-weight: var(--jcp-font-weight-medium);
 }
 
 .profile-hero-copy .rank-note {
@@ -280,79 +348,93 @@ body:has(.profile-shell) {
   color: var(--jcp-color-text-secondary);
 }
 
-/* Contractor bio (1–2 sentences under name/rating) */
+/* Bio: compact line height, slightly more space below */
 .profile-hero-copy .profile-bio {
   font-size: var(--jcp-font-size-base);
   color: var(--jcp-color-text-secondary);
-  line-height: var(--jcp-line-height-relaxed);
-  margin: var(--jcp-space-md) 0 0 0;
+  line-height: 1.45;
+  margin: 0 0 var(--jcp-space-md) 0;
 }
 
-/* Why homeowners choose this pro – proof bullets */
-.profile-proof-block {
-  margin-top: var(--jcp-space-lg);
-}
-
-.profile-proof-title {
-  font-size: var(--jcp-font-size-sm);
-  font-weight: var(--jcp-font-weight-bold);
-  color: var(--jcp-color-text-primary);
-  margin: 0 0 var(--jcp-space-sm) 0;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.profile-proof-list {
+/* Proof & activity: compact cluster, tight gap */
+.profile-header-proof .profile-proof-list {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--jcp-space-xs);
 }
 
-.profile-proof-item {
+.profile-header-proof .profile-proof-item {
   display: flex;
   align-items: center;
   gap: var(--jcp-space-sm);
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
-  line-height: var(--jcp-line-height-normal);
-  margin-bottom: var(--jcp-space-xs);
-}
-
-.profile-proof-item:last-child {
-  margin-bottom: 0;
+  line-height: 1.35;
+  margin: 0;
 }
 
 .profile-proof-icon {
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--jcp-color-primary);
+  color: var(--jcp-color-text-tertiary);
+}
+
+.profile-header-proof .profile-proof-item:first-child .profile-proof-icon {
+  color: #16a34a;
+}
+
+.profile-header-proof .profile-proof-item:last-child .profile-proof-icon {
+  color: var(--jcp-color-text-secondary);
 }
 
 .profile-proof-icon svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
-/* Homeowner CTAs */
-.profile-cta-row {
+.profile-proof-text {
+  flex: 1;
+}
+
+/* Action: CTAs close to trust, primary anchors bottom of header */
+.profile-header-actions .profile-cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--jcp-space-sm);
-  margin-top: var(--jcp-space-xl);
+  margin: 0 0 var(--jcp-space-xs) 0;
 }
 
-.profile-cta-row .btn {
+.profile-header-actions .profile-cta-row .btn {
   min-width: 0;
+}
+
+.profile-header-actions .profile-cta-call {
+  font-weight: var(--jcp-font-weight-semibold);
+  padding: var(--jcp-space-md) var(--jcp-space-xl);
+}
+
+.profile-header-actions .profile-cta-quote {
+  border: 1px solid var(--jcp-color-border);
+  background: var(--jcp-color-bg-primary);
+  color: var(--jcp-color-text-primary);
+}
+
+.profile-header-actions .profile-cta-quote:hover {
+  background: var(--jcp-color-bg-secondary);
+  border-color: var(--jcp-color-text-tertiary);
 }
 
 .profile-cta-helper {
   font-size: var(--jcp-font-size-xs);
   color: var(--jcp-color-text-tertiary);
-  margin: var(--jcp-space-xs) 0 0 0;
+  margin: 0;
 }
 
 .profile-hero-copy .profile-build {
@@ -400,7 +482,7 @@ body:has(.profile-shell) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--jcp-space-lg);
+  padding: var(--jcp-space-md);
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(12px);
 }
@@ -462,7 +544,7 @@ body:has(.profile-shell) {
 .profile-gallery-scroll {
   position: relative;
   overflow: hidden;
-  height: 360px;
+  height: 300px;
 }
 
 .profile-gallery-track {
@@ -491,7 +573,7 @@ body:has(.profile-shell) {
   left: 0;
   right: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-  padding: var(--jcp-space-2xl) var(--jcp-space-lg) var(--jcp-space-lg);
+  padding: var(--jcp-space-lg) var(--jcp-space-md) var(--jcp-space-md);
   color: #ffffff;
 }
 
@@ -512,7 +594,7 @@ body:has(.profile-shell) {
   display: flex;
   justify-content: center;
   gap: var(--jcp-space-xs);
-  padding: var(--jcp-space-lg);
+  padding: var(--jcp-space-md);
   background: rgba(0, 0, 0, 0.2);
 }
 
@@ -775,8 +857,8 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
 ========================================================= */
 
 .profile-shell .profile-hero-section {
-  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
-  padding-bottom: var(--jcp-space-3xl) !important;
+  padding-top: calc(72px + var(--jcp-space-md)) !important;
+  padding-bottom: var(--jcp-space-2xl) !important;
   background: #ffffff !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -793,7 +875,8 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
 .profile-shell .profile-hero-section .jcp-hero-grid {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: calc(var(--jcp-space-5xl) + var(--jcp-space-lg)) !important;
+  align-items: start !important;
+  gap: var(--jcp-space-2xl) !important;
   align-items: center !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -813,11 +896,6 @@ body:has(.profile-shell) .jcp-footer .jcp-container {
   display: flex;
   flex-direction: column;
   gap: var(--jcp-space-xs);
-}
-
-/* Restore breathing room after condensed head (title / subtitle / rating) */
-.profile-hero-copy .profile-bio {
-  margin-top: var(--jcp-space-md);
 }
 
 /* =========================================================

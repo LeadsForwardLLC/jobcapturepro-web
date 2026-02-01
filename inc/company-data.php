@@ -32,6 +32,25 @@ function jcp_core_normalize_address( $raw_address ): array {
 }
 
 /**
+ * Build a single-line address string from an address array (supports multiple key names).
+ *
+ * @param array $address Address array (e.g. from _jcp_address or API)
+ * @return string Formatted address or empty string
+ */
+function jcp_core_format_address_from_array( array $address ): string {
+    if ( empty( $address ) ) {
+        return '';
+    }
+    $street = $address['street'] ?? $address['street1'] ?? $address['address1'] ?? $address['streetAddress'] ?? $address['line1'] ?? '';
+    $city   = $address['city'] ?? $address['locality'] ?? $address['cityName'] ?? '';
+    $state  = $address['state'] ?? $address['region'] ?? $address['administrativeArea'] ?? $address['stateCode'] ?? '';
+    $zip    = $address['zip'] ?? $address['postalCode'] ?? $address['postal_code'] ?? $address['zipCode'] ?? '';
+    $country = $address['country'] ?? $address['countryCode'] ?? '';
+    $parts = array_filter( [ $street, $city, $state, $zip, $country ] );
+    return implode( ', ', $parts );
+}
+
+/**
  * Get company service label from industries
  *
  * @param int $post_id Company post ID
@@ -53,14 +72,58 @@ function jcp_core_company_service_label( int $post_id ): string {
 }
 
 /**
- * Get company city and state formatted
+ * Abbreviate US state to 2-letter code for display (City, ST).
+ * If already 2 chars or unknown, returns as-is.
+ *
+ * @param string $state State name or code
+ * @return string 2-letter state code or original
+ */
+function jcp_core_abbreviate_state( string $state ): string {
+    $state = trim( $state );
+    if ( strlen( $state ) === 2 ) {
+        return strtoupper( $state );
+    }
+    $map = [
+        'alabama' => 'AL', 'alaska' => 'AK', 'arizona' => 'AZ', 'arkansas' => 'AR',
+        'california' => 'CA', 'colorado' => 'CO', 'connecticut' => 'CT',
+        'delaware' => 'DE', 'florida' => 'FL', 'georgia' => 'GA', 'hawaii' => 'HI',
+        'idaho' => 'ID', 'illinois' => 'IL', 'indiana' => 'IN', 'iowa' => 'IA',
+        'kansas' => 'KS', 'kentucky' => 'KY', 'louisiana' => 'LA', 'maine' => 'ME',
+        'maryland' => 'MD', 'massachusetts' => 'MA', 'michigan' => 'MI', 'minnesota' => 'MN',
+        'mississippi' => 'MS', 'missouri' => 'MO', 'montana' => 'MT', 'nebraska' => 'NE',
+        'nevada' => 'NV', 'new hampshire' => 'NH', 'new jersey' => 'NJ', 'new mexico' => 'NM',
+        'new york' => 'NY', 'north carolina' => 'NC', 'north dakota' => 'ND', 'ohio' => 'OH',
+        'oklahoma' => 'OK', 'oregon' => 'OR', 'pennsylvania' => 'PA', 'rhode island' => 'RI',
+        'south carolina' => 'SC', 'south dakota' => 'SD', 'tennessee' => 'TN', 'texas' => 'TX',
+        'utah' => 'UT', 'vermont' => 'VT', 'virginia' => 'VA', 'washington' => 'WA',
+        'west virginia' => 'WV', 'wisconsin' => 'WI', 'wyoming' => 'WY', 'district of columbia' => 'DC',
+    ];
+    $key = strtolower( $state );
+    return isset( $map[ $key ] ) ? $map[ $key ] : $state;
+}
+
+/**
+ * Get company city and state formatted for directory (City, ST).
+ * Uses abbreviated state when built from address array or when normalizing stored formatted string.
  *
  * @param int $post_id Company post ID
- * @return string Formatted "City, State" string
+ * @return string Formatted "City, State" string (state abbreviated)
  */
 function jcp_core_company_city_state( int $post_id ): string {
     $formatted = get_post_meta( $post_id, '_jcp_address_formatted', true );
     if ( ! empty( $formatted ) ) {
+        $formatted = trim( $formatted );
+        if ( strpos( $formatted, ',' ) !== false ) {
+            $parts = array_map( 'trim', explode( ',', $formatted ) );
+            $last = end( $parts );
+            if ( $last !== '' && strlen( $last ) > 2 ) {
+                $abbr = jcp_core_abbreviate_state( $last );
+                if ( $abbr !== $last ) {
+                    $parts[ count( $parts ) - 1 ] = $abbr;
+                    $formatted = implode( ', ', $parts );
+                }
+            }
+        }
         return $formatted;
     }
 
@@ -70,10 +133,11 @@ function jcp_core_company_city_state( int $post_id ): string {
     if ( ! empty( $address ) ) {
         $parts = [];
         if ( ! empty( $address['city'] ) ) {
-            $parts[] = $address['city'];
+            $parts[] = trim( $address['city'] );
         }
-        if ( ! empty( $address['state'] ) ) {
-            $parts[] = $address['state'];
+        $state = $address['state'] ?? $address['region'] ?? $address['stateCode'] ?? $address['administrativeArea'] ?? '';
+        if ( $state !== '' ) {
+            $parts[] = jcp_core_abbreviate_state( (string) $state );
         }
         return ! empty( $parts ) ? implode( ', ', $parts ) : '';
     }
@@ -143,16 +207,17 @@ function jcp_core_company_data( WP_Post $post ): array {
     $lat = $address['lat'] ?? $address['latitude'] ?? null;
     $lng = $address['lng'] ?? $address['longitude'] ?? null;
 
+    // Full address: prefer stored formatted string, else build from array, else use raw string
     $address_formatted = get_post_meta( $post_id, '_jcp_address_formatted', true );
-    if ( empty( $address_formatted ) && ! empty( $address ) ) {
-        $parts = array_filter( [
-            $address['street'] ?? '',
-            $address['city'] ?? '',
-            $address['state'] ?? '',
-            $address['zip'] ?? '',
-            $address['country'] ?? '',
-        ] );
-        $address_formatted = implode( ', ', $parts );
+    $address_formatted = is_string( $address_formatted ) ? trim( $address_formatted ) : '';
+    if ( $address_formatted === '' && ! empty( $address ) ) {
+        $address_formatted = jcp_core_format_address_from_array( $address );
+    }
+    if ( $address_formatted === '' && is_string( $raw_address ) && trim( $raw_address ) !== '' ) {
+        $decoded = json_decode( $raw_address, true );
+        if ( ! is_array( $decoded ) ) {
+            $address_formatted = trim( $raw_address );
+        }
     }
 
     return [

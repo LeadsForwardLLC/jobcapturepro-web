@@ -1847,10 +1847,17 @@
 .card-location {
   display: flex;
   align-items: center;
-  gap: var(--jcp-space-xs);
+  flex-wrap: wrap;
+  gap: var(--jcp-space-sm);
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
   margin-bottom: var(--jcp-space-sm);
+}
+
+.card-location-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jcp-space-xs);
 }
 
 .lucide-icon {

@@ -48,6 +48,41 @@ function toTitle(text) {
     .trim();
 }
 
+/** Replace HTML entities and Unicode dashes with a clean hyphen so they don't display as strange characters. */
+function cleanDashes(text) {
+  if (text == null || typeof text !== 'string') return '';
+  return text
+    .replace(/&#8211;/g, '-')
+    .replace(/&#8212;/g, '-')
+    .replace(/\u2013/g, '-')
+    .replace(/\u2014/g, '-')
+    .trim();
+}
+
+function getCompanyInitial(name) {
+  if (!name || typeof name !== 'string') return '?';
+  const cleaned = cleanDashes(name);
+  return (cleaned.charAt(0) || '?').toUpperCase();
+}
+
+function getAvatarColor(initial) {
+  const colors = [
+    'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+    'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+    'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+    'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
+  ];
+  const charCode = (initial || '?').charCodeAt(0);
+  return colors[charCode % colors.length];
+}
+
+function isValidLogo(url) {
+  if (!url || typeof url !== 'string' || url.trim() === '') return false;
+  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
+}
+
 function loadContractorData() {
   if (window.JCP_PROFILE_DATA) {
     return window.JCP_PROFILE_DATA;
@@ -89,9 +124,9 @@ function loadContractorData() {
 function renderProfile(data) {
   if (!data) return;
   
-  // Update page title
-  document.title = `${data.name} — Contractor Profile | JobCapturePro`;
-  
+  const cleanName = cleanDashes(data.name || '');
+  document.title = `${cleanName} — Contractor Profile | JobCapturePro`;
+
   // Update badge and tooltip
   const badgeEl = document.getElementById('profileBadge');
   const tooltipEl = document.getElementById('profileBadgeTooltip');
@@ -105,19 +140,28 @@ function renderProfile(data) {
     }
   }
   
-  // Update name
+  // Update name (clean dashes so &#8211; etc. don't show as strange characters)
   const nameEl = document.querySelector('.profile-hero-copy .jcp-hero-title');
-  if (nameEl) nameEl.textContent = data.name;
+  if (nameEl) nameEl.textContent = cleanName;
 
-  // Primary service
+  // Primary service (capitalize in case API sends lowercase)
   const primaryServiceVal = document.getElementById('profilePrimaryServiceValue');
-  if (primaryServiceVal) primaryServiceVal.textContent = data.service || 'Service';
+  if (primaryServiceVal) primaryServiceVal.textContent = toTitle(data.service || 'Service');
 
-  // Full address
+  // Full address (clean dashes; from post type only)
   const addressVal = document.getElementById('profileAddressValue');
-  if (addressVal) addressVal.textContent = data.addressFormatted || data.city || '—';
+  if (addressVal) addressVal.textContent = cleanDashes(data.addressFormatted || '') || '—';
 
-  // Phone · Website
+  // Phone · Website: inject Lucide icons once so they show to the left of number/website
+  const phoneIconWrap = document.getElementById('profilePhoneIconWrap');
+  const websiteIconWrap = document.getElementById('profileWebsiteIconWrap');
+  if (phoneIconWrap && !phoneIconWrap.innerHTML.trim()) {
+    phoneIconWrap.innerHTML = '<img src="' + assetBase + '/shared/assets/icons/lucide/phone.svg" class="lucide-icon lucide-icon-sm" alt="" role="presentation">';
+  }
+  if (websiteIconWrap && !websiteIconWrap.innerHTML.trim()) {
+    websiteIconWrap.innerHTML = '<img src="' + assetBase + '/shared/assets/icons/lucide/earth.svg" class="lucide-icon lucide-icon-sm" alt="" role="presentation">';
+  }
+
   const phoneWrap = document.getElementById('profilePhoneWrap');
   const phoneLink = document.getElementById('profilePhoneLink');
   const websiteWrap = document.getElementById('profileWebsiteWrap');
@@ -169,7 +213,7 @@ function renderProfile(data) {
   // TODO: Replace static placeholder with dynamic bio when contractor bio field exists
   const bioEl = document.querySelector('.profile-bio');
   if (bioEl && data.description && data.description.trim()) {
-    bioEl.textContent = data.description.trim();
+    bioEl.textContent = cleanDashes(data.description.trim());
   }
 
   // Hydrate proof block with real activity signals (jobs, city)

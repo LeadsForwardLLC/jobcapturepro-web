@@ -47,7 +47,7 @@ function getDemoListing() {
       id: 'demo-listing',
       name: demoUser.businessName || 'Your Business',
       service: demoUser.niche || 'Service',
-      city: demoUser.serviceArea || 'Service Area',
+      city: demoUser.serviceArea || '—',
       rating: '5.0',
       reviews: 'New',
       jobs: 1,
@@ -351,8 +351,14 @@ function renderCards() {
       </div>
       
       <div class="card-location">
-        <img src="${assetBase}/shared/assets/icons/lucide/map-pin.svg" class="lucide-icon lucide-icon-xs" alt="">
-        <span>${l.city || 'Service Area'}</span>
+        <span class="card-location-segment">
+          <img src="${assetBase}/shared/assets/icons/lucide/map-pin.svg" class="lucide-icon lucide-icon-xs" alt="">
+          <span>${l.city || '—'}</span>
+        </span>
+        <span class="card-location-segment">
+          <img src="${assetBase}/shared/assets/icons/lucide/briefcase.svg" class="lucide-icon lucide-icon-xs" alt="">
+          <span>${l.service || 'Service'}</span>
+        </span>
       </div>
 
       <div class="card-meta-row">
