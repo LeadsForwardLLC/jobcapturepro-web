@@ -105,13 +105,38 @@ function renderProfile(data) {
     }
   }
   
-  // Update name and meta
+  // Update name
   const nameEl = document.querySelector('.profile-hero-copy .jcp-hero-title');
   if (nameEl) nameEl.textContent = data.name;
-  
-  const metaEl = document.querySelector('.profile-hero-copy .jcp-hero-subtitle');
-  if (metaEl) metaEl.textContent = `${data.service || 'Service'} · ${data.city || 'Service Area'}`;
-  
+
+  // Primary service
+  const primaryServiceVal = document.getElementById('profilePrimaryServiceValue');
+  if (primaryServiceVal) primaryServiceVal.textContent = data.service || 'Service';
+
+  // Full address
+  const addressVal = document.getElementById('profileAddressValue');
+  if (addressVal) addressVal.textContent = data.addressFormatted || data.city || '—';
+
+  // Phone · Website
+  const phoneWrap = document.getElementById('profilePhoneWrap');
+  const phoneLink = document.getElementById('profilePhoneLink');
+  const websiteWrap = document.getElementById('profileWebsiteWrap');
+  const websiteLink = document.getElementById('profileWebsiteLink');
+  const contactSep = document.getElementById('profileContactSep');
+  const contactLine = document.getElementById('profileContactLine');
+  if (phoneLink && data.phone) {
+    phoneLink.href = 'tel:' + data.phone.replace(/[^\d+]/g, '');
+    phoneLink.textContent = data.phone;
+    if (phoneWrap) phoneWrap.style.display = '';
+  } else if (phoneWrap) phoneWrap.style.display = 'none';
+  if (websiteLink && data.website) {
+    websiteLink.href = data.website;
+    websiteLink.textContent = 'Website';
+    if (websiteWrap) websiteWrap.style.display = '';
+  } else if (websiteWrap) websiteWrap.style.display = 'none';
+  if (contactSep) contactSep.style.display = (data.phone && data.website) ? '' : 'none';
+  if (contactLine) contactLine.style.display = (data.phone || data.website) ? '' : 'none';
+
   // Show owner name if available
   if (data.owner) {
     const ownerEl = document.getElementById('profile-owner');

@@ -1450,7 +1450,7 @@ function init() {
   // Tour start (after DOM paints)
   setTimeout(() => {
     jcpDemoTrack('demo_run_started');
-    // Matomo intent-threshold events (once per session)
+    // Matomo + dataLayer (once per session)
     try {
       if (typeof _paq !== 'undefined') {
         if (!sessionStorage.getItem('jcp_matomo_demo_started')) {
@@ -1461,6 +1461,10 @@ function init() {
           _paq.push(['trackEvent', 'Demo Run Started', 'Run Started']);
           sessionStorage.setItem('jcp_matomo_demo_run_started', '1');
         }
+      }
+      if (typeof window.dataLayer !== 'undefined' && !sessionStorage.getItem('jcp_datalayer_demo_run_started')) {
+        window.dataLayer.push({ event: 'demo_run_started' });
+        sessionStorage.setItem('jcp_datalayer_demo_run_started', '1');
       }
     } catch (e) {}
     setTourStep('step1');

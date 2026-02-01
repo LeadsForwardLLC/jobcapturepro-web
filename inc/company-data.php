@@ -143,6 +143,18 @@ function jcp_core_company_data( WP_Post $post ): array {
     $lat = $address['lat'] ?? $address['latitude'] ?? null;
     $lng = $address['lng'] ?? $address['longitude'] ?? null;
 
+    $address_formatted = get_post_meta( $post_id, '_jcp_address_formatted', true );
+    if ( empty( $address_formatted ) && ! empty( $address ) ) {
+        $parts = array_filter( [
+            $address['street'] ?? '',
+            $address['city'] ?? '',
+            $address['state'] ?? '',
+            $address['zip'] ?? '',
+            $address['country'] ?? '',
+        ] );
+        $address_formatted = implode( ', ', $parts );
+    }
+
     return [
         'id'               => get_post_meta( $post_id, '_jcp_company_id', true ) ?: (string) $post_id,
         'wpId'             => $post_id,
@@ -158,6 +170,7 @@ function jcp_core_company_data( WP_Post $post ): array {
         'logo'             => get_post_meta( $post_id, '_jcp_logo_url', true ) ?: '',
         'phone'            => get_post_meta( $post_id, '_jcp_phone', true ) ?: '',
         'website'          => get_post_meta( $post_id, '_jcp_website_url', true ) ?: '',
+        'addressFormatted' => $address_formatted ?: '',
         'description'      => wp_strip_all_tags( $post->post_content ?? '' ),
         'serviceArea'      => $address['serviceArea'] ?? '',
         'address'          => $address,
@@ -176,7 +189,7 @@ function jcp_core_company_data( WP_Post $post ): array {
  */
 function jcp_core_get_demo_companies(): array {
     $base = [
-        [ 'id' => 'demo-1', 'wpId' => 0, 'name' => 'Summit Roofing', 'service' => 'Roofing', 'city' => 'Houston, TX', 'badge' => 'verified', 'rating' => '4.9', 'reviews' => 126, 'jobs' => 42, 'activity' => 'Very Active', 'lastJobDaysAgo' => 2, 'logo' => '' ],
+        [ 'id' => 'demo-1', 'wpId' => 0, 'name' => 'Summit Roofing', 'service' => 'Roofing', 'city' => 'Houston, TX', 'badge' => 'verified', 'rating' => '4.9', 'reviews' => 126, 'jobs' => 42, 'activity' => 'Very Active', 'lastJobDaysAgo' => 2, 'logo' => '', 'addressFormatted' => '123 Main St, Houston, TX 77001', 'phone' => '(555) 123-4567', 'website' => 'https://example.com' ],
         [ 'id' => 'demo-2', 'wpId' => 0, 'name' => 'Elite Plumbing Services', 'service' => 'Plumbing', 'city' => 'Dallas, TX', 'badge' => 'trusted', 'rating' => '4.8', 'reviews' => 89, 'jobs' => 67, 'activity' => 'Very Active', 'lastJobDaysAgo' => 1, 'logo' => '' ],
         [ 'id' => 'demo-3', 'wpId' => 0, 'name' => 'Premier HVAC Solutions', 'service' => 'HVAC', 'city' => 'Austin, TX', 'badge' => 'verified', 'rating' => '4.7', 'reviews' => 54, 'jobs' => 38, 'activity' => 'Active', 'lastJobDaysAgo' => 3, 'logo' => '' ],
         [ 'id' => 'demo-4', 'wpId' => 0, 'name' => 'Apex Electrical Contractors', 'service' => 'Electrical', 'city' => 'San Antonio, TX', 'badge' => 'verified', 'rating' => '4.9', 'reviews' => 112, 'jobs' => 51, 'activity' => 'Very Active', 'lastJobDaysAgo' => 0, 'logo' => '' ],

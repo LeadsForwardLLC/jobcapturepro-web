@@ -204,6 +204,31 @@ body:has(.profile-shell) {
   margin-bottom: 0;
 }
 
+/* Primary service, address, phone · website */
+.profile-hero-copy .profile-primary-service,
+.profile-hero-copy .profile-address,
+.profile-hero-copy .profile-contact-line {
+  margin-top: var(--jcp-space-sm);
+  margin-bottom: 0;
+  font-size: var(--jcp-font-size-base);
+  color: var(--jcp-color-text-secondary);
+  line-height: var(--jcp-line-height-normal);
+}
+
+.profile-hero-copy .profile-label {
+  font-weight: 600;
+  color: var(--jcp-color-text-primary);
+}
+
+.profile-hero-copy .profile-contact-line .profile-contact-link {
+  color: var(--jcp-color-primary);
+  text-decoration: none;
+}
+
+.profile-hero-copy .profile-contact-line .profile-contact-link:hover {
+  text-decoration: underline;
+}
+
 .profile-hero-copy .directory-rating {
   display: flex;
   align-items: center;
