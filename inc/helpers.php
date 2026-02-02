@@ -141,6 +141,24 @@ function jcp_core_is_help_archive(): bool {
 }
 
 /**
+ * Whether the current request is the Help Articles page (Page with template or slug "help").
+ * Used when /help/ is a WordPress Page; assign template "Help Articles" so search/filter connect to the CPT.
+ *
+ * @return bool
+ */
+function jcp_core_is_help_page(): bool {
+    if ( ! is_page() ) {
+        return false;
+    }
+    $template = get_page_template_slug();
+    if ( $template === 'page-help.php' ) {
+        return true;
+    }
+    $post = get_queried_object();
+    return $post instanceof WP_Post && $post->post_name === 'help';
+}
+
+/**
  * Whether the current request is in Directory Mode (marketplace context).
  * True on /directory, /directory/*, and contractor profile (/company).
  * Used by the global header to switch nav links and CTAs.
