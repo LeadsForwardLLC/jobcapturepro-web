@@ -123,6 +123,24 @@ function jcp_core_get_page_detection(): array {
 }
 
 /**
+ * Whether the current request is the Help articles CPT archive (/help/).
+ * Supports post type names "help_article", "help", or rewrite slug "help".
+ *
+ * @return bool
+ */
+function jcp_core_is_help_archive(): bool {
+    if ( ! is_post_type_archive() ) {
+        return false;
+    }
+    $pt = get_queried_object();
+    if ( ! $pt instanceof WP_Post_Type ) {
+        return false;
+    }
+    $slug = isset( $pt->rewrite['slug'] ) ? $pt->rewrite['slug'] : $pt->name;
+    return $pt->name === 'help_article' || $pt->name === 'help' || $slug === 'help';
+}
+
+/**
  * Whether the current request is in Directory Mode (marketplace context).
  * True on /directory, /directory/*, and contractor profile (/company).
  * Used by the global header to switch nav links and CTAs.

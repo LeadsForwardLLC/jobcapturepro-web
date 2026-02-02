@@ -56,7 +56,8 @@ $dir_trust = $dir_url . '/#trust';
         <button type="button" class="nav-dropdown-trigger nav-link" id="navResourcesTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="navResourcesMenu">Resources <svg class="nav-dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="nav-dropdown-menu" id="navResourcesMenu" role="menu" aria-labelledby="navResourcesTrigger" hidden>
           <a href="<?php echo esc_url( home_url( '/blog' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="blog">Blog</a>
-          <a href="<?php echo esc_url( $dir_url ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="directory">Directory (coming soon)</a>
+          <a href="<?php echo esc_url( home_url( '/help' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="help">Help Articles</a>
+          <a href="<?php echo esc_url( $dir_url ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="directory">Directory</a>
           <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="contact">Contact</a>
         </div>
       </div>
@@ -250,12 +251,20 @@ $dir_trust = $dir_url . '/#trust';
           </svg>
           <span>Blog</span>
         </a>
+        <a href="<?php echo esc_url( home_url( '/help' ) ); ?>" class="mobile-nav-link" data-page="help">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span><?php esc_html_e( 'Help Articles', 'jcp-core' ); ?></span>
+        </a>
         <a href="<?php echo esc_url( $dir_url ); ?>" class="mobile-nav-link" data-page="directory">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          <span>Directory (coming soon)</span>
+          <span><?php esc_html_e( 'Directory', 'jcp-core' ); ?></span>
         </a>
         <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="mobile-nav-link" data-page="contact">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
