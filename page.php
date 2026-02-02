@@ -3,12 +3,37 @@
  * Standard Page Template
  * 
  * Default template for WordPress pages.
- * Content added via WP Admin editor renders cleanly with proper spacing and typography.
+ * When the page slug is "help", the Help Articles layout (help_article CPT + search/filter) is shown instead.
  *
  * @package JCP_Core
  */
 
 get_header();
+
+// Use Help Articles layout when this page has slug "help" so search/filter connect to the CPT.
+if ( is_page( 'help' ) ) {
+	$help_query = new WP_Query( [
+		'post_type'      => 'help_article',
+		'posts_per_page' => -1,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+		'post_status'    => 'publish',
+	] );
+	$help_has_posts = $help_query->have_posts();
+	$total_posts    = $help_has_posts ? (int) $help_query->found_posts : 0;
+	$help_terms     = get_terms( [ 'taxonomy' => 'help-category', 'hide_empty' => true ] );
+	if ( is_wp_error( $help_terms ) || empty( $help_terms ) ) {
+		$help_terms = [];
+	}
+	get_template_part( 'templates/help-articles-content', null, [
+		'help_query'     => $help_query,
+		'help_has_posts' => $help_has_posts,
+		'total_posts'    => $total_posts,
+		'help_terms'     => $help_terms,
+	] );
+	get_footer();
+	return;
+}
 ?>
 
 <main class="jcp-marketing">
