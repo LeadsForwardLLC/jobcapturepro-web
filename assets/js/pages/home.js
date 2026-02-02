@@ -205,7 +205,7 @@
                         </div>
                         <div class="phone-body hero-phone-body">
                           <div class="hero-phone-image-wrap">
-                            <img src="http://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg" alt="Job photo" class="hero-phone-image" />
+                            <img src="https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg" alt="Job photo" class="hero-phone-image" width="390" height="292" fetchpriority="high" />
                           </div>
                           <div class="demo-preview-item hero-phone-card hero-phone-card-1">
                             <div class="demo-item-icon">
@@ -895,7 +895,7 @@
               </div>
               <div class="conversion-visual">
                 <div class="conversion-image-wrapper">
-                  <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop&q=80" alt="Contractors at work" class="conversion-image">
+                  <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop&q=80" alt="Contractors at work" class="conversion-image" width="800" height="600" loading="lazy">
                   <div class="conversion-image-overlay">
                     <div class="conversion-badge">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -642,7 +642,7 @@ function createCheckinCard(checkin, isNew = false) {
   return `
     <div class="checkin-card ${isNew ? 'new' : ''}">
       <div class="checkin-image">
-        <img src="${checkin.image}" alt="${checkin.title}">
+        <img src="${checkin.image}" alt="${checkin.title}" width="400" height="300" loading="lazy">
       </div>
       <div class="checkin-content">
         <div class="checkin-title">${checkin.title}</div>
@@ -885,7 +885,7 @@ function addPhotos() {
   const photoDiv = document.createElement('div');
   photoDiv.className = 'photo-item';
   photoDiv.innerHTML = `
-    <img src="${demoPhotos[idx]}" alt="Job photo">
+    <img src="${demoPhotos[idx]}" alt="Job photo" width="120" height="90">
     <button class="photo-remove" type="button">×</button>
   `;
 
@@ -972,7 +972,7 @@ function showEditScreen() {
     for (let i = 0; i < state.photoCount; i++) {
       const photoDiv = document.createElement('div');
       photoDiv.className = 'photo-item';
-      photoDiv.innerHTML = `<img src="${demoPhotos[i]}" alt="Job photo">`;
+      photoDiv.innerHTML = `<img src="${demoPhotos[i]}" alt="Job photo" width="120" height="90">`;
       editGrid.appendChild(photoDiv);
     }
   }
@@ -1110,7 +1110,7 @@ async function publishToSocial() {
 
   const jobCard = `
     <div class="feed-card">
-      <div class="feed-image"><img src="${demoPhotos[0]}" alt="Job"></div>
+      <div class="feed-image"><img src="${demoPhotos[0]}" alt="Job" width="400" height="300" loading="lazy"></div>
       <div class="feed-content">
         <h4>Water Heater Replacement • Austin, TX</h4>
         <p>Posted today • Professional installation</p>
@@ -1180,7 +1180,7 @@ async function sendReviewRequest() {
 
   document.getElementById('feed-review')?.insertAdjacentHTML('afterbegin', `
     <div class="feed-card">
-      <div class="feed-image"><img src="${demoPhotos[0]}" alt="Job"></div>
+      <div class="feed-image"><img src="${demoPhotos[0]}" alt="Job" width="400" height="300" loading="lazy"></div>
       <div class="feed-content">
         <h4>Review Request Sent</h4>
         <p>SMS sent automatically</p>
@@ -1193,7 +1193,7 @@ async function sendReviewRequest() {
   pulse('sim-google');
   document.getElementById('feed-google')?.insertAdjacentHTML('afterbegin', `
     <div class="feed-card">
-      <div class="feed-image"><img src="${demoPhotos[0]}" alt="Job"></div>
+      <div class="feed-image"><img src="${demoPhotos[0]}" alt="Job" width="400" height="300" loading="lazy"></div>
       <div class="feed-content">
         <h4>⭐ 5-Star Review Received</h4>
         <p>"Great service!"</p>
@@ -1266,7 +1266,7 @@ function openCheckinForEdit(index) {
     if (checkin.image) {
       const photoDiv = document.createElement('div');
       photoDiv.className = 'photo-item';
-      photoDiv.innerHTML = `<img src="${checkin.image}" alt="Job photo">`;
+      photoDiv.innerHTML = `<img src="${checkin.image}" alt="Job photo" width="400" height="300" loading="lazy">`;
       editGrid.appendChild(photoDiv);
     }
   }

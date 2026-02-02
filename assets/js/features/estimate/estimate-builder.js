@@ -1561,7 +1561,7 @@ function renderPhotos() {
     const wrapper = document.createElement("div");
     wrapper.className = "photo-thumb";
     wrapper.innerHTML = `
-      <img src="${url}" alt="Uploaded photo ${index + 1}" />
+      <img src="${url}" alt="Uploaded photo ${index + 1}" width="200" height="150" loading="lazy" />
       <button class="thumb-remove" data-index="${index}" type="button">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -1676,7 +1676,7 @@ function populateExistingPhotos() {
       const item = document.createElement('div');
       item.className = 'existing-photo-item';
       item.innerHTML = `
-        <img src="${photo.src}" alt="${photo.label}" class="existing-photo-img" />
+        <img src="${photo.src}" alt="${photo.label}" class="existing-photo-img" width="200" height="150" loading="lazy" />
         <div class="existing-photo-label">${photo.label}</div>
       `;
       container.appendChild(item);
@@ -2693,7 +2693,7 @@ function renderPhotoGrid() {
   
   dom.intakePhotoGrid.innerHTML = state.visualIntakePhotos.map((photo, index) => `
     <div class="intake-photo-item">
-      <img src="${photo}" alt="Project photo ${index + 1}" class="intake-photo-img" />
+      <img src="${photo}" alt="Project photo ${index + 1}" class="intake-photo-img" width="200" height="150" loading="lazy" />
       <button class="intake-photo-remove" data-index="${index}" type="button">×</button>
     </div>
   `).join('');

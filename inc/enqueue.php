@@ -16,6 +16,20 @@ function jcp_core_enqueue_assets(): void {
     $render_handle = 'jcp-core-render';
     $render_deps = [];
 
+    // Preload LCP image to improve LCP (exclude from lazy-load in WP Rocket)
+    if ( $pages['is_home'] ) {
+        $lcp_url = esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg' );
+        add_action( 'wp_head', function () use ( $lcp_url ) {
+            echo '<link rel="preload" href="' . $lcp_url . '" as="image">' . "\n";
+        }, 1 );
+    }
+    if ( $pages['is_directory'] ) {
+        $lcp_url = esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/confident-foreman.jpg' );
+        add_action( 'wp_head', function () use ( $lcp_url ) {
+            echo '<link rel="preload" href="' . $lcp_url . '" as="image">' . "\n";
+        }, 1 );
+    }
+
     $is_marketing = $pages['is_home'] || $pages['is_pricing'] || $pages['is_early_access'] || $pages['is_contact'];
 
     // Always load navigation JS
@@ -119,14 +133,16 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
     }
 
-    // Always load render dispatcher
-    jcp_core_enqueue_script( $render_handle, 'js/core/jcp-render.js', $render_deps );
-
-    // Global JS config
-    $globals = "window.JCP_ENV = 'live';\n";
-    $globals .= "window.JCP_CONFIG = { env: 'live', baseUrl: '" . esc_url_raw( site_url() ) . "' };\n";
-    $globals .= "window.JCP_ASSET_BASE = '" . esc_url_raw( get_stylesheet_directory_uri() . '/assets' ) . "';";
-    wp_add_inline_script( $render_handle, $globals, 'before' );
+    // Load render dispatcher only on app pages (not blog, single, or generic pages)
+    $needs_render = $pages['is_home'] || $pages['is_pricing'] || $pages['is_early_access'] || $pages['is_contact']
+        || $pages['is_demo'] || $pages['is_directory'] || $pages['is_company'] || $pages['is_estimate'];
+    if ( $needs_render ) {
+        jcp_core_enqueue_script( $render_handle, 'js/core/jcp-render.js', $render_deps );
+        $globals = "window.JCP_ENV = 'live';\n";
+        $globals .= "window.JCP_CONFIG = { env: 'live', baseUrl: '" . esc_url_raw( site_url() ) . "' };\n";
+        $globals .= "window.JCP_ASSET_BASE = '" . esc_url_raw( get_stylesheet_directory_uri() . '/assets' ) . "';";
+        wp_add_inline_script( $render_handle, $globals, 'before' );
+    }
 
     // Demo page
     if ( $pages['is_demo'] ) {

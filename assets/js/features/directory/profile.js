@@ -255,7 +255,7 @@ function renderCheckins(checkins) {
     card.className = 'checkin-card';
     card.innerHTML = `
       <div class="checkin-image">
-        <img src="${checkin.image}" alt="${checkin.title}" loading="lazy" />
+        <img src="${checkin.image}" alt="${checkin.title}" width="400" height="210" loading="lazy" />
       </div>
       <div class="checkin-content">
         <h3 class="checkin-title">${checkin.title}</h3>
@@ -422,17 +422,18 @@ function initProfileCTAs() {
 }
 
 /* =========================================================
-   INIT
+   INIT (called by jcp-render.js after template is injected)
 ========================================================= */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initProfile() {
   const contractorData = loadContractorData();
   if (contractorData) {
     renderProfile(contractorData);
   } else {
     showError('Contractor data unavailable');
   }
-  
   initGallery();
   initProfileCTAs();
-});
+}
+
+window.initProfile = initProfile;

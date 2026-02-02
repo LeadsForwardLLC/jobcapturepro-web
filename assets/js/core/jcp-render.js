@@ -65,33 +65,33 @@
       return;
   }
 
-  const request = new XMLHttpRequest();
-  request.open('GET', templateUrl, false);
-  request.send(null);
+  // Reserve layout space to reduce CLS while template loads
+  root.style.minHeight = '50vh';
 
-  if (request.status < 200 || request.status >= 300) {
-    console.error(`JCP render: failed to load template ${templateUrl}`);
-    return;
-  }
+  fetch(templateUrl)
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.text();
+    })
+    .then((html) => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const inlineScripts = [];
 
-  const doc = new DOMParser().parseFromString(request.responseText, 'text/html');
-  const inlineScripts = [];
+      doc.body.querySelectorAll('script').forEach((script) => {
+        if (!script.src && script.textContent.trim()) {
+          inlineScripts.push(script.textContent);
+        }
+        script.remove();
+      });
 
-  doc.body.querySelectorAll('script').forEach((script) => {
-    if (!script.src && script.textContent.trim()) {
-      inlineScripts.push(script.textContent);
-    }
-    script.remove();
-  });
+      doc.body.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+        link.remove();
+      });
 
-  doc.body.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-    link.remove();
-  });
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = doc.body.innerHTML;
 
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = doc.body.innerHTML;
-
-  const rewriteAssetValue = (value) => {
+      const rewriteAssetValue = (value) => {
     if (!value) return value;
 
     const sharedMatch = value.match(/^(?:\.\.\/)*shared\/assets\/(.+)$/);
@@ -145,14 +145,27 @@
     el.setAttribute('poster', rewriteAssetValue(el.getAttribute('poster')));
   });
 
-  root.innerHTML = '';
-  while (wrapper.firstChild) {
-    root.appendChild(wrapper.firstChild);
-  }
+      root.style.minHeight = '';
+      root.innerHTML = '';
+      while (wrapper.firstChild) {
+        root.appendChild(wrapper.firstChild);
+      }
 
-  inlineScripts.forEach((code) => {
-    const script = document.createElement('script');
-    script.text = code;
-    document.body.appendChild(script);
-  });
+      inlineScripts.forEach((code) => {
+        const script = document.createElement('script');
+        script.text = code;
+        document.body.appendChild(script);
+      });
+
+      if (page === 'directory' && typeof window.initDirectory === 'function') {
+        window.initDirectory();
+      }
+      if (page === 'company' && typeof window.initProfile === 'function') {
+        window.initProfile();
+      }
+    })
+    .catch((err) => {
+      root.style.minHeight = '';
+      console.error('JCP render: failed to load template', templateUrl, err);
+    });
 })();

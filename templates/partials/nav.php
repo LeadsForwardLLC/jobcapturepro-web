@@ -26,6 +26,8 @@ $dir_trust = $dir_url . '#trust';
         src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png"
         alt="JobCapturePro"
         class="logo-image"
+        width="180"
+        height="40"
       />
     </a>
     <?php if ( $directory_mode ) : ?>
@@ -114,6 +116,8 @@ $dir_trust = $dir_url . '#trust';
           src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png"
           alt="JobCapturePro"
           class="mobile-logo"
+          width="160"
+          height="36"
         />
         <?php if ( $directory_mode ) : ?>
           <span class="mobile-directory-badge" aria-hidden="true"><?php echo esc_html__( 'Directory', 'jcp-core' ); ?></span>

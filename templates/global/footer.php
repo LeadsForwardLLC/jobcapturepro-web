@@ -32,7 +32,7 @@ $dir_trust = $dir_url . '#trust';
       <?php if ( $directory_mode ) : ?>
         <div class="jcp-footer-brand">
           <a href="<?php echo esc_url( $dir_url ); ?>" aria-label="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>">
-            <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" />
+            <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" width="180" height="40" />
           </a>
           <p><?php esc_html_e( 'Verified job proof from active contractors.', 'jcp-core' ); ?></p>
         </div>
@@ -50,7 +50,7 @@ $dir_trust = $dir_url . '#trust';
         </div>
       <?php else : ?>
         <div class="jcp-footer-brand">
-          <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" />
+          <img src="<?php echo esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' ); ?>" alt="<?php esc_attr_e( 'JobCapturePro', 'jcp-core' ); ?>" width="180" height="40" />
           <p>Turn real job photos into proof, visibility, reviews, and more jobs.</p>
         </div>
         <div class="jcp-footer-col">

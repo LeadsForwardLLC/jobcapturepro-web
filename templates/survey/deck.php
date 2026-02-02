@@ -126,25 +126,25 @@ $icon_dir   = esc_url( jcp_core_icon( 'map' ) );
         <div class="deck-tiles">
           <div class="deck-tile">
             <span class="tile-icon">
-              <img src="<?php echo $icon_layout; ?>" alt="">
+              <img src="<?php echo $icon_layout; ?>" alt="" width="24" height="24">
             </span>
             <span>Website</span>
           </div>
           <div class="deck-tile">
             <span class="tile-icon">
-              <img src="<?php echo $icon_map; ?>" alt="">
+              <img src="<?php echo $icon_map; ?>" alt="" width="24" height="24">
             </span>
             <span>Google</span>
           </div>
           <div class="deck-tile">
             <span class="tile-icon">
-              <img src="<?php echo $icon_social; ?>" alt="">
+              <img src="<?php echo $icon_social; ?>" alt="" width="24" height="24">
             </span>
             <span>Social</span>
           </div>
           <div class="deck-tile">
             <span class="tile-icon">
-              <img src="<?php echo $icon_dir; ?>" alt="">
+              <img src="<?php echo $icon_dir; ?>" alt="" width="24" height="24">
             </span>
             <span>Directory</span>
           </div>

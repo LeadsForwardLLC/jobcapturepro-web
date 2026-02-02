@@ -10,19 +10,21 @@ const assetBase = window.JCP_ASSET_BASE || '';
 
 
 /* =========================================================
-   DOM ELEMENTS
+   DOM ELEMENTS (set when initDirectory runs, after template is injected)
 ========================================================= */
 
-const grid = document.getElementById("directoryGrid");
-const searchInput = document.getElementById("searchInput");
-const cityFilter = document.getElementById("cityFilter");
-const serviceFilter = document.getElementById("serviceFilter");
-const verifiedOnlyToggle = document.getElementById("verifiedOnly");
-const loadMoreBtn = document.getElementById("loadMore");
-const sortBySelect = document.getElementById("sortBy");
-const clearSearchBtn = document.getElementById("clearSearch");
-const clearFiltersBtn = document.getElementById("clearFiltersBtn");
-const resultsCount = document.getElementById("resultsCount");
+let grid = null;
+let searchInput = null;
+let cityFilter = null;
+let serviceFilter = null;
+let verifiedOnlyToggle = null;
+let loadMoreBtn = null;
+let sortBySelect = null;
+let clearSearchBtn = null;
+let clearFiltersBtn = null;
+let resultsCount = null;
+let gridViewBtn = null;
+let listViewBtn = null;
 
 const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
   ? window.JCP_CONFIG.baseUrl
@@ -63,62 +65,74 @@ function getDemoListing() {
 
 
 /* =========================================================
-   EVENT BINDINGS
+   EVENT BINDINGS (run inside initDirectory after DOM is ready)
 ========================================================= */
 
-[
-  searchInput,
-  cityFilter,
-  serviceFilter,
-  verifiedOnlyToggle,
-  sortBySelect
-].forEach(el =>
-  el.addEventListener("input", () => {
-    visibleCount = 6;
-    render();
-  })
-);
-
-loadMoreBtn.addEventListener("click", () => {
-  visibleCount += 6;
-  renderCards();
-});
-
-// Clear search button
-if (clearSearchBtn) {
-  clearSearchBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    clearSearchBtn.classList.add("is-hidden");
-    visibleCount = 6;
-    render();
+function bindDirectoryEvents() {
+  [
+    searchInput,
+    cityFilter,
+    serviceFilter,
+    verifiedOnlyToggle,
+    sortBySelect
+  ].forEach(el => {
+    if (el) el.addEventListener("input", () => { visibleCount = 6; render(); });
   });
-}
 
-// Show/hide clear search button
-if (searchInput) {
-  searchInput.addEventListener("input", () => {
-    if (searchInput.value.length > 0) {
-      clearSearchBtn?.classList.remove("is-hidden");
-    } else {
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", () => {
+      visibleCount += 6;
+      renderCards();
+    });
+  }
+
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", () => {
+      if (searchInput) searchInput.value = "";
+      clearSearchBtn.classList.add("is-hidden");
+      visibleCount = 6;
+      render();
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      if (searchInput.value.length > 0) {
+        clearSearchBtn?.classList.remove("is-hidden");
+      } else {
+        clearSearchBtn?.classList.add("is-hidden");
+      }
+    });
+  }
+
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener("click", () => {
+      if (searchInput) searchInput.value = "";
+      if (cityFilter) cityFilter.value = "";
+      if (serviceFilter) serviceFilter.value = "";
+      if (sortBySelect) sortBySelect.value = "activity";
+      if (verifiedOnlyToggle) verifiedOnlyToggle.checked = false;
       clearSearchBtn?.classList.add("is-hidden");
-    }
-  });
-}
+      clearFiltersBtn.classList.add("is-hidden");
+      visibleCount = 6;
+      render();
+    });
+  }
 
-
-// Clear all filters
-if (clearFiltersBtn) {
-  clearFiltersBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    cityFilter.value = "";
-    serviceFilter.value = "";
-    sortBySelect.value = "activity";
-    verifiedOnlyToggle.checked = false;
-    clearSearchBtn?.classList.add("is-hidden");
-    clearFiltersBtn.classList.add("is-hidden");
-    visibleCount = 6;
-    render();
-  });
+  if (gridViewBtn) {
+    gridViewBtn.addEventListener("click", () => {
+      if (grid) grid.classList.remove("list-view");
+      gridViewBtn.classList.add("active");
+      if (listViewBtn) listViewBtn.classList.remove("active");
+    });
+  }
+  if (listViewBtn) {
+    listViewBtn.addEventListener("click", () => {
+      if (grid) grid.classList.add("list-view");
+      listViewBtn.classList.add("active");
+      if (gridViewBtn) gridViewBtn.classList.remove("active");
+    });
+  }
 }
 
 
@@ -127,11 +141,12 @@ if (clearFiltersBtn) {
 ========================================================= */
 
 function render() {
-  const term = (searchInput.value || "").trim();
+  if (!grid) return;
+  const term = (searchInput && searchInput.value || "").trim();
   const termLower = term.toLowerCase();
-  const city = cityFilter.value;
-  const service = serviceFilter.value;
-  const verifiedOnly = verifiedOnlyToggle.checked;
+  const city = cityFilter ? cityFilter.value : "";
+  const service = serviceFilter ? serviceFilter.value : "";
+  const verifiedOnly = verifiedOnlyToggle ? verifiedOnlyToggle.checked : false;
 
   /* ---------------------------------------------
      FILTERING
@@ -163,7 +178,7 @@ function render() {
      - "activity" = city rank score
      - computed server-side
   */
-  const sortBy = sortBySelect.value;
+  const sortBy = sortBySelect ? sortBySelect.value : "activity";
 
   if (sortBy === "jobs") {
     filteredListings.sort((a, b) => (b.jobs || 0) - (a.jobs || 0));
@@ -267,6 +282,8 @@ function renderCompanyMark(listing) {
           src="${listing.logo}" 
           alt="${listing.name}" 
           class="company-logo"
+          width="40"
+          height="40"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
         />
         <div class="company-avatar" style="display:none; background:${avatarColor};">${initial}</div>
@@ -286,6 +303,7 @@ function renderCompanyMark(listing) {
 ========================================================= */
 
 function renderCards() {
+  if (!grid) return;
   grid.innerHTML = "";
 
   if (!filteredListings.length) {
@@ -295,7 +313,7 @@ function renderCards() {
         <p style="color: var(--jcp-color-text-secondary); margin: 0;">Try adjusting your search or filters to see more results.</p>
       </div>
     `;
-    loadMoreBtn.style.display = "none";
+    if (loadMoreBtn) loadMoreBtn.style.display = "none";
     return;
   }
 
@@ -388,34 +406,62 @@ function renderCards() {
     grid.appendChild(card);
   });
 
-  loadMoreBtn.style.display =
-    visibleCount < filteredListings.length ? "block" : "none";
+  if (loadMoreBtn) {
+    loadMoreBtn.style.display =
+      visibleCount < filteredListings.length ? "block" : "none";
+  }
 }
 
 
 /* =========================================================
-   VIEW TOGGLE
+   INIT (called by jcp-render.js after template is injected)
 ========================================================= */
 
-const gridViewBtn = document.getElementById("gridView");
-const listViewBtn = document.getElementById("listView");
+function initDirectory() {
+  grid = document.getElementById("directoryGrid");
+  searchInput = document.getElementById("searchInput");
+  cityFilter = document.getElementById("cityFilter");
+  serviceFilter = document.getElementById("serviceFilter");
+  verifiedOnlyToggle = document.getElementById("verifiedOnly");
+  loadMoreBtn = document.getElementById("loadMore");
+  sortBySelect = document.getElementById("sortBy");
+  clearSearchBtn = document.getElementById("clearSearch");
+  clearFiltersBtn = document.getElementById("clearFiltersBtn");
+  resultsCount = document.getElementById("resultsCount");
+  gridViewBtn = document.getElementById("gridView");
+  listViewBtn = document.getElementById("listView");
 
-/* Default view = grid */
-grid.classList.remove("list-view");
-gridViewBtn.classList.add("active");
-listViewBtn.classList.remove("active");
+  if (!grid) return;
 
-gridViewBtn.addEventListener("click", () => {
   grid.classList.remove("list-view");
-  gridViewBtn.classList.add("active");
-  listViewBtn.classList.remove("active");
-});
+  if (gridViewBtn) gridViewBtn.classList.add("active");
+  if (listViewBtn) listViewBtn.classList.remove("active");
 
-listViewBtn.addEventListener("click", () => {
-  grid.classList.add("list-view");
-  listViewBtn.classList.add("active");
-  gridViewBtn.classList.remove("active");
-});
+  bindDirectoryEvents();
+  initDynamicNavigation();
+  initMobileMenu();
+  initShowcase();
+  render();
+  initBadgeLegendToggle();
+
+  const rotatingWordEl = document.querySelector('.directory-shell .jcp-hero-rotating-word');
+  if (rotatingWordEl) {
+    const words = ['work', 'reviews', 'activity'];
+    let index = 0;
+    const cycleMs = 2800;
+    const fadeMs = 350;
+    setInterval(() => {
+      rotatingWordEl.style.opacity = '0';
+      setTimeout(() => {
+        index = (index + 1) % words.length;
+        rotatingWordEl.textContent = words[index];
+        rotatingWordEl.style.opacity = '1';
+      }, fadeMs);
+    }, cycleMs);
+  }
+}
+
+window.initDirectory = initDirectory;
 
 
 /* =========================================================
@@ -709,28 +755,5 @@ function initBadgeLegendToggle() {
 }
 
 /* =========================================================
-   INIT
+   INIT (runs from initDirectory after template is injected)
 ========================================================= */
-
-initDynamicNavigation();
-initMobileMenu();
-initShowcase();
-render();
-initBadgeLegendToggle();
-
-// Rotating word in directory hero: work → reviews → activity → consistency (same pattern as homepage hero)
-const rotatingWordEl = document.querySelector('.directory-shell .jcp-hero-rotating-word');
-if (rotatingWordEl) {
-  const words = ['work', 'reviews', 'activity'];
-  let index = 0;
-  const cycleMs = 2800;
-  const fadeMs = 350;
-  setInterval(() => {
-    rotatingWordEl.style.opacity = '0';
-    setTimeout(() => {
-      index = (index + 1) % words.length;
-      rotatingWordEl.textContent = words[index];
-      rotatingWordEl.style.opacity = '1';
-    }, fadeMs);
-  }, cycleMs);
-}

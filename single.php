@@ -66,9 +66,9 @@ get_header();
         <div class="jcp-hero-visual jcp-single-hero-visual">
           <div class="jcp-single-hero-image-wrapper">
             <?php if ( has_post_thumbnail() ) : ?>
-              <?php the_post_thumbnail( 'large', [ 'class' => 'jcp-single-post-featured-img', 'alt' => esc_attr( $post_title ), 'fetchpriority' => 'high' ] ); ?>
+              <?php the_post_thumbnail( 'large', [ 'class' => 'jcp-single-post-featured-img', 'alt' => esc_attr( $post_title ), 'loading' => 'eager', 'fetchpriority' => 'high' ] ); ?>
             <?php else : ?>
-              <img src="<?php echo esc_url( $default_featured_url ); ?>" alt="" class="jcp-single-post-featured-img" loading="eager" fetchpriority="high" />
+              <img src="<?php echo esc_url( $default_featured_url ); ?>" alt="" class="jcp-single-post-featured-img" width="800" height="520" loading="eager" fetchpriority="high" />
             <?php endif; ?>
           </div>
         </div>
