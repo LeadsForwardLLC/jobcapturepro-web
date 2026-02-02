@@ -24,8 +24,8 @@ $social_links = [
 $directory_mode = function_exists( 'jcp_is_directory_mode' ) && jcp_is_directory_mode();
 $dir_url = home_url( '/directory' );
 $dir_search = $dir_url . '#search';
-$dir_how = $dir_url . '#how-it-works';
-$dir_trust = $dir_url . '#trust';
+$dir_how = home_url( '/#how-it-works' );
+$dir_trust = home_url( '/#trust' );
 ?>
   <footer class="jcp-footer">
     <div class="jcp-container jcp-footer-grid">

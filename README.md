@@ -26,10 +26,12 @@ The master documentation includes:
 
 ### Key Files
 
-- `functions.php` - Theme bootstrap and initialization
+- `functions.php` - Theme bootstrap and initialization (loads company-data, jcp-api-cpt, enqueue, routes, etc.)
 - `inc/enqueue.php` - Asset loading logic
 - `inc/helpers.php` - Utility functions, page detection, and `jcp_is_directory_mode()` (Directory Mode for header/nav)
 - `inc/template-routes.php` - URL routing (directory/company via rewrite + template_include; others via 404 fallback), 404 handling
+- `inc/company-data.php` - Company data helpers, description resolution, generated descriptions
+- `inc/jcp-api-cpt.php` - JCP Companies CPT, API sync (Import from API, daily cron), shortcode `[jcp_companies]`. **Requires `JCP_API_TOKEN` in wp-config.php.** See DOCUMENTATION.md → Setup & Integrations → JCP Companies CPT & API Sync.
 - `page-directory.php` - Directory listing (standard WP template; get_header/get_footer)
 - `single-jcp_company.php` - Company profile (standard WP template; get_header/get_footer)
 - `inc/form-fields.php` - Canonical REST param names and GHL payload keys (Demo Survey = source of truth)
@@ -52,6 +54,7 @@ Two critical forms submit to GoHighLevel via separate webhooks:
 ### Setup & Integrations
 
 - **Local:** Run WordPress locally (e.g. Local by Flywheel). Use a tunnel for GHL webhook testing if needed.
+- **JCP Companies (directory):** The theme includes the JCP Companies CPT and sync with the JobCapture Pro API. **API key is stored in wp-config.php**, not in the theme: add `define( 'JCP_API_TOKEN', 'your_key' );` in the “Add any custom values” section of wp-config.php (above “That’s all, stop editing!”). Without it, Import from API and daily cron will not work. Do not run the old “Companies Directory” Code Snippet—the theme replaces it. See DOCUMENTATION.md → Setup & Integrations → JCP Companies CPT & API Sync.
 - **GoHighLevel:** Two webhooks—Early Access (`rest-early-access.php`) and Demo Survey (`rest-demo-survey.php`). Do not swap URLs; see DOCUMENTATION.md → Setup & Integrations and Forms & GoHighLevel.
 - **ACF:** Required for Homepage Settings, **JCP Theme Settings** (global CTAs, form copy, footer basics), and **per-page bottom CTA** on Pages. Early Access and Demo Survey copy can be overridden via Theme Settings.
 

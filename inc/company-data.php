@@ -194,6 +194,27 @@ function jcp_core_parse_checkins( int $post_id ): array {
 }
 
 /**
+ * Resolve company description for display.
+ * Uses API/manual post_content if 120+ chars; else generated; else fallback.
+ * Does not generate on read — generation happens on save only.
+ *
+ * @param WP_Post $post Company post object
+ * @return string Description to display
+ */
+function jcp_core_resolve_company_description( WP_Post $post ): string {
+    $content = wp_strip_all_tags( $post->post_content ?? '' );
+    $content = trim( $content );
+    if ( strlen( $content ) >= 120 ) {
+        return $content;
+    }
+    $generated = get_post_meta( $post->ID, '_jcp_generated_description', true );
+    if ( is_string( $generated ) && trim( $generated ) !== '' ) {
+        return trim( $generated );
+    }
+    return __( 'This company has not set a description yet.', 'jcp-core' );
+}
+
+/**
  * Get complete company data object
  *
  * @param WP_Post $post Company post object
@@ -236,7 +257,7 @@ function jcp_core_company_data( WP_Post $post ): array {
         'phone'            => get_post_meta( $post_id, '_jcp_phone', true ) ?: '',
         'website'          => get_post_meta( $post_id, '_jcp_website_url', true ) ?: '',
         'addressFormatted' => $address_formatted ?: '',
-        'description'      => wp_strip_all_tags( $post->post_content ?? '' ),
+        'description'      => jcp_core_resolve_company_description( $post ),
         'serviceArea'      => $address['serviceArea'] ?? '',
         'address'          => $address,
         'lat'              => is_numeric( $lat ) ? (float) $lat : null,
@@ -321,4 +342,75 @@ function jcp_core_resolve_company_for_profile( string $slug ): ?array {
         ];
     }
     return null;
+}
+
+/**
+ * Generate a deterministic 2–3 sentence company description from name, service, and location.
+ * Informational only; no promotional language. Same inputs always produce the same output.
+ *
+ * @param string $name       Company name
+ * @param string $service    Primary industry/service label
+ * @param string $city_state City and state (e.g. "Owosso, MI") or empty
+ * @return string Generated description
+ */
+function jcp_core_generate_company_description( string $name, string $service, string $city_state ): string {
+    $name       = trim( $name );
+    $service    = trim( $service );
+    $city_state = trim( $city_state );
+    if ( $name === '' ) {
+        $name = __( 'This company', 'jcp-core' );
+    }
+    if ( $service === '' ) {
+        $service = __( 'contractor', 'jcp-core' );
+    }
+    $sentence1 = $city_state !== ''
+        ? sprintf(
+            /* translators: 1: company name, 2: service type, 3: city and state */
+            __( '%1$s provides %2$s services in the %3$s area.', 'jcp-core' ),
+            $name,
+            $service,
+            $city_state
+        )
+        : sprintf(
+            /* translators: 1: company name, 2: service type */
+            __( '%1$s provides %2$s services.', 'jcp-core' ),
+            $name,
+            $service
+        );
+    $sentence2 = __( 'This listing appears in the JobCapture Pro contractor directory.', 'jcp-core' );
+    return $sentence1 . ' ' . $sentence2;
+}
+
+/**
+ * Maybe generate and store company description on save. Runs only on jcp_company save;
+ * does not run on page render. Uses API/manual description if 120+ chars; otherwise
+ * generates deterministically from name, primary industry, and city/state, and stores
+ * in _jcp_generated_description. Regenerates only when those inputs change.
+ */
+add_action( 'save_post_jcp_company', 'jcp_core_maybe_generate_company_description', 10, 3 );
+
+function jcp_core_maybe_generate_company_description( int $post_id, WP_Post $post, bool $update ): void {
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+    if ( wp_is_post_revision( $post_id ) ) {
+        return;
+    }
+    $content = wp_strip_all_tags( $post->post_content ?? '' );
+    $content = trim( $content );
+    if ( strlen( $content ) >= 120 ) {
+        return;
+    }
+    $name       = get_the_title( $post_id ) ?: '';
+    $service    = jcp_core_company_service_label( $post_id );
+    $city_state = jcp_core_company_city_state( $post_id );
+    $input_hash = md5( $name . '|' . $service . '|' . $city_state );
+    $stored_hash = get_post_meta( $post_id, '_jcp_description_input_hash', true );
+    $existing_generated = get_post_meta( $post_id, '_jcp_generated_description', true );
+    if ( $stored_hash === $input_hash && is_string( $existing_generated ) && trim( $existing_generated ) !== '' ) {
+        return;
+    }
+    $generated = jcp_core_generate_company_description( $name, $service, $city_state );
+    update_post_meta( $post_id, '_jcp_generated_description', $generated );
+    update_post_meta( $post_id, '_jcp_description_input_hash', $input_hash );
 }

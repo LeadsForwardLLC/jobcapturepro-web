@@ -16,7 +16,7 @@
 6. [Development Guidelines](#development-guidelines)
 7. [Current Status](#current-status)
 8. [Quick Reference](#quick-reference)
-9. [Setup & Integrations](#setup--integrations)
+9. [Setup & Integrations](#setup--integrations) — includes [JCP Companies CPT & API key (wp-config)](#jcp-companies-cpt--api-sync)
 10. [Forms & GoHighLevel](#forms--gohighlevel)
 
 ---
@@ -584,6 +584,31 @@ Located in `inc/template-routes.php`:
 ---
 
 ## 🔌 SETUP & INTEGRATIONS
+
+### JCP Companies CPT & API Sync
+
+The theme includes the **JCP Companies** custom post type and sync with the JobCapture Pro API (`https://app.jobcapturepro.com/api/companies`). This replaces the former Code Snippets “Companies Directory” snippet; do not run that snippet and the theme together or the CPT will register twice and break the site.
+
+**What it does (same as the original snippet):**
+- Registers the `jcp_company` post type (menu: **JCP Companies**).
+- **Import from API:** WP Admin → **JCP Companies** → **Import from API** to fetch companies and create/update posts. Option to “Force update existing companies.”
+- **Daily cron:** Runs an import automatically once per day.
+- **Shortcode:** `[jcp_companies]` with attributes `limit`, `columns`, `show_description`, `show_address`, `show_phone`, `show_logo`, `show_industries`, `show_tags`.
+- **Admin:** Custom list columns (Company ID, Industries, Tags, Phone, Last Synced), Company Information meta box on edit screen.
+
+**API key (required for Import and cron):** The JobCapture Pro API key is **not** stored in the theme. It must be set in **wp-config.php** so it is never committed to the theme repo.
+
+1. Open **wp-config.php** (WordPress root, not inside the theme).
+2. In the “Add any custom values” section (above `/* That's all, stop editing! */`), add:
+   ```php
+   define( 'JCP_API_TOKEN', 'your_jobcapturepro_api_key_here' );
+   ```
+3. Replace `your_jobcapturepro_api_key_here` with your actual JobCapture Pro API key (from the JobCapture Pro app dashboard or your previous snippet).
+4. Save wp-config.php. Do not commit wp-config.php with the real key; it lives outside the theme and is not pushed with the theme to GitHub.
+
+Without this constant, **Import from API** and the daily cron cannot authenticate; the theme shows an admin notice on JCP Companies screens when the token is missing.
+
+**Theme files:** `inc/jcp-api-cpt.php` (CPT registration, API client, import page, cron, shortcode, admin columns/meta box); `inc/company-data.php` (description resolution and generated descriptions for display). Directory and profile pages read company data via `jcp_core_company_data()` which uses the resolved description (API description if ≥120 chars, else generated, else fallback).
 
 ### Local Development
 

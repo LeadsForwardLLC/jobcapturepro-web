@@ -9,8 +9,11 @@
 // Load helper functions (asset paths, URLs, ACF helpers)
 require_once get_template_directory() . '/inc/helpers.php';
 
-// Load company data functions
+// Load company data functions (description resolution, demo companies, save_post description generation)
 require_once get_template_directory() . '/inc/company-data.php';
+
+// JCP Companies CPT + API sync (Import from API, daily cron, shortcode). API key: set JCP_API_TOKEN in wp-config.php.
+require_once get_template_directory() . '/inc/jcp-api-cpt.php';
 
 // Load asset enqueuing logic
 require_once get_template_directory() . '/inc/enqueue.php';

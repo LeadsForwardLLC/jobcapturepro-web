@@ -17,8 +17,8 @@ $home_features = $is_home ? '#features' : esc_url( home_url( '/#features' ) );
 $home_who = $is_home ? '#who-its-for' : esc_url( home_url( '/#who-its-for' ) );
 $dir_url = home_url( '/directory' );
 $dir_search = $dir_url . '#search';
-$dir_how = $dir_url . '#how-it-works';
-$dir_trust = $dir_url . '#trust';
+$dir_how = esc_url( home_url( '/#how-it-works' ) );
+$dir_trust = esc_url( home_url( '/#trust' ) );
 ?><header class="directory-header" id="jcpGlobalHeader">
   <div class="header-brand">
     <a href="<?php echo $directory_mode ? esc_url( $dir_url ) : esc_url( home_url( '/' ) ); ?>" class="brand-link">
@@ -45,8 +45,8 @@ $dir_trust = $dir_url . '#trust';
       <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>" class="nav-link" data-page="pricing">Pricing</a>
     <?php elseif ( $directory_mode ) : ?>
       <a href="<?php echo esc_url( $dir_search ); ?>" class="nav-link" data-page="directory"><?php esc_html_e( 'Find contractors', 'jcp-core' ); ?></a>
-      <a href="<?php echo esc_url( $dir_how ); ?>" class="nav-link" data-home-anchor="#how-it-works"><?php esc_html_e( 'How rankings work', 'jcp-core' ); ?></a>
-      <a href="<?php echo esc_url( $dir_trust ); ?>" class="nav-link"><?php esc_html_e( 'Trust & verification', 'jcp-core' ); ?></a>
+      <a href="<?php echo $dir_how; ?>" class="nav-link" data-home-anchor="#how-it-works"><?php esc_html_e( 'How rankings work', 'jcp-core' ); ?></a>
+      <a href="<?php echo $dir_trust; ?>" class="nav-link"><?php esc_html_e( 'Trust & verification', 'jcp-core' ); ?></a>
     <?php else : ?>
       <a href="<?php echo $home_how; ?>" class="nav-link" data-home-anchor="#how-it-works">How it works</a>
       <a href="<?php echo $home_features; ?>" class="nav-link" data-home-anchor="#features">Features</a>
@@ -194,14 +194,14 @@ $dir_trust = $dir_url . '#trust';
           </svg>
           <span><?php esc_html_e( 'Find contractors', 'jcp-core' ); ?></span>
         </a>
-        <a href="<?php echo esc_url( $dir_how ); ?>" class="mobile-nav-link" data-home-anchor="#how-it-works">
+        <a href="<?php echo $dir_how; ?>" class="mobile-nav-link" data-home-anchor="#how-it-works">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="10 8 16 12 10 16 10 8"></polygon>
           </svg>
           <span><?php esc_html_e( 'How rankings work', 'jcp-core' ); ?></span>
         </a>
-        <a href="<?php echo esc_url( $dir_trust ); ?>" class="mobile-nav-link">
+        <a href="<?php echo $dir_trust; ?>" class="mobile-nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             <path d="m9 12 2 2 4-4"></path>
