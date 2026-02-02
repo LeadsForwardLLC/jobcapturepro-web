@@ -14,19 +14,10 @@ get_header();
 if ( function_exists( 'jcp_core_is_help_archive' ) && jcp_core_is_help_archive() ) :
     $help_has_posts = have_posts();
     $total_posts    = $help_has_posts ? (int) $GLOBALS['wp_query']->found_posts : 0;
-    $post_type      = get_queried_object();
-    $taxonomies     = get_object_taxonomies( $post_type->name, 'objects' );
-    $help_terms     = [];
-    $help_tax_slug  = null;
-    foreach ( $taxonomies as $tax ) {
-        if ( $tax->public ) {
-            $terms = get_terms( [ 'taxonomy' => $tax->name, 'hide_empty' => true ] );
-            if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-                $help_terms = $terms;
-                $help_tax_slug = $tax->name;
-                break;
-            }
-        }
+    $help_tax_slug  = 'help-category';
+    $help_terms     = get_terms( [ 'taxonomy' => $help_tax_slug, 'hide_empty' => true ] );
+    if ( is_wp_error( $help_terms ) || empty( $help_terms ) ) {
+        $help_terms = [];
     }
     ?>
 <main class="jcp-marketing">
@@ -54,7 +45,7 @@ if ( function_exists( 'jcp_core_is_help_archive' ) && jcp_core_is_help_archive()
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
-            <?php if ( ! empty( $help_terms ) && $help_tax_slug !== null ) : ?>
+            <?php if ( ! empty( $help_terms ) ) : ?>
               <select class="filter-select blog-category-filter" aria-label="<?php esc_attr_e( 'Filter by category', 'jcp-core' ); ?>">
                 <option value=""><?php esc_html_e( 'All categories', 'jcp-core' ); ?></option>
                 <?php foreach ( $help_terms as $term ) : ?>
@@ -86,7 +77,7 @@ if ( function_exists( 'jcp_core_is_help_archive' ) && jcp_core_is_help_archive()
           <?php
           while ( have_posts() ) :
             the_post();
-            get_template_part( 'templates/content/content', 'post-card' );
+            get_template_part( 'templates/content/content', 'help-card' );
           endwhile;
           ?>
         </div>
