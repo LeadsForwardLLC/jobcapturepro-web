@@ -16,9 +16,9 @@ $home_how = $is_home ? '#how-it-works' : esc_url( home_url( '/#how-it-works' ) )
 $home_features = $is_home ? '#features' : esc_url( home_url( '/#features' ) );
 $home_who = $is_home ? '#who-its-for' : esc_url( home_url( '/#who-its-for' ) );
 $dir_url = home_url( '/directory' );
-$dir_search = $dir_url . '#search';
-$dir_how = $dir_url . '#how-it-works';
-$dir_trust = $dir_url . '#trust';
+$dir_search = $dir_url . '/#search';
+$dir_how = $dir_url . '/#how-it-works';
+$dir_trust = $dir_url . '/#trust';
 ?><header class="directory-header" id="jcpGlobalHeader">
   <div class="header-brand">
     <a href="<?php echo $directory_mode ? esc_url( $dir_url ) : esc_url( home_url( '/' ) ); ?>" class="brand-link">
