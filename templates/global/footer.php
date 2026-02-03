@@ -55,29 +55,28 @@ $dir_trust = $dir_url . '/#trust';
         </div>
         <div class="jcp-footer-col">
           <h4>Product</h4>
-          <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>">Live demo</a>
+          <a href="<?php echo esc_url( home_url( '/#how-it-works' ) ); ?>">How it Works</a>
+          <a href="<?php echo esc_url( home_url( '/#features' ) ); ?>">Features</a>
           <a href="<?php echo esc_url( home_url( '/directory' ) ); ?>">Directory</a>
+          <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>">Pricing</a>
+        </div>
+        <div class="jcp-footer-col">
+          <h4>Resources</h4>
+          <a href="<?php echo esc_url( home_url( '/blog' ) ); ?>">Blog</a>
+          <a href="<?php echo esc_url( home_url( '/help' ) ); ?>">Help Center</a>
+          <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>">Online Demo</a>
         </div>
         <div class="jcp-footer-col">
           <h4>Company</h4>
-          <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>">Pricing</a>
-          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>">Founding crew</a>
-          <a href="<?php echo esc_url( home_url( '/#how-it-works' ) ); ?>">How it works</a>
-        </div>
-        <?php if ( $footer_support !== '' || $footer_sales !== '' || $footer_address !== '' ) : ?>
-        <div class="jcp-footer-col">
-          <h4><?php esc_html_e( 'Contact', 'jcp-core' ); ?></h4>
-          <?php if ( $footer_support !== '' ) : ?>
-            <a href="mailto:<?php echo esc_attr( $footer_support ); ?>"><?php esc_html_e( 'Support', 'jcp-core' ); ?></a>
-          <?php endif; ?>
-          <?php if ( $footer_sales !== '' ) : ?>
-            <a href="mailto:<?php echo esc_attr( $footer_sales ); ?>"><?php esc_html_e( 'Sales', 'jcp-core' ); ?></a>
-          <?php endif; ?>
-          <?php if ( $footer_address !== '' ) : ?>
-            <span class="jcp-footer-address"><?php echo esc_html( $footer_address ); ?></span>
+          <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Contact</a>
+          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>">Founding Crew</a>
+          <?php
+          $about_page = get_page_by_path( 'about' );
+          if ( $about_page && $about_page->post_status === 'publish' ) :
+            ?>
+            <a href="<?php echo esc_url( home_url( '/about' ) ); ?>">About JobCapturePro</a>
           <?php endif; ?>
         </div>
-        <?php endif; ?>
       <?php endif; ?>
     </div>
 

@@ -200,23 +200,32 @@
       document.querySelectorAll('.mobile-nav-link').forEach((link) => link.classList.remove('is-active'));
       const resourcesTrigger = document.getElementById('navResourcesTrigger');
       if (resourcesTrigger) resourcesTrigger.classList.remove('is-active');
+      const mobileResourcesSummary = document.querySelector('.mobile-nav-resources-summary');
+      if (mobileResourcesSummary) mobileResourcesSummary.classList.remove('is-active');
 
-      if (page === 'pricing') {
-        document.querySelectorAll('.nav-link[href="/pricing"]').forEach((link) => link.classList.add('is-active'));
-        document.querySelectorAll('.mobile-nav-link[href="/pricing"]').forEach((link) => link.classList.add('is-active'));
+      const pathname = (window.location.pathname || '/').replace(/\/$/, '') || '/';
+
+      // Primary nav pages: how-it-works, features, directory, pricing (by data-page or pathname)
+      const primaryPages = ['how-it-works', 'features', 'directory', 'pricing'];
+      const activePrimary = primaryPages.find((p) => page === p || pathname === '/' + p);
+      if (activePrimary) {
+        document.querySelectorAll('.nav-link[data-page="' + activePrimary + '"]').forEach((link) => link.classList.add('is-active'));
+        document.querySelectorAll('.mobile-nav-link[data-page="' + activePrimary + '"]').forEach((link) => link.classList.add('is-active'));
         return;
       }
 
-      // Resources dropdown: show active (orange) when on any dropdown page (Blog, Directory, Contact)
-      const pathname = (window.location.pathname || '/').replace(/\/$/, '') || '/';
+      // Resources dropdown: show active when on Blog, Help Center, or Contact (not Directory)
       const isBlogPage = page === 'blog' || pathname === '/blog' || (document.body && document.body.classList.contains('blog'));
-      const isResourcesPage = ['blog', 'directory', 'contact'].includes(page) || isBlogPage || pathname === '/contact';
+      const isHelpPage = page === 'help' || pathname === '/help';
+      const isContactPage = page === 'contact' || pathname === '/contact';
+      const isResourcesPage = isBlogPage || isHelpPage || isContactPage;
       if (isResourcesPage) {
         if (resourcesTrigger) resourcesTrigger.classList.add('is-active');
+        if (mobileResourcesSummary) mobileResourcesSummary.classList.add('is-active');
         return;
       }
 
-      // Homepage: keep anchor link active when hash matches (e.g. #how-it-works)
+      // Homepage: keep anchor link active when hash matches (demo/directory modes may still use data-home-anchor)
       if (isHome) {
         const hash = window.location.hash || '';
         if (hash) {
