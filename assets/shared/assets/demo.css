@@ -739,10 +739,17 @@
         }
 
         .location-prompt-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 18px;
             font-weight: 700;
             color: #111827;
             margin: 0 0 12px;
+        }
+
+        .location-prompt-title .lucide-icon {
+            flex-shrink: 0;
         }
 
         .location-prompt-message {

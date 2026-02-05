@@ -103,10 +103,12 @@ function jcp_core_icon( string $icon_name ): string {
  */
 function jcp_core_get_page_detection(): array {
     $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+    $path_segments = array_filter( explode( '/', $path ) );
+    $is_prototype_path = ( $path === 'prototype' || in_array( 'prototype', $path_segments, true ) );
 
     return [
         'is_home'         => is_front_page() || $path === '' || $path === 'home',
-        'is_prototype'    => is_page_template( 'page-prototype.php' ) || is_page( 'prototype' ) || $path === 'prototype',
+        'is_prototype'    => is_page_template( 'page-prototype.php' ) || is_page( 'prototype' ) || $is_prototype_path,
         'is_demo'         => is_page_template( 'page-demo.php' ) || is_page( 'demo' ) || $path === 'demo',
         'is_pricing'      => is_page_template( 'page-pricing.php' ) || is_page( 'pricing' ) || $path === 'pricing',
         'is_early_access'         => is_page_template( 'page-early-access.php' ) || is_page( 'early-access' ) || $path === 'early-access',

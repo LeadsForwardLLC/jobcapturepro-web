@@ -24,8 +24,17 @@ const assetBase = window.JCP_ASSET_BASE || '';
    Demo Mode Configuration
    - isPrototype: true = clean app-only page, no tour, no Start Demo screen
    - isDemoMode: true = restricted demo, false = full prototype
+   - Fallback: if #jcp-app has data-jcp-page="prototype", treat as prototype (fixes live when PHP global is missing)
 ========================= */
-const isPrototype = window.JCP_IS_PROTOTYPE === true;
+function _jcpIsPrototype() {
+  if (window.JCP_IS_PROTOTYPE === true) return true;
+  try {
+    const app = document.getElementById('jcp-app');
+    if (app && (app.dataset.jcpPage || '').toLowerCase() === 'prototype') return true;
+  } catch (e) {}
+  return false;
+}
+const isPrototype = _jcpIsPrototype();
 const isDemoMode = window.JCP_IS_DEMO_MODE === true;
 
 // Features disabled in demo mode
@@ -346,13 +355,13 @@ function loadCheckins() {
    Locations (mock data for prototype)
 ---------------------------- */
 const LOCATIONS = [
-  { id: 'austin', name: 'Summit Plumbing', city: 'Austin', state: 'TX', lat: 30.2672, lng: -97.7431 },
-  { id: 'round-rock', name: 'Round Rock Service', city: 'Round Rock', state: 'TX', lat: 30.5083, lng: -97.6789 },
-  { id: 'cedar-park', name: 'Cedar Park HVAC', city: 'Cedar Park', state: 'TX', lat: 30.5052, lng: -97.8203 },
-  { id: 'georgetown', name: 'Georgetown Plumbing Co', city: 'Georgetown', state: 'TX', lat: 30.6333, lng: -97.6784 },
-  { id: 'pflugerville', name: 'Pflugerville Pros', city: 'Pflugerville', state: 'TX', lat: 30.4397, lng: -97.6200 },
-  { id: 'san-marcos', name: 'San Marcos Service', city: 'San Marcos', state: 'TX', lat: 29.8833, lng: -97.9414 },
-  { id: 'kyle', name: 'Kyle Contractors', city: 'Kyle', state: 'TX', lat: 29.9891, lng: -97.8772 },
+  { id: 'austin', name: 'Austin', city: 'Austin', state: 'TX', lat: 30.2672, lng: -97.7431 },
+  { id: 'round-rock', name: 'Round Rock', city: 'Round Rock', state: 'TX', lat: 30.5083, lng: -97.6789 },
+  { id: 'cedar-park', name: 'Cedar Park', city: 'Cedar Park', state: 'TX', lat: 30.5052, lng: -97.8203 },
+  { id: 'georgetown', name: 'Georgetown', city: 'Georgetown', state: 'TX', lat: 30.6333, lng: -97.6784 },
+  { id: 'pflugerville', name: 'Pflugerville', city: 'Pflugerville', state: 'TX', lat: 30.4397, lng: -97.6200 },
+  { id: 'san-marcos', name: 'San Marcos', city: 'San Marcos', state: 'TX', lat: 29.8833, lng: -97.9414 },
+  { id: 'kyle', name: 'Kyle', city: 'Kyle', state: 'TX', lat: 29.9891, lng: -97.8772 },
 ];
 
 const locationState = {
@@ -361,9 +370,6 @@ const locationState = {
 };
 
 const LOCATION_STORAGE_KEY = 'jcp_active_location_id';
-const LOCATION_PROMPT_SHOWN_KEY = 'jcp_location_prompt_shown';
-/** Prototype only: add ?test_location_prompt=1 to the URL to allow the "nearer location" prompt to show again (for developer testing). */
-const LOCATION_PROMPT_TEST_PARAM = 'test_location_prompt';
 
 /* ---------------------------
    Guide Content
@@ -707,22 +713,21 @@ function initTagSelector() {
   renderTagPills();
 }
 
+/**
+ * Show the "nearer location" prompt. Prototype: static, no geolocation, shows every time.
+ * Demo: not used (prompt is prototype-only).
+ */
 function showSmartLocationPrompt(closerLocation) {
   if (!isPrototype || isDemoMode) return;
-  try {
-    if (sessionStorage.getItem(LOCATION_PROMPT_SHOWN_KEY)) return;
-  } catch (e) {}
+  if (!closerLocation) return;
   const overlay = $('location-prompt-overlay');
   const nameEl = $('location-prompt-name');
   const keepBtn = $('location-prompt-keep');
   const switchBtn = $('location-prompt-switch');
-  if (!overlay || !nameEl || !closerLocation) return;
+  if (!overlay || !nameEl) return;
   nameEl.textContent = closerLocation.name;
   overlay.classList.add('is-open');
   overlay.setAttribute('aria-hidden', 'false');
-  try {
-    sessionStorage.setItem(LOCATION_PROMPT_SHOWN_KEY, '1');
-  } catch (e) {}
   const closePrompt = () => {
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
@@ -735,39 +740,17 @@ function showSmartLocationPrompt(closerLocation) {
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closePrompt(); }, { once: true });
 }
 
-function maybeShowSmartLocationPrompt() {
-  if (!isPrototype || isDemoMode) return;
-  const active = getActiveLocation();
-  const list = getLocationsWithDistance('');
-  const closest = list[0];
-  if (!closest || closest.id === active.id) return;
-  if (locationState.userCoords == null) return;
-  showSmartLocationPrompt(closest);
-}
-
 /**
- * Prototype only: on first load, if the user's last saved location differs from the
- * closest location to their current position, show a prompt: "We noticed [name] is
- * nearer to your current location. Would you like to switch?" Developers can re-show
- * the prompt by adding ?test_location_prompt=1 to the URL (then set a non-closest
- * location and refresh, or allow geolocation so a different location is closest).
+ * Prototype only: show the "nearer location" prompt every time with generic/static info.
+ * No geolocation — browser never asks for location. Suggests a different location than
+ * current; if user clicks Switch, we switch to that location. For developer reference
+ * when building the real app (dynamic geolocation + closest location).
  */
 function initLocationSmartPrompt() {
   if (!isPrototype || isDemoMode) return;
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get(LOCATION_PROMPT_TEST_PARAM) === '1') {
-      sessionStorage.removeItem(LOCATION_PROMPT_SHOWN_KEY);
-    }
-  } catch (e) {}
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      locationState.userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      setTimeout(maybeShowSmartLocationPrompt, 600);
-    },
-    () => {},
-    { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
-  );
+  const active = getActiveLocation();
+  const suggested = active.id === LOCATIONS[0].id ? LOCATIONS[1] : LOCATIONS[0];
+  setTimeout(() => showSmartLocationPrompt(suggested), 800);
 }
 
 /* ---------------------------

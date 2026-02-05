@@ -2,7 +2,7 @@
   const root = document.getElementById('jcp-app');
   if (!root) return;
 
-  const page = root.dataset.jcpPage;
+  const page = (root.dataset.jcpPage || '').trim().toLowerCase();
 
   if (!window.JCP_ASSET_BASE) {
     const scriptSrc = document.currentScript && document.currentScript.src ? document.currentScript.src : '';
@@ -19,7 +19,10 @@
 
   let templateUrl = '';
 
-  switch (page) {
+  // Treat prototype and demo the same (fetch demo/index.html, then initDemo)
+  if (page === 'prototype' || page === 'demo') {
+    templateUrl = `${assetBase}/demo/index.html`;
+  } else switch (page) {
     case 'home':
       if (typeof window.renderHome === 'function') {
         window.renderHome();
@@ -48,10 +51,6 @@
       }
       console.warn('JCP render: renderContact is not available');
       return;
-    case 'prototype':
-    case 'demo':
-      templateUrl = `${assetBase}/demo/index.html`;
-      break;
     case 'directory':
       templateUrl = `${assetBase}/directory/index.html`;
       break;

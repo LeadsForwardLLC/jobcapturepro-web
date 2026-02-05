@@ -148,7 +148,8 @@ function jcp_core_enqueue_assets(): void {
 
     // App Prototype page - full interactive experience (source of truth)
     if ( $pages['is_prototype'] ) {
-        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo-shared', 'assets/shared/assets/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css', [ 'jcp-core-demo-shared' ] );
         jcp_core_enqueue_style( 'jcp-core-leaflet', 'demo/leaflet/leaflet.css', [ 'jcp-core-demo' ] );
         jcp_core_enqueue_script( 'jcp-core-leaflet', 'demo/leaflet/leaflet.js', [ $render_handle ] );
         jcp_core_enqueue_script( 'jcp-core-demo', 'js/features/demo/jcp-demo.js', [ 'jcp-core-leaflet' ] );
@@ -163,7 +164,8 @@ function jcp_core_enqueue_assets(): void {
     // Demo page - same UI as prototype but with restrictions
     if ( $pages['is_demo'] ) {
         $demo_mode = isset( $_GET['mode'] ) && $_GET['mode'] === 'run'; // phpcs:ignore
-        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo-shared', 'assets/shared/assets/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css', [ 'jcp-core-demo-shared' ] );
         if ( $demo_mode ) {
             jcp_core_enqueue_style( 'jcp-core-leaflet', 'demo/leaflet/leaflet.css', [ 'jcp-core-demo' ] );
             jcp_core_enqueue_script( 'jcp-core-leaflet', 'demo/leaflet/leaflet.js', [ $render_handle ] );
@@ -187,7 +189,8 @@ function jcp_core_enqueue_assets(): void {
 
     // Directory page
     if ( $pages['is_directory'] ) {
-        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo-shared', 'assets/shared/assets/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css', [ 'jcp-core-demo-shared' ] );
         jcp_core_enqueue_style( 'jcp-core-directory', 'css/pages/directory-consolidated.css', [ 'jcp-core-utilities' ] );
         jcp_core_enqueue_script( 'jcp-core-directory', 'js/features/directory/directory.js', [ $render_handle ] );
 
@@ -217,7 +220,8 @@ function jcp_core_enqueue_assets(): void {
 
     // Company (single company profile): /directory/slug or /company?id=slug
     if ( $pages['is_company'] ) {
-        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo-shared', 'assets/shared/assets/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css', [ 'jcp-core-demo-shared' ] );
         jcp_core_enqueue_style( 'jcp-core-directory', 'css/pages/directory-consolidated.css', [ 'jcp-core-utilities' ] );
         jcp_core_enqueue_style( 'jcp-core-profile', 'css/pages/profile-consolidated.css', [ 'jcp-core-directory' ] );
         jcp_core_enqueue_script( 'jcp-core-profile', 'js/features/directory/profile.js', [ $render_handle ] );
@@ -245,7 +249,8 @@ function jcp_core_enqueue_assets(): void {
 
     // Estimate page
     if ( $pages['is_estimate'] ) {
-        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo-shared', 'assets/shared/assets/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css', [ 'jcp-core-demo-shared' ] );
         jcp_core_enqueue_style( 'jcp-core-estimate', 'css/pages/estimate.css' );
         jcp_core_enqueue_script( 'jcp-core-analytics', 'js/features/estimate/analytics.js', [ $render_handle ] );
         jcp_core_enqueue_script( 'jcp-core-requests', 'js/features/estimate/requests.js', [ $render_handle ] );

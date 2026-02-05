@@ -67,3 +67,32 @@ function jcp_core_remove_tailwind() {
     wp_deregister_style( 'tailwind.min.css' );
 }
 add_action( 'wp_enqueue_scripts', 'jcp_core_remove_tailwind', 999 );
+
+/**
+ * On the prototype page, dequeue plugin scripts that throw (e.g. Fido2 CredentialsContainer)
+ * so they don't break the app on live.
+ */
+function jcp_core_prototype_dequeue_conflicting_scripts(): void {
+	$pages = jcp_core_get_page_detection();
+	if ( empty( $pages['is_prototype'] ) ) {
+		return;
+	}
+	$wp_scripts = wp_scripts();
+	if ( ! $wp_scripts ) {
+		return;
+	}
+	$conflicting = [ 'fido2', 'fido-2' ];
+	foreach ( $wp_scripts->registered as $handle => $obj ) {
+		if ( ! isset( $obj->src ) || ! is_string( $obj->src ) ) {
+			continue;
+		}
+		$src_lower = strtolower( $obj->src );
+		foreach ( $conflicting as $needle ) {
+			if ( strpos( $src_lower, $needle ) !== false ) {
+				wp_dequeue_script( $handle );
+				break;
+			}
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'jcp_core_prototype_dequeue_conflicting_scripts', 9999 );
