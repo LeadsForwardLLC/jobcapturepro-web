@@ -574,10 +574,17 @@
         }
 
         .location-sheet-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 18px;
             font-weight: 700;
             color: #111827;
             margin: 0;
+        }
+
+        .location-sheet-title .lucide-icon {
+            flex-shrink: 0;
         }
 
         .location-sheet-close {
@@ -626,6 +633,58 @@
 
         .location-sheet-search::placeholder {
             color: #9ca3af;
+        }
+
+        .location-sheet-body {
+            padding: 16px 20px;
+            flex-shrink: 0;
+        }
+
+        .location-sheet-description {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin: 0 0 12px;
+        }
+
+        .location-sheet-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .location-sheet-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #f9fafb;
+        }
+
+        .location-sheet-input:focus {
+            outline: none;
+            border-color: #ff503e;
+            background: #fff;
+        }
+
+        .location-sheet-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .location-sheet-actions {
+            display: flex;
+            gap: 12px;
+            padding: 12px 20px 20px;
+            border-top: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+
+        .location-sheet-actions .btn {
+            flex: 1;
         }
 
         .location-sheet-list {
@@ -2002,54 +2061,18 @@
             }
         }
 
-        .modal h3,
-        .modal .modal-title-with-icon {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 20px;
+        .modal h3 {
+            font-size: 24px;
             font-weight: 800;
             color: #111827;
-            margin: 0 0 12px;
+            margin-bottom: 12px;
         }
 
-        .modal .modal-title-with-icon .lucide-icon {
-            flex-shrink: 0;
-        }
-
-        .modal p,
-        .modal .modal-description {
+        .modal p {
             font-size: 15px;
             color: #6b7280;
             line-height: 1.6;
-            margin: 0 0 16px;
-        }
-
-        .modal .modal-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-
-        .modal .modal-input {
-            width: 100%;
-            margin-bottom: 20px;
-            padding: 12px 14px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: inherit;
-        }
-
-        .modal .modal-input:focus {
-            outline: none;
-            border-color: #FF503E;
-        }
-
-        .modal .modal-input::placeholder {
-            color: #9ca3af;
+            margin-bottom: 24px;
         }
 
         .modal-actions {

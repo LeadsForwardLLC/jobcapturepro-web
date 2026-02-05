@@ -354,16 +354,23 @@
                         </div>
                     </div>
 
-                    <!-- Regenerate description modal -->
-                    <div class="modal-overlay" id="regenerate-modal" aria-hidden="true">
-                        <div class="modal" role="dialog" aria-labelledby="regenerate-modal-title">
-                            <h3 id="regenerate-modal-title" class="modal-title-with-icon"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true"> Regenerate description</h3>
-                            <p class="modal-description">Add an optional prompt to guide how the description should change.</p>
-                            <label for="regenerate-prompt" class="modal-label">Prompt (optional)</label>
-                            <input type="text" id="regenerate-prompt" class="input-field modal-input" placeholder="e.g. Make it more concise, add warranty details…" autocomplete="off">
-                            <div class="modal-actions">
-                                <button type="button" class="btn btn-ghost" id="regenerate-modal-cancel">Cancel</button>
-                                <button type="button" class="btn btn-primary" id="regenerate-modal-submit"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt=""> Regenerate</button>
+                    <!-- Regenerate description – same sheet pattern as location/tag -->
+                    <div class="location-sheet-overlay" id="regenerate-sheet-overlay" aria-hidden="true">
+                        <div class="location-sheet" id="regenerate-sheet" role="dialog" aria-labelledby="regenerate-sheet-title">
+                            <div class="location-sheet-header">
+                                <h2 id="regenerate-sheet-title" class="location-sheet-title"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true"> Regenerate description</h2>
+                                <button type="button" class="location-sheet-close" id="regenerate-sheet-close" aria-label="Close">
+                                    <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
+                                </button>
+                            </div>
+                            <div class="location-sheet-body">
+                                <p class="location-sheet-description">Add an optional prompt to guide how the description should change.</p>
+                                <label for="regenerate-prompt" class="location-sheet-label">Prompt (optional)</label>
+                                <input type="text" id="regenerate-prompt" class="location-sheet-input" placeholder="e.g. Make it more concise, add warranty details…" autocomplete="off">
+                            </div>
+                            <div class="location-sheet-actions">
+                                <button type="button" class="btn btn-primary" id="regenerate-sheet-submit"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt=""> Regenerate</button>
+                                <button type="button" class="btn btn-secondary" id="regenerate-sheet-cancel">Cancel</button>
                             </div>
                         </div>
                     </div>
