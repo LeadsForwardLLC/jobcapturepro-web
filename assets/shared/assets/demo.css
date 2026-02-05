@@ -68,6 +68,23 @@
           font-weight: 700;
         }
 
+        /* Tertiary / warning (e.g. Delete Account): light red-pink bg, red text */
+        .btn-warning {
+          background: #fef2f2;
+          color: #ff503e;
+          border-color: #fecaca;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+          background: #fee2e2;
+          border-color: #fca5a5;
+        }
+
+        .btn-warning .lucide-icon {
+          color: #ff503e;
+          filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(101%);
+        }
+
         .is-disabled {
           pointer-events: none;
           opacity: 0.6;
@@ -801,10 +818,10 @@
 
         /* Home Screen */
         .greeting {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 400;
             color: #111827;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .greeting-accent {
@@ -818,37 +835,19 @@
             margin-bottom: 20px;
         }
 
-        .tile {
-            background: #fff;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 10px 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tile:hover {
-            border-color: #FF503E;
-            transform: translateY(-2px);
-        }
-
-        .tile-icon {
-            font-size: 20px;
-        }
-
-.tile-icon .lucide-icon {
-  width: 20px;
-  height: 20px;
-}
-
-        .tile-label {
+        .action-tiles .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 8px 10px;
             font-size: 12px;
-            font-weight: 600;
-            color: #374151;
+            font-weight: 700;
+            gap: 6px;
+            border-radius: 10px;
+        }
+
+        .action-tiles .btn .lucide-icon {
+            width: 16px;
+            height: 16px;
         }
 
         .empty-state {
@@ -885,6 +884,121 @@
             margin-top: 16px;
         }
 
+        /* Profile Screen */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .profile-card__avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #93c5fd 0%, #fef3c7 100%);
+            flex-shrink: 0;
+        }
+        .profile-card__info {
+            min-width: 0;
+        }
+        .profile-card__name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .profile-card__email {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .profile-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 12px 0;
+        }
+        #profile-screen .content-area .btn-full {
+            margin-bottom: 10px;
+        }
+        #profile-screen .content-area .btn-full:last-of-type {
+            margin-bottom: 0;
+        }
+
+        /* Edit Profile Screen */
+        .edit-profile-photo-wrap {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .edit-profile-photo {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #93c5fd 0%, #fef3c7 100%);
+            margin: 0 auto 8px;
+            border: 2px solid #e5e7eb;
+        }
+        .edit-profile-photo-hint {
+            font-size: 13px;
+            color: #6b7280;
+            margin: 0;
+        }
+        .edit-profile-field {
+            margin-bottom: 20px;
+        }
+        .edit-profile-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        #edit-profile-screen .content-area .input-field {
+            margin-bottom: 0;
+        }
+        #edit-profile-screen .content-area .btn-full {
+            margin-top: 8px;
+        }
+
+        /* Change Password Screen */
+        .password-field-wrap {
+            position: relative;
+        }
+        .password-field-wrap .input-field {
+            padding-right: 44px;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .password-toggle:hover {
+            color: #111827;
+        }
+        .change-password-requirement {
+            font-size: 14px;
+            color: #374151;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+        .change-password-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .change-password-actions .btn {
+            flex: 1;
+        }
+
         /* Bottom Tab Bar */
         .tab-bar {
             display: grid;
@@ -901,7 +1015,7 @@
             gap: 4px;
             background: none;
             border: none;
-            color: #9ca3af;
+            color: #000000;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
@@ -909,6 +1023,11 @@
 
         .tab-item.active {
             color: #FF503E;
+        }
+
+        .tab-item.active .tab-icon .lucide-icon {
+            color: #FF503E;
+            filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(101%);
         }
 
         .tab-icon {
@@ -919,6 +1038,10 @@
   width: 20px;
   height: 20px;
 }
+
+        .tab-item:not(.active) .tab-icon .lucide-icon {
+            filter: brightness(0);
+        }
 
         .fab {
             width: 60px;
@@ -937,20 +1060,12 @@
         }
 
 .fab .lucide-icon {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   color: #ffffff;
-  filter: brightness(0) invert(1);
+  opacity: 1;
+  filter: brightness(0) invert(1) !important;
 }
-
-        @keyframes fab-breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-
-        .fab-attention {
-            animation: fab-breathe 1.6s ease-in-out infinite;
-        }
 
         .fab.is-disabled {
           opacity: 0.4;
@@ -965,10 +1080,10 @@
         }
 
         .upload-hint {
-          font-size: 20px;
-          font-weight: 700;
-          color: #374151;
-          line-height: 1.35;
+          font-size: 15px;
+          font-weight: 400;
+          color: #6b7280;
+          line-height: 1.4;
           margin-bottom: 24px;
         }
 
@@ -998,8 +1113,8 @@
 .upload-btn .lucide-icon {
   width: 28px;
   height: 28px;
-  color: #ffffff;
-  filter: brightness(0) invert(1);
+  opacity: 1 !important;
+  filter: brightness(0) invert(1) contrast(1.4) !important;
 }
 
         .upload-btn:hover {
@@ -1012,6 +1127,81 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 24px;
+        }
+
+        #edit-screen #edit-photo-grid {
+            margin-bottom: 4px;
+        }
+
+        /* Shared link-style action (Add Media, Regenerate) – identical style */
+        .edit-action-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            margin: 0;
+            background: none;
+            border: none;
+            color: #FF503E;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .edit-action-link .lucide-icon {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            filter: brightness(0) saturate(100%) invert(40%);
+        }
+        .edit-action-link:hover {
+            color: #e94836;
+            text-decoration: underline;
+        }
+        #edit-screen #edit-photo-grid + .edit-action-link {
+            margin-bottom: 24px;
+            align-self: flex-start;
+        }
+        .description-header-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #9ca3af;
+            margin: 0;
+        }
+        .description-header-label .lucide-icon {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        /* Request Review Screen */
+        .request-review-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin: -4px 0 16px 0;
+        }
+        .request-review-message {
+            margin-bottom: 20px;
+            min-height: 100px;
+        }
+        .request-review-location {
+            margin-bottom: 20px;
+        }
+        .request-review-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .request-review-photos .request-review-photo-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #e5e7eb;
         }
 
         .photo-item {
@@ -1077,8 +1267,8 @@
         }
 
         .processing-title {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 600;
             color: #111827;
         }
 
@@ -1122,7 +1312,18 @@
             border-color: #10b981;
             color: #fff;
         }
+        .processing-step.done .step-icon .lucide-icon {
+            opacity: 1 !important;
+            filter: brightness(0) invert(1) contrast(1.4) !important;
+        }
 
+        /* --- App prototype design tokens (keep consistent) ---
+         * Section titles: 12px, 800, uppercase, #6b7280, margin-bottom 6px
+         * Secondary labels: 14px, #9ca3af (or #6b7280 where appropriate)
+         * Action links (Add Media, Regenerate): .edit-action-link — icon + text, orange #ea580c
+         * Cards: border 2px #e5e7eb, radius 12px, padding 12–16px
+         * Content padding: 16px horizontal, 24px top; bottom 100px on scroll screens
+         */
         /* Edit Check-in Screen */
         .edit-content {
             padding-bottom: 100px;
@@ -1150,56 +1351,61 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #6b7280;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
+        }
+
+        /* Tighter spacing between TAGS heading and tag selector/dropdown */
+        .section-title:has(+ .tag-pills-wrap) {
+            margin-bottom: 2px;
         }
 
         .location-card {
             background: #fff;
             border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 24px;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
         }
 
         .location-header {
             display: flex;
-            gap: 12px;
+            gap: 10px;
+            align-items: center;
         }
 
         .map-thumb {
-          background: #eef2ff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
             background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
             flex-shrink: 0;
         }
 
         .location-info h3 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #111827;
-            margin-bottom: 4px;
+            margin: 0 0 2px 0;
         }
 
         .location-info p {
-            font-size: 14px;
+            font-size: 13px;
             color: #6b7280;
-            margin-bottom: 8px;
+            margin: 0 0 4px 0;
         }
 
         .change-link {
             color: #FF503E;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
         }
 
 .change-link .lucide-icon {
-  margin-right: 6px;
+  margin-right: 4px;
   vertical-align: -2px;
 }
 
@@ -1223,7 +1429,8 @@
         .auto-save-note {
             font-size: 13px;
             color: #9ca3af;
-            margin-top: 8px;
+            margin-top: 4px;
+            margin-bottom: 20px;
         }
 
 .auto-save-note .lucide-icon {
@@ -1231,21 +1438,45 @@
   vertical-align: -2px;
 }
 
-        .regenerate-btn {
-            background: none;
-            border: none;
-            color: #FF503E;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 0;
+        .tag-pills-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .tag-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            padding: 6px 10px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
         }
 
-        .regenerate-btn:hover {
-            text-decoration: underline;
+        .tag-pill-remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tag-pill-remove:hover {
+            color: #111827;
+        }
+
+        #tag-selector-trigger {
+            margin-top: 0;
         }
 
         .description-header {
@@ -1260,6 +1491,10 @@
             flex-direction: column;
             gap: 12px;
             margin-top: 24px;
+        }
+
+        .action-buttons .action-buttons__item--spaced {
+            margin-top: 8px;
         }
 
         .panel-header {
@@ -1830,63 +2065,72 @@
     height: 300px;
 }
 
-/* Home feed – iOS-style vertical cards */
+/* Home feed – condensed cards with clear section hierarchy */
 
 .home-checkin-item {
     display: flex;
     justify-content: space-between;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 18px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
 }
 
 .home-checkin-left {
     flex: 1;
+    min-width: 0;
 }
 
 .home-checkin-left h3 {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 2px;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px 0;
     color: #111827;
+    line-height: 1.3;
 }
 
 .home-checkin-location {
-    font-size: 16px;
+    font-size: 12px;
     color: #6b7280;
     margin-bottom: 6px;
+    line-height: 1.3;
 }
 
 .home-checkin-desc {
-    font-size: 16px;
+    font-size: 12px;
     color: #374151;
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    line-height: 1.4;
 }
 
 .home-checkin-meta {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #e5e7eb;
 }
 
 .home-checkin-user {
-    font-size: 16px;
-    color: #111827;
+    font-size: 12px;
+    color: #6b7280;
 }
 
 .home-checkin-time {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 700;
     color: #FF503E;
 }
 
 .home-checkin-thumb img {
-    width: 96px;
-    height: 96px;
-    border-radius: 14px;
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 /* Pending Job Styles */
@@ -1909,21 +2153,21 @@
 }
 
 .pending-icon {
-    width: 96px;
-    height: 96px;
-    border-radius: 14px;
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
     background: rgba(59, 130, 246, 0.12);
     display: grid;
     place-items: center;
-    font-size: 32px;
+    font-size: 24px;
     color: #2563eb;
 }
 
-.home-checkin-list{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    margin-top:18px;
+.home-checkin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
 }
 
 /* =========================================================

@@ -55,18 +55,18 @@
                             <div class="greeting"></div>
 
                             <div class="action-tiles">
-                                <div class="tile">
-                                <div class="tile-icon"><img src="../../shared/assets/icons/lucide/briefcase.svg" class="lucide-icon" alt=""></div>
-                                    <div class="tile-label">My Jobs</div>
-                                </div>
-                                <div class="tile">
-                                <div class="tile-icon"><img src="../../shared/assets/icons/lucide/users.svg" class="lucide-icon" alt=""></div>
-                                    <div class="tile-label">Team</div>
-                                </div>
-                                <div class="tile">
-                                <div class="tile-icon"><img src="../../shared/assets/icons/lucide/archive.svg" class="lucide-icon" alt=""></div>
-                                    <div class="tile-label">Archived</div>
-                                </div>
+                                <button type="button" class="btn btn-primary" id="tab-my-jobs" data-tab="my-jobs">
+                                    <img src="../../shared/assets/icons/lucide/briefcase.svg" class="lucide-icon" alt="">
+                                    <span>My Jobs</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="tab-team" data-tab="team">
+                                    <img src="../../shared/assets/icons/lucide/users.svg" class="lucide-icon" alt="">
+                                    <span>Team</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="tab-archived" data-tab="archived">
+                                    <img src="../../shared/assets/icons/lucide/archive.svg" class="lucide-icon" alt="">
+                                    <span>Archived</span>
+                                </button>
                             </div>
 
                             <div class="empty-state">
@@ -120,7 +120,7 @@
                                 Check-ins
                             </button>
                             <button class="fab is-disabled"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
-                            <button class="tab-item">
+                            <button type="button" class="tab-item" data-action="profile" onclick="goToProfile()">
                                 <div class="tab-icon"><img src="../../shared/assets/icons/lucide/user.svg" class="lucide-icon" alt=""></div>
                                 Profile
                             </button>
@@ -145,29 +145,155 @@
                                     <div class="location-info">
                                         <h3>1242 Mason Rd</h3>
                                         <p>Austin, TX 78704</p>
-                                        <div class="change-link"><img src="../../shared/assets/icons/lucide/pencil.svg" class="lucide-icon lucide-icon-xs" alt=""> Change Location</div>
+                                        <button type="button" class="edit-action-link"><img src="../../shared/assets/icons/lucide/pencil.svg" class="lucide-icon lucide-icon-sm" alt=""> Change Location</button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="section-title">PHOTOS</div>
                             <div class="photo-grid" id="edit-photo-grid"></div>
-                            <button class="btn btn-ghost" style="margin-bottom: 24px;"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon lucide-icon-sm" alt=""> Add Media</button>
+                            <button type="button" class="edit-action-link" id="btnAddMedia"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon lucide-icon-sm" alt=""> Add Media</button>
 
                             <div class="section-title">DESCRIPTION</div>
                             <div class="description-header">
-                                <p style="font-size: 13px; color: #9ca3af;"><img src="../../shared/assets/icons/lucide/zap.svg" class="lucide-icon lucide-icon-xs" alt=""> AI-generated description</p>
-                                <button class="regenerate-btn" onclick="regenerateDescription()">
-                                    <img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-xs" alt=""> Regenerate
-                                </button>
+                                <p class="description-header-label"><img src="../../shared/assets/icons/lucide/zap.svg" class="lucide-icon lucide-icon-sm" alt=""> AI-generated description</p>
+                                <button type="button" class="edit-action-link" onclick="regenerateDescription()"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt=""> Regenerate</button>
                             </div>
                             <textarea id="description-field">Replaced an aging water heater and brought the system up to code. We installed a new high-efficiency unit, verified proper venting, and tested temperature + pressure relief for safe operation. Customer is back to consistent hot water with improved energy performance.</textarea>
                             <div class="auto-save-note"><img src="../../shared/assets/icons/lucide/check.svg" class="lucide-icon lucide-icon-xs" alt=""> Saved Automatically</div>
 
-                            <div class="action-buttons">
+                            <div class="section-title">TAGS</div>
+                            <div class="tag-pills-wrap" id="edit-tag-pills"></div>
+                            <button type="button" class="location-switcher" id="tag-selector-trigger" aria-label="Select tags">
+                                <img src="../../shared/assets/icons/lucide/tag.svg" class="location-switcher__icon" alt="" aria-hidden="true">
+                                <span class="location-switcher__label" id="tag-selector-label">Add tags…</span>
+                                <img src="../../shared/assets/icons/lucide/chevron-down.svg" class="location-switcher__chevron" alt="" aria-hidden="true">
+                            </button>
+
+                            <div class="action-buttons action-buttons--normal" id="edit-screen-buttons-normal">
                                 <button class="btn btn-primary" id="btnSavePublish" onclick="saveCheckin()"><img src="../../shared/assets/icons/lucide/upload.svg" class="lucide-icon lucide-icon-sm" alt=""> Publish Everywhere</button>
-                                <button class="btn btn-primary is-disabled" id="btnRequestReview" onclick="sendReviewRequest()"><img src="../../shared/assets/icons/lucide/star.svg" class="lucide-icon lucide-icon-sm" alt=""> Request Review</button>
-                                <button class="btn btn-secondary"><img src="../../shared/assets/icons/lucide/archive.svg" class="lucide-icon lucide-icon-sm" alt=""> Archive Check-In</button>
+                                <button type="button" class="btn btn-warning" id="btnArchiveCheckin"><img src="../../shared/assets/icons/lucide/archive.svg" class="lucide-icon lucide-icon-sm" alt=""> <span id="btnArchiveCheckinLabel">Archive Check-In</span></button>
+                                <button class="btn btn-primary action-buttons__item--spaced" id="btnRequestReview" onclick="goToRequestReview()"><img src="../../shared/assets/icons/lucide/star.svg" class="lucide-icon lucide-icon-sm" alt=""> Request Review</button>
+                            </div>
+                            <div class="action-buttons action-buttons--archived" id="edit-screen-buttons-archived" style="display: none;">
+                                <button type="button" class="btn btn-secondary" id="btnArchivedSave" onclick="saveArchivedCheckinEdits()"><img src="../../shared/assets/icons/lucide/check.svg" class="lucide-icon lucide-icon-sm" alt=""> Save</button>
+                                <button type="button" class="btn btn-primary" id="btnArchivedRestore" onclick="archiveCheckin()"><img src="../../shared/assets/icons/lucide/iteration-ccw.svg" class="lucide-icon lucide-icon-sm" alt=""> Restore</button>
+                                <button type="button" class="btn btn-warning action-buttons__item--spaced" id="btnArchivedDelete" onclick="deleteArchivedCheckin()"><img src="../../shared/assets/icons/lucide/trash-2.svg" class="lucide-icon lucide-icon-sm" alt=""> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Request Review Screen -->
+                    <div class="app-screen" id="request-review-screen">
+                        <div class="app-header">
+                            <div class="app-header__left"><button type="button" class="back-btn" onclick="goBackToEdit()" aria-label="Back"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button></div>
+                            <h1 class="app-header__title">Request Review</h1>
+                            <div class="app-header__right"></div>
+                        </div>
+                        <div class="content-area">
+                            <p class="request-review-subtitle" id="request-review-subtitle">105 Walnut St, Austin, TX</p>
+                            <div class="section-title">Include a message</div>
+                            <textarea class="input-field request-review-message" id="request-review-message" rows="4" placeholder="Add a personal note (optional)">We loved working with you! If you have a moment to leave a review, it would mean a lot to us.</textarea>
+                            <div class="section-title">Job details</div>
+                            <div class="location-card request-review-location">
+                                <div class="location-header">
+                                    <div class="map-thumb">
+                                        <img src="../../shared/assets/icons/lucide/map-pin.svg" class="lucide-icon lucide-icon-lg" alt="">
+                                    </div>
+                                    <div class="location-info">
+                                        <h3 id="request-review-address">105 Walnut St</h3>
+                                        <p id="request-review-location">Austin, TX</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="section-title">Photos</div>
+                            <div class="request-review-photos" id="request-review-photos">
+                                <!-- Filled by JS from current check-in -->
+                            </div>
+                            <button type="button" class="btn btn-primary btn-full" id="btnSendReviewRequest" onclick="submitReviewRequestFromScreen()"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send Review Request</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Screen -->
+                    <div class="app-screen" id="profile-screen">
+                        <div class="app-header">
+                            <div class="app-header__left"></div>
+                            <h1 class="app-header__title">Profile</h1>
+                            <div class="app-header__right"></div>
+                        </div>
+                        <div class="content-area">
+                            <div class="profile-card">
+                                <div class="profile-card__avatar" id="profile-avatar"></div>
+                                <div class="profile-card__info">
+                                    <div class="profile-card__name" id="profile-name">Trevor</div>
+                                    <div class="profile-card__email" id="profile-email">trevor@leadsforward.com</div>
+                                </div>
+                            </div>
+                            <h2 class="profile-section-title">Account Settings</h2>
+                            <button type="button" class="btn btn-secondary btn-full" id="btnChangePassword" onclick="goToChangePassword()">Change Password</button>
+                            <button type="button" class="btn btn-secondary btn-full" id="btnEditProfile" onclick="goToEditProfile()">Edit Profile</button>
+                            <button type="button" class="btn btn-primary btn-full">Log Out</button>
+                            <button type="button" class="btn btn-warning btn-full">Delete Account</button>
+                        </div>
+                        <div class="tab-bar">
+                            <button type="button" class="tab-item" onclick="goToHome()">
+                                <div class="tab-icon"><img src="../../shared/assets/icons/lucide/clipboard-list.svg" class="lucide-icon" alt=""></div>
+                                Check-ins
+                            </button>
+                            <button type="button" class="fab" onclick="goToNew()"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
+                            <button type="button" class="tab-item active">
+                                <div class="tab-icon"><img src="../../shared/assets/icons/lucide/user.svg" class="lucide-icon" alt=""></div>
+                                Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Edit Profile Screen -->
+                    <div class="app-screen" id="edit-profile-screen">
+                        <div class="app-header">
+                            <div class="app-header__left"><button type="button" class="back-btn" onclick="goToProfile()" aria-label="Back"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button></div>
+                            <h1 class="app-header__title">Edit Profile</h1>
+                            <div class="app-header__right"></div>
+                        </div>
+                        <div class="content-area">
+                            <div class="edit-profile-photo-wrap">
+                                <div class="edit-profile-photo" id="edit-profile-avatar"></div>
+                                <p class="edit-profile-photo-hint">Tap to change your photo</p>
+                            </div>
+                            <div class="edit-profile-field">
+                                <label class="edit-profile-label" for="edit-profile-name">Your Name</label>
+                                <input type="text" class="input-field" id="edit-profile-name" placeholder="Your name" value="">
+                            </div>
+                            <button type="button" class="btn btn-primary btn-full" id="btnSaveEditProfile" onclick="saveEditProfile()">Save Changes</button>
+                        </div>
+                    </div>
+
+                    <!-- Change Password Screen -->
+                    <div class="app-screen" id="change-password-screen">
+                        <div class="app-header">
+                            <div class="app-header__left"><button type="button" class="back-btn" onclick="goToProfile()" aria-label="Back"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button></div>
+                            <h1 class="app-header__title">Change Password</h1>
+                            <div class="app-header__right"></div>
+                        </div>
+                        <div class="content-area">
+                            <div class="edit-profile-field">
+                                <label class="edit-profile-label" for="change-password-new">New Password</label>
+                                <div class="password-field-wrap">
+                                    <input type="password" class="input-field" id="change-password-new" placeholder="Enter new password" autocomplete="new-password">
+                                    <button type="button" class="password-toggle" id="toggle-new-password" aria-label="Show password"><img src="../../shared/assets/icons/lucide/eye-off.svg" class="lucide-icon lucide-icon-sm" alt=""></button>
+                                </div>
+                            </div>
+                            <div class="edit-profile-field">
+                                <label class="edit-profile-label" for="change-password-confirm">Confirm Password</label>
+                                <div class="password-field-wrap">
+                                    <input type="password" class="input-field" id="change-password-confirm" placeholder="Confirm password" autocomplete="new-password">
+                                    <button type="button" class="password-toggle" id="toggle-confirm-password" aria-label="Show password"><img src="../../shared/assets/icons/lucide/eye-off.svg" class="lucide-icon lucide-icon-sm" alt=""></button>
+                                </div>
+                            </div>
+                            <p class="change-password-requirement">Passwords must include a capital letter and a special character.</p>
+                            <div class="change-password-actions">
+                                <button type="button" class="btn btn-primary" id="btnConfirmPassword" onclick="confirmChangePassword()">Confirm</button>
+                                <button type="button" class="btn btn-secondary" onclick="goToProfile()">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -213,12 +339,27 @@
                         </div>
                     </div>
 
+                    <!-- Tag selector – same design as location sheet -->
+                    <div class="location-sheet-overlay" id="tag-sheet-overlay" aria-hidden="true">
+                        <div class="location-sheet" id="tag-sheet" role="dialog" aria-labelledby="tag-sheet-title">
+                            <div class="location-sheet-header">
+                                <h2 id="tag-sheet-title" class="location-sheet-title">Select tags</h2>
+                                <button type="button" class="location-sheet-close" id="tag-sheet-close" aria-label="Close">
+                                    <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
+                                </button>
+                            </div>
+                            <div class="location-sheet-list" id="tag-sheet-list" role="listbox">
+                                <!-- Filled by JS: dummy tags -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Smart Location Prompt (prototype only, contained in app screen) -->
                     <div class="location-prompt-overlay" id="location-prompt-overlay" aria-hidden="true">
                         <div class="location-prompt-modal" id="location-prompt-modal" role="dialog" aria-labelledby="location-prompt-title">
                             <h2 id="location-prompt-title" class="location-prompt-title">Closer location</h2>
                             <p class="location-prompt-message" id="location-prompt-message">
-                                We noticed <strong id="location-prompt-name"></strong> is closer to your current location.
+                                We noticed <strong id="location-prompt-name"></strong> is nearer to your current location.
                                 Would you like to switch?
                             </p>
                             <div class="location-prompt-actions">

@@ -111,17 +111,19 @@ function applyDemoRestrictions() {
   `;
   document.body.appendChild(indicator);
   
-  // Disable profile button
-  const profileBtn = document.getElementById('profile-btn') || document.querySelector('[data-action="profile"]');
-  if (profileBtn && demoRestrictions.profileAccess) {
-    profileBtn.classList.add('is-demo-disabled');
-    profileBtn.style.opacity = '0.5';
-    profileBtn.style.cursor = 'not-allowed';
-    profileBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      showDemoRestrictionTooltip(profileBtn, 'Profile access is disabled in demo mode');
-    }, true);
+  // Disable profile button everywhere (all tab bars)
+  if (demoRestrictions.profileAccess) {
+    document.querySelectorAll('[data-action="profile"]').forEach((profileBtn) => {
+      profileBtn.classList.add('is-demo-disabled');
+      profileBtn.style.opacity = '0.5';
+      profileBtn.style.cursor = 'not-allowed';
+      profileBtn.setAttribute('aria-disabled', 'true');
+      profileBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showDemoRestrictionTooltip(profileBtn, 'Profile access is disabled in demo mode');
+      }, true);
+    });
   }
 
   // Location switcher: in demo mode chip stays visible and sheet can open; switching is no-op (handled in selectLocation / renderLocationList)
@@ -129,6 +131,10 @@ function applyDemoRestrictions() {
     const locationSwitcher = document.getElementById('location-switcher') || document.querySelector('[data-action="switch-location"]');
     if (locationSwitcher) locationSwitcher.classList.add('is-demo-disabled');
   }
+
+  // Archived tab: disabled in demo (setHomeTab shows tooltip on click)
+  const tabArchived = document.getElementById('tab-archived');
+  if (tabArchived && isDemoMode) tabArchived.classList.add('is-demo-disabled');
   
   // Add CSS for demo disabled state
   const style = document.createElement('style');
@@ -289,11 +295,52 @@ const state = {
   metrics: { checkins: 12, posts: 36, reviews: 48 },
   currentDescriptionIndex: 0,
   savedCheckins: [],
+  archivedCheckins: [],
+  homeActiveTab: 'my-jobs',
+  activeCheckinIndex: null,
+  activeCheckinFromArchived: false,
+  comingFromProcessPhotos: false,
   map: null,
   mapMarkers: [],
-  activeCheckinIndex: null,
   guideHidden: false,
+  selectedTags: [],
 };
+
+const EDIT_TAGS = [
+  { id: 'plumbing', label: 'Plumbing' },
+  { id: 'water-heater', label: 'Water Heater' },
+  { id: 'hvac', label: 'HVAC' },
+  { id: 'emergency', label: 'Emergency' },
+  { id: 'same-day', label: 'Same-day' },
+  { id: 'routine', label: 'Routine Service' },
+];
+
+const CHECKINS_STORAGE_KEY = 'jcp_checkins';
+const ARCHIVED_STORAGE_KEY = 'jcp_archived_checkins';
+
+function persistCheckins() {
+  if (isDemoMode) return;
+  try {
+    localStorage.setItem(CHECKINS_STORAGE_KEY, JSON.stringify(state.savedCheckins));
+    localStorage.setItem(ARCHIVED_STORAGE_KEY, JSON.stringify(state.archivedCheckins));
+  } catch (e) {}
+}
+
+function loadCheckins() {
+  if (isDemoMode) return;
+  try {
+    const saved = localStorage.getItem(CHECKINS_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state.savedCheckins = Array.isArray(parsed) ? parsed : [];
+    }
+    const archived = localStorage.getItem(ARCHIVED_STORAGE_KEY);
+    if (archived) {
+      const parsed = JSON.parse(archived);
+      state.archivedCheckins = Array.isArray(parsed) ? parsed : [];
+    }
+  } catch (e) {}
+}
 
 /* ---------------------------
    Locations (mock data for prototype)
@@ -315,6 +362,8 @@ const locationState = {
 
 const LOCATION_STORAGE_KEY = 'jcp_active_location_id';
 const LOCATION_PROMPT_SHOWN_KEY = 'jcp_location_prompt_shown';
+/** Prototype only: add ?test_location_prompt=1 to the URL to allow the "nearer location" prompt to show again (for developer testing). */
+const LOCATION_PROMPT_TEST_PARAM = 'test_location_prompt';
 
 /* ---------------------------
    Guide Content
@@ -357,10 +406,22 @@ const demoGuideContent = {
    DOM Helpers
 ---------------------------- */
 const $ = (id) => document.getElementById(id);
+function escapeHtml(s) {
+  if (s == null) return '';
+  const t = String(s);
+  return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 function safeText(id, value) {
   const el = $(id);
   if (el) el.textContent = value;
+}
+
+function excerptText(str, maxWords = 10) {
+  if (!str || typeof str !== 'string') return str || '';
+  const words = str.trim().split(/\s+/);
+  if (words.length <= maxWords) return str;
+  return words.slice(0, maxWords).join(' ') + '...';
 }
 
 function applyPersonalization() {
@@ -373,6 +434,16 @@ function applyPersonalization() {
   if (urlPill) {
     const slug = demoUser.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '');
     urlPill.textContent = `${slug}.com/jobs`;
+  }
+}
+
+function updateProfilePersonalization() {
+  const nameEl = $('profile-name');
+  const emailEl = $('profile-email');
+  if (nameEl) nameEl.textContent = demoUser.firstName || 'User';
+  if (emailEl) {
+    const email = demoUser.email || `${(demoUser.firstName || 'user').toLowerCase()}@${(demoUser.businessName || 'company').replace(/\s+/g, '').toLowerCase()}.com`;
+    emailEl.textContent = email;
   }
 }
 
@@ -566,6 +637,76 @@ function initLocationSwitcher() {
   });
 }
 
+function openTagSheet() {
+  const overlay = $('tag-sheet-overlay');
+  const sheet = $('tag-sheet');
+  if (overlay) overlay.classList.add('is-open');
+  if (sheet) sheet.classList.add('is-open');
+  renderTagSheetList();
+}
+
+function closeTagSheet() {
+  const overlay = $('tag-sheet-overlay');
+  const sheet = $('tag-sheet');
+  if (overlay) overlay.classList.remove('is-open');
+  if (sheet) sheet.classList.remove('is-open');
+}
+
+function renderTagSheetList() {
+  const listEl = $('tag-sheet-list');
+  if (!listEl) return;
+  listEl.innerHTML = EDIT_TAGS.map((tag) => {
+    const selected = state.selectedTags.includes(tag.id);
+    const itemClass = 'location-sheet-item' + (selected ? ' is-active' : '');
+    return `<button type="button" class="${itemClass}" data-tag-id="${tag.id}" role="option">
+        <div class="location-sheet-item-name-row">
+          <span class="location-sheet-item-name">${escapeHtml(tag.label)}</span>
+        </div>
+      </button>`;
+  }).join('');
+  listEl.querySelectorAll('.location-sheet-item').forEach((btn) => {
+    btn.addEventListener('click', () => toggleTag(btn.dataset.tagId));
+  });
+}
+
+function renderTagPills() {
+  const wrap = $('edit-tag-pills');
+  if (!wrap) return;
+  wrap.innerHTML = state.selectedTags.map((id) => {
+    const tag = EDIT_TAGS.find((t) => t.id === id);
+    if (!tag) return '';
+    return `<span class="tag-pill" data-tag-id="${tag.id}">${escapeHtml(tag.label)}<button type="button" class="tag-pill-remove" aria-label="Remove tag">×</button></span>`;
+  }).join('');
+  wrap.querySelectorAll('.tag-pill-remove').forEach((btn) => {
+    const pill = btn.closest('.tag-pill');
+    if (pill) btn.addEventListener('click', () => toggleTag(pill.dataset.tagId));
+  });
+}
+
+function toggleTag(tagId) {
+  const idx = state.selectedTags.indexOf(tagId);
+  if (idx === -1) state.selectedTags.push(tagId);
+  else state.selectedTags.splice(idx, 1);
+  renderTagPills();
+  renderTagSheetList();
+}
+
+function initTagSelector() {
+  const trigger = $('tag-selector-trigger');
+  const overlay = $('tag-sheet-overlay');
+  const closeBtn = $('tag-sheet-close');
+  if (trigger) trigger.addEventListener('click', (e) => { e.preventDefault(); openTagSheet(); });
+  if (closeBtn) closeBtn.addEventListener('click', closeTagSheet);
+  if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) closeTagSheet(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const o = $('tag-sheet-overlay');
+      if (o && o.classList.contains('is-open')) closeTagSheet();
+    }
+  });
+  renderTagPills();
+}
+
 function showSmartLocationPrompt(closerLocation) {
   if (!isPrototype || isDemoMode) return;
   try {
@@ -579,7 +720,9 @@ function showSmartLocationPrompt(closerLocation) {
   nameEl.textContent = closerLocation.name;
   overlay.classList.add('is-open');
   overlay.setAttribute('aria-hidden', 'false');
-  sessionStorage.setItem(LOCATION_PROMPT_SHOWN_KEY, '1');
+  try {
+    sessionStorage.setItem(LOCATION_PROMPT_SHOWN_KEY, '1');
+  } catch (e) {}
   const closePrompt = () => {
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
@@ -602,8 +745,21 @@ function maybeShowSmartLocationPrompt() {
   showSmartLocationPrompt(closest);
 }
 
+/**
+ * Prototype only: on first load, if the user's last saved location differs from the
+ * closest location to their current position, show a prompt: "We noticed [name] is
+ * nearer to your current location. Would you like to switch?" Developers can re-show
+ * the prompt by adding ?test_location_prompt=1 to the URL (then set a non-closest
+ * location and refresh, or allow geolocation so a different location is closest).
+ */
 function initLocationSmartPrompt() {
   if (!isPrototype || isDemoMode) return;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get(LOCATION_PROMPT_TEST_PARAM) === '1') {
+      sessionStorage.removeItem(LOCATION_PROMPT_SHOWN_KEY);
+    }
+  } catch (e) {}
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       locationState.userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
@@ -1030,11 +1186,15 @@ function setScreen(screenId) {
 
   state.currentScreen = screenId;
 
+  if (isPrototype && typeof window.CustomEvent !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jcp-prototype-screen-change', { detail: { screenId } }));
+  }
+
 // Tour is step-driven, not screen-driven
 updateTourFloating();
 
 
-if (['login-screen','home-screen','new-screen','edit-screen'].includes(screenId)) {
+if (['login-screen','home-screen','new-screen','edit-screen','profile-screen','edit-profile-screen','change-password-screen','request-review-screen'].includes(screenId)) {
   applyFocalPoint();
 }
 
@@ -1110,6 +1270,7 @@ function loadSampleCheckins() {
   }));
 
   samples.forEach(job => state.savedCheckins.push(job));
+  persistCheckins();
 
   // Phone
   renderHomeCheckins();
@@ -1162,37 +1323,70 @@ function renderHomeCheckins() {
     console.warn('Could not load pending jobs');
   }
   
-  // Show pending jobs first
+  const isArchived = state.homeActiveTab === 'archived';
+  const sourceList = isArchived ? state.archivedCheckins : state.savedCheckins;
+
+  if (isArchived) {
+    if (sourceList.length === 0) {
+      if (emptyState) {
+        emptyState.querySelector('h3').textContent = 'No archived check-ins';
+        emptyState.querySelector('p').textContent = 'Archived check-ins will appear here.';
+        emptyState.style.display = 'block';
+      }
+      return;
+    }
+    if (emptyState) emptyState.style.display = 'none';
+    sourceList.forEach((checkin, index) => {
+      const item = document.createElement('div');
+      item.className = 'home-checkin-item';
+      item.innerHTML = `
+        <div class="home-checkin-left">
+          <h3>${checkin.address || '105 Walnut St'}</h3>
+          <div class="home-checkin-location">${checkin.location}</div>
+          <div class="home-checkin-desc">${excerptText(checkin.summary || 'Replaced water heater.', 10)}</div>
+          <div class="home-checkin-meta">
+            <span class="home-checkin-user">${checkin.customer || 'John Doe'}</span>
+            <span class="home-checkin-time">${checkin.time || '2h ago'}</span>
+          </div>
+        </div>
+        <div class="home-checkin-thumb"><img src="${checkin.image}" alt="Job photo"></div>
+      `;
+      item.onclick = () => {
+        if (isDemoMode) { showDemoRestrictionTooltip(item, 'Check-in editing is disabled in the demo'); return; }
+        openCheckinForEdit(index, true);
+      };
+      list.appendChild(item);
+    });
+    return;
+  }
+
+  // My Jobs: show pending first, then saved check-ins
   pendingJobs.forEach((job, index) => {
     const item = document.createElement('div');
     item.className = 'home-checkin-item pending-job-item';
-
     item.innerHTML = `
       <div class="home-checkin-left">
         <div class="pending-pill">Next job ready</div>
         <h3>${job.address}</h3>
         <div class="home-checkin-location">${job.city}</div>
-        <div class="home-checkin-desc">
-          ${job.scopeSummary.service} · ${job.scopeSummary.scope}
-        </div>
+        <div class="home-checkin-desc">${job.scopeSummary.service} · ${job.scopeSummary.scope}</div>
         <div class="home-checkin-meta">
           <span class="home-checkin-user">${job.status}</span>
           <span class="home-checkin-time">Tap to start</span>
         </div>
       </div>
-
-      <div class="home-checkin-thumb">
-        <div class="pending-icon">
-          <i class="fas fa-clipboard-check"></i>
-        </div>
-      </div>
+      <div class="home-checkin-thumb"><div class="pending-icon"><i class="fas fa-clipboard-check"></i></div></div>
     `;
     item.onclick = () => startPendingJob(job, index);
     list.appendChild(item);
   });
 
   if (state.savedCheckins.length === 0 && pendingJobs.length === 0) {
-    if (emptyState) emptyState.style.display = 'block';
+    if (emptyState) {
+      emptyState.querySelector('h3').textContent = 'Start capturing proof';
+      emptyState.querySelector('p').textContent = 'Take a few photos → submit → automatically published everywhere.';
+      emptyState.style.display = 'block';
+    }
     return;
   }
 
@@ -1201,25 +1395,22 @@ function renderHomeCheckins() {
   state.savedCheckins.forEach((checkin, index) => {
     const item = document.createElement('div');
     item.className = 'home-checkin-item';
-
     item.innerHTML = `
       <div class="home-checkin-left">
         <h3>${checkin.address || '105 Walnut St'}</h3>
         <div class="home-checkin-location">${checkin.location}</div>
-        <div class="home-checkin-desc">
-          ${checkin.summary || 'Replaced water heater.'}
-        </div>
+        <div class="home-checkin-desc">${excerptText(checkin.summary || 'Replaced water heater.', 10)}</div>
         <div class="home-checkin-meta">
           <span class="home-checkin-user">${checkin.customer || 'John Doe'}</span>
           <span class="home-checkin-time">${checkin.time || '2h ago'}</span>
         </div>
       </div>
-
-      <div class="home-checkin-thumb">
-        <img src="${checkin.image}" alt="Job photo">
-      </div>
+      <div class="home-checkin-thumb"><img src="${checkin.image}" alt="Job photo"></div>
     `;
-    item.onclick = () => openCheckinForEdit(index);
+    item.onclick = () => {
+      if (isDemoMode) { showDemoRestrictionTooltip(item, 'Check-in editing is disabled in the demo'); return; }
+      openCheckinForEdit(index, false);
+    };
     list.appendChild(item);
   });
 }
@@ -1284,6 +1475,8 @@ function addMapMarker(lat, lng, title) {
    New Check-in Flow (Phone)
 ========================================================= */
 function goToHome() {
+  state.activeCheckinIndex = null;
+  state.activeCheckinFromArchived = false;
   setScreen('home-screen');
   renderHomeCheckins();
 
@@ -1309,6 +1502,52 @@ function goToNew() {
     updateTourFloating();
   }
   syncAttentionAnimations();
+}
+
+function goToProfile() {
+  if (isDemoMode) {
+    const el = document.querySelector('[data-action="profile"]');
+    if (el) showDemoRestrictionTooltip(el, 'Profile access is disabled in demo mode');
+    return;
+  }
+  setScreen('profile-screen');
+  updateProfilePersonalization();
+}
+
+function goToEditProfile() {
+  setScreen('edit-profile-screen');
+  const input = $('edit-profile-name');
+  if (input) input.value = demoUser.firstName || '';
+}
+
+function goToChangePassword() {
+  setScreen('change-password-screen');
+  const newInput = $('change-password-new');
+  const confirmInput = $('change-password-confirm');
+  if (newInput) newInput.value = '';
+  if (confirmInput) confirmInput.value = '';
+}
+
+function confirmChangePassword() {
+  goToProfile();
+}
+
+function saveEditProfile() {
+  const input = $('edit-profile-name');
+  if (input && input.value.trim()) {
+    demoUser.firstName = input.value.trim();
+    try {
+      const stored = localStorage.getItem('demoUser');
+      const parsed = stored ? JSON.parse(stored) : {};
+      localStorage.setItem('demoUser', JSON.stringify({ ...parsed, firstName: demoUser.firstName }));
+    } catch (e) {}
+    updateProfilePersonalization();
+    const greeting = document.querySelector('.greeting');
+    if (greeting) {
+      greeting.innerHTML = `Hi, <span class="greeting-accent">${demoUser.firstName}</span> | ${demoUser.businessName}`;
+    }
+  }
+  goToProfile();
 }
 
 function addPhotos() {
@@ -1365,6 +1604,9 @@ async function processPhotos() {
   }
 
   overlay.classList.add('active');
+  if (isPrototype && typeof window.CustomEvent !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jcp-prototype-screen-change', { detail: { screenId: 'checkin-creation-screen' } }));
+  }
 
   await wait(700);
   markProcessingStepDone('step1');
@@ -1380,6 +1622,22 @@ async function processPhotos() {
 
   // Reset steps
   setTimeout(() => resetProcessingSteps(['step1','step2','step3']), 400);
+
+  if (isPrototype) {
+    const summary = descriptions[0] || 'Replaced water heater.';
+    state.savedCheckins.push({
+      title: 'Water Heater Replacement',
+      address: '105 Walnut St',
+      location: 'Austin, TX',
+      summary,
+      customer: 'John Doe',
+      time: 'Just now',
+      image: demoPhotos[0]
+    });
+    persistCheckins();
+    state.activeCheckinIndex = state.savedCheckins.length - 1;
+    state.comingFromProcessPhotos = true;
+  }
 
   showEditScreen();
 }
@@ -1404,16 +1662,52 @@ function resetProcessingSteps(ids) {
 
 function showEditScreen() {
   const editGrid = $('edit-photo-grid');
-  if (editGrid) {
-    editGrid.innerHTML = '';
-    for (let i = 0; i < state.photoCount; i++) {
-      const photoDiv = document.createElement('div');
-      photoDiv.className = 'photo-item';
-      photoDiv.innerHTML = `<img src="${demoPhotos[i]}" alt="Job photo" width="120" height="90">`;
-      editGrid.appendChild(photoDiv);
+  const descriptionField = $('description-field');
+  const addressEl = document.querySelector('#edit-screen .location-info h3');
+  const locationEl = document.querySelector('#edit-screen .location-info p');
+
+  if (state.comingFromProcessPhotos && state.activeCheckinIndex !== null) {
+    const checkin = state.savedCheckins[state.activeCheckinIndex];
+    if (checkin) {
+      if (descriptionField) descriptionField.value = checkin.summary || '';
+      if (addressEl) addressEl.textContent = checkin.address || '105 Walnut St';
+      if (locationEl) locationEl.textContent = checkin.location || 'Austin, TX';
+      if (editGrid) {
+        editGrid.innerHTML = '';
+        const imgSrc = checkin.image || demoPhotos[0];
+        const photoDiv = document.createElement('div');
+        photoDiv.className = 'photo-item';
+        photoDiv.innerHTML = `<img src="${imgSrc}" alt="Job photo" width="120" height="90">`;
+        editGrid.appendChild(photoDiv);
+      }
+    }
+    state.comingFromProcessPhotos = false;
+  } else {
+    state.activeCheckinIndex = null;
+    state.activeCheckinFromArchived = false;
+    if (editGrid) {
+      editGrid.innerHTML = '';
+      for (let i = 0; i < state.photoCount; i++) {
+        const photoDiv = document.createElement('div');
+        photoDiv.className = 'photo-item';
+        photoDiv.innerHTML = `<img src="${demoPhotos[i]}" alt="Job photo" width="120" height="90">`;
+        editGrid.appendChild(photoDiv);
+      }
     }
   }
 
+  updateArchiveButtonUI();
+  const publishBtn = $('btnSavePublish');
+  if (publishBtn) {
+    publishBtn.disabled = false;
+    publishBtn.classList.remove('is-disabled');
+    if (isPrototype) {
+      publishBtn.innerHTML = `<img src="${assetBase}/shared/assets/icons/lucide/check.svg" class="lucide-icon lucide-icon-sm" alt=""> Save`;
+    } else {
+      publishBtn.innerHTML = `<img src="${assetBase}/shared/assets/icons/lucide/upload.svg" class="lucide-icon lucide-icon-sm" alt=""> Publish Everywhere`;
+    }
+    publishBtn.onclick = saveCheckin;
+  }
   setScreen('edit-screen');
   setTourStep('step4');
 
@@ -1459,34 +1753,54 @@ async function saveCheckin() {
 const publishBtn = $('btnSavePublish');
 if (publishBtn) {
   publishBtn.disabled = true;
-  publishBtn.textContent = 'Published';
+  if (isPrototype) {
+    publishBtn.innerHTML = `<img src="${assetBase}/shared/assets/icons/lucide/check.svg" class="lucide-icon lucide-icon-sm" alt=""> Saved`;
+  } else {
+    publishBtn.textContent = 'Published';
+  }
   publishBtn.classList.add('is-disabled');
 }
   const descField = $('description-field');
 
-  // Edit existing
-  if (state.activeCheckinIndex !== null) {
+  // Edit existing (from My Jobs or after Unarchive we're still in savedCheckins)
+  if (state.activeCheckinIndex !== null && !state.activeCheckinFromArchived) {
     const existing = state.savedCheckins[state.activeCheckinIndex];
     if (existing) {
       existing.summary = descField ? descField.value : existing.summary;
       existing.time = 'Just now';
     }
+    persistCheckins();
     state.activeCheckinIndex = null;
+    state.activeCheckinFromArchived = false;
+  } else if (state.activeCheckinIndex !== null && state.activeCheckinFromArchived) {
+    const existing = state.archivedCheckins[state.activeCheckinIndex];
+    if (existing) {
+      existing.summary = descField ? descField.value : existing.summary;
+      existing.time = 'Just now';
+    }
+    persistCheckins();
+    state.activeCheckinIndex = null;
+    state.activeCheckinFromArchived = false;
   } else {
     // Create new
+    const desc = descField ? descField.value : 'Replaced water heater.';
     state.savedCheckins.push({
       title: 'Water Heater Replacement',
       address: '105 Walnut St',
       location: 'Austin, TX',
-      summary: 'Replaced water heater.',
+      summary: desc,
       customer: 'John Doe',
       time: 'Just now',
       image: demoPhotos[0]
     });
+    persistCheckins();
 
     initializeMap();
     addMapMarker(30.2672, -97.7431, 'Water Heater Replacement');
   }
+
+  // Prototype: save only, no publish to website/social
+  if (isPrototype) return;
 
   // Metrics
   state.metrics.checkins++;
@@ -1686,16 +2000,23 @@ async function sendReviewRequest() {
    Edit Existing Check-in
 ========================================================= */
 
-function openCheckinForEdit(index) {
-  const checkin = state.savedCheckins[index];
+function openCheckinForEdit(index, fromArchived = false) {
+  const list = fromArchived ? state.archivedCheckins : state.savedCheckins;
+  const checkin = list[index];
   if (!checkin) return;
 
   state.activeCheckinIndex = index;
+  state.activeCheckinFromArchived = fromArchived;
 
   const descriptionField = $('description-field');
-  if (descriptionField && checkin.summary) {
-    descriptionField.value = checkin.summary;
+  if (descriptionField) {
+    descriptionField.value = checkin.summary || 'Replaced water heater.';
   }
+
+  const addressEl = document.querySelector('#edit-screen .location-info h3');
+  const locationEl = document.querySelector('#edit-screen .location-info p');
+  if (addressEl) addressEl.textContent = checkin.address || '105 Walnut St';
+  if (locationEl) locationEl.textContent = checkin.location || 'Austin, TX';
 
   const editGrid = $('edit-photo-grid');
   if (editGrid) {
@@ -1708,11 +2029,156 @@ function openCheckinForEdit(index) {
     }
   }
 
-  // Status pill to Published
   const status = document.querySelector('.status-pill');
   if (status) status.innerHTML = `<img src="${assetBase}/shared/assets/icons/lucide/badge-check.svg" class="lucide-icon lucide-icon-sm" alt=""> Published`;
 
+  const publishBtn = $('btnSavePublish');
+  if (publishBtn) {
+    publishBtn.disabled = true;
+    publishBtn.classList.add('is-disabled');
+    publishBtn.textContent = 'Published';
+    publishBtn.onclick = null;
+  }
+
+  updateArchiveButtonUI();
   setScreen('edit-screen');
+}
+
+function updateArchiveButtonUI() {
+  const btn = $('btnArchiveCheckin');
+  const label = $('btnArchiveCheckinLabel');
+  if (!btn || !label) return;
+  const isNew = state.activeCheckinIndex === null;
+  if (state.activeCheckinFromArchived) {
+    label.textContent = 'Unarchive';
+    btn.title = 'Move back to My Jobs';
+    btn.disabled = false;
+    btn.classList.remove('is-disabled');
+  } else if (isNew) {
+    label.textContent = 'Archive Check-In';
+    btn.title = 'Publish first to archive';
+    btn.disabled = true;
+    btn.classList.add('is-disabled');
+  } else {
+    label.textContent = 'Archive Check-In';
+    btn.title = '';
+    btn.disabled = false;
+    btn.classList.remove('is-disabled');
+  }
+  if (isDemoMode) {
+    btn.classList.add('is-demo-disabled');
+  } else {
+    btn.classList.remove('is-demo-disabled');
+  }
+
+  const normalBtns = $('edit-screen-buttons-normal');
+  const archivedBtns = $('edit-screen-buttons-archived');
+  if (normalBtns && archivedBtns) {
+    if (state.activeCheckinFromArchived) {
+      normalBtns.style.display = 'none';
+      archivedBtns.style.display = 'flex';
+    } else {
+      normalBtns.style.display = 'flex';
+      archivedBtns.style.display = 'none';
+    }
+  }
+}
+
+function saveArchivedCheckinEdits() {
+  if (state.activeCheckinIndex === null || !state.activeCheckinFromArchived) return;
+  const checkin = state.archivedCheckins[state.activeCheckinIndex];
+  if (!checkin) return;
+  const descField = $('description-field');
+  if (descField) checkin.summary = descField.value;
+  persistCheckins();
+}
+
+function deleteArchivedCheckin() {
+  if (isDemoMode) {
+    showDemoRestrictionTooltip($('btnArchivedDelete'), 'Deleting is disabled in the demo');
+    return;
+  }
+  if (state.activeCheckinIndex === null || !state.activeCheckinFromArchived) return;
+  state.archivedCheckins.splice(state.activeCheckinIndex, 1);
+  persistCheckins();
+  state.activeCheckinIndex = null;
+  state.activeCheckinFromArchived = false;
+  goToHome();
+}
+
+function goToRequestReview() {
+  const checkin = getCurrentCheckinForReview();
+  const subtitle = $('request-review-subtitle');
+  const addressEl = $('request-review-address');
+  const locationEl = $('request-review-location');
+  const messageEl = $('request-review-message');
+  const photosEl = $('request-review-photos');
+  if (subtitle) subtitle.textContent = checkin ? `${checkin.address || '105 Walnut St'}, ${checkin.location || 'Austin, TX'}` : '105 Walnut St, Austin, TX';
+  if (addressEl) addressEl.textContent = checkin?.address || '105 Walnut St';
+  if (locationEl) locationEl.textContent = checkin?.location || 'Austin, TX';
+  if (messageEl) messageEl.value = 'We loved working with you! If you have a moment to leave a review, it would mean a lot to us.';
+  if (photosEl) {
+    const imgSrc = checkin?.image || demoPhotos[0];
+    photosEl.innerHTML = `<img src="${imgSrc}" alt="Job" class="request-review-photo-thumb">`;
+  }
+  setScreen('request-review-screen');
+}
+
+function getCurrentCheckinForReview() {
+  if (state.activeCheckinIndex !== null && state.activeCheckinFromArchived) return state.archivedCheckins[state.activeCheckinIndex];
+  if (state.activeCheckinIndex !== null) return state.savedCheckins[state.activeCheckinIndex];
+  if (state.savedCheckins.length > 0) return state.savedCheckins[state.savedCheckins.length - 1];
+  return null;
+}
+
+function goBackToEdit() {
+  setScreen('edit-screen');
+}
+
+function submitReviewRequestFromScreen() {
+  state.metrics.reviews++;
+  safeText('metric-reviews', String(state.metrics.reviews));
+  goToHome();
+}
+
+function archiveCheckin() {
+  if (isDemoMode) {
+    showDemoRestrictionTooltip($('btnArchiveCheckin'), 'Archiving is disabled in the demo');
+    return;
+  }
+  if (state.activeCheckinFromArchived) {
+    const checkin = state.archivedCheckins[state.activeCheckinIndex];
+    if (checkin) {
+      state.archivedCheckins.splice(state.activeCheckinIndex, 1);
+      state.savedCheckins.push(checkin);
+      persistCheckins();
+    }
+  } else {
+    const checkin = state.savedCheckins[state.activeCheckinIndex];
+    if (checkin) {
+      state.savedCheckins.splice(state.activeCheckinIndex, 1);
+      state.archivedCheckins.push(checkin);
+      persistCheckins();
+    }
+  }
+  state.activeCheckinIndex = null;
+  state.activeCheckinFromArchived = false;
+  goToHome();
+}
+
+function setHomeTab(tab) {
+  if (isDemoMode && tab === 'archived') {
+    const tabEl = document.getElementById('tab-archived');
+    if (tabEl) showDemoRestrictionTooltip(tabEl, 'Archived list is disabled in the demo');
+    return;
+  }
+  state.homeActiveTab = tab;
+  document.querySelectorAll('.action-tiles [data-tab]').forEach((el) => {
+    const isActive = el.getAttribute('data-tab') === tab;
+    el.classList.toggle('btn-primary', isActive);
+    el.classList.toggle('btn-secondary', !isActive);
+  });
+  renderHomeCheckins();
 }
 
 /* =========================================================
@@ -1793,6 +2259,17 @@ function wireControls() {
     updateTourFloating();
   });
 
+  (document.getElementById('profile-btn') || document.querySelector('[data-action="profile"]'))?.addEventListener('click', () => {
+    if (document.querySelector('[data-action="profile"].is-demo-disabled')) return;
+    goToProfile();
+  });
+
+  document.querySelectorAll('.action-tiles [data-tab]').forEach((el) => {
+    el.addEventListener('click', () => setHomeTab(el.getAttribute('data-tab')));
+  });
+
+  $('btnArchiveCheckin')?.addEventListener('click', () => archiveCheckin());
+
   $('fabNewCheckin')?.addEventListener(
     'click',
     () => {
@@ -1822,6 +2299,26 @@ document
   .getElementById('btnLoadSampleData')
   ?.addEventListener('click', loadSampleCheckins);
 
+  initPasswordToggles();
+}
+
+function initPasswordToggles() {
+  const eyePath = `${assetBase}/shared/assets/icons/lucide/eye.svg`;
+  const eyeOffPath = `${assetBase}/shared/assets/icons/lucide/eye-off.svg`;
+  function wireToggle(toggleId, inputId) {
+    const btn = $(toggleId);
+    const input = $(inputId);
+    if (!btn || !input) return;
+    btn.addEventListener('click', () => {
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      const img = btn.querySelector('img');
+      if (img) img.src = isPassword ? eyePath : eyeOffPath;
+      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    });
+  }
+  wireToggle('toggle-new-password', 'change-password-new');
+  wireToggle('toggle-confirm-password', 'change-password-confirm');
 }
 
 /* =========================================================
@@ -1829,6 +2326,7 @@ document
 ========================================================= */
 
 function init() {
+  loadCheckins();
   initializeWebsite();
   applyPersonalization();
 
@@ -1844,6 +2342,8 @@ function init() {
     `;
   }
 
+  updateProfilePersonalization();
+
   // Wire UI
   wireControls();
   wirePostDemoPanel();
@@ -1856,6 +2356,8 @@ function init() {
 
   // Location switcher: shared UI for both prototype and demo (demo = no-op on switch)
   initLocationSwitcher();
+
+  initTagSelector();
 
   // Prototype page: start on app home screen, no tour, no Start Demo; all controls active
   if (isPrototype) {
@@ -2178,6 +2680,14 @@ window.initDemo = init;
 ========================================================= */
 window.goToHome = goToHome;
 window.goToNew = goToNew;
+window.goToProfile = goToProfile;
+window.goToEditProfile = goToEditProfile;
+window.saveEditProfile = saveEditProfile;
+window.goToChangePassword = goToChangePassword;
+window.confirmChangePassword = confirmChangePassword;
+window.goToRequestReview = goToRequestReview;
+window.goBackToEdit = goBackToEdit;
+window.submitReviewRequestFromScreen = submitReviewRequestFromScreen;
 window.addPhotos = addPhotos;
 window.processPhotos = processPhotos;
 window.regenerateDescription = regenerateDescription;
