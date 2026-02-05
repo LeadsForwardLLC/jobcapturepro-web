@@ -374,17 +374,31 @@
             to { opacity: 1; }
         }
 
-        /* Header – three-zone layout so title stays centered */
+        /* Header – compact top app bar */
         .app-header {
-            padding: 44px 16px 12px;
+            padding: 44px 16px 10px 16px;
             background: #fff;
             border-bottom: 1px solid #e5e7eb;
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
             gap: 12px;
-            min-height: 56px;
+            min-height: 44px;
             z-index: 5;
+        }
+
+        /* Check-ins: title left, location right (global app context) */
+        .app-header--title-left {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-header--title-left .app-header__title {
+            text-align: left;
+            flex: 1;
+            min-width: 0;
         }
 
         .app-header__left {
@@ -437,57 +451,63 @@
             opacity: 0.7;
         }
 
-        /* Location Switcher – compact, secondary to title */
+        /* Location Switcher – text + pin + chevron, no pill; secondary to title */
         .location-switcher {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 5px 8px 5px 6px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #475569;
+            padding: 4px 0 4px 4px;
+            margin: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
             cursor: pointer;
-            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+            transition: color 0.15s ease;
             -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
 
         .location-switcher:hover {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-            color: #334155;
+            color: #475569;
         }
 
         .location-switcher:active {
-            background: #e2e8f0;
+            color: #334155;
         }
 
         .location-switcher__icon {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             color: #94a3b8;
             flex-shrink: 0;
         }
 
         .location-switcher__label {
-            max-width: 120px;
+            max-width: 140px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .location-switcher__chevron {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             color: #94a3b8;
             flex-shrink: 0;
-            transition: transform 0.2s ease;
         }
 
+        .location-switcher:hover .location-switcher__icon,
         .location-switcher:hover .location-switcher__chevron {
             color: #64748b;
+        }
+
+        /* Demo: disabled state (visible, no interaction) */
+        .location-switcher.is-demo-disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         /* Location Switch Modal */
