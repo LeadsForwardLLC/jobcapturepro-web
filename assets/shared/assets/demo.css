@@ -374,78 +374,120 @@
             to { opacity: 1; }
         }
 
-        /* Header */
+        /* Header – three-zone layout so title stays centered */
         .app-header {
-            padding: 44px 16px 12px; /* extra top padding for notch */
+            padding: 44px 16px 12px;
             background: #fff;
             border-bottom: 1px solid #e5e7eb;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            justify-content: center;
-            position: relative;
+            gap: 12px;
             min-height: 56px;
             z-index: 5;
         }
 
-
-        .back-btn {
-            position: absolute;
-            left: 16px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: #FF6B35;
-            cursor: pointer;
-            padding: 4px;
+        .app-header__left {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-width: 0;
         }
 
-.back-btn .lucide-icon {
-  width: 18px;
-  height: 18px;
-}
-
-        .app-header h1 {
+        .app-header__title {
             font-size: 17px;
             font-weight: 700;
             color: #1f2937;
+            margin: 0;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Location Switcher */
-        .location-switcher {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+        .app-header__right {
             display: flex;
             align-items: center;
+            justify-content: flex-end;
+            min-width: 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            margin: -6px 0 -6px -6px;
+            color: #ff503e;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn .lucide-icon {
+            width: 22px;
+            height: 22px;
+        }
+
+        .back-btn:hover {
+            opacity: 0.85;
+        }
+
+        .back-btn:active {
+            opacity: 0.7;
+        }
+
+        /* Location Switcher – compact, secondary to title */
+        .location-switcher {
+            display: inline-flex;
+            align-items: center;
             gap: 4px;
-            padding: 6px 10px;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            padding: 5px 8px 5px 6px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            color: #374151;
+            color: #475569;
             cursor: pointer;
-            transition: all 0.15s ease;
-            margin-top: 16px;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .location-switcher:hover {
-            background: #e5e7eb;
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #334155;
         }
 
-        .location-switcher .location-name {
-            max-width: 100px;
+        .location-switcher:active {
+            background: #e2e8f0;
+        }
+
+        .location-switcher__icon {
+            width: 12px;
+            height: 12px;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+
+        .location-switcher__label {
+            max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .location-switcher .lucide-icon {
-            width: 14px;
-            height: 14px;
-            opacity: 0.6;
+        .location-switcher__chevron {
+            width: 12px;
+            height: 12px;
+            color: #94a3b8;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .location-switcher:hover .location-switcher__chevron {
+            color: #64748b;
         }
 
         /* Location Switch Modal */

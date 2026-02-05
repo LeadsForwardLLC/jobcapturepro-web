@@ -395,7 +395,7 @@ function getLocationDisplay(loc) {
 
 function updateLocationUI() {
   const loc = getActiveLocation();
-  const label = document.querySelector('.location-switcher .location-name');
+  const label = document.querySelector('.location-switcher .location-switcher__label');
   if (label) label.textContent = getLocationDisplay(loc);
 }
 
