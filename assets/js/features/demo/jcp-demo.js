@@ -1328,12 +1328,12 @@ function restartTour() {
 
 function wireControls() {
   $('btnReset')?.addEventListener('click', () => location.reload());
-  $('#mobileBtnReset')?.addEventListener('click', () => location.reload());
+  $('mobileBtnReset')?.addEventListener('click', () => location.reload());
 
   $('btnRestartLead')?.addEventListener('click', () => location.reload());
 
   $('btnNext')?.addEventListener('click', () => advanceDemo());
-  $('#mobileBtnNext')?.addEventListener('click', () => advanceDemo());
+  $('mobileBtnNext')?.addEventListener('click', () => advanceDemo());
 
   $('btnViewDirectory')?.addEventListener('click', openDirectoryProfileFromDemo);
 
@@ -1341,7 +1341,7 @@ function wireControls() {
     setScreen('login-screen');
     state.activeCheckinIndex = null;
   });
-  $('#mobileBtnExit')?.addEventListener('click', () => {
+  $('mobileBtnExit')?.addEventListener('click', () => {
     setScreen('login-screen');
     state.activeCheckinIndex = null;
   });
@@ -1710,7 +1710,9 @@ function wirePostDemoPanel() {
 }
 
 
-init();
+// Don't call init() immediately - wait for jcp-render.js to inject the HTML
+// jcp-render.js will call window.initDemo() after the template is loaded
+window.initDemo = init;
 
 /* =========================================================
    GLOBALS (required because HTML uses inline onclick)

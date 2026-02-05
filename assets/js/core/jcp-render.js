@@ -157,6 +157,9 @@
         document.body.appendChild(script);
       });
 
+      if (page === 'demo' && typeof window.initDemo === 'function') {
+        window.initDemo();
+      }
       if (page === 'directory' && typeof window.initDirectory === 'function') {
         window.initDirectory();
       }
