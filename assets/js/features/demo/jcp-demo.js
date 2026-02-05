@@ -123,16 +123,11 @@ function applyDemoRestrictions() {
       showDemoRestrictionTooltip(profileBtn, 'Profile access is disabled in demo mode');
     }, true);
   }
-  
-  // Disable location switcher (but keep visible)
-  const locationSwitcher = document.getElementById('location-switcher') || document.querySelector('[data-action="switch-location"]');
-  if (locationSwitcher && demoRestrictions.locationSwitcher) {
-    locationSwitcher.classList.add('is-demo-disabled');
-    locationSwitcher.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      showDemoRestrictionTooltip(locationSwitcher, 'Location switching is disabled in demo mode');
-    }, true);
+
+  // Location switcher: in demo mode chip stays visible and sheet can open; switching is no-op (handled in selectLocation / renderLocationList)
+  if (demoRestrictions.locationSwitcher) {
+    const locationSwitcher = document.getElementById('location-switcher') || document.querySelector('[data-action="switch-location"]');
+    if (locationSwitcher) locationSwitcher.classList.add('is-demo-disabled');
   }
   
   // Add CSS for demo disabled state
@@ -411,6 +406,12 @@ function haversineMi(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+function formatDistance(mi) {
+  if (mi == null || mi < 0) return '';
+  if (mi < 10) return mi.toFixed(1) + ' mi';
+  return '~' + Math.round(mi) + ' mi';
+}
+
 function getLocationsWithDistance(searchQuery) {
   const q = (searchQuery || '').toLowerCase().trim();
   let list = LOCATIONS.map((loc) => {
@@ -441,19 +442,19 @@ function getLocationsWithDistance(searchQuery) {
   return list;
 }
 
-function openLocationModal() {
+function openLocationSheet() {
   const overlay = $('location-modal-overlay');
   const listEl = $('location-modal-list');
   const searchEl = $('location-modal-search');
   if (!overlay || !listEl) return;
-  searchEl.value = '';
+  if (searchEl) searchEl.value = '';
   renderLocationList('');
   overlay.classList.add('is-open');
   overlay.setAttribute('aria-hidden', 'false');
   if (searchEl) searchEl.focus();
 }
 
-function closeLocationModal() {
+function closeLocationSheet() {
   const overlay = $('location-modal-overlay');
   if (!overlay) return;
   overlay.classList.remove('is-open');
@@ -465,23 +466,48 @@ function renderLocationList(searchQuery) {
   if (!listEl) return;
   const activeId = locationState.activeId || LOCATIONS[0].id;
   const list = getLocationsWithDistance(searchQuery);
-  listEl.innerHTML = list
-    .map(
-      (loc) => {
-        const isActive = loc.id === activeId;
-        const distStr =
-          loc.distance != null ? `${loc.distance.toFixed(1)} mi away` : '';
-        return `
-          <button type="button" class="location-modal-item ${isActive ? 'is-active' : ''}" data-location-id="${loc.id}" role="option">
-            <span class="location-modal-item-name">${loc.name}</span>
-            <span class="location-modal-item-meta">${loc.city}, ${loc.state}</span>
-            ${distStr ? `<span class="location-modal-item-distance">${distStr}</span>` : ''}
-          </button>`;
-      }
-    )
-    .join('');
-  listEl.querySelectorAll('.location-modal-item').forEach((btn) => {
+  const hasUserCoords = locationState.userCoords != null;
+  const showGroups = hasUserCoords && !(searchQuery || '').trim() && list.length > 0;
+  const closestCount = showGroups ? Math.min(5, list.length) : 0;
+  const closest = showGroups ? list.slice(0, closestCount) : [];
+  const other = showGroups ? list.slice(closestCount) : list;
+
+  function itemMarkup(loc) {
+    const isActive = loc.id === activeId;
+    const distStr = formatDistance(loc.distance);
+    const currentBadge = isActive ? '<span class="location-sheet-item-current-badge">Current</span>' : '';
+    const itemClass = 'location-sheet-item' + (isActive ? ' is-active' : '') + (isDemoMode ? ' is-demo-disabled' : '');
+    return `
+      <button type="button" class="${itemClass}" data-location-id="${loc.id}" role="option">
+        <div class="location-sheet-item-name-row">
+          <span class="location-sheet-item-name">${loc.name}</span>
+          ${currentBadge}
+        </div>
+        <span class="location-sheet-item-meta">${loc.city}, ${loc.state}</span>
+        ${distStr ? `<span class="location-sheet-item-distance">${distStr}</span>` : ''}
+      </button>`;
+  }
+
+  let html = '';
+  if (showGroups && closest.length > 0) {
+    html += '<p class="location-sheet-group-title">Closest to you</p>';
+    closest.forEach((loc) => { html += itemMarkup(loc); });
+  }
+  if (showGroups && other.length > 0) {
+    html += '<p class="location-sheet-group-title">Other locations</p>';
+    other.forEach((loc) => { html += itemMarkup(loc); });
+  }
+  if (!showGroups) {
+    list.forEach((loc) => { html += itemMarkup(loc); });
+  }
+  listEl.innerHTML = html;
+
+  listEl.querySelectorAll('.location-sheet-item').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (isDemoMode) {
+        showDemoRestrictionTooltip(btn, 'Switching locations is disabled in demo');
+        return;
+      }
       const id = btn.getAttribute('data-location-id');
       if (id) selectLocation(id);
     });
@@ -489,6 +515,7 @@ function renderLocationList(searchQuery) {
 }
 
 function selectLocation(id) {
+  if (isDemoMode) return;
   const loc = LOCATIONS.find((l) => l.id === id);
   if (!loc) return;
   locationState.activeId = id;
@@ -496,12 +523,11 @@ function selectLocation(id) {
     localStorage.setItem(LOCATION_STORAGE_KEY, id);
   } catch (e) {}
   updateLocationUI();
-  closeLocationModal();
+  closeLocationSheet();
   renderHomeCheckins();
 }
 
 function initLocationSwitcher() {
-  if (!isPrototype) return;
   try {
     const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
     if (saved && LOCATIONS.some((l) => l.id === saved)) {
@@ -514,29 +540,28 @@ function initLocationSwitcher() {
   const overlay = $('location-modal-overlay');
   const closeBtn = $('location-modal-close');
   const searchEl = $('location-modal-search');
-  const listEl = $('location-modal-list');
 
   if (trigger) {
     trigger.addEventListener('click', (e) => {
       e.preventDefault();
-      openLocationModal();
+      openLocationSheet();
     });
   }
-  if (closeBtn) closeBtn.addEventListener('click', closeLocationModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeLocationSheet);
   if (overlay) {
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closeLocationModal();
+      if (e.target === overlay) closeLocationSheet();
     });
   }
   if (searchEl) {
     searchEl.addEventListener('input', () => renderLocationList(searchEl.value));
     searchEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLocationModal();
+      if (e.key === 'Escape') closeLocationSheet();
     });
   }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay && overlay.classList.contains('is-open')) {
-      closeLocationModal();
+      closeLocationSheet();
     }
   });
 }
@@ -1829,6 +1854,9 @@ function init() {
   applyFocalPoint();
   syncAttentionAnimations();
 
+  // Location switcher: shared UI for both prototype and demo (demo = no-op on switch)
+  initLocationSwitcher();
+
   // Prototype page: start on app home screen, no tour, no Start Demo; all controls active
   if (isPrototype) {
     document.querySelectorAll('.app-screen').forEach((s) => s.classList.remove('active'));
@@ -1840,7 +1868,6 @@ function init() {
     document.getElementById('tour-bubble')?.classList.add('is-hidden');
     ensurePrototypeControlsEnabled();
     syncAttentionAnimations();
-    initLocationSwitcher();
     initLocationSmartPrompt();
     return;
   }

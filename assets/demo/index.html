@@ -193,6 +193,40 @@
                     </div>
 
                     <div class="home-indicator"></div>
+
+                    <!-- Location Switcher – bottom sheet (contained in app screen) -->
+                    <div class="location-sheet-overlay" id="location-modal-overlay" aria-hidden="true">
+                        <div class="location-sheet" id="location-sheet" role="dialog" aria-labelledby="location-modal-title">
+                            <div class="location-sheet-header">
+                                <h2 id="location-modal-title" class="location-sheet-title">Switch location</h2>
+                                <button type="button" class="location-sheet-close" id="location-modal-close" aria-label="Close">
+                                    <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
+                                </button>
+                            </div>
+                            <div class="location-sheet-search-wrap">
+                                <img src="../../shared/assets/icons/lucide/search.svg" class="lucide-icon lucide-icon-sm location-search-icon" alt="">
+                                <input type="text" class="location-sheet-search" id="location-modal-search" placeholder="Search locations…" autocomplete="off">
+                            </div>
+                            <div class="location-sheet-list" id="location-modal-list" role="listbox">
+                                <!-- Filled by JS: Closest to you / Other locations + items -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Location Prompt (prototype only, contained in app screen) -->
+                    <div class="location-prompt-overlay" id="location-prompt-overlay" aria-hidden="true">
+                        <div class="location-prompt-modal" id="location-prompt-modal" role="dialog" aria-labelledby="location-prompt-title">
+                            <h2 id="location-prompt-title" class="location-prompt-title">Closer location</h2>
+                            <p class="location-prompt-message" id="location-prompt-message">
+                                We noticed <strong id="location-prompt-name"></strong> is closer to your current location.
+                                Would you like to switch?
+                            </p>
+                            <div class="location-prompt-actions">
+                                <button type="button" class="btn btn-secondary" id="location-prompt-keep">Keep current location</button>
+                                <button type="button" class="btn btn-primary" id="location-prompt-switch">Switch</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -440,40 +474,6 @@
   <img src="../../shared/assets/icons/lucide/message-circle.svg" class="lucide-icon lucide-icon-sm" alt="">
   <span>Tour</span>
 </button>
-
-<!-- Location Switch Modal (prototype only) -->
-<div class="location-modal-overlay" id="location-modal-overlay" aria-hidden="true">
-  <div class="location-modal" id="location-modal" role="dialog" aria-labelledby="location-modal-title">
-    <div class="location-modal-header">
-      <h2 id="location-modal-title">Switch location</h2>
-      <button type="button" class="location-modal-close" id="location-modal-close" aria-label="Close">
-        <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
-      </button>
-    </div>
-    <div class="location-modal-search-wrap">
-      <img src="../../shared/assets/icons/lucide/search.svg" class="lucide-icon lucide-icon-sm location-search-icon" alt="">
-      <input type="text" class="location-modal-search" id="location-modal-search" placeholder="Search locations..." autocomplete="off">
-    </div>
-    <div class="location-modal-list" id="location-modal-list" role="listbox">
-      <!-- Filled by JS -->
-    </div>
-  </div>
-</div>
-
-<!-- Smart Location Prompt (prototype only, once per session) -->
-<div class="location-prompt-overlay" id="location-prompt-overlay" aria-hidden="true">
-  <div class="location-prompt-modal" id="location-prompt-modal" role="dialog" aria-labelledby="location-prompt-title">
-    <h2 id="location-prompt-title" class="location-prompt-title">Closer location</h2>
-    <p class="location-prompt-message" id="location-prompt-message">
-      We noticed <strong id="location-prompt-name"></strong> is closer to your current location.
-      Would you like to switch?
-    </p>
-    <div class="location-prompt-actions">
-      <button type="button" class="btn btn-secondary" id="location-prompt-keep">Keep current location</button>
-      <button type="button" class="btn btn-primary" id="location-prompt-switch">Switch</button>
-    </div>
-  </div>
-</div>
 
 <!-- JS loaded via WordPress enqueue (jcp-render.js strips script tags anyway) -->
 

@@ -451,37 +451,39 @@
             opacity: 0.7;
         }
 
-        /* Location Switcher – text + pin + chevron, no pill; secondary to title */
+        /* Location chip in header – compact, does not block title */
         .location-switcher {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 0 4px 4px;
+            gap: 5px;
+            padding: 5px 10px 5px 8px;
             margin: 0;
-            background: transparent;
-            border: none;
-            border-radius: 0;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
             font-size: 13px;
             font-weight: 500;
-            color: #64748b;
+            color: #475569;
             cursor: pointer;
-            transition: color 0.15s ease;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
             -webkit-tap-highlight-color: transparent;
             flex-shrink: 0;
         }
 
         .location-switcher:hover {
-            color: #475569;
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #334155;
         }
 
         .location-switcher:active {
-            color: #334155;
+            background: #cbd5e1;
         }
 
         .location-switcher__icon {
             width: 14px;
             height: 14px;
-            color: #94a3b8;
+            color: #64748b;
             flex-shrink: 0;
         }
 
@@ -504,58 +506,64 @@
             color: #64748b;
         }
 
-        /* Demo: disabled state (visible, no interaction) */
         .location-switcher.is-demo-disabled {
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
-        /* Location Switch Modal */
-        .location-modal-overlay {
-            position: fixed;
+        /* Location Switcher – bottom sheet (contained within app .screen) */
+        .location-sheet-overlay {
+            position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
             z-index: 9998;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
         }
 
-        .location-modal-overlay.is-open {
+        .location-sheet-overlay.is-open {
             opacity: 1;
             visibility: visible;
         }
 
-        .location-modal {
+        .location-sheet {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 85%;
             background: #fff;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 360px;
-            max-height: 80vh;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+            z-index: 9999;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
         }
 
-        .location-modal-header {
+        .location-sheet-overlay.is-open .location-sheet {
+            transform: translateY(0);
+        }
+
+        .location-sheet-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
             border-bottom: 1px solid #e5e7eb;
+            flex-shrink: 0;
         }
 
-        .location-modal-header h2 {
+        .location-sheet-title {
             font-size: 18px;
             font-weight: 700;
             color: #111827;
             margin: 0;
         }
 
-        .location-modal-close {
+        .location-sheet-close {
             background: none;
             border: none;
             padding: 8px;
@@ -564,17 +572,18 @@
             border-radius: 8px;
         }
 
-        .location-modal-close:hover {
+        .location-sheet-close:hover {
             background: #f3f4f6;
             color: #111827;
         }
 
-        .location-modal-search-wrap {
+        .location-sheet-search-wrap {
             padding: 12px 16px;
             position: relative;
+            flex-shrink: 0;
         }
 
-        .location-search-icon {
+        .location-sheet-search-wrap .location-search-icon {
             position: absolute;
             left: 28px;
             top: 50%;
@@ -582,7 +591,7 @@
             color: #9ca3af;
         }
 
-        .location-modal-search {
+        .location-sheet-search {
             width: 100%;
             padding: 10px 12px 10px 36px;
             border: 1px solid #e5e7eb;
@@ -592,28 +601,38 @@
             background: #f9fafb;
         }
 
-        .location-modal-search:focus {
+        .location-sheet-search:focus {
             outline: none;
             border-color: #ff503e;
             background: #fff;
         }
 
-        .location-modal-search::placeholder {
+        .location-sheet-search::placeholder {
             color: #9ca3af;
         }
 
-        .location-modal-list {
+        .location-sheet-list {
             overflow-y: auto;
-            padding: 8px;
+            padding: 8px 12px 16px;
             flex: 1;
             min-height: 200px;
         }
 
-        .location-modal-item {
+        .location-sheet-group-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 12px 4px 6px;
+            margin: 0;
+        }
+
+        .location-sheet-item {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            padding: 14px 16px;
+            padding: 12px 14px;
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.15s ease;
@@ -624,36 +643,59 @@
             font-family: inherit;
         }
 
-        .location-modal-item:hover {
+        .location-sheet-item:hover {
             background: #f3f4f6;
         }
 
-        .location-modal-item.is-active {
-            background: #fff5f4;
-            color: #ff503e;
+        .location-sheet-item.is-active {
+            background: #fef2f2;
         }
 
-        .location-modal-item-name {
+        .location-sheet-item.is-demo-disabled {
+            cursor: default;
+        }
+
+        .location-sheet-item.is-demo-disabled:hover {
+            background: transparent;
+        }
+
+        .location-sheet-item-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .location-sheet-item-name {
             font-size: 15px;
             font-weight: 600;
             color: #111827;
         }
 
-        .location-modal-item-meta {
+        .location-sheet-item-current-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: #ff503e;
+            background: #fff5f4;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .location-sheet-item-meta {
             font-size: 13px;
             color: #6b7280;
             margin-top: 2px;
         }
 
-        .location-modal-item-distance {
+        .location-sheet-item-distance {
             font-size: 12px;
-            color: #9ca3af;
+            color: #94a3b8;
             margin-top: 2px;
         }
 
         /* Smart Location Prompt */
         .location-prompt-overlay {
-            position: fixed;
+            position: absolute;
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
             display: flex;
