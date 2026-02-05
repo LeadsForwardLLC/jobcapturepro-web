@@ -157,7 +157,7 @@
                             <div class="section-title">DESCRIPTION</div>
                             <div class="description-header">
                                 <p class="description-header-label"><img src="../../shared/assets/icons/lucide/zap.svg" class="lucide-icon lucide-icon-sm" alt=""> AI-generated description</p>
-                                <button type="button" class="edit-action-link" onclick="regenerateDescription()"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt=""> Regenerate</button>
+                                <button type="button" class="edit-action-link" id="btnRegenerateDescription" aria-label="Regenerate description"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt=""> Regenerate</button>
                             </div>
                             <textarea id="description-field">Replaced an aging water heater and brought the system up to code. We installed a new high-efficiency unit, verified proper venting, and tested temperature + pressure relief for safe operation. Customer is back to consistent hot water with improved energy performance.</textarea>
                             <div class="auto-save-note"><img src="../../shared/assets/icons/lucide/check.svg" class="lucide-icon lucide-icon-xs" alt=""> Saved Automatically</div>
@@ -350,6 +350,20 @@
                             </div>
                             <div class="location-sheet-list" id="tag-sheet-list" role="listbox">
                                 <!-- Filled by JS: dummy tags -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regenerate description modal -->
+                    <div class="modal-overlay" id="regenerate-modal" aria-hidden="true">
+                        <div class="modal" role="dialog" aria-labelledby="regenerate-modal-title">
+                            <h3 id="regenerate-modal-title" class="modal-title-with-icon"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true"> Regenerate description</h3>
+                            <p class="modal-description">Add an optional prompt to guide how the description should change.</p>
+                            <label for="regenerate-prompt" class="modal-label">Prompt (optional)</label>
+                            <input type="text" id="regenerate-prompt" class="input-field modal-input" placeholder="e.g. Make it more concise, add warranty details…" autocomplete="off">
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-ghost" id="regenerate-modal-cancel">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="regenerate-modal-submit"><img src="../../shared/assets/icons/lucide/refresh-cw.svg" class="lucide-icon lucide-icon-sm" alt=""> Regenerate</button>
                             </div>
                         </div>
                     </div>

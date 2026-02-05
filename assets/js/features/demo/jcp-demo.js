@@ -1728,6 +1728,42 @@ function regenerateDescription() {
   }, 180);
 }
 
+function openRegenerateModal() {
+  const overlay = $('regenerate-modal');
+  const input = $('regenerate-prompt');
+  if (overlay) overlay.classList.add('active');
+  if (overlay) overlay.setAttribute('aria-hidden', 'false');
+  if (input) {
+    input.value = '';
+    setTimeout(() => input.focus(), 100);
+  }
+}
+
+function closeRegenerateModal() {
+  const overlay = $('regenerate-modal');
+  if (overlay) overlay.classList.remove('active');
+  if (overlay) overlay.setAttribute('aria-hidden', 'true');
+}
+
+function initRegenerateModal() {
+  const trigger = $('btnRegenerateDescription');
+  const overlay = $('regenerate-modal');
+  const cancelBtn = $('regenerate-modal-cancel');
+  const submitBtn = $('regenerate-modal-submit');
+  const input = $('regenerate-prompt');
+  if (trigger) trigger.addEventListener('click', openRegenerateModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeRegenerateModal);
+  if (submitBtn) submitBtn.addEventListener('click', () => {
+    regenerateDescription();
+    closeRegenerateModal();
+  });
+  if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) closeRegenerateModal(); });
+  if (input) input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeRegenerateModal();
+    if (e.key === 'Enter') { e.preventDefault(); regenerateDescription(); closeRegenerateModal(); }
+  });
+}
+
 /* =========================================================
    Save / Publish / Social / Review
 ========================================================= */
@@ -2341,6 +2377,7 @@ function init() {
   initLocationSwitcher();
 
   initTagSelector();
+  initRegenerateModal();
 
   // Prototype page: start on app home screen, no tour, no Start Demo; all controls active
   if (isPrototype) {
