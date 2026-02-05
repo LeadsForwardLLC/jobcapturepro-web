@@ -32,8 +32,10 @@ function jcp_core_enqueue_assets(): void {
 
     $is_marketing = $pages['is_home'] || $pages['is_pricing'] || $pages['is_early_access'] || $pages['is_contact'];
 
-    // Always load navigation JS
-    jcp_core_enqueue_script( 'jcp-core-nav', 'js/core/jcp-nav.js' );
+    // Always load navigation JS (skip on prototype - no header/footer)
+    if ( ! $pages['is_prototype'] ) {
+        jcp_core_enqueue_script( 'jcp-core-nav', 'js/core/jcp-nav.js' );
+    }
 
     // UI Library page (internal documentation - shows all components)
     if ( $pages['is_ui_library'] ) {
@@ -135,7 +137,7 @@ function jcp_core_enqueue_assets(): void {
 
     // Load render dispatcher only on app pages (not blog, single, or generic pages)
     $needs_render = $pages['is_home'] || $pages['is_pricing'] || $pages['is_early_access'] || $pages['is_contact']
-        || $pages['is_demo'] || $pages['is_directory'] || $pages['is_company'] || $pages['is_estimate'];
+        || $pages['is_prototype'] || $pages['is_demo'] || $pages['is_directory'] || $pages['is_company'] || $pages['is_estimate'];
     if ( $needs_render ) {
         jcp_core_enqueue_script( $render_handle, 'js/core/jcp-render.js', $render_deps );
         $globals = "window.JCP_ENV = 'live';\n";
@@ -144,7 +146,21 @@ function jcp_core_enqueue_assets(): void {
         wp_add_inline_script( $render_handle, $globals, 'before' );
     }
 
-    // Demo page
+    // App Prototype page - full interactive experience (source of truth)
+    if ( $pages['is_prototype'] ) {
+        jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
+        jcp_core_enqueue_style( 'jcp-core-leaflet', 'demo/leaflet/leaflet.css', [ 'jcp-core-demo' ] );
+        jcp_core_enqueue_script( 'jcp-core-leaflet', 'demo/leaflet/leaflet.js', [ $render_handle ] );
+        jcp_core_enqueue_script( 'jcp-core-demo', 'js/features/demo/jcp-demo.js', [ 'jcp-core-leaflet' ] );
+        wp_localize_script( 'jcp-core-demo', 'JCP_DEMO_EVENT', [
+            'rest_url' => rest_url( 'jcp/v1/demo-event' ),
+        ] );
+        // Prototype mode: no demo flow, no tour, start on app home; full access
+        wp_add_inline_script( 'jcp-core-demo', 'window.JCP_IS_DEMO_MODE = false; window.JCP_IS_PROTOTYPE = true;', 'before' );
+        return;
+    }
+
+    // Demo page - same UI as prototype but with restrictions
     if ( $pages['is_demo'] ) {
         $demo_mode = isset( $_GET['mode'] ) && $_GET['mode'] === 'run'; // phpcs:ignore
         jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css' );
@@ -155,6 +171,8 @@ function jcp_core_enqueue_assets(): void {
             wp_localize_script( 'jcp-core-demo', 'JCP_DEMO_EVENT', [
                 'rest_url' => rest_url( 'jcp/v1/demo-event' ),
             ] );
+            // Demo mode: restricted access
+            wp_add_inline_script( 'jcp-core-demo', 'window.JCP_IS_DEMO_MODE = true;', 'before' );
         } else {
             jcp_core_enqueue_style( 'jcp-core-survey', 'css/pages/survey.css', [ 'jcp-core-demo' ] );
             jcp_core_enqueue_script( 'jcp-core-survey', 'js/pages/survey.js', [ $render_handle ] );

@@ -20,6 +20,165 @@ const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
   : window.location.origin;
 const assetBase = window.JCP_ASSET_BASE || '';
 
+/* =========================
+   Demo Mode Configuration
+   - isPrototype: true = clean app-only page, no tour, no Start Demo screen
+   - isDemoMode: true = restricted demo, false = full prototype
+========================= */
+const isPrototype = window.JCP_IS_PROTOTYPE === true;
+const isDemoMode = window.JCP_IS_DEMO_MODE === true;
+
+// Features disabled in demo mode
+const demoRestrictions = {
+  profileAccess: true,      // Profile button/navigation
+  accountSettings: true,    // Settings access
+  destructiveActions: true, // Delete, archive, etc.
+  locationSwitcher: true,   // Location switching (visible but disabled)
+};
+
+/**
+ * Show a tooltip when a restricted action is attempted in demo mode
+ */
+function showDemoRestrictionTooltip(element, message = 'This action is disabled in the demo') {
+  if (!isDemoMode) return false;
+  
+  // Remove any existing tooltip
+  const existing = document.querySelector('.demo-restriction-tooltip');
+  if (existing) existing.remove();
+  
+  const tooltip = document.createElement('div');
+  tooltip.className = 'demo-restriction-tooltip';
+  tooltip.textContent = message;
+  tooltip.style.cssText = `
+    position: fixed;
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 10000;
+    pointer-events: none;
+    animation: tooltipFade 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  
+  document.body.appendChild(tooltip);
+  
+  // Position near the element
+  const rect = element.getBoundingClientRect();
+  tooltip.style.top = `${rect.top - tooltip.offsetHeight - 8}px`;
+  tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
+  
+  // Auto-remove after delay
+  setTimeout(() => {
+    tooltip.style.opacity = '0';
+    tooltip.style.transition = 'opacity 0.2s ease';
+    setTimeout(() => tooltip.remove(), 200);
+  }, 2000);
+  
+  return true;
+}
+
+/**
+ * Apply demo mode restrictions to UI elements
+ */
+function applyDemoRestrictions() {
+  if (!isDemoMode) return;
+  
+  // Add demo mode indicator
+  const indicator = document.createElement('div');
+  indicator.className = 'demo-mode-indicator';
+  indicator.innerHTML = `
+    <span class="demo-mode-badge">Demo Mode</span>
+    <span class="demo-mode-hint">Some features are restricted</span>
+  `;
+  indicator.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  `;
+  document.body.appendChild(indicator);
+  
+  // Disable profile button
+  const profileBtn = document.getElementById('profile-btn') || document.querySelector('[data-action="profile"]');
+  if (profileBtn && demoRestrictions.profileAccess) {
+    profileBtn.classList.add('is-demo-disabled');
+    profileBtn.style.opacity = '0.5';
+    profileBtn.style.cursor = 'not-allowed';
+    profileBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showDemoRestrictionTooltip(profileBtn, 'Profile access is disabled in demo mode');
+    }, true);
+  }
+  
+  // Disable location switcher (but keep visible)
+  const locationSwitcher = document.getElementById('location-switcher') || document.querySelector('[data-action="switch-location"]');
+  if (locationSwitcher && demoRestrictions.locationSwitcher) {
+    locationSwitcher.classList.add('is-demo-disabled');
+    locationSwitcher.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showDemoRestrictionTooltip(locationSwitcher, 'Location switching is disabled in demo mode');
+    }, true);
+  }
+  
+  // Add CSS for demo disabled state
+  const style = document.createElement('style');
+  style.textContent = `
+    .is-demo-disabled {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
+      pointer-events: auto !important;
+    }
+    .is-demo-disabled * {
+      pointer-events: none;
+    }
+    .demo-restriction-tooltip {
+      animation: tooltipFade 0.2s ease;
+    }
+    @keyframes tooltipFade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .demo-mode-indicator .demo-mode-badge {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .demo-mode-indicator .demo-mode-hint {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+    @media (max-width: 768px) {
+      .demo-mode-indicator {
+        bottom: 80px !important;
+        left: 12px !important;
+        padding: 8px 12px !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// In demo mode, hide location modals (interactive only on prototype)
+if (isDemoMode) {
+  const hide = document.createElement('style');
+  hide.textContent = '#location-modal-overlay, #location-prompt-overlay { display: none !important; }';
+  document.head.appendChild(hide);
+}
+
 function getDemoSessionId() {
   const key = 'jcp_demo_session_id';
   try {
@@ -130,7 +289,7 @@ const state = {
   currentScreen: 'login-screen',
   hasPublished: false,
   guideDisabled: false,
-  isFinalStep: false, // ← ADD THIS
+  isFinalStep: false,
   photoCount: 0,
   metrics: { checkins: 12, posts: 36, reviews: 48 },
   currentDescriptionIndex: 0,
@@ -140,6 +299,27 @@ const state = {
   activeCheckinIndex: null,
   guideHidden: false,
 };
+
+/* ---------------------------
+   Locations (mock data for prototype)
+---------------------------- */
+const LOCATIONS = [
+  { id: 'austin', name: 'Summit Plumbing', city: 'Austin', state: 'TX', lat: 30.2672, lng: -97.7431 },
+  { id: 'round-rock', name: 'Round Rock Service', city: 'Round Rock', state: 'TX', lat: 30.5083, lng: -97.6789 },
+  { id: 'cedar-park', name: 'Cedar Park HVAC', city: 'Cedar Park', state: 'TX', lat: 30.5052, lng: -97.8203 },
+  { id: 'georgetown', name: 'Georgetown Plumbing Co', city: 'Georgetown', state: 'TX', lat: 30.6333, lng: -97.6784 },
+  { id: 'pflugerville', name: 'Pflugerville Pros', city: 'Pflugerville', state: 'TX', lat: 30.4397, lng: -97.6200 },
+  { id: 'san-marcos', name: 'San Marcos Service', city: 'San Marcos', state: 'TX', lat: 29.8833, lng: -97.9414 },
+  { id: 'kyle', name: 'Kyle Contractors', city: 'Kyle', state: 'TX', lat: 29.9891, lng: -97.8772 },
+];
+
+const locationState = {
+  activeId: null,
+  userCoords: null,
+};
+
+const LOCATION_STORAGE_KEY = 'jcp_active_location_id';
+const LOCATION_PROMPT_SHOWN_KEY = 'jcp_location_prompt_shown';
 
 /* ---------------------------
    Guide Content
@@ -201,6 +381,213 @@ function applyPersonalization() {
   }
 }
 
+/* ---------------------------
+   Location Switcher (prototype only)
+---------------------------- */
+function getActiveLocation() {
+  const id = locationState.activeId || LOCATIONS[0].id;
+  return LOCATIONS.find((loc) => loc.id === id) || LOCATIONS[0];
+}
+
+function getLocationDisplay(loc) {
+  return loc ? `${loc.city}, ${loc.state}` : 'Austin, TX';
+}
+
+function updateLocationUI() {
+  const loc = getActiveLocation();
+  const label = document.querySelector('.location-switcher .location-name');
+  if (label) label.textContent = getLocationDisplay(loc);
+}
+
+function haversineMi(lat1, lon1, lat2, lon2) {
+  const R = 3959;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function getLocationsWithDistance(searchQuery) {
+  const q = (searchQuery || '').toLowerCase().trim();
+  let list = LOCATIONS.map((loc) => {
+    const distance = locationState.userCoords
+      ? haversineMi(
+        locationState.userCoords.lat,
+        locationState.userCoords.lng,
+        loc.lat,
+        loc.lng
+      )
+      : null;
+    return { ...loc, distance };
+  });
+  if (q) {
+    list = list.filter(
+      (loc) =>
+        loc.name.toLowerCase().includes(q) ||
+        loc.city.toLowerCase().includes(q) ||
+        loc.state.toLowerCase().includes(q)
+    );
+  }
+  list.sort((a, b) => {
+    if (a.distance != null && b.distance != null) return a.distance - b.distance;
+    if (a.distance != null) return -1;
+    if (b.distance != null) return 1;
+    return a.name.localeCompare(b.name);
+  });
+  return list;
+}
+
+function openLocationModal() {
+  const overlay = $('location-modal-overlay');
+  const listEl = $('location-modal-list');
+  const searchEl = $('location-modal-search');
+  if (!overlay || !listEl) return;
+  searchEl.value = '';
+  renderLocationList('');
+  overlay.classList.add('is-open');
+  overlay.setAttribute('aria-hidden', 'false');
+  if (searchEl) searchEl.focus();
+}
+
+function closeLocationModal() {
+  const overlay = $('location-modal-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('is-open');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+
+function renderLocationList(searchQuery) {
+  const listEl = $('location-modal-list');
+  if (!listEl) return;
+  const activeId = locationState.activeId || LOCATIONS[0].id;
+  const list = getLocationsWithDistance(searchQuery);
+  listEl.innerHTML = list
+    .map(
+      (loc) => {
+        const isActive = loc.id === activeId;
+        const distStr =
+          loc.distance != null ? `${loc.distance.toFixed(1)} mi away` : '';
+        return `
+          <button type="button" class="location-modal-item ${isActive ? 'is-active' : ''}" data-location-id="${loc.id}" role="option">
+            <span class="location-modal-item-name">${loc.name}</span>
+            <span class="location-modal-item-meta">${loc.city}, ${loc.state}</span>
+            ${distStr ? `<span class="location-modal-item-distance">${distStr}</span>` : ''}
+          </button>`;
+      }
+    )
+    .join('');
+  listEl.querySelectorAll('.location-modal-item').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-location-id');
+      if (id) selectLocation(id);
+    });
+  });
+}
+
+function selectLocation(id) {
+  const loc = LOCATIONS.find((l) => l.id === id);
+  if (!loc) return;
+  locationState.activeId = id;
+  try {
+    localStorage.setItem(LOCATION_STORAGE_KEY, id);
+  } catch (e) {}
+  updateLocationUI();
+  closeLocationModal();
+  renderHomeCheckins();
+}
+
+function initLocationSwitcher() {
+  if (!isPrototype) return;
+  try {
+    const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
+    if (saved && LOCATIONS.some((l) => l.id === saved)) {
+      locationState.activeId = saved;
+    }
+  } catch (e) {}
+  updateLocationUI();
+
+  const trigger = $('location-switcher');
+  const overlay = $('location-modal-overlay');
+  const closeBtn = $('location-modal-close');
+  const searchEl = $('location-modal-search');
+  const listEl = $('location-modal-list');
+
+  if (trigger) {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLocationModal();
+    });
+  }
+  if (closeBtn) closeBtn.addEventListener('click', closeLocationModal);
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeLocationModal();
+    });
+  }
+  if (searchEl) {
+    searchEl.addEventListener('input', () => renderLocationList(searchEl.value));
+    searchEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLocationModal();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay && overlay.classList.contains('is-open')) {
+      closeLocationModal();
+    }
+  });
+}
+
+function showSmartLocationPrompt(closerLocation) {
+  if (!isPrototype || isDemoMode) return;
+  try {
+    if (sessionStorage.getItem(LOCATION_PROMPT_SHOWN_KEY)) return;
+  } catch (e) {}
+  const overlay = $('location-prompt-overlay');
+  const nameEl = $('location-prompt-name');
+  const keepBtn = $('location-prompt-keep');
+  const switchBtn = $('location-prompt-switch');
+  if (!overlay || !nameEl || !closerLocation) return;
+  nameEl.textContent = closerLocation.name;
+  overlay.classList.add('is-open');
+  overlay.setAttribute('aria-hidden', 'false');
+  sessionStorage.setItem(LOCATION_PROMPT_SHOWN_KEY, '1');
+  const closePrompt = () => {
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+  };
+  if (keepBtn) keepBtn.addEventListener('click', closePrompt, { once: true });
+  if (switchBtn) switchBtn.addEventListener('click', () => {
+    selectLocation(closerLocation.id);
+    closePrompt();
+  }, { once: true });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePrompt(); }, { once: true });
+}
+
+function maybeShowSmartLocationPrompt() {
+  if (!isPrototype || isDemoMode) return;
+  const active = getActiveLocation();
+  const list = getLocationsWithDistance('');
+  const closest = list[0];
+  if (!closest || closest.id === active.id) return;
+  if (locationState.userCoords == null) return;
+  showSmartLocationPrompt(closest);
+}
+
+function initLocationSmartPrompt() {
+  if (!isPrototype || isDemoMode) return;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      locationState.userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      setTimeout(maybeShowSmartLocationPrompt, 600);
+    },
+    () => {},
+    { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+  );
+}
 
 /* ---------------------------
    Utilities
@@ -386,14 +773,15 @@ function setTourStep(stepKey) {
     jcpDemoTrack('demo_step_viewed', stepNum);
   }
   updateTourNextLabel(getNextLabelForStep(stepKey));
-  // Disable back buttons during guided steps (prevents breaking the flow)
-  lockBackButtons(['step2','step3','step4','step5'].includes(stepKey));
+  // Disable back buttons during guided steps (prevents breaking the flow) — skip on prototype
+  if (!isPrototype) {
+    lockBackButtons(['step2','step3','step4','step5'].includes(stepKey));
+  }
 
-    //Control Request Review button by tour step
+    // Control Request Review button by tour step — on prototype always enabled
     const requestReviewBtn = document.getElementById('btnRequestReview');
-
     if (requestReviewBtn) {
-      const enabled = stepKey === 'step5';
+      const enabled = isPrototype || stepKey === 'step5';
       requestReviewBtn.disabled = !enabled;
       requestReviewBtn.classList.toggle('is-disabled', !enabled);
     }
@@ -577,12 +965,36 @@ function syncAttentionAnimations() {
    Screens / Navigation
 ========================================================= */
 function lockBackButtons(lock) {
+  if (isPrototype) lock = false; // Prototype: all controls always usable
   const buttons = ['btnBackToHome', 'btnEditBack'];
   buttons.forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.classList.toggle('is-disabled', lock);
     btn.disabled = lock;
+  });
+}
+
+/** On prototype: ensure all buttons, back arrows, and controls are active and usable */
+function ensurePrototypeControlsEnabled() {
+  if (!isPrototype) return;
+  lockBackButtons(false);
+  const requestReviewBtn = document.getElementById('btnRequestReview');
+  if (requestReviewBtn) {
+    requestReviewBtn.disabled = false;
+    requestReviewBtn.classList.remove('is-disabled');
+  }
+  const fab = document.getElementById('fabNewCheckin');
+  if (fab) {
+    fab.classList.remove('is-disabled');
+    fab.disabled = false;
+  }
+  document.querySelectorAll('.home-checkin-item').forEach((el) => {
+    el.classList.remove('is-disabled');
+  });
+  document.querySelectorAll('.back-btn').forEach((btn) => {
+    btn.classList.remove('is-disabled');
+    btn.disabled = false;
   });
 }
 
@@ -1411,8 +1823,27 @@ function init() {
   wireControls();
   wirePostDemoPanel();
 
+  // Apply demo mode restrictions if in demo mode (not on prototype)
+  applyDemoRestrictions();
+
   applyFocalPoint();
   syncAttentionAnimations();
+
+  // Prototype page: start on app home screen, no tour, no Start Demo; all controls active
+  if (isPrototype) {
+    document.querySelectorAll('.app-screen').forEach((s) => s.classList.remove('active'));
+    const homeScreen = document.getElementById('home-screen');
+    if (homeScreen) homeScreen.classList.add('active');
+    state.currentScreen = 'home-screen';
+    renderHomeCheckins();
+    document.getElementById('tour-float')?.classList.add('is-hidden');
+    document.getElementById('tour-bubble')?.classList.add('is-hidden');
+    ensurePrototypeControlsEnabled();
+    syncAttentionAnimations();
+    initLocationSwitcher();
+    initLocationSmartPrompt();
+    return;
+  }
 
   const returnState = readReturnState();
   if (returnState) {
@@ -1729,3 +2160,11 @@ window.closeReviewDialog = closeReviewDialog;
 window.sendReviewRequest = sendReviewRequest;
 window.openCheckinForEdit = openCheckinForEdit;
 window.advanceDemo = advanceDemo;
+
+// Demo / prototype mode utilities
+window.JCP_DEMO = {
+  isPrototype: isPrototype,
+  isDemoMode: isDemoMode,
+  showRestrictionTooltip: showDemoRestrictionTooltip,
+  restrictions: demoRestrictions
+};

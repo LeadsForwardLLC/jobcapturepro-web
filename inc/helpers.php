@@ -106,6 +106,7 @@ function jcp_core_get_page_detection(): array {
 
     return [
         'is_home'         => is_front_page() || $path === '' || $path === 'home',
+        'is_prototype'    => is_page_template( 'page-prototype.php' ) || is_page( 'prototype' ) || $path === 'prototype',
         'is_demo'         => is_page_template( 'page-demo.php' ) || is_page( 'demo' ) || $path === 'demo',
         'is_pricing'      => is_page_template( 'page-pricing.php' ) || is_page( 'pricing' ) || $path === 'pricing',
         'is_early_access'         => is_page_template( 'page-early-access.php' ) || is_page( 'early-access' ) || $path === 'early-access',

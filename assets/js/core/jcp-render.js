@@ -48,6 +48,7 @@
       }
       console.warn('JCP render: renderContact is not available');
       return;
+    case 'prototype':
     case 'demo':
       templateUrl = `${assetBase}/demo/index.html`;
       break;
@@ -157,7 +158,7 @@
         document.body.appendChild(script);
       });
 
-      if (page === 'demo' && typeof window.initDemo === 'function') {
+      if ((page === 'demo' || page === 'prototype') && typeof window.initDemo === 'function') {
         window.initDemo();
       }
       if (page === 'directory' && typeof window.initDirectory === 'function') {
