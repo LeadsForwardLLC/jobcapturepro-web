@@ -257,6 +257,14 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_script( 'jcp-core-estimate', 'js/features/estimate/estimate-builder.js', [ 'jcp-core-analytics', 'jcp-core-requests' ] );
         return;
     }
+
+    // WP Plugin Prototype – map + check-in slider + Powered by footer (demo content)
+    if ( $pages['is_wp_plugin_prototype'] ) {
+        jcp_core_enqueue_style( 'jcp-core-sections', 'css/sections.css', [ 'jcp-core-components' ] );
+        jcp_core_enqueue_style( 'jcp-core-wp-plugin-prototype', 'css/pages/wp-plugin-prototype.css', [ 'jcp-core-sections' ] );
+        jcp_core_enqueue_script( 'jcp-core-wp-plugin-prototype', 'js/pages/wp-plugin-prototype.js' );
+        return;
+    }
 }
 
 add_action( 'wp_enqueue_scripts', 'jcp_core_enqueue_assets' );

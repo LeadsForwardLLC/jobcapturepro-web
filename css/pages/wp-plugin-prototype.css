@@ -1,0 +1,346 @@
+/**
+ * WP Plugin Prototype – map, check-in slider (3 at a time), Powered by footer.
+ * Uses JCP design tokens and existing branding.
+ */
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.jcp-wp-plugin-prototype {
+  padding-bottom: 0;
+}
+
+.jcp-plugin-hero {
+  padding: var(--jcp-space-5xl) 0 var(--jcp-space-4xl);
+  text-align: center;
+}
+
+.jcp-plugin-hero__title {
+  font-size: var(--jcp-font-size-3xl);
+  font-weight: var(--jcp-font-weight-bold);
+  color: var(--jcp-color-text-primary);
+  line-height: var(--jcp-line-height-tight);
+  margin: 0 0 var(--jcp-space-md);
+}
+
+@media (min-width: 768px) {
+  .jcp-plugin-hero__title {
+    font-size: var(--jcp-font-size-4xl);
+  }
+}
+
+.jcp-plugin-hero__intro {
+  font-size: var(--jcp-font-size-base);
+  line-height: var(--jcp-line-height-relaxed);
+  color: var(--jcp-color-text-secondary);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   MAP
+   ========================================================= */
+.jcp-plugin-map-wrap {
+  width: 100%;
+  padding: 0 var(--jcp-space-lg) var(--jcp-space-4xl);
+}
+
+.jcp-plugin-map {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: var(--jcp-radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.jcp-plugin-map__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+  object-fit: cover;
+  min-height: 320px;
+}
+
+.jcp-plugin-map__pins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.jcp-plugin-map__pin {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  margin-top: -12px;
+  background: var(--jcp-color-primary);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.jcp-plugin-map__pin:nth-child(even) {
+  background: var(--jcp-color-secondary);
+}
+
+/* =========================================================
+   SLIDER SECTION
+   ========================================================= */
+.jcp-plugin-slider-section {
+  padding: 0 0 var(--jcp-space-6xl);
+}
+
+.jcp-plugin-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-md);
+}
+
+.jcp-plugin-slider__btn {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--jcp-color-border);
+  background: var(--jcp-color-bg-primary);
+  color: var(--jcp-color-text-primary);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.jcp-plugin-slider__btn:hover:not(:disabled) {
+  background: var(--jcp-color-bg-secondary);
+  border-color: var(--jcp-color-primary);
+  color: var(--jcp-color-primary);
+  transform: scale(1.05);
+}
+
+.jcp-plugin-slider__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.jcp-plugin-slider__chevron {
+  display: block;
+}
+
+.jcp-plugin-slider__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.jcp-plugin-slider__track {
+  display: flex;
+  gap: var(--jcp-space-lg);
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+/* Card width and step are set by JS via --card-width and --card-step */
+.jcp-plugin-card {
+  flex: 0 0 var(--card-width, 300px);
+  min-width: 0;
+  background: var(--jcp-color-bg-primary);
+  border: 1px solid var(--jcp-color-border);
+  border-radius: var(--jcp-radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.jcp-plugin-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--jcp-color-border);
+}
+
+/* =========================================================
+   CARD GALLERY (per-checkin image carousel)
+   ========================================================= */
+.jcp-plugin-card__gallery {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 400 / 260;
+  overflow: hidden;
+  background: var(--jcp-color-bg-tertiary);
+}
+
+.jcp-plugin-card__gallery-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.jcp-plugin-card__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.jcp-plugin-card__slide.is-active {
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+}
+
+.jcp-plugin-card__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jcp-plugin-card__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--jcp-color-text-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, transform 0.15s ease;
+  z-index: 2;
+}
+
+.jcp-plugin-card__nav:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.jcp-plugin-card__nav--prev {
+  left: var(--jcp-space-sm);
+}
+
+.jcp-plugin-card__nav--next {
+  right: var(--jcp-space-sm);
+}
+
+.jcp-plugin-card__dots {
+  position: absolute;
+  bottom: var(--jcp-space-sm);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.jcp-plugin-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.jcp-plugin-card__dot:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.jcp-plugin-card__dot.is-active {
+  background: #fff;
+  transform: scale(1.2);
+}
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+.jcp-plugin-card__body {
+  padding: var(--jcp-space-lg);
+}
+
+.jcp-plugin-card__description {
+  font-size: var(--jcp-font-size-sm);
+  line-height: var(--jcp-line-height-relaxed);
+  color: var(--jcp-color-text-primary);
+  margin: 0 0 var(--jcp-space-md);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.jcp-plugin-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--jcp-space-sm) var(--jcp-space-md);
+  font-size: var(--jcp-font-size-xs);
+  color: var(--jcp-color-text-secondary);
+}
+
+.jcp-plugin-card__date,
+.jcp-plugin-card__location {
+  white-space: nowrap;
+}
+
+/* =========================================================
+   FOOTER – Powered by JobCapturePro
+   ========================================================= */
+.jcp-plugin-footer {
+  padding: var(--jcp-space-xl) 0;
+  background: var(--jcp-color-bg-secondary);
+  border-top: 1px solid var(--jcp-color-border-light);
+}
+
+.jcp-plugin-footer__text {
+  text-align: center;
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  margin: 0;
+}
+
+.jcp-plugin-footer__link {
+  color: var(--jcp-color-primary);
+  font-weight: var(--jcp-font-weight-semibold);
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.jcp-plugin-footer__link:hover {
+  color: var(--jcp-color-primary-dark);
+  text-decoration: underline;
+}
+
+/* =========================================================
+   RESPONSIVE – show fewer cards on small screens
+   ========================================================= */
+@media (max-width: 1023px) {
+  .jcp-plugin-card {
+    flex: 0 0 var(--card-width-md, 280px);
+  }
+}
+
+@media (max-width: 639px) {
+  .jcp-plugin-slider__btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .jcp-plugin-card {
+    flex: 0 0 var(--card-width-sm, 100%);
+  }
+
+  .jcp-plugin-card__description {
+    -webkit-line-clamp: 3;
+  }
+}
