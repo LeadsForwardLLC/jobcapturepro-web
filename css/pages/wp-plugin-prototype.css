@@ -12,10 +12,6 @@
   overflow-x: hidden;
 }
 
-.jcp-wp-plugin-prototype .jcp-container {
-  max-width: 1140px;
-}
-
 .jcp-plugin-hero {
   padding: var(--jcp-space-5xl) 0 var(--jcp-space-4xl);
   text-align: center;
