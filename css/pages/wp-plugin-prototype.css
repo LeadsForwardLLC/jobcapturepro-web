@@ -8,6 +8,8 @@
    ========================================================= */
 .jcp-wp-plugin-prototype {
   padding-bottom: 0;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .jcp-plugin-hero {
@@ -94,7 +96,6 @@
 
 .jcp-plugin-slider {
   position: relative;
-  padding: 0 56px;
 }
 
 .jcp-plugin-slider__btn {
@@ -132,11 +133,11 @@
 }
 
 .jcp-plugin-slider__btn--prev {
-  left: 0;
+  left: calc(-1 * (48px + var(--jcp-space-sm)));
 }
 
 .jcp-plugin-slider__btn--next {
-  right: 0;
+  right: calc(-1 * (48px + var(--jcp-space-sm)));
 }
 
 .jcp-plugin-slider__viewport {
@@ -392,8 +393,12 @@
    RESPONSIVE – show fewer cards on small screens
    ========================================================= */
 @media (max-width: 1023px) {
-  .jcp-plugin-slider {
-    padding: 0 48px;
+  .jcp-plugin-slider__btn--prev {
+    left: 0;
+  }
+
+  .jcp-plugin-slider__btn--next {
+    right: 0;
   }
 
   .jcp-plugin-card {
@@ -407,8 +412,12 @@
     height: 40px;
   }
 
-  .jcp-plugin-slider {
-    padding: 0 44px;
+  .jcp-plugin-slider__btn--prev {
+    left: 0;
+  }
+
+  .jcp-plugin-slider__btn--next {
+    right: 0;
   }
 
   .jcp-plugin-card {
