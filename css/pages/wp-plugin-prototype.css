@@ -14,28 +14,38 @@
 
 /* Keep global header from overflowing at medium widths on this page */
 @media (max-width: 1240px) {
-  body.page-template-page-wp-plugin-prototype .directory-header {
+  body.page-template-page-wp-plugin-prototype .directory-header,
+  body.page-wp-plugin-prototype .directory-header,
+  body:has(.jcp-wp-plugin-prototype) .directory-header {
     padding-left: var(--jcp-space-lg) !important;
     padding-right: var(--jcp-space-lg) !important;
     gap: var(--jcp-space-md) !important;
   }
 
-  body.page-template-page-wp-plugin-prototype .directory-header .header-nav {
+  body.page-template-page-wp-plugin-prototype .directory-header .header-nav,
+  body.page-wp-plugin-prototype .directory-header .header-nav,
+  body:has(.jcp-wp-plugin-prototype) .directory-header .header-nav {
     gap: var(--jcp-space-lg);
   }
 
-  body.page-template-page-wp-plugin-prototype .directory-header .header-actions .btn {
+  body.page-template-page-wp-plugin-prototype .directory-header .header-actions .btn,
+  body.page-wp-plugin-prototype .directory-header .header-actions .btn,
+  body:has(.jcp-wp-plugin-prototype) .directory-header .header-actions .btn {
     padding: var(--jcp-space-sm) var(--jcp-space-md);
     font-size: var(--jcp-font-size-sm);
   }
 }
 
 @media (max-width: 1080px) {
-  body.page-template-page-wp-plugin-prototype .directory-header .header-actions .btn-secondary {
+  body.page-template-page-wp-plugin-prototype .directory-header .header-actions .btn-secondary,
+  body.page-wp-plugin-prototype .directory-header .header-actions .btn-secondary,
+  body:has(.jcp-wp-plugin-prototype) .directory-header .header-actions .btn-secondary {
     display: none;
   }
 
-  body.page-template-page-wp-plugin-prototype .directory-header .header-nav {
+  body.page-template-page-wp-plugin-prototype .directory-header .header-nav,
+  body.page-wp-plugin-prototype .directory-header .header-nav,
+  body:has(.jcp-wp-plugin-prototype) .directory-header .header-nav {
     gap: var(--jcp-space-md);
   }
 }
