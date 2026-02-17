@@ -140,12 +140,10 @@ get_header();
 
 	<footer class="jcp-plugin-footer">
 		<div class="jcp-container">
-			<div class="jcp-plugin-footer__pill">
+			<a href="https://jobcapturepro.com" target="_blank" rel="noopener noreferrer" class="jcp-plugin-footer__pill" aria-label="Powered by JobCapturePro">
 				<span class="jcp-plugin-footer__text">Powered by</span>
-				<a href="https://jobcapturepro.com" target="_blank" rel="noopener noreferrer" class="jcp-plugin-footer__link" aria-label="Powered by JobCapturePro">
-					<img src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png" alt="JobCapturePro" class="jcp-plugin-footer__logo" width="129" height="31" loading="lazy">
-				</a>
-			</div>
+				<img src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png" alt="JobCapturePro Logo" class="jcp-plugin-footer__logo" width="129" height="31" loading="lazy">
+			</a>
 		</div>
 	</footer>
 </main>
