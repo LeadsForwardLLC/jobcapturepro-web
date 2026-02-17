@@ -42,17 +42,16 @@
    ========================================================= */
 .jcp-plugin-map-wrap {
   width: 100%;
-  padding: 0 var(--jcp-space-lg) var(--jcp-space-4xl);
+  padding: 0 0 var(--jcp-space-lg);
 }
 
 .jcp-plugin-map {
   position: relative;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   border-radius: var(--jcp-radius-lg, 12px);
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .jcp-plugin-map__img {
@@ -90,18 +89,18 @@
    SLIDER SECTION
    ========================================================= */
 .jcp-plugin-slider-section {
-  padding: 0 0 var(--jcp-space-6xl);
+  padding: 0 0 var(--jcp-space-md);
 }
 
 .jcp-plugin-slider {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--jcp-space-md);
+  padding: 0 56px;
 }
 
 .jcp-plugin-slider__btn {
-  flex-shrink: 0;
+  position: absolute;
+  top: 50%;
+  z-index: 4;
   width: 48px;
   height: 48px;
   display: inline-flex;
@@ -112,6 +111,7 @@
   background: var(--jcp-color-bg-primary);
   color: var(--jcp-color-text-primary);
   cursor: pointer;
+  transform: translateY(-50%);
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
@@ -119,7 +119,7 @@
   background: var(--jcp-color-bg-secondary);
   border-color: var(--jcp-color-primary);
   color: var(--jcp-color-primary);
-  transform: scale(1.05);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .jcp-plugin-slider__btn:disabled {
@@ -131,8 +131,16 @@
   display: block;
 }
 
+.jcp-plugin-slider__btn--prev {
+  left: 0;
+}
+
+.jcp-plugin-slider__btn--next {
+  right: 0;
+}
+
 .jcp-plugin-slider__viewport {
-  flex: 1;
+  width: 100%;
   min-width: 0;
   overflow: hidden;
 }
@@ -152,13 +160,14 @@
   border: 1px solid var(--jcp-color-border);
   border-radius: var(--jcp-radius-lg, 12px);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 2px 8px rgba(16, 24, 40, 0.04);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .jcp-plugin-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-color: var(--jcp-color-border);
+  transform: translateY(-2px);
+  border-color: #d7dbe2;
+  box-shadow: 0 8px 22px rgba(16, 24, 40, 0.10);
 }
 
 /* =========================================================
@@ -269,23 +278,65 @@
 }
 
 .jcp-plugin-card__description {
-  font-size: var(--jcp-font-size-sm);
-  line-height: var(--jcp-line-height-relaxed);
+  font-size: 17px;
+  line-height: 1.6;
   color: var(--jcp-color-text-primary);
-  margin: 0 0 var(--jcp-space-md);
+  margin: 0 0 var(--jcp-space-sm);
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+.jcp-plugin-card__description.is-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
+  overflow: visible;
+}
+
+.jcp-plugin-card__toggle {
+  border: 0;
+  background: transparent;
+  color: var(--jcp-color-primary);
+  font-size: var(--jcp-font-size-sm);
+  font-weight: var(--jcp-font-weight-semibold);
+  padding: 0;
+  margin: 0 0 var(--jcp-space-md);
+  cursor: pointer;
+}
+
+.jcp-plugin-card__toggle:hover {
+  text-decoration: underline;
+}
+
 .jcp-plugin-card__meta {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--jcp-space-sm) var(--jcp-space-md);
-  font-size: var(--jcp-font-size-xs);
+  justify-content: space-between;
+  gap: var(--jcp-space-sm);
+  padding-top: var(--jcp-space-md);
+  border-top: 1px solid var(--jcp-color-border);
+  font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
+}
+
+.jcp-plugin-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.jcp-plugin-card__meta-icon {
+  color: var(--jcp-color-text-tertiary);
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.jcp-plugin-card:hover .jcp-plugin-card__meta-icon {
+  color: var(--jcp-color-primary);
 }
 
 .jcp-plugin-card__date,
@@ -293,38 +344,58 @@
   white-space: nowrap;
 }
 
+.jcp-plugin-card__location {
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-text-primary);
+}
+
 /* =========================================================
    FOOTER – Powered by JobCapturePro
    ========================================================= */
 .jcp-plugin-footer {
-  padding: var(--jcp-space-xl) 0;
-  background: var(--jcp-color-bg-secondary);
-  border-top: 1px solid var(--jcp-color-border-light);
+  padding: 0 0 var(--jcp-space-xl);
+  background: transparent;
+  border-top: 0;
+  text-align: center;
+}
+
+.jcp-plugin-footer__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jcp-space-sm);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--jcp-color-bg-tertiary);
+  border: 1px solid var(--jcp-color-border);
+  margin: 0 auto;
 }
 
 .jcp-plugin-footer__text {
-  text-align: center;
-  font-size: var(--jcp-font-size-sm);
+  font-size: var(--jcp-font-size-xs);
   color: var(--jcp-color-text-secondary);
   margin: 0;
 }
 
 .jcp-plugin-footer__link {
-  color: var(--jcp-color-primary);
-  font-weight: var(--jcp-font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
 }
 
-.jcp-plugin-footer__link:hover {
-  color: var(--jcp-color-primary-dark);
-  text-decoration: underline;
+.jcp-plugin-footer__logo {
+  display: block;
+  height: 16px;
+  width: auto;
 }
 
 /* =========================================================
    RESPONSIVE – show fewer cards on small screens
    ========================================================= */
 @media (max-width: 1023px) {
+  .jcp-plugin-slider {
+    padding: 0 48px;
+  }
+
   .jcp-plugin-card {
     flex: 0 0 var(--card-width-md, 280px);
   }
@@ -336,11 +407,22 @@
     height: 40px;
   }
 
+  .jcp-plugin-slider {
+    padding: 0 44px;
+  }
+
   .jcp-plugin-card {
     flex: 0 0 var(--card-width-sm, 100%);
   }
 
   .jcp-plugin-card__description {
+    font-size: 16px;
     -webkit-line-clamp: 3;
+  }
+
+  .jcp-plugin-card__meta {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: var(--jcp-space-sm) var(--jcp-space-md);
   }
 }

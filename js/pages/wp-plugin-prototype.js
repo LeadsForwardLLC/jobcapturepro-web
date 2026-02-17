@@ -19,7 +19,6 @@
     if (vw < 1024) return 2;
     return 3;
   }
-  var cardsVisible = 3;
 
   function getViewportWidth(el) {
     return el && el.offsetWidth ? el.offsetWidth : 0;
@@ -27,16 +26,21 @@
 
   function setSliderVars() {
     if (!sliderViewport || !sliderTrack) return;
-    cardsVisible = getCardsVisible();
+    var cardsVisible = getCardsVisible();
     var vw = getViewportWidth(sliderViewport);
     if (vw <= 0) return;
+
     var cardWidth = (vw - (cardsVisible - 1) * gap) / cardsVisible;
     var step = cardWidth + gap;
+
     sliderTrack.style.setProperty('--card-width', cardWidth + 'px');
     sliderTrack.style.setProperty('--card-step', step + 'px');
+
     totalCards = sliderTrack.querySelectorAll('.jcp-plugin-card').length;
+    currentIndex = Math.max(0, Math.min(currentIndex, Math.max(0, totalCards - cardsVisible)));
+
     updateSliderPosition();
-    updateSliderButtons();
+    updateSliderButtons(cardsVisible);
   }
 
   function updateSliderPosition() {
@@ -45,39 +49,53 @@
     sliderTrack.style.transform = 'translateX(-' + currentIndex * step + 'px)';
   }
 
-  function updateSliderButtons() {
+  function updateSliderButtons(cardsVisible) {
+    var visible = cardsVisible || getCardsVisible();
     if (sliderPrev) sliderPrev.disabled = currentIndex <= 0;
-    if (sliderNext) sliderNext.disabled = totalCards <= cardsVisible || currentIndex >= totalCards - cardsVisible;
+    if (sliderNext) sliderNext.disabled = totalCards <= visible || currentIndex >= totalCards - visible;
   }
 
   function goPrev() {
     if (currentIndex <= 0) return;
-    currentIndex--;
+    currentIndex -= 1;
     updateSliderPosition();
     updateSliderButtons();
   }
 
   function goNext() {
-    if (totalCards <= cardsVisible || currentIndex >= totalCards - cardsVisible) return;
-    currentIndex++;
+    var visible = getCardsVisible();
+    if (totalCards <= visible || currentIndex >= totalCards - visible) return;
+    currentIndex += 1;
     updateSliderPosition();
-    updateSliderButtons();
+    updateSliderButtons(visible);
   }
 
-  if (sliderPrev) sliderPrev.addEventListener('click', goPrev);
-  if (sliderNext) sliderNext.addEventListener('click', goNext);
+  function initDescriptionToggles() {
+    document.querySelectorAll('.jcp-plugin-card').forEach(function (card) {
+      var text = card.querySelector('[data-desc-text]');
+      var toggle = card.querySelector('[data-desc-toggle]');
+      if (!text || !toggle) return;
 
-  var resizeTimeout;
-  window.addEventListener('resize', function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(function () {
-      if (!sliderViewport) return;
-      var vw = getViewportWidth(sliderViewport);
-      if (vw <= 0) return;
-      cardsVisible = getCardsVisible();
-      setSliderVars();
-    }, 100);
-  });
+      if (!toggle.dataset.bound) {
+        toggle.addEventListener('click', function () {
+          var expanded = text.classList.toggle('is-expanded');
+          toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+          toggle.textContent = expanded ? 'Show less' : 'Read more';
+        });
+        toggle.dataset.bound = '1';
+      }
+
+      // If card is expanded, keep button visible.
+      if (text.classList.contains('is-expanded')) {
+        toggle.hidden = false;
+        return;
+      }
+
+      requestAnimationFrame(function () {
+        toggle.hidden = text.scrollHeight <= text.clientHeight + 2;
+      });
+    });
+  }
 
   // Per-card image carousels
   document.querySelectorAll('.jcp-plugin-card__gallery[data-carousel]').forEach(function (gallery) {
@@ -92,26 +110,40 @@
       if (i < 0) i = total - 1;
       if (i >= total) i = 0;
       active = i;
-      slides.forEach(function (s, idx) {
-        s.classList.toggle('is-active', idx === active);
+      slides.forEach(function (slide, idx) {
+        slide.classList.toggle('is-active', idx === active);
       });
-      dots.forEach(function (d, idx) {
-        d.classList.toggle('is-active', idx === active);
+      dots.forEach(function (dot, idx) {
+        dot.classList.toggle('is-active', idx === active);
       });
     }
 
     if (prevBtn) prevBtn.addEventListener('click', function () { setActive(active - 1); });
     if (nextBtn) nextBtn.addEventListener('click', function () { setActive(active + 1); });
-    dots.forEach(function (d, idx) {
-      d.addEventListener('click', function () { setActive(idx); });
+    dots.forEach(function (dot, idx) {
+      dot.addEventListener('click', function () { setActive(idx); });
     });
+  });
+
+  if (sliderPrev) sliderPrev.addEventListener('click', goPrev);
+  if (sliderNext) sliderNext.addEventListener('click', goNext);
+
+  var resizeTimeout;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function () {
+      setSliderVars();
+      initDescriptionToggles();
+    }, 100);
   });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       setSliderVars();
+      initDescriptionToggles();
     });
   } else {
     setSliderVars();
+    initDescriptionToggles();
   }
 })();

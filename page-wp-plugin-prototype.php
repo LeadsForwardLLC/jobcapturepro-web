@@ -73,7 +73,7 @@ get_header();
 		<p class="jcp-plugin-hero__intro">Take a look through our recently completed projects to see real work finished across the area. Each project shows our approach to planning, installation, and respect for your home.</p>
 	</section>
 
-	<section class="jcp-plugin-map-wrap" aria-label="Project locations">
+	<section class="jcp-plugin-map-wrap jcp-container" aria-label="Project locations">
 		<div class="jcp-plugin-map" id="jcp-plugin-map">
 			<div class="jcp-plugin-map__pins" id="jcp-plugin-map-pins" aria-hidden="true">
 				<span class="jcp-plugin-map__pin" style="left: 28%; top: 42%;" aria-hidden="true"></span>
@@ -83,7 +83,7 @@ get_header();
 				<span class="jcp-plugin-map__pin" style="left: 45%; top: 48%;" aria-hidden="true"></span>
 				<span class="jcp-plugin-map__pin" style="left: 32%; top: 58%;" aria-hidden="true"></span>
 			</div>
-			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/image-dc148927-57a8-4172-8a25-ee63735be59a.png' ); ?>" alt="Map of service area" class="jcp-plugin-map__img" width="1200" height="500" loading="lazy">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/map-033d2dbf-ce0f-41eb-bbf8-2056273673dd.png' ); ?>" alt="Map of service area" class="jcp-plugin-map__img" width="1200" height="500" loading="lazy">
 		</div>
 	</section>
 
@@ -115,10 +115,17 @@ get_header();
 								<?php endif; ?>
 							</div>
 							<div class="jcp-plugin-card__body">
-								<p class="jcp-plugin-card__description"><?php echo esc_html( $checkin['description'] ); ?></p>
+								<p class="jcp-plugin-card__description" data-desc-text><?php echo esc_html( $checkin['description'] ); ?></p>
+								<button type="button" class="jcp-plugin-card__toggle" data-desc-toggle hidden aria-expanded="false">Read more</button>
 								<div class="jcp-plugin-card__meta">
-									<span class="jcp-plugin-card__date"><?php echo esc_html( $checkin['date'] ); ?></span>
-									<span class="jcp-plugin-card__location"><?php echo esc_html( $checkin['location'] ); ?></span>
+									<span class="jcp-plugin-card__meta-item jcp-plugin-card__date">
+										<svg class="jcp-plugin-card__meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg>
+										<?php echo esc_html( $checkin['date'] ); ?>
+									</span>
+									<span class="jcp-plugin-card__meta-item jcp-plugin-card__location">
+										<svg class="jcp-plugin-card__meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+										<?php echo esc_html( $checkin['location'] ); ?>
+									</span>
 								</div>
 							</div>
 						</article>
@@ -133,9 +140,12 @@ get_header();
 
 	<footer class="jcp-plugin-footer">
 		<div class="jcp-container">
-			<p class="jcp-plugin-footer__text">
-				Powered by <a href="https://jobcapturepro.com" target="_blank" rel="noopener noreferrer" class="jcp-plugin-footer__link">JobCapturePro</a>
-			</p>
+			<div class="jcp-plugin-footer__pill">
+				<span class="jcp-plugin-footer__text">Powered by</span>
+				<a href="https://jobcapturepro.com" target="_blank" rel="noopener noreferrer" class="jcp-plugin-footer__link" aria-label="Powered by JobCapturePro">
+					<img src="https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png" alt="JobCapturePro" class="jcp-plugin-footer__logo" width="129" height="31" loading="lazy">
+				</a>
+			</div>
 		</div>
 	</footer>
 </main>
