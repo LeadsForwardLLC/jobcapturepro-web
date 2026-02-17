@@ -157,15 +157,13 @@
   flex: 0 0 var(--card-width, 300px);
   min-width: 0;
   background: var(--jcp-color-bg-primary);
-  border: 2px solid var(--jcp-color-border);
   border-radius: var(--jcp-radius-lg, 12px);
   overflow: hidden;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .jcp-plugin-card:hover {
   transform: translateY(-2px);
-  border-color: var(--jcp-color-border);
 }
 
 /* =========================================================
@@ -273,6 +271,9 @@
    ========================================================= */
 .jcp-plugin-card__body {
   padding: var(--jcp-space-lg);
+  border: 2px solid var(--jcp-color-border);
+  border-top: 0;
+  border-radius: 0 0 var(--jcp-radius-lg, 12px) var(--jcp-radius-lg, 12px);
 }
 
 .jcp-plugin-card__description {
