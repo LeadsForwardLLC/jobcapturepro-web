@@ -83,7 +83,7 @@ get_header();
 				<span class="jcp-plugin-map__pin" style="left: 45%; top: 48%;" aria-hidden="true"></span>
 				<span class="jcp-plugin-map__pin" style="left: 32%; top: 58%;" aria-hidden="true"></span>
 			</div>
-			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/map-033d2dbf-ce0f-41eb-bbf8-2056273673dd.png' ); ?>" alt="Map of service area" class="jcp-plugin-map__img" width="1200" height="500" loading="lazy">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/map-3c5b675f-f28d-41a5-ba3a-972b4c189f10.png' ); ?>" alt="Map of service area" class="jcp-plugin-map__img" width="1200" height="500" loading="lazy">
 		</div>
 	</section>
 

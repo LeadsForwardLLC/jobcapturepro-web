@@ -50,7 +50,7 @@
   width: 100%;
   max-width: none;
   margin: 0;
-  border-radius: var(--jcp-radius-lg, 12px);
+  border-radius: 15px;
   overflow: hidden;
 }
 
