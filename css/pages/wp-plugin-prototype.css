@@ -352,7 +352,7 @@
    FOOTER – Powered by JobCapturePro
    ========================================================= */
 .jcp-plugin-footer {
-  padding: 0 0 var(--jcp-space-xl);
+  padding: var(--jcp-space-sm) 0 var(--jcp-space-xl);
   background: transparent;
   border-top: 0;
   text-align: center;
@@ -384,7 +384,7 @@
 
 .jcp-plugin-footer__logo {
   display: block;
-  height: 20px;
+  height: 22px;
   width: auto;
 }
 
