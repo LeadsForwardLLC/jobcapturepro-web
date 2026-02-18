@@ -270,6 +270,40 @@ function jcp_core_enqueue_assets(): void {
 add_action( 'wp_enqueue_scripts', 'jcp_core_enqueue_assets' );
 
 /**
+ * Remove conflicting third-party auth scripts on prototype routes.
+ *
+ * Some plugins inject WebAuthn/FIDO scripts globally; on prototype pages those
+ * scripts can throw runtime errors and prevent the app shell from rendering.
+ *
+ * @return void
+ */
+function jcp_core_strip_conflicting_scripts_on_prototype(): void {
+    $pages = jcp_core_get_page_detection();
+    if ( ! $pages['is_prototype'] && ! $pages['is_wp_plugin_prototype'] ) {
+        return;
+    }
+
+    global $wp_scripts;
+    if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+        return;
+    }
+
+    foreach ( (array) $wp_scripts->queue as $handle ) {
+        if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+            continue;
+        }
+
+        $src = (string) $wp_scripts->registered[ $handle ]->src;
+        if ( $src !== '' && strpos( $src, 'fido2-page-script.js' ) !== false ) {
+            wp_dequeue_script( $handle );
+            wp_deregister_script( $handle );
+        }
+    }
+}
+
+add_action( 'wp_print_scripts', 'jcp_core_strip_conflicting_scripts_on_prototype', 100 );
+
+/**
  * Add defer to theme scripts to reduce parse-blocking and improve LCP/TBT.
  * Scripts still run in order after DOM ready; no behavior change.
  *

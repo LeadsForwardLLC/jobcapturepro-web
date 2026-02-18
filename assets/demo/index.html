@@ -183,7 +183,23 @@
                         </div>
                     </div>
 
-                    <!-- Request Review Screen -->
+                    <!-- Request Review Method Screen -->
+                    <div class="app-screen" id="review-request-options-screen">
+                        <div class="app-header">
+                            <div class="app-header__left"><button type="button" class="back-btn" onclick="goBackFromReviewMethod()" aria-label="Back"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button></div>
+                            <h1 class="app-header__title">Request Review</h1>
+                            <div class="app-header__right"></div>
+                        </div>
+                        <div class="content-area review-request-options">
+                            <p class="request-review-subtitle">Choose how you want to ask for a review.</p>
+                            <div class="section-title">Include a message</div>
+                            <textarea class="input-field request-review-message" rows="4" placeholder="Add a personal note (optional)">We loved working with you! If you have a moment to leave a review, it would mean a lot to us.</textarea>
+                            <button type="button" class="btn btn-secondary btn-full review-method-btn"><img src="../../shared/assets/icons/lucide/qr-code.svg" class="lucide-icon lucide-icon-sm" alt=""> Scan QR</button>
+                            <button type="button" class="btn btn-primary btn-full review-method-btn"><img src="../../shared/assets/icons/lucide/link.svg" class="lucide-icon lucide-icon-sm" alt=""> Send Link</button>
+                        </div>
+                    </div>
+
+                    <!-- Request Review Link Screen -->
                     <div class="app-screen" id="request-review-screen">
                         <div class="app-header">
                             <div class="app-header__left"><button type="button" class="back-btn" onclick="goBackToEdit()" aria-label="Back"><img src="../../shared/assets/icons/lucide/arrow-left.svg" class="lucide-icon" alt=""></button></div>
@@ -210,7 +226,8 @@
                             <div class="request-review-photos" id="request-review-photos">
                                 <!-- Filled by JS from current check-in -->
                             </div>
-                            <button type="button" class="btn btn-primary btn-full" id="btnSendReviewRequest" onclick="submitReviewRequestFromScreen()"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send Review Request</button>
+                            <button type="button" class="btn btn-secondary btn-full review-method-btn"><img src="../../shared/assets/icons/lucide/qr-code.svg" class="lucide-icon lucide-icon-sm" alt=""> Scan QR</button>
+                            <button type="button" class="btn btn-primary btn-full review-method-btn"><img src="../../shared/assets/icons/lucide/link.svg" class="lucide-icon lucide-icon-sm" alt=""> Send Link</button>
                         </div>
                     </div>
 

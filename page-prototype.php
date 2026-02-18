@@ -14,6 +14,10 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex, nofollow">
+	<script>
+		window.JCP_IS_PROTOTYPE = true;
+		window.JCP_IS_DEMO_MODE = false;
+	</script>
 	<?php wp_head(); ?>
 	<style>
 		body.jcp-prototype-page {

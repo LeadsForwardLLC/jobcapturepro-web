@@ -1337,6 +1337,15 @@
         }
 
         /* Request Review Screen */
+        .review-request-options {
+            padding-top: 28px;
+        }
+        .review-method-btn {
+            margin-bottom: 12px;
+        }
+        .review-method-btn:last-of-type {
+            margin-bottom: 0;
+        }
         .request-review-subtitle {
             font-size: 13px;
             color: #6b7280;

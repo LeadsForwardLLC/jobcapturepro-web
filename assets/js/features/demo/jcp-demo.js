@@ -31,6 +31,10 @@ function _jcpIsPrototype() {
   try {
     const app = document.getElementById('jcp-app');
     if (app && (app.dataset.jcpPage || '').toLowerCase() === 'prototype') return true;
+    if (document.body && document.body.classList.contains('jcp-prototype-page')) return true;
+
+    const path = (window.location.pathname || '').toLowerCase();
+    if (path === '/prototype' || path === '/prototype/') return true;
   } catch (e) {}
   return false;
 }
@@ -313,6 +317,7 @@ const state = {
   mapMarkers: [],
   guideHidden: false,
   selectedTags: [],
+  reviewMethodBackScreen: 'home-screen',
 };
 
 const EDIT_TAGS = [
@@ -1177,7 +1182,7 @@ function setScreen(screenId) {
 updateTourFloating();
 
 
-if (['login-screen','home-screen','new-screen','edit-screen','profile-screen','edit-profile-screen','change-password-screen','request-review-screen'].includes(screenId)) {
+if (['login-screen','home-screen','new-screen','edit-screen','profile-screen','edit-profile-screen','change-password-screen','review-request-options-screen','request-review-screen'].includes(screenId)) {
   applyFocalPoint();
 }
 
@@ -1517,7 +1522,7 @@ function closeCreateActionSheet() {
 function handleCreateAction(action) {
   closeCreateActionSheet();
   if (action === 'review') {
-    goToRequestReview();
+    goToReviewRequestOptions('home-screen');
     return;
   }
   goToNew();
@@ -2220,6 +2225,20 @@ function goToRequestReview() {
   setScreen('request-review-screen');
 }
 
+function goToReviewRequestOptions(fromScreen = 'home-screen') {
+  state.reviewMethodBackScreen = fromScreen;
+  setScreen('review-request-options-screen');
+}
+
+function goBackFromReviewMethod() {
+  const backTo = state.reviewMethodBackScreen || 'home-screen';
+  if (backTo === 'edit-screen') {
+    goBackToEdit();
+    return;
+  }
+  goToHome();
+}
+
 function getCurrentCheckinForReview() {
   if (state.activeCheckinIndex !== null && state.activeCheckinFromArchived) return state.archivedCheckins[state.activeCheckinIndex];
   if (state.activeCheckinIndex !== null) return state.savedCheckins[state.activeCheckinIndex];
@@ -2786,6 +2805,8 @@ window.saveEditProfile = saveEditProfile;
 window.goToChangePassword = goToChangePassword;
 window.confirmChangePassword = confirmChangePassword;
 window.goToRequestReview = goToRequestReview;
+window.goToReviewRequestOptions = goToReviewRequestOptions;
+window.goBackFromReviewMethod = goBackFromReviewMethod;
 window.goBackToEdit = goBackToEdit;
 window.submitReviewRequestFromScreen = submitReviewRequestFromScreen;
 window.addPhotos = addPhotos;
