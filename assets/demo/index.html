@@ -83,7 +83,7 @@
                                 <div class="tab-icon"><img src="../../shared/assets/icons/lucide/clipboard-list.svg" class="lucide-icon" alt=""></div>
                                 Check-ins
                             </button>
-                            <button class="fab" id="fabNewCheckin" onclick="goToNew()"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
+                            <button type="button" class="fab" id="fabNewCheckin"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
 
                             <button class="tab-item" id="profile-btn" data-action="profile">
                                 <div class="tab-icon"><img src="../../shared/assets/icons/lucide/user.svg" class="lucide-icon" alt=""></div>
@@ -240,7 +240,7 @@
                                 <div class="tab-icon"><img src="../../shared/assets/icons/lucide/clipboard-list.svg" class="lucide-icon" alt=""></div>
                                 Check-ins
                             </button>
-                            <button type="button" class="fab" onclick="goToNew()"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
+                            <button type="button" class="fab"><img src="../../shared/assets/icons/lucide/plus.svg" class="lucide-icon" alt=""></button>
                             <button type="button" class="tab-item active">
                                 <div class="tab-icon"><img src="../../shared/assets/icons/lucide/user.svg" class="lucide-icon" alt=""></div>
                                 Profile
@@ -389,6 +389,40 @@
                             </div>
                         </div>
                     </div>
+        <!-- Create Action Sheet (tap +) -->
+        <div class="location-sheet-overlay" id="create-sheet-overlay" aria-hidden="true">
+            <div class="location-sheet create-sheet" id="create-sheet" role="dialog" aria-labelledby="create-sheet-title">
+                <div class="location-sheet-header">
+                    <h2 id="create-sheet-title" class="location-sheet-title"><img src="../../shared/assets/icons/lucide/sparkles.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true"> What do you want to create?</h2>
+                    <button type="button" class="location-sheet-close" id="create-sheet-close" aria-label="Close">
+                        <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
+                    </button>
+                </div>
+                <div class="create-sheet-list">
+                    <button type="button" class="create-sheet-item create-sheet-item--primary" id="create-action-checkin">
+                        <span class="create-sheet-item__icon-wrap"><img src="../../shared/assets/icons/lucide/circle-plus.svg" class="lucide-icon" alt=""></span>
+                        <span class="create-sheet-item__text-wrap">
+                            <span class="create-sheet-item__title">New Check-in</span>
+                            <span class="create-sheet-item__desc">Capture photos, add details, and publish proof of work.</span>
+                        </span>
+                        <img src="../../shared/assets/icons/lucide/arrow-right.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true">
+                    </button>
+
+                    <button type="button" class="create-sheet-item" id="create-action-review">
+                        <span class="create-sheet-item__icon-wrap"><img src="../../shared/assets/icons/lucide/message-square-heart.svg" class="lucide-icon" alt=""></span>
+                        <span class="create-sheet-item__text-wrap">
+                            <span class="create-sheet-item__title">Send Review Request</span>
+                            <span class="create-sheet-item__desc">Ask a customer for a review by SMS or email.</span>
+                        </span>
+                        <img src="../../shared/assets/icons/lucide/arrow-right.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true">
+                    </button>
+                </div>
+                <div class="location-sheet-actions">
+                    <button type="button" class="btn btn-secondary btn-full" id="create-sheet-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
                 </div>
             </div>
         </div>
