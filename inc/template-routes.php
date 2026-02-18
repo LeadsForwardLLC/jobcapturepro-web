@@ -141,6 +141,37 @@ add_action( 'template_redirect', 'jcp_core_directory_route_template_redirect' );
 add_filter( 'template_include', 'jcp_core_directory_route_template_include', 5 );
 
 /**
+ * Force prototype templates by route path.
+ *
+ * This protects live environments where the WP page/template assignment for
+ * /prototype or /wp-plugin-prototype may be missing or incorrect.
+ *
+ * @param string $template Current template path.
+ * @return string
+ */
+function jcp_core_force_prototype_templates( string $template ): string {
+    $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+    $segment = strpos( $path, '/' ) !== false ? strtok( $path, '/' ) : $path;
+
+    if ( $segment === 'prototype' ) {
+        $forced = get_stylesheet_directory() . '/page-prototype.php';
+        if ( file_exists( $forced ) ) {
+            return $forced;
+        }
+    }
+
+    if ( $segment === 'wp-plugin-prototype' ) {
+        $forced = get_stylesheet_directory() . '/page-wp-plugin-prototype.php';
+        if ( file_exists( $forced ) ) {
+            return $forced;
+        }
+    }
+
+    return $template;
+}
+add_filter( 'template_include', 'jcp_core_force_prototype_templates', 4 );
+
+/**
  * Flush rewrite rules on theme switch so directory/company rules take effect.
  *
  * @return void
