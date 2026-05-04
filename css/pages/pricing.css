@@ -116,27 +116,33 @@
 }
 .jcp-pricing-notes-list {
   list-style: none;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--jcp-space-lg) var(--jcp-space-xl);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--jcp-space-lg) var(--jcp-space-3xl);
+  max-width: 900px;
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
-  line-height: 1.6;
-  text-align: center;
+  line-height: 1.55;
+  text-align: left;
 }
 .jcp-pricing-note-item {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--jcp-space-sm);
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--jcp-space-md);
   padding-left: 0;
 }
 .jcp-pricing-note-icon {
   flex-shrink: 0;
+  margin-top: 2px;
   color: var(--jcp-color-primary);
   opacity: 0.9;
+}
+
+.jcp-pricing-note-item > span {
+  min-width: 0;
 }
 .jcp-pricing-notes-list li {
   padding-left: 0;
@@ -144,7 +150,8 @@
 @media (max-width: 768px) {
   .jcp-pricing-notes-list {
     grid-template-columns: 1fr;
-    gap: var(--jcp-space-sm);
+    gap: var(--jcp-space-md);
+    max-width: none;
   }
 }
 
