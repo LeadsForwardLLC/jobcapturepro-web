@@ -12,7 +12,7 @@ let demoUser = {
   firstName: 'John',
   lastName: 'Smith',
   businessName: 'Summit Plumbing',
-  niche: 'service'
+  niche: 'plumbing'
 };
 
 const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
