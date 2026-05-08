@@ -1,18 +1,15 @@
 (() => {
-  const KEY = 'jcp_earlybird_banner_dismissed_until';
+  const KEY = 'jcp_earlybird_banner_dismissed';
   const banner = document.getElementById('jcpEarlybirdBanner');
   if (!banner) return;
 
   const close = document.getElementById('jcpEarlybirdBannerClose');
 
-  const now = Date.now();
-  const dismissedUntil = (() => {
+  const dismissed = (() => {
     try {
-      const raw = window.localStorage ? window.localStorage.getItem(KEY) : null;
-      const n = raw ? Number(raw) : 0;
-      return Number.isFinite(n) ? n : 0;
+      return window.sessionStorage ? window.sessionStorage.getItem(KEY) === '1' : false;
     } catch (e) {
-      return 0;
+      return false;
     }
   })();
 
@@ -23,7 +20,7 @@
     } catch (e) {}
   };
 
-  if (dismissedUntil && dismissedUntil > now) {
+  if (dismissed) {
     hide();
     return;
   }
@@ -31,8 +28,7 @@
   if (!close) return;
   close.addEventListener('click', () => {
     try {
-      const sevenDays = 7 * 24 * 60 * 60 * 1000;
-      window.localStorage && window.localStorage.setItem(KEY, String(Date.now() + sevenDays));
+      window.sessionStorage && window.sessionStorage.setItem(KEY, '1');
     } catch (e) {}
     hide();
   });
