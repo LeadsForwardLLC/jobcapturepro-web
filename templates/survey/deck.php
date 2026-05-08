@@ -26,54 +26,42 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
 
     <div class="deck-slides" id="deckSlides">
       <article class="deck-slide deck-slide--intro is-active">
-        <div class="deck-intro">
-          <div class="deck-intro-copy">
-            <h2 id="deckSlide1Title">Every completed job should help you win the next one.</h2>
-            <p class="deck-lead">
-              Capture real work once, and JobCapturePro turns it into proof that shows up across your website, directory, and search—so customers choose you faster.
-            </p>
-            <div class="deck-signal" aria-hidden="true">
-              <span class="deck-signal-pill">From 1 job → more calls</span>
+        <h2 id="deckSlide1Title">Every completed job should help you win the next one.</h2>
+        <p class="deck-lead">
+          Capture real work once, and JobCapturePro turns it into proof that shows up across your website, directory, and search—so customers choose you faster.
+        </p>
+        <div class="deck-signal" aria-hidden="true">
+          <span class="deck-signal-pill">From 1 job → more calls</span>
+        </div>
+
+        <div class="deck-flow deck-flow--stack" aria-label="Outcomes">
+          <div class="deck-flow-card">
+            <span class="deck-flow-icon" aria-hidden="true">
+              <img src="<?php echo esc_url( $icon_camera ); ?>" alt="" />
+            </span>
+            <div class="deck-flow-body">
+              <div class="deck-flow-title">More proof builds trust faster</div>
+              <div class="deck-flow-sub">Turn job photos into verified work customers can see.</div>
             </div>
           </div>
 
-          <div class="deck-intro-flow">
-            <div class="deck-flow-meta">
-              <p class="deck-compound-label">Here's how that compounds:</p>
+          <div class="deck-flow-card">
+            <span class="deck-flow-icon" aria-hidden="true">
+              <img src="<?php echo esc_url( $icon_shield ); ?>" alt="" />
+            </span>
+            <div class="deck-flow-body">
+              <div class="deck-flow-title">More trust leads to more calls</div>
+              <div class="deck-flow-sub">Show real proof where people compare options.</div>
             </div>
+          </div>
 
-            <div class="deck-flow" aria-label="Compounding outcomes">
-              <div class="deck-flow-line" aria-hidden="true"></div>
-
-              <div class="deck-flow-card">
-                <span class="deck-flow-icon" aria-hidden="true">
-                  <img src="<?php echo esc_url( $icon_camera ); ?>" alt="" />
-                </span>
-                <div class="deck-flow-body">
-                  <div class="deck-flow-title">More proof builds trust faster</div>
-                  <div class="deck-flow-sub">Turn job photos into verified work customers can see.</div>
-                </div>
-              </div>
-
-              <div class="deck-flow-card">
-                <span class="deck-flow-icon" aria-hidden="true">
-                  <img src="<?php echo esc_url( $icon_shield ); ?>" alt="" />
-                </span>
-                <div class="deck-flow-body">
-                  <div class="deck-flow-title">More trust leads to more calls</div>
-                  <div class="deck-flow-sub">Show real proof where people compare options.</div>
-                </div>
-              </div>
-
-              <div class="deck-flow-card">
-                <span class="deck-flow-icon" aria-hidden="true">
-                  <img src="<?php echo esc_url( $icon_phone ); ?>" alt="" />
-                </span>
-                <div class="deck-flow-body">
-                  <div class="deck-flow-title">More calls mean more booked jobs</div>
-                  <div class="deck-flow-sub">Win faster decisions without discounting.</div>
-                </div>
-              </div>
+          <div class="deck-flow-card">
+            <span class="deck-flow-icon" aria-hidden="true">
+              <img src="<?php echo esc_url( $icon_phone ); ?>" alt="" />
+            </span>
+            <div class="deck-flow-body">
+              <div class="deck-flow-title">More calls mean more booked jobs</div>
+              <div class="deck-flow-sub">Win faster decisions without discounting.</div>
             </div>
           </div>
         </div>
