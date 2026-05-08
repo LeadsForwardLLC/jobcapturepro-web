@@ -21,7 +21,23 @@ $social_links = [
     'youtube'  => [ 'url' => 'https://www.youtube.com/channel/UCckc38UwNU5P8A7eI1txZAw', 'label' => 'YouTube' ],
 ];
 
-$directory_mode = function_exists( 'jcp_is_directory_mode' ) && jcp_is_directory_mode();
+$directory_mode       = function_exists( 'jcp_is_directory_mode' ) && jcp_is_directory_mode();
+$jcp_onb_utms      = function_exists( 'jcp_core_onboarding_utm_defaults' );
+$jcp_onboarding_url = ! function_exists( 'jcp_core_onboarding_app_url' )
+  ? home_url( '/demo' )
+  : ( $jcp_onb_utms
+    ? jcp_core_onboarding_app_url( jcp_core_onboarding_utm_defaults( 'footer_signup' ) )
+    : jcp_core_onboarding_app_url() );
+$jcp_onboarding_url_dir_listed = ! function_exists( 'jcp_core_onboarding_app_url' )
+  ? home_url( '/demo' )
+  : ( $jcp_onb_utms
+    ? jcp_core_onboarding_app_url( jcp_core_onboarding_utm_defaults( 'footer_get_listed' ) )
+    : jcp_core_onboarding_app_url() );
+$jcp_onboarding_url_dir_started = ! function_exists( 'jcp_core_onboarding_app_url' )
+  ? home_url( '/demo' )
+  : ( $jcp_onb_utms
+    ? jcp_core_onboarding_app_url( jcp_core_onboarding_utm_defaults( 'footer_get_started' ) )
+    : jcp_core_onboarding_app_url() );
 $dir_url = home_url( '/directory' );
 $dir_search = $dir_url . '/#search';
 $dir_how = $dir_url . '/#how-it-works';
@@ -44,9 +60,9 @@ $dir_trust = $dir_url . '/#trust';
         </div>
         <div class="jcp-footer-col">
           <h4><?php esc_html_e( 'For contractors', 'jcp-core' ); ?></h4>
-          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>"><?php esc_html_e( 'Get listed', 'jcp-core' ); ?></a>
+          <a href="<?php echo esc_url( $jcp_onboarding_url_dir_listed ); ?>"><?php esc_html_e( 'Get listed', 'jcp-core' ); ?></a>
           <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>"><?php esc_html_e( 'See the live demo', 'jcp-core' ); ?></a>
-          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>"><?php esc_html_e( 'Join early access', 'jcp-core' ); ?></a>
+          <a href="<?php echo esc_url( $jcp_onboarding_url_dir_started ); ?>"><?php esc_html_e( 'Get started', 'jcp-core' ); ?></a>
         </div>
       <?php else : ?>
         <div class="jcp-footer-brand">
@@ -69,7 +85,7 @@ $dir_trust = $dir_url . '/#trust';
         <div class="jcp-footer-col">
           <h4>Company</h4>
           <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Contact</a>
-          <a href="<?php echo esc_url( home_url( '/early-access' ) ); ?>">Founding Crew</a>
+          <a href="<?php echo esc_url( $jcp_onboarding_url ); ?>"><?php esc_html_e( 'Sign up', 'jcp-core' ); ?></a>
           <?php
           $about_page = get_page_by_path( 'about' );
           if ( $about_page && $about_page->post_status === 'publish' ) :

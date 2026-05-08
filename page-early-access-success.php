@@ -25,6 +25,9 @@ if ( have_posts() ) {
 }
 $supporting = trim( (string) $page_content );
 $subtitle   = $supporting !== '' ? $supporting : $default_msg;
+$signup_url = function_exists( 'jcp_core_onboarding_app_url' ) && function_exists( 'jcp_core_onboarding_utm_defaults' )
+  ? jcp_core_onboarding_app_url( jcp_core_onboarding_utm_defaults( 'early_access_success' ) )
+  : ( function_exists( 'jcp_core_onboarding_app_url' ) ? jcp_core_onboarding_app_url() : home_url( '/demo' ) );
 ?>
 <main class="jcp-marketing jcp-early-access-page jcp-success-page">
   <section class="jcp-section rankings-section jcp-success-section">
@@ -38,7 +41,7 @@ $subtitle   = $supporting !== '' ? $supporting : $default_msg;
         <?php endif; ?>
       </div>
       <div class="jcp-form-actions jcp-success-actions">
-        <a class="btn btn-primary" href="<?php echo esc_url( home_url( '/early-access' ) ); ?>"><?php esc_html_e( 'Back to Early Access', 'jcp-core' ); ?></a>
+        <a class="btn btn-primary" href="<?php echo esc_url( $signup_url ); ?>"><?php esc_html_e( 'Create your account', 'jcp-core' ); ?></a>
         <a class="btn btn-secondary" href="<?php echo esc_url( home_url( '/demo' ) ); ?>"><?php esc_html_e( 'See the Demo', 'jcp-core' ); ?></a>
       </div>
     </div>

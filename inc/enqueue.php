@@ -143,6 +143,14 @@ function jcp_core_enqueue_assets(): void {
         $globals = "window.JCP_ENV = 'live';\n";
         $globals .= "window.JCP_CONFIG = { env: 'live', baseUrl: '" . esc_url_raw( site_url() ) . "' };\n";
         $globals .= "window.JCP_ASSET_BASE = '" . esc_url_raw( get_stylesheet_directory_uri() . '/assets' ) . "';";
+        if ( function_exists( 'jcp_core_onboarding_app_url_raw' ) && function_exists( 'jcp_core_onboarding_hardcoded_session_id' ) ) {
+            $onb = [
+                'url'         => jcp_core_onboarding_app_url_raw(),
+                'sessionId'   => jcp_core_onboarding_hardcoded_session_id(),
+                'utmDefaults' => function_exists( 'jcp_core_onboarding_utm_defaults' ) ? jcp_core_onboarding_utm_defaults() : [],
+            ];
+            $globals .= "\nwindow.JCP_ONBOARDING = " . wp_json_encode( $onb ) . ';';
+        }
         wp_add_inline_script( $render_handle, $globals, 'before' );
     }
 

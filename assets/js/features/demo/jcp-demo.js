@@ -20,6 +20,64 @@ const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
   : window.location.origin;
 const assetBase = window.JCP_ASSET_BASE || '';
 
+/** Build app onboarding URL; merges UTM defaults, then extra params (demo_session, email, names, utm_content, …). */
+function jcpBuildOnboardingUrl(extraParams) {
+  const fallback =
+    'https://app.jobcapturepro.com/onboarding?sessionId=75ad8454-312e-4224-95b7-8f48f5cd0277&step=1';
+  const base =
+    typeof window.JCP_ONBOARDING === 'object' && window.JCP_ONBOARDING && window.JCP_ONBOARDING.url
+      ? window.JCP_ONBOARDING.url
+      : fallback;
+  const utmFallback = { utm_source: 'jobcapturepro.com', utm_medium: 'website', utm_campaign: 'onboarding' };
+  try {
+    const u = base.startsWith('http') ? new URL(base) : new URL(base, window.location.origin);
+    const defs =
+      typeof window.JCP_ONBOARDING === 'object' &&
+      window.JCP_ONBOARDING &&
+      window.JCP_ONBOARDING.utmDefaults &&
+      typeof window.JCP_ONBOARDING.utmDefaults === 'object'
+        ? window.JCP_ONBOARDING.utmDefaults
+        : utmFallback;
+    Object.keys(defs).forEach((key) => {
+      const val = defs[key];
+      if (val !== undefined && val !== null && String(val).trim() !== '') {
+        u.searchParams.set(key, String(val));
+      }
+    });
+    if (extraParams && typeof extraParams === 'object') {
+      Object.keys(extraParams).forEach((key) => {
+        const val = extraParams[key];
+        if (val !== undefined && val !== null && String(val).trim() !== '') {
+          u.searchParams.set(key, String(val));
+        }
+      });
+    }
+    return u.toString();
+  } catch (e) {
+    return base;
+  }
+}
+
+/** Query params for handoff after demo (session + PII the app can prefill), plus optional utm_content. */
+function jcpDemoOnboardingHandoffQuery(utmContent) {
+  const extra = {
+    demo_session: getDemoSessionId(),
+    utm_content: utmContent || 'demo_handoff'
+  };
+  try {
+    if (demoUser && typeof demoUser.email === 'string' && demoUser.email.trim()) {
+      extra.email = demoUser.email.trim();
+    }
+    const fn = (demoUser.firstName || '').trim();
+    const ln = (demoUser.lastName || '').trim();
+    if (fn) extra.first_name = fn;
+    if (ln) extra.last_name = ln;
+    const fullName = [demoUser.firstName, demoUser.lastName].filter(Boolean).join(' ').trim();
+    if (fullName) extra.full_name = fullName;
+  } catch (e) {}
+  return extra;
+}
+
 /* =========================
    Demo Mode Configuration
    - isPrototype: true = clean app-only page, no tour, no Start Demo screen
@@ -2073,7 +2131,9 @@ async function sendReviewRequest() {
   const headerCta = document.getElementById('btnNext');
   if (headerCta) {
     headerCta.textContent = 'Get Started →';
-    headerCta.onclick = () => { window.location.href = (baseUrl || window.location.origin).replace(/\/?$/, '') + '/early-access'; };
+    headerCta.onclick = () => {
+      window.location.href = jcpBuildOnboardingUrl(jcpDemoOnboardingHandoffQuery('demo_header_complete'));
+    };
   }
 
   // Reveal header "View Demo Directory" button AFTER demo finishes
@@ -2763,9 +2823,7 @@ function wirePostDemoPanel() {
 
   const primaryCta = document.querySelector('.post-demo-primary-cta');
   if (primaryCta) {
-    const earlyAccessUrl = (baseUrl || window.location.origin).replace(/\/?$/, '') + '/early-access';
-    const sessionId = getDemoSessionId();
-    primaryCta.href = earlyAccessUrl + '?demo_session=' + encodeURIComponent(sessionId);
+    primaryCta.href = jcpBuildOnboardingUrl(jcpDemoOnboardingHandoffQuery('demo_post_panel'));
     primaryCta.addEventListener('click', function() {
       jcpDemoTrack('cta_clicked', null, { cta: 'early_access' });
       // Matomo: Post Demo CTA Click (Early Access), once per session

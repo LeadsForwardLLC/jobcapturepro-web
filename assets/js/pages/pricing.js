@@ -6,6 +6,31 @@
   const assetBase = () => window.JCP_ASSET_BASE || fallbackBase;
   const icon = (name) => `${assetBase()}/shared/assets/icons/lucide/${name}.svg`;
 
+  const onboardingBaseHref =
+    typeof window !== 'undefined' && window.JCP_ONBOARDING && window.JCP_ONBOARDING.url
+      ? window.JCP_ONBOARDING.url
+      : 'https://app.jobcapturepro.com/onboarding?sessionId=75ad8454-312e-4224-95b7-8f48f5cd0277&step=1';
+  const onboardingUtmFallback = { utm_source: 'jobcapturepro.com', utm_medium: 'website', utm_campaign: 'onboarding' };
+  const onboardingCtaHref = (() => {
+    try {
+      const u = onboardingBaseHref.startsWith('http')
+        ? new URL(onboardingBaseHref)
+        : new URL(onboardingBaseHref, window.location.origin);
+      const defs =
+        window.JCP_ONBOARDING && window.JCP_ONBOARDING.utmDefaults && typeof window.JCP_ONBOARDING.utmDefaults === 'object'
+          ? window.JCP_ONBOARDING.utmDefaults
+          : onboardingUtmFallback;
+      Object.keys(defs).forEach((key) => {
+        const val = defs[key];
+        if (val !== undefined && val !== null && String(val).trim() !== '') u.searchParams.set(key, String(val));
+      });
+      u.searchParams.set('utm_content', 'pricing');
+      return u.toString();
+    } catch (e) {
+      return onboardingBaseHref;
+    }
+  })();
+
   // Pricing data with monthly and yearly prices
   // Features can be strings or { text: string, tooltip: string } for items with tooltips
   const pricingData = {
@@ -158,8 +183,8 @@
         <ul class="jcp-plan-list">
           ${plan.features.map(renderFeature).join('')}
         </ul>
-        <a class="btn ${plan.featured ? 'btn-primary' : 'btn-secondary'}" href="/early-access">
-          ${hasPricing ? 'Join Early Access' : 'Contact sales'}
+        <a class="btn ${plan.featured ? 'btn-primary' : 'btn-secondary'}" href="${escapeAttr(onboardingCtaHref)}">
+          ${hasPricing ? 'Get started' : 'Contact sales'}
         </a>
       </article>
     `;
@@ -357,7 +382,7 @@
               </div>
             </div>
             <div class="jcp-actions jcp-compare-actions">
-              <a class="btn btn-primary" href="/early-access">Join Early Access</a>
+              <a class="btn btn-primary" href="${escapeAttr(onboardingCtaHref)}">Get started</a>
               <a class="btn btn-secondary" href="/demo">See the Demo</a>
             </div>
           </div>

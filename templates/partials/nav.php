@@ -87,7 +87,9 @@ $dir_trust = $dir_url . '/#trust';
       $secondary_label = 'Online Demo';
       $secondary_url   = home_url( '/demo' );
       $primary_label   = 'Get Started';
-      $primary_url     = home_url( '/early-access' );
+      $primary_url     = function_exists( 'jcp_core_onboarding_app_url' ) && function_exists( 'jcp_core_onboarding_utm_defaults' )
+        ? jcp_core_onboarding_app_url( jcp_core_onboarding_utm_defaults( 'nav_get_started' ) )
+        : ( function_exists( 'jcp_core_onboarding_app_url' ) ? jcp_core_onboarding_app_url() : home_url( '/demo' ) );
       ?>
       <a href="<?php echo esc_url( $secondary_url ); ?>" class="btn btn-secondary" id="dynamicBackBtn">
         <span><?php echo esc_html( $secondary_label ); ?></span>

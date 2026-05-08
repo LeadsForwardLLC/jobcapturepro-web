@@ -9,6 +9,9 @@
 // Load helper functions (asset paths, URLs, ACF helpers)
 require_once get_template_directory() . '/inc/helpers.php';
 
+// App onboarding handoff URLs (marketing site → SaaS signup)
+require_once get_template_directory() . '/inc/onboarding.php';
+
 // Load company data functions (description resolution, demo companies, save_post description generation)
 require_once get_template_directory() . '/inc/company-data.php';
 
