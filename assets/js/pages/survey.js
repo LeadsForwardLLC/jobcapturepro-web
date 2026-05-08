@@ -26,6 +26,34 @@
     ? window.JCP_CONFIG.baseUrl
     : window.location.origin;
 
+  // If they've already completed the demo form before, skip the form + slides and go straight to run-demo.
+  // (We can only check localStorage client-side.)
+  const shouldAutoRun = (() => {
+    try {
+      const params = new URLSearchParams(window.location.search || '');
+      if (params.get('mode') === 'run') return false;
+      if (params.get('forceSurvey') === '1') return false; // escape hatch
+      const raw = localStorage.getItem('demoUser');
+      if (!raw) return false;
+      const demoUser = JSON.parse(raw);
+      if (!demoUser || typeof demoUser !== 'object') return false;
+      const hasIdentity = Boolean(
+        (demoUser.firstName || '').trim() &&
+        (demoUser.lastName || '').trim() &&
+        (demoUser.email || '').trim()
+      );
+      const hasSession = Boolean((localStorage.getItem('jcp_demo_session_id') || '').trim());
+      return hasIdentity && hasSession;
+    } catch (e) {
+      return false;
+    }
+  })();
+
+  if (shouldAutoRun) {
+    window.location.replace(`${baseUrl}/demo/?mode=run`);
+    return;
+  }
+
   let currentIndex = 0;
   let deckIndex = 0;
   let rankTimers = [];
