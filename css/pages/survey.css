@@ -41,6 +41,27 @@
   flex-direction: column;
   gap: 12px;
   margin-top: 18px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.deck-slide--intro .deck-flow-card {
+  transform: translateY(0);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  opacity: 1;
+}
+
+.deck-slide.is-active.deck-slide--intro .deck-flow-card {
+  animation: deckCardIn 520ms cubic-bezier(0.2, 0.95, 0.2, 1) both;
+}
+.deck-slide.is-active.deck-slide--intro .deck-flow-card:nth-child(1) { animation-delay: 40ms; }
+.deck-slide.is-active.deck-slide--intro .deck-flow-card:nth-child(2) { animation-delay: 120ms; }
+.deck-slide.is-active.deck-slide--intro .deck-flow-card:nth-child(3) { animation-delay: 200ms; }
+
+@keyframes deckCardIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .deck-slide--intro .deck-flow-card {
@@ -54,8 +75,6 @@
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(226, 232, 240, 0.98);
   box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10);
-  transform: translateY(0);
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 .deck-slide--intro .deck-flow-card:hover {
   transform: translateY(-1px);
@@ -64,6 +83,7 @@
 }
 
 .deck-slide--intro .deck-flow-icon {
+  position: relative;
   width: 42px;
   height: 42px;
   border-radius: 15px;
@@ -76,6 +96,23 @@
   width: 18px;
   height: 18px;
   display: block;
+}
+
+.deck-slide--intro .deck-flow-step {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 950;
+  color: #7c2d12;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 80, 62, 0.22);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
 }
 
 .deck-slide--intro .deck-flow-title {
@@ -97,6 +134,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .deck-slide.is-active.deck-slide--intro .deck-flow-card {
+    animation: none !important;
+  }
   .deck-slide--intro .deck-flow-card {
     transition: none !important;
   }

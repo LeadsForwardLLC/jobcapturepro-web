@@ -37,6 +37,7 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
         <div class="deck-flow deck-flow--stack" aria-label="Outcomes">
           <div class="deck-flow-card">
             <span class="deck-flow-icon" aria-hidden="true">
+              <span class="deck-flow-step" aria-hidden="true">1</span>
               <img src="<?php echo esc_url( $icon_camera ); ?>" alt="" />
             </span>
             <div class="deck-flow-body">
@@ -47,6 +48,7 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
 
           <div class="deck-flow-card">
             <span class="deck-flow-icon" aria-hidden="true">
+              <span class="deck-flow-step" aria-hidden="true">2</span>
               <img src="<?php echo esc_url( $icon_shield ); ?>" alt="" />
             </span>
             <div class="deck-flow-body">
@@ -57,6 +59,7 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
 
           <div class="deck-flow-card">
             <span class="deck-flow-icon" aria-hidden="true">
+              <span class="deck-flow-step" aria-hidden="true">3</span>
               <img src="<?php echo esc_url( $icon_phone ); ?>" alt="" />
             </span>
             <div class="deck-flow-body">
