@@ -38,29 +38,30 @@
       monthly: 99,
       yearly: 79, // 20% discount
       name: 'Starter',
-      description: 'Single-location companies',
-      pill: 'Build trust fast',
+      description: 'Everything a single-location business needs to turn check-ins into reviews.',
+      pill: 'Single-location',
       features: [
-        { text: 'Mobile app check-ins', tooltip: 'photo → AI content' },
-        { text: 'SEO-optimized check-ins', tooltip: 'WebP images, filenames, schema' },
-        'WordPress plugin (1 site)',
-        'Review links + QR codes',
-        'Company dashboard'
+        '1 location included',
+        { text: 'Unlimited check-in tracking', tooltip: 'Track unlimited jobs/check-ins for your included location.' },
+        { text: 'Automated review requests', tooltip: 'Automatically send review requests via SMS/email after a job is completed.' },
+        { text: 'Team activity feed', tooltip: 'See check-ins and activity across your team in one place.' },
+        'Email support'
       ]
     },
     scale: {
       monthly: 249,
       yearly: 199, // 20% discount
       name: 'Scale',
-      description: 'Growing teams needing automation',
-      pill: 'Automate visibility',
+      description: 'Built for multi-location brands ready to grow without adding overhead.',
+      pill: 'Most popular',
       features: [
-        'Everything in Starter, plus:',
-        { text: 'CRM integrations', tooltip: 'Housecall Pro, Workiz, QuickBooks, CompanyCam' },
-        { text: 'Automated review requests', tooltip: 'SMS/email + follow-ups' },
-        { text: 'Auto-posting to social', tooltip: 'Facebook, Instagram, X' },
-        'Google Business Profile auto-posting',
-        { text: 'Monthly GeoGrid reports', tooltip: 'LocalFalcon' }
+        'Everything in Starter',
+        { text: 'Multi-location support', tooltip: 'Manage multiple operating locations under one account.' },
+        { text: 'CRM integration', tooltip: 'Connect systems like Housecall Pro, Workiz, QuickBooks, and CompanyCam.' },
+        'WordPress plugin',
+        { text: 'Advanced analytics', tooltip: 'Deeper reporting across check-ins, reviews, and performance by location.' },
+        { text: 'Priority support', tooltip: 'Faster responses and escalation for time-sensitive issues.' },
+        'Add more locations any time'
       ],
       featured: true
     },
@@ -68,16 +69,15 @@
       monthly: 399,
       yearly: 319, // 20% discount
       name: 'Enterprise',
-      description: 'Multi-location companies, franchises, agencies',
-      pill: 'Scale across locations',
+      description: 'AI-powered insights and a dedicated team behind every location.',
+      pill: 'Enterprise',
       features: [
-        'Everything in Scale, plus:',
-        'Org-level dashboard',
-        { text: 'User roles & permissions', tooltip: 'Admin, manager, and crew access levels' },
-        'API access',
-        { text: 'Custom integrations & migration', tooltip: 'API-based connectors, data migration support' },
-        { text: 'White-glove onboarding', tooltip: 'Dedicated setup, training, and go-live support' },
-        { text: 'Dedicated success manager', tooltip: 'Single point of contact for strategy and support' }
+        'Everything in Scale',
+        { text: 'AI-powered check-in and review insights', tooltip: 'AI highlights patterns and opportunities from check-ins and reviews across locations.' },
+        { text: 'Custom integrations', tooltip: 'Custom API integrations and tailored workflows for complex stacks.' },
+        { text: 'Dedicated account manager', tooltip: 'A single point of contact for rollout, strategy, and ongoing success.' },
+        { text: 'SLA guarantee', tooltip: 'Priority handling with service-level commitments for support/uptime.' },
+        { text: 'Add locations and AI credits on demand', tooltip: 'Scale locations and AI usage as needed without replatforming.' }
       ]
     }
   };
@@ -239,18 +239,62 @@
                 ${renderPricingCard(pricingData.enterprise, isYearly)}
               </div>
             </div>
-            <div class="jcp-pricing-notes">
-              <p class="jcp-pricing-notes-label">Location pricing</p>
-              <ul class="jcp-pricing-notes-list">
-                <li class="jcp-pricing-note-item">
-                  <img src="${icon('map-pin')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
-                  <span>Each plan covers <strong>one</strong> operating location at the price above. Add more for <strong>$100/month</strong> per location.</span>
-                </li>
-                <li class="jcp-pricing-note-item">
-                  <img src="${icon('users')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
-                  <span>Unlimited users per location. You are not billed per seat.</span>
-                </li>
-              </ul>
+            <div class="jcp-pricing-extras">
+              <div class="jcp-pricing-extras__callout">
+                <p class="jcp-pricing-notes-label">Location pricing</p>
+                <ul class="jcp-pricing-notes-list">
+                  <li class="jcp-pricing-note-item">
+                    <img src="${icon('map-pin')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
+                    <span>Each plan covers <strong>one</strong> operating location at the price above. Add an additional location for <strong>$199/month</strong>.</span>
+                  </li>
+                  <li class="jcp-pricing-note-item">
+                    <img src="${icon('users')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
+                    <span>Unlimited users per location. You are not billed per seat.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="jcp-addons">
+                <div class="jcp-addons__head">
+                  <p class="jcp-pricing-notes-label">Add-ons</p>
+                  <h3 class="jcp-addons__title">Extend your plan as you grow</h3>
+                  <p class="jcp-addons__sub">Add capacity when you need it—no sales call required.</p>
+                </div>
+
+                <div class="jcp-addons__grid">
+                  <article class="jcp-addon-card">
+                    <div class="jcp-addon-card__top">
+                      <div class="jcp-addon-card__icon">
+                        <img src="${icon('map')}" alt="" width="18" height="18" />
+                      </div>
+                      <div class="jcp-addon-card__meta">
+                        <div class="jcp-addon-card__name">Additional Location</div>
+                        <div class="jcp-addon-card__note">Available on Scale and Enterprise</div>
+                      </div>
+                      <div class="jcp-addon-card__price">
+                        <span class="jcp-addon-card__amount">$199</span><span class="jcp-addon-card__period">/mo</span>
+                      </div>
+                    </div>
+                    <div class="jcp-addon-card__body">Add another operating location under the same organization.</div>
+                  </article>
+
+                  <article class="jcp-addon-card jcp-addon-card--enterprise">
+                    <div class="jcp-addon-card__top">
+                      <div class="jcp-addon-card__icon">
+                        <img src="${icon('sparkles')}" alt="" width="18" height="18" />
+                      </div>
+                      <div class="jcp-addon-card__meta">
+                        <div class="jcp-addon-card__name">AI Credits Pack</div>
+                        <div class="jcp-addon-card__note">Enterprise only</div>
+                      </div>
+                      <div class="jcp-addon-card__price">
+                        <span class="jcp-addon-card__amount">$29</span><span class="jcp-addon-card__period">one-time</span>
+                      </div>
+                    </div>
+                    <div class="jcp-addon-card__body">Top up AI usage for insights and advanced automation.</div>
+                  </article>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -285,7 +329,7 @@
               <div class="jcp-compare-row">
                 <div>Multi-location capture</div>
                 <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
-                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
                 <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
               </div>
 
@@ -324,7 +368,7 @@
               </div>
               <div class="jcp-compare-row">
                 <div>Automated review sequences</div>
-                <div><img src="${icon('x')}" class="lucide-icon lucide-icon-xs" alt="Not available"></div>
+                <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
                 <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
                 <div><img src="${icon('check')}" class="lucide-icon lucide-icon-xs" alt="Included"></div>
               </div>
