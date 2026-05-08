@@ -239,63 +239,60 @@
                 ${renderPricingCard(pricingData.enterprise, isYearly)}
               </div>
             </div>
-            <div class="jcp-pricing-extras">
-              <div class="jcp-pricing-extras__callout">
-                <p class="jcp-pricing-notes-label">Location pricing</p>
-                <ul class="jcp-pricing-notes-list">
-                  <li class="jcp-pricing-note-item">
-                    <img src="${icon('map-pin')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
-                    <span>Each plan covers <strong>one</strong> operating location at the price above. Add an additional location for <strong>$199/month</strong>.</span>
-                  </li>
-                  <li class="jcp-pricing-note-item">
-                    <img src="${icon('users')}" alt="" class="jcp-pricing-note-icon" width="18" height="18" />
-                    <span>Unlimited users per location. You are not billed per seat.</span>
-                  </li>
-                </ul>
+            <section class="jcp-pricing-extras" aria-label="Add-ons and plan details">
+              <div class="jcp-pricing-extras__head">
+                <p class="jcp-pricing-notes-label">Add-ons</p>
+                <h3 class="jcp-addons__title">Extend your plan as you grow</h3>
+                <p class="jcp-addons__sub">Each plan includes <strong>one</strong> operating location. Add another location for <strong>$199/month</strong> when you’re ready.</p>
               </div>
 
-              <div class="jcp-addons">
-                <div class="jcp-addons__head">
-                  <p class="jcp-pricing-notes-label">Add-ons</p>
-                  <h3 class="jcp-addons__title">Extend your plan as you grow</h3>
-                  <p class="jcp-addons__sub">Add capacity when you need it—no sales call required.</p>
-                </div>
+              <div class="jcp-addons__grid jcp-addons__grid--three">
+                <article class="jcp-addon-card jcp-addon-card--included">
+                  <div class="jcp-addon-card__top">
+                    <div class="jcp-addon-card__icon">
+                      <img src="${icon('users')}" alt="" width="18" height="18" />
+                    </div>
+                    <div class="jcp-addon-card__meta">
+                      <div class="jcp-addon-card__name">Unlimited users per location</div>
+                      <div class="jcp-addon-card__note">Included in every plan</div>
+                    </div>
+                  </div>
+                  <div class="jcp-addon-card__body">You are not billed per seat. Invite your whole team.</div>
+                </article>
 
-                <div class="jcp-addons__grid">
-                  <article class="jcp-addon-card">
-                    <div class="jcp-addon-card__top">
-                      <div class="jcp-addon-card__icon">
-                        <img src="${icon('map')}" alt="" width="18" height="18" />
-                      </div>
-                      <div class="jcp-addon-card__meta">
-                        <div class="jcp-addon-card__name">Additional Location</div>
-                        <div class="jcp-addon-card__note">Available on Scale and Enterprise</div>
-                      </div>
+                <article class="jcp-addon-card">
+                  <div class="jcp-addon-card__top">
+                    <div class="jcp-addon-card__icon">
+                      <img src="${icon('map')}" alt="" width="18" height="18" />
+                    </div>
+                    <div class="jcp-addon-card__meta">
+                      <div class="jcp-addon-card__name">Additional Location</div>
+                      <div class="jcp-addon-card__note">Available on Scale and Enterprise</div>
                       <div class="jcp-addon-card__price">
                         <span class="jcp-addon-card__amount">$199</span><span class="jcp-addon-card__period">/mo</span>
                       </div>
                     </div>
-                    <div class="jcp-addon-card__body">Add another operating location under the same organization.</div>
-                  </article>
+                  </div>
+                  <div class="jcp-addon-card__body">Add another operating location under the same organization.</div>
+                </article>
 
-                  <article class="jcp-addon-card jcp-addon-card--enterprise">
-                    <div class="jcp-addon-card__top">
-                      <div class="jcp-addon-card__icon">
-                        <img src="${icon('sparkles')}" alt="" width="18" height="18" />
-                      </div>
-                      <div class="jcp-addon-card__meta">
-                        <div class="jcp-addon-card__name">AI Credits Pack</div>
-                        <div class="jcp-addon-card__note">Enterprise only</div>
-                      </div>
+                <article class="jcp-addon-card jcp-addon-card--enterprise">
+                  <div class="jcp-addon-card__top">
+                    <div class="jcp-addon-card__icon">
+                      <img src="${icon('sparkles')}" alt="" width="18" height="18" />
+                    </div>
+                    <div class="jcp-addon-card__meta">
+                      <div class="jcp-addon-card__name">AI Credits Pack</div>
+                      <div class="jcp-addon-card__note">Enterprise only</div>
                       <div class="jcp-addon-card__price">
                         <span class="jcp-addon-card__amount">$29</span><span class="jcp-addon-card__period">one-time</span>
                       </div>
                     </div>
-                    <div class="jcp-addon-card__body">Top up AI usage for insights and advanced automation.</div>
-                  </article>
-                </div>
+                  </div>
+                  <div class="jcp-addon-card__body">Top up AI usage for insights and advanced automation.</div>
+                </article>
               </div>
-            </div>
+            </section>
           </div>
         </section>
 

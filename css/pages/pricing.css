@@ -97,26 +97,19 @@
 /* Pricing extras: location pricing + add-ons */
 .jcp-pricing-extras {
   margin-top: var(--jcp-space-3xl);
-  padding: var(--jcp-space-2xl);
+  padding: var(--jcp-space-3xl);
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: var(--jcp-radius-2xl);
   box-shadow: var(--jcp-shadow-sm);
-  display: grid;
-  grid-template-columns: 1.05fr 1.25fr;
+  display: flex;
+  flex-direction: column;
   gap: var(--jcp-space-xl);
-  align-items: stretch;
 }
 
-.jcp-pricing-extras__callout {
-  padding: var(--jcp-space-xl);
+.jcp-pricing-extras__head {
   text-align: left;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  background: linear-gradient(135deg, rgba(255, 80, 62, 0.06), rgba(255, 255, 255, 0));
-  border-radius: var(--jcp-radius-xl);
-  border: 1px solid rgba(255, 80, 62, 0.18);
+  max-width: 760px;
 }
 .jcp-pricing-notes-label {
   font-size: var(--jcp-font-size-sm);
@@ -127,23 +120,7 @@
   margin: 0 0 var(--jcp-space-md) 0;
 }
 
-.jcp-pricing-extras__callout .jcp-pricing-notes-label {
-  margin-bottom: var(--jcp-space-sm);
-}
-
-.jcp-pricing-notes-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--jcp-space-md);
-  max-width: none;
-  font-size: var(--jcp-font-size-sm);
-  color: var(--jcp-color-text-secondary);
-  line-height: 1.55;
-  text-align: left;
-}
+/* Keep label styles; notes list no longer used in extras */
 .jcp-pricing-note-item {
   display: flex;
   align-items: flex-start;
@@ -166,14 +143,7 @@
 }
 @media (max-width: 768px) {
   .jcp-pricing-extras {
-    grid-template-columns: 1fr;
-    padding: var(--jcp-space-xl);
-  }
-
-  .jcp-pricing-notes-list {
-    grid-template-columns: 1fr;
-    gap: var(--jcp-space-md);
-    max-width: none;
+    padding: var(--jcp-space-2xl);
   }
 }
 
@@ -213,6 +183,10 @@
   gap: var(--jcp-space-md);
 }
 
+.jcp-addons__grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .jcp-addon-card {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.10);
@@ -224,6 +198,11 @@
   gap: var(--jcp-space-md);
   min-width: 0;
   transition: transform var(--jcp-transition-fast), box-shadow var(--jcp-transition-fast), border-color var(--jcp-transition-fast);
+}
+
+.jcp-addon-card--included {
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.03), rgba(255, 255, 255, 0));
+  border-color: rgba(15, 23, 42, 0.10);
 }
 
 .jcp-addon-card:hover {
