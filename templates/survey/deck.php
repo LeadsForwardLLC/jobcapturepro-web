@@ -30,8 +30,7 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
           <div class="deck-intro-copy">
             <h2 id="deckSlide1Title">Every completed job should help you win the next one.</h2>
             <p class="deck-lead">
-              Most job photos never leave a phone.
-              That's missed trust, missed visibility, and missed calls.
+              Capture real work once, and JobCapturePro turns it into proof that shows up across your website, directory, and search—so customers choose you faster.
             </p>
             <div class="deck-signal" aria-hidden="true">
               <span class="deck-signal-pill">From 1 job → more calls</span>
@@ -40,7 +39,6 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
 
           <div class="deck-intro-flow">
             <div class="deck-flow-meta">
-              <div class="deck-connector-line" aria-hidden="true"></div>
               <p class="deck-compound-label">Here's how that compounds:</p>
             </div>
 

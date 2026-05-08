@@ -539,6 +539,10 @@ body.survey-only #jcp-app {
   align-items: start;
 }
 
+.deck-slide--intro h2 {
+  line-height: 1.06;
+}
+
 .deck-slide--intro .deck-intro-copy {
   padding-right: 10px;
 }
@@ -564,22 +568,23 @@ body.survey-only #jcp-app {
 
 .deck-slide--intro .deck-intro-flow {
   position: relative;
-  border-radius: 18px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background:
-    radial-gradient(600px 320px at 30% -10%, rgba(255, 80, 62, 0.16), transparent 55%),
-    radial-gradient(520px 260px at 110% 20%, rgba(255, 138, 61, 0.14), transparent 55%),
-    linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(255, 255, 255, 0.95));
-  padding: 16px 16px 14px;
-  overflow: hidden;
+  padding: 2px 0 0;
 }
+.deck-slide--intro .deck-intro-flow::before {
+  content: '';
+  position: absolute;
+  inset: -24px -18px -24px -18px;
+  border-radius: 26px;
+  background:
+    radial-gradient(600px 320px at 30% -10%, rgba(255, 80, 62, 0.14), transparent 55%),
+    radial-gradient(520px 260px at 110% 20%, rgba(255, 138, 61, 0.12), transparent 55%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.deck-slide--intro .deck-intro-flow > * { position: relative; }
 
 .deck-slide--intro .deck-flow-meta {
   margin-bottom: 12px;
-}
-.deck-slide--intro .deck-flow-meta .deck-connector-line {
-  max-width: 160px;
-  background: linear-gradient(90deg, rgba(148, 163, 184, 0.55), rgba(226, 232, 240, 0.9));
 }
 .deck-slide--intro .deck-flow-meta .deck-compound-label {
   margin-bottom: 0;
@@ -595,7 +600,7 @@ body.survey-only #jcp-app {
 
 .deck-slide--intro .deck-flow-line {
   position: absolute;
-  left: 22px;
+  left: 27px;
   top: 8px;
   bottom: 8px;
   width: 2px;

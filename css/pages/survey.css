@@ -14,6 +14,10 @@
   align-items: start;
 }
 
+.deck-slide--intro h2 {
+  line-height: 1.06;
+}
+
 .deck-slide--intro .deck-intro-copy {
   padding-right: 10px;
 }
@@ -43,23 +47,25 @@
 
 .deck-slide--intro .deck-intro-flow {
   position: relative;
-  border-radius: 20px;
-  border: 1px solid rgba(226, 232, 240, 0.95);
+  padding: 2px 0 0;
+}
+.deck-slide--intro .deck-intro-flow::before {
+  content: '';
+  position: absolute;
+  inset: -24px -18px -24px -18px;
+  border-radius: 26px;
   background:
-    radial-gradient(760px 360px at 22% -12%, rgba(255, 80, 62, 0.18), transparent 58%),
-    radial-gradient(620px 320px at 110% 30%, rgba(255, 138, 61, 0.16), transparent 55%),
-    linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.96));
-  padding: 16px 16px 14px;
-  overflow: hidden;
-  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.10);
+    radial-gradient(760px 360px at 22% -12%, rgba(255, 80, 62, 0.14), transparent 58%),
+    radial-gradient(620px 320px at 110% 30%, rgba(255, 138, 61, 0.12), transparent 55%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.deck-slide--intro .deck-intro-flow > * {
+  position: relative;
 }
 
 .deck-slide--intro .deck-flow-meta {
   margin-bottom: 12px;
-}
-.deck-slide--intro .deck-flow-meta .deck-connector-line {
-  max-width: 160px;
-  background: linear-gradient(90deg, rgba(148, 163, 184, 0.55), rgba(226, 232, 240, 0.9));
 }
 .deck-slide--intro .deck-flow-meta .deck-compound-label {
   margin-bottom: 0;
@@ -75,7 +81,7 @@
 
 .deck-slide--intro .deck-flow-line {
   position: absolute;
-  left: 22px;
+  left: 27px;
   top: 8px;
   bottom: 8px;
   width: 2px;
