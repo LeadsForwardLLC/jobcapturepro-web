@@ -536,35 +536,17 @@ body.survey-only #jcp-app {
   line-height: 1.06;
 }
 
-.deck-slide--intro .deck-signal {
-  margin-top: 14px;
-}
-
-.deck-slide--intro .deck-signal-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 16px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-  color: #7c2d12;
-  background: linear-gradient(90deg, rgba(255, 138, 61, 0.18), rgba(255, 80, 62, 0.12));
-  border: 1px solid rgba(255, 80, 62, 0.20);
-  box-shadow: 0 10px 26px rgba(255, 138, 61, 0.15);
-}
-
 .deck-slide--intro .deck-flow {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 22px;
   width: 100%;
   max-width: 100%;
   margin-left: 0;
   margin-right: 0;
+  align-items: stretch;
 }
 
 .deck-slide--intro .deck-flow-card {
@@ -589,7 +571,8 @@ body.survey-only #jcp-app {
   grid-template-columns: 40px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
-  padding: 12px 12px;
+  width: 100%;
+  padding: 15px 14px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(226, 232, 240, 0.95);
@@ -631,7 +614,7 @@ body.survey-only #jcp-app {
 }
 
 .deck-slide--intro .deck-flow-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 950;
   color: #0f172a;
   letter-spacing: -0.01em;
@@ -639,8 +622,8 @@ body.survey-only #jcp-app {
 }
 .deck-slide--intro .deck-flow-sub {
   margin-top: 4px;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   color: #475569;
   font-weight: 700;
 }

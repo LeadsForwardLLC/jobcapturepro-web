@@ -30,9 +30,6 @@ $icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
         <p class="deck-lead">
           Capture real work once, and JobCapturePro turns it into proof that shows up across your website, directory, and search—so customers choose you faster.
         </p>
-        <div class="deck-signal" aria-hidden="true">
-          <span class="deck-signal-pill">From 1 job:</span>
-        </div>
 
         <div class="deck-flow deck-flow--stack" aria-label="Outcomes">
           <div class="deck-flow-card">
