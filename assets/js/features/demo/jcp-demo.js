@@ -2847,7 +2847,29 @@ function wirePostDemoPanel() {
 
 // Don't call init() immediately - wait for jcp-render.js to inject the HTML
 // jcp-render.js will call window.initDemo() after the template is loaded
-window.initDemo = init;
+window.__JCP_DEMO_INITED = window.__JCP_DEMO_INITED || false;
+window.initDemo = () => {
+  if (window.__JCP_DEMO_INITED) return;
+  window.__JCP_DEMO_INITED = true;
+  init();
+};
+
+// Defensive: if template loads before this script (race), auto-init once DOM has demo UI
+function jcpMaybeAutoInitDemo() {
+  if (window.__JCP_DEMO_INITED) return;
+  if (document.getElementById('btnStartDemo') || document.getElementById('home-screen')) {
+    window.initDemo();
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(jcpMaybeAutoInitDemo, 0);
+    setTimeout(jcpMaybeAutoInitDemo, 250);
+  });
+} else {
+  setTimeout(jcpMaybeAutoInitDemo, 0);
+  setTimeout(jcpMaybeAutoInitDemo, 250);
+}
 
 /* =========================================================
    GLOBALS (required because HTML uses inline onclick)
