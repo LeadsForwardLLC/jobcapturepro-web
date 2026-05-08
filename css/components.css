@@ -1,3 +1,99 @@
+/* =========================
+   Early Bird top banner
+========================= */
+.jcp-top-banner {
+  position: sticky;
+  top: 0;
+  z-index: var(--jcp-z-sticky);
+  width: 100%;
+  background: linear-gradient(90deg, rgba(17, 24, 39, 0.98), rgba(17, 24, 39, 0.92));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.jcp-top-banner__inner {
+  max-width: var(--jcp-container-width);
+  margin: 0 auto;
+  padding: 10px var(--jcp-space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--jcp-space-md);
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.jcp-top-banner__copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  min-width: 0;
+}
+
+.jcp-top-banner__headline {
+  color: #fff;
+}
+
+.jcp-top-banner__text {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.jcp-top-banner__code {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 80, 54, 0.14);
+  border: 1px solid rgba(255, 80, 54, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+}
+
+.jcp-top-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.jcp-top-banner__cta {
+  white-space: nowrap;
+}
+
+.jcp-top-banner__close {
+  appearance: none;
+  border: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--jcp-transition-fast), background var(--jcp-transition-fast), opacity var(--jcp-transition-fast);
+}
+
+.jcp-top-banner__close:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.jcp-top-banner__close:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .jcp-top-banner__inner {
+    padding: 10px var(--jcp-space-md);
+    min-height: 56px;
+  }
+}
+
 /**
  * Component Styles
  *

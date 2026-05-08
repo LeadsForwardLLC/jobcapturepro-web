@@ -197,10 +197,20 @@ body {
   min-height: 100vh;
   min-height: 100dvh; /* iOS Safari: use dynamic viewport so content fills visible area on load */
   min-width: 0;
-  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+  padding-top: calc(var(--jcp-header-height) + var(--jcp-banner-offset, 0px) + env(safe-area-inset-top, 0px));
   word-wrap: break-word;
   overflow-wrap: break-word;
   -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+}
+
+body.has-top-banner {
+  --jcp-banner-offset: 44px;
+}
+
+@media (max-width: 640px) {
+  body.has-top-banner {
+    --jcp-banner-offset: 56px;
+  }
 }
 
 h1, h2, h3, h4 {
