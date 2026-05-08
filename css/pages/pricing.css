@@ -97,6 +97,11 @@
 /* Pricing extras: location pricing + add-ons */
 .jcp-pricing-extras {
   margin-top: var(--jcp-space-3xl);
+  padding: var(--jcp-space-2xl);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--jcp-radius-2xl);
+  box-shadow: var(--jcp-shadow-sm);
   display: grid;
   grid-template-columns: 1.05fr 1.25fr;
   gap: var(--jcp-space-xl);
@@ -104,32 +109,36 @@
 }
 
 .jcp-pricing-extras__callout {
-  padding: var(--jcp-space-xl) var(--jcp-space-2xl);
-  text-align: center;
+  padding: var(--jcp-space-xl);
+  text-align: left;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  background: var(--jcp-color-bg-secondary, #f9fafb);
+  background: linear-gradient(135deg, rgba(255, 80, 62, 0.06), rgba(255, 255, 255, 0));
   border-radius: var(--jcp-radius-xl);
-  border: 1px solid var(--jcp-color-border, #e5e7eb);
-  box-shadow: var(--jcp-shadow-sm);
+  border: 1px solid rgba(255, 80, 62, 0.18);
 }
 .jcp-pricing-notes-label {
   font-size: var(--jcp-font-size-sm);
   font-weight: var(--jcp-font-weight-semibold);
-  color: var(--jcp-color-text-secondary);
+  color: rgba(15, 23, 42, 0.62);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0 0 var(--jcp-space-md) 0;
 }
+
+.jcp-pricing-extras__callout .jcp-pricing-notes-label {
+  margin-bottom: var(--jcp-space-sm);
+}
+
 .jcp-pricing-notes-list {
   list-style: none;
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--jcp-space-lg) var(--jcp-space-3xl);
-  max-width: 900px;
+  grid-template-columns: 1fr;
+  gap: var(--jcp-space-md);
+  max-width: none;
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
   line-height: 1.55;
@@ -158,6 +167,7 @@
 @media (max-width: 768px) {
   .jcp-pricing-extras {
     grid-template-columns: 1fr;
+    padding: var(--jcp-space-xl);
   }
 
   .jcp-pricing-notes-list {
@@ -169,16 +179,16 @@
 
 /* Add-ons block */
 .jcp-addons {
-  padding: var(--jcp-space-xl) var(--jcp-space-2xl);
-  background: linear-gradient(135deg, rgba(255, 80, 62, 0.06), rgba(17, 24, 39, 0.02));
-  border: 1px solid rgba(255, 80, 62, 0.14);
-  border-radius: var(--jcp-radius-xl);
-  box-shadow: var(--jcp-shadow-sm);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .jcp-addons__head {
   text-align: left;
-  margin-bottom: var(--jcp-space-lg);
+  margin-bottom: var(--jcp-space-md);
 }
 
 .jcp-addons__title {
@@ -200,15 +210,15 @@
 .jcp-addons__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--jcp-space-lg);
+  gap: var(--jcp-space-md);
 }
 
 .jcp-addon-card {
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.10);
   border-radius: var(--jcp-radius-xl);
-  padding: var(--jcp-space-lg);
-  box-shadow: var(--jcp-shadow-xs);
+  padding: var(--jcp-space-xl);
+  box-shadow: var(--jcp-shadow-sm);
   display: flex;
   flex-direction: column;
   gap: var(--jcp-space-md);
@@ -217,27 +227,32 @@
 }
 
 .jcp-addon-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--jcp-shadow-md);
-  border-color: rgba(255, 80, 62, 0.28);
+  transform: translateY(-1px);
+  box-shadow: var(--jcp-shadow-lg);
+  border-color: rgba(255, 80, 62, 0.26);
 }
 
 .jcp-addon-card__top {
   display: grid;
-  grid-template-columns: 40px 1fr auto;
+  grid-template-columns: 44px 1fr;
   gap: var(--jcp-space-md);
-  align-items: center;
+  align-items: start;
 }
 
 .jcp-addon-card__icon {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 80, 62, 0.10);
-  border: 1px solid rgba(255, 80, 62, 0.18);
+  background: rgba(255, 80, 62, 0.12);
+  border: 1px solid rgba(255, 80, 62, 0.22);
+}
+
+.jcp-addon-card__icon img {
+  width: 20px;
+  height: 20px;
 }
 
 .jcp-addon-card__meta {
@@ -257,15 +272,19 @@
 }
 
 .jcp-addon-card__price {
+  margin-top: var(--jcp-space-md);
   display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-  white-space: nowrap;
-  color: var(--jcp-color-text-primary);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  width: fit-content;
 }
 
 .jcp-addon-card__amount {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: var(--jcp-font-weight-extrabold);
 }
 
@@ -279,6 +298,7 @@
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
   line-height: 1.6;
+  margin-top: 2px;
 }
 
 .jcp-addon-card--enterprise .jcp-addon-card__icon {
