@@ -35,12 +35,30 @@
     const email = (u.email || '').trim();
     const company = (u.businessName || '').trim();
     const businessType = (u.niche || '').trim();
+    const fullName = [first, last].filter(Boolean).join(' ').trim();
 
+    // Account step
     if (first) params.first_name = first;
     if (last) params.last_name = last;
     if (email) params.email = email;
-    if (company) params.company = company;
-    if (businessType) params.business_type = businessType;
+    if (fullName) {
+      params.full_name = fullName; // legacy / snake_case
+      params.fullName = fullName;  // likely app key
+      params.name = fullName;      // compatibility
+    }
+
+    // Org step
+    if (company) {
+      params.company = company;                 // legacy
+      params.organization_name = company;       // snake_case
+      params.organizationName = company;        // likely app key
+    }
+    if (businessType) {
+      params.business_type = businessType;      // legacy
+      params.industry = businessType;           // likely app label
+      params.service_industry = businessType;   // snake_case variant
+      params.serviceIndustry = businessType;    // camelCase variant
+    }
 
     const demoSession = readDemoSession();
     if (demoSession) params.demo_session = demoSession;

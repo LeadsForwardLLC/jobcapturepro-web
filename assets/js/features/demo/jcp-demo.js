@@ -73,7 +73,24 @@ function jcpDemoOnboardingHandoffQuery(utmContent) {
     if (fn) extra.first_name = fn;
     if (ln) extra.last_name = ln;
     const fullName = [demoUser.firstName, demoUser.lastName].filter(Boolean).join(' ').trim();
-    if (fullName) extra.full_name = fullName;
+    if (fullName) {
+      extra.full_name = fullName;
+      extra.fullName = fullName;
+      extra.name = fullName;
+    }
+    const company = (demoUser.businessName || '').trim();
+    if (company) {
+      extra.company = company;
+      extra.organization_name = company;
+      extra.organizationName = company;
+    }
+    const industry = (demoUser.niche || '').trim();
+    if (industry) {
+      extra.business_type = industry;
+      extra.industry = industry;
+      extra.service_industry = industry;
+      extra.serviceIndustry = industry;
+    }
   } catch (e) {}
   return extra;
 }
