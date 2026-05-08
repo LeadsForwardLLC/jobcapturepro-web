@@ -433,6 +433,12 @@ function initDirectory() {
 
   if (!grid) return;
 
+  // Ensure the demo user's listing is visible in the main directory results.
+  const demoListing = getDemoListing();
+  if (demoListing && !filteredListings.some((l) => l && (l.id === demoListing.id || l.name === demoListing.name))) {
+    filteredListings = [demoListing, ...filteredListings];
+  }
+
   grid.classList.remove("list-view");
   if (gridViewBtn) gridViewBtn.classList.add("active");
   if (listViewBtn) listViewBtn.classList.remove("active");

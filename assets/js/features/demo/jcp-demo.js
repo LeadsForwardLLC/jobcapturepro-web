@@ -2662,7 +2662,8 @@ function openDirectoryProfileFromDemo() {
     })
   );
 
-  window.location.href = `${baseUrl}/directory/contractor-demo`;
+  // Go to the main Directory page (not a single listing)
+  window.location.href = `${baseUrl}/directory/`;
 }
 
 /* =========================================================
@@ -2697,10 +2698,10 @@ function showPostDemoPanel() {
   const navBtn = document.getElementById('dynamicBackBtn');
   if (navBtn) {
     navBtn.style.display = 'inline-flex';
-    navBtn.setAttribute('href', `${baseUrl}/directory/contractor-demo`);
+    navBtn.setAttribute('href', `${baseUrl}/directory/`);
     const label = navBtn.querySelector('span');
     if (label) {
-      label.textContent = 'View Your Directory Listing';
+      label.textContent = 'View the Directory';
     }
     const icon = navBtn.querySelector('svg');
     if (icon) {
@@ -2711,10 +2712,10 @@ function showPostDemoPanel() {
   const mobileNavBtn = document.getElementById('mobileDynamicBackBtn');
   if (mobileNavBtn) {
     mobileNavBtn.style.display = 'inline-flex';
-    mobileNavBtn.setAttribute('href', `${baseUrl}/directory/contractor-demo`);
+    mobileNavBtn.setAttribute('href', `${baseUrl}/directory/`);
     const label = mobileNavBtn.querySelector('span');
     if (label) {
-      label.textContent = 'View Your Directory Listing';
+      label.textContent = 'View the Directory';
     }
     const icon = mobileNavBtn.querySelector('svg');
     if (icon) {
