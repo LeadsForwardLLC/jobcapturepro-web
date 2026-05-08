@@ -90,6 +90,35 @@ function jcpDemoOnboardingHandoffQuery(utmContent) {
       extra.industry = industry;
       extra.service_industry = industry;
       extra.serviceIndustry = industry;
+
+      // Step 2 expects a select value like "plumbing" or "cleaning-services".
+      const allowed = new Set([
+        'hvac',
+        'plumbing',
+        'cleaning-services',
+        'pool-service',
+        'roofing',
+        'solar',
+        'carpet-cleaning',
+        'foundation-repair',
+        'dumpster-rental',
+        'tree-service',
+        'deck-builder',
+        'home-inspection',
+        'home-windows',
+      ]);
+      const slug = industry
+        .toLowerCase()
+        .replace(/['"]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      if (allowed.has(industry)) {
+        extra.industryId = industry;
+        extra.industry_id = industry;
+      } else if (allowed.has(slug)) {
+        extra.industryId = slug;
+        extra.industry_id = slug;
+      }
     }
   } catch (e) {}
   return extra;

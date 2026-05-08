@@ -42,40 +42,22 @@ $demo_btn      = 'Next step';
       <label for="niche">Business type</label>
       <select id="niche" class="survey-input" required>
         <option value="">Select your business type</option>
-        <optgroup label="Building & mechanical">
-          <option value="plumbing">Plumbing</option>
+        <optgroup label="Popular services">
           <option value="hvac">HVAC</option>
-          <option value="electrical">Electrical</option>
+          <option value="plumbing">Plumbing</option>
+          <option value="cleaning-services">Cleaning Services</option>
+          <option value="pool-service">Pool Service</option>
           <option value="roofing">Roofing</option>
+          <option value="solar">Solar</option>
         </optgroup>
-        <optgroup label="General contracting & remodeling">
-          <option value="general-contractor">General Contractor</option>
-          <option value="handyman">Handyman</option>
-          <option value="remodeling">Remodeling / Renovation</option>
-        </optgroup>
-        <optgroup label="Outdoor & property">
-          <option value="landscaping">Landscaping</option>
-          <option value="lawn-care">Lawn care</option>
-          <option value="tree-service">Tree service</option>
-          <option value="pest-control">Pest control</option>
-          <option value="fencing">Fencing</option>
-        </optgroup>
-        <optgroup label="Cleaning & restoration">
-          <option value="carpet-cleaning">Carpet cleaning</option>
-          <option value="house-cleaning">House cleaning</option>
-          <option value="pressure-washing">Pressure washing</option>
-          <option value="painting">Painting (interior / exterior)</option>
-        </optgroup>
-        <optgroup label="Other trades">
-          <option value="flooring">Flooring</option>
-          <option value="windows-doors">Windows & doors</option>
-          <option value="insulation">Insulation</option>
-          <option value="garage-doors">Garage doors</option>
-          <option value="pool-service">Pool service</option>
-          <option value="moving-junk">Moving / Junk removal</option>
-        </optgroup>
-        <optgroup label="Other">
-          <option value="other">Other home service</option>
+        <optgroup label="More services">
+          <option value="carpet-cleaning">Carpet Cleaning</option>
+          <option value="foundation-repair">Foundation Repair</option>
+          <option value="dumpster-rental">Dumpster Rental</option>
+          <option value="tree-service">Tree Service</option>
+          <option value="deck-builder">Deck Builder</option>
+          <option value="home-inspection">Home Inspection</option>
+          <option value="home-windows">Home Windows</option>
         </optgroup>
       </select>
     </div>

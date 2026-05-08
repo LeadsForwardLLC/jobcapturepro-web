@@ -25,6 +25,53 @@
     }
   };
 
+  const normalizeIndustryId = (raw) => {
+    const val = (raw || '').toString().trim().toLowerCase();
+    if (!val) return '';
+
+    // Allowed values inferred from the app's Step 2 <select>.
+    const allowed = new Set([
+      'hvac',
+      'plumbing',
+      'cleaning-services',
+      'pool-service',
+      'roofing',
+      'solar',
+      'carpet-cleaning',
+      'foundation-repair',
+      'dumpster-rental',
+      'tree-service',
+      'deck-builder',
+      'home-inspection',
+      'home-windows',
+    ]);
+
+    // Direct match.
+    if (allowed.has(val)) return val;
+
+    // Common legacy/demo values → app ids.
+    const alias = {
+      'cleaning service': 'cleaning-services',
+      'cleaning services': 'cleaning-services',
+      'house-cleaning': 'cleaning-services',
+      'home-windows': 'home-windows',
+      'windows-doors': 'home-windows',
+      'windows & doors': 'home-windows',
+      'home windows': 'home-windows',
+      'deck builder': 'deck-builder',
+      'tree service': 'tree-service',
+      'pool service': 'pool-service',
+    };
+    if (alias[val]) return alias[val];
+
+    // Basic slugify attempt (for labels like "Cleaning Services").
+    const slug = val
+      .replace(/['"]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return allowed.has(slug) ? slug : '';
+  };
+
   const buildHandoffParams = () => {
     const u = readDemoUser();
     if (!u) return null;
@@ -52,12 +99,19 @@
       params.company = company;                 // legacy
       params.organization_name = company;       // snake_case
       params.organizationName = company;        // likely app key
+      params.organizationName = company;        // explicit: matches Step 2 input id/key
     }
     if (businessType) {
       params.business_type = businessType;      // legacy
       params.industry = businessType;           // likely app label
       params.service_industry = businessType;   // snake_case variant
       params.serviceIndustry = businessType;    // camelCase variant
+
+      const industryId = normalizeIndustryId(businessType);
+      if (industryId) {
+        params.industryId = industryId;         // explicit: matches Step 2 select id/key
+        params.industry_id = industryId;        // snake_case variant
+      }
     }
 
     const demoSession = readDemoSession();
