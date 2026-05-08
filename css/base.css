@@ -207,6 +207,16 @@ body.has-top-banner {
   --jcp-banner-offset: 44px;
 }
 
+body.admin-bar {
+  --jcp-adminbar-offset: 32px;
+}
+
+@media (max-width: 782px) {
+  body.admin-bar {
+    --jcp-adminbar-offset: 46px;
+  }
+}
+
 @media (max-width: 640px) {
   body.has-top-banner {
     --jcp-banner-offset: 56px;

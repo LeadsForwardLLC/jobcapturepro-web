@@ -40,7 +40,7 @@ $body_classes = 'jcp-global-nav-active' . ( $show_earlybird_banner ? ' has-top-b
           <span class="jcp-top-banner__code">Code: <strong>EARLYBIRD</strong></span>
         </div>
         <div class="jcp-top-banner__actions">
-          <a class="btn btn-primary btn-sm jcp-top-banner__cta" href="<?php echo esc_url( $earlybird_url ); ?>">Get Started →</a>
+          <a class="jcp-top-banner__cta" href="<?php echo esc_url( $earlybird_url ); ?>">Claim offer →</a>
           <button type="button" class="jcp-top-banner__close" id="jcpEarlybirdBannerClose" aria-label="<?php esc_attr_e( 'Dismiss banner', 'jcp-core' ); ?>">
             <span aria-hidden="true">×</span>
           </button>

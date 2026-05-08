@@ -2,13 +2,24 @@
    Early Bird top banner
 ========================= */
 .jcp-top-banner {
-  position: sticky;
-  top: 0;
-  z-index: var(--jcp-z-sticky);
+  position: fixed;
+  top: var(--jcp-adminbar-offset, 0px);
+  left: 0;
+  right: 0;
+  z-index: calc(var(--jcp-z-sticky) + 5);
   width: 100%;
   background: linear-gradient(90deg, rgba(17, 24, 39, 0.98), rgba(17, 24, 39, 0.92));
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
+}
+
+/* Push fixed header below the fixed banner (and WP admin bar when present). */
+body.has-top-banner .directory-header {
+  top: calc(var(--jcp-adminbar-offset, 0px) + var(--jcp-banner-offset, 0px)) !important;
+}
+
+body.admin-bar:not(.has-top-banner) .directory-header {
+  top: var(--jcp-adminbar-offset, 0px) !important;
 }
 
 .jcp-top-banner__inner {
@@ -60,6 +71,29 @@
 
 .jcp-top-banner__cta {
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: transform var(--jcp-transition-fast), background var(--jcp-transition-fast), border-color var(--jcp-transition-fast);
+}
+
+.jcp-top-banner__cta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.jcp-top-banner__cta:active {
+  transform: translateY(0);
 }
 
 .jcp-top-banner__close {
