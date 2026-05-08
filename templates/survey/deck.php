@@ -8,6 +8,9 @@ $icon_layout = esc_url( jcp_core_icon( 'layout-list' ) );
 $icon_map   = esc_url( jcp_core_icon( 'map-pin' ) );
 $icon_social = esc_url( jcp_core_icon( 'message-square' ) );
 $icon_dir   = esc_url( jcp_core_icon( 'map' ) );
+$icon_camera = esc_url( jcp_core_icon( 'camera' ) );
+$icon_shield = esc_url( jcp_core_icon( 'shield-check' ) );
+$icon_phone  = esc_url( jcp_core_icon( 'phone-call' ) );
 ?>
 <section class="survey-deck" id="surveyDeck">
   <div class="deck">
@@ -22,19 +25,58 @@ $icon_dir   = esc_url( jcp_core_icon( 'map' ) );
     </div>
 
     <div class="deck-slides" id="deckSlides">
-      <article class="deck-slide is-active">
-        <h2 id="deckSlide1Title">Every completed job should help you win the next one.</h2>
-        <p class="deck-lead">
-          Most job photos never leave a phone.
-          That's missed trust, missed visibility, and missed calls.
-        </p>
-        <div class="deck-compound-wrap">
-          <div class="deck-connector-line" aria-hidden="true"></div>
-          <p class="deck-compound-label">Here's how that compounds:</p>
-          <div class="deck-list">
-            <div class="deck-bullet">More proof builds trust faster</div>
-            <div class="deck-bullet">More trust leads to more calls</div>
-            <div class="deck-bullet">More calls mean more booked jobs</div>
+      <article class="deck-slide deck-slide--intro is-active">
+        <div class="deck-intro">
+          <div class="deck-intro-copy">
+            <h2 id="deckSlide1Title">Every completed job should help you win the next one.</h2>
+            <p class="deck-lead">
+              Most job photos never leave a phone.
+              That's missed trust, missed visibility, and missed calls.
+            </p>
+            <div class="deck-signal" aria-hidden="true">
+              <span class="deck-signal-pill">From 1 job → more calls</span>
+            </div>
+          </div>
+
+          <div class="deck-intro-flow">
+            <div class="deck-flow-meta">
+              <div class="deck-connector-line" aria-hidden="true"></div>
+              <p class="deck-compound-label">Here's how that compounds:</p>
+            </div>
+
+            <div class="deck-flow" aria-label="Compounding outcomes">
+              <div class="deck-flow-line" aria-hidden="true"></div>
+
+              <div class="deck-flow-card">
+                <span class="deck-flow-icon" aria-hidden="true">
+                  <img src="<?php echo esc_url( $icon_camera ); ?>" alt="" />
+                </span>
+                <div class="deck-flow-body">
+                  <div class="deck-flow-title">More proof builds trust faster</div>
+                  <div class="deck-flow-sub">Turn job photos into verified work customers can see.</div>
+                </div>
+              </div>
+
+              <div class="deck-flow-card">
+                <span class="deck-flow-icon" aria-hidden="true">
+                  <img src="<?php echo esc_url( $icon_shield ); ?>" alt="" />
+                </span>
+                <div class="deck-flow-body">
+                  <div class="deck-flow-title">More trust leads to more calls</div>
+                  <div class="deck-flow-sub">Show real proof where people compare options.</div>
+                </div>
+              </div>
+
+              <div class="deck-flow-card">
+                <span class="deck-flow-icon" aria-hidden="true">
+                  <img src="<?php echo esc_url( $icon_phone ); ?>" alt="" />
+                </span>
+                <div class="deck-flow-body">
+                  <div class="deck-flow-title">More calls mean more booked jobs</div>
+                  <div class="deck-flow-sub">Win faster decisions without discounting.</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </article>
