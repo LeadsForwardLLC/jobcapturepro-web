@@ -55,6 +55,7 @@ if ( is_admin() ) {
 function jcp_core_theme_setup(): void {
 	load_theme_textdomain( 'jcp-core', get_template_directory() . '/languages' );
 	add_theme_support( 'title-tag' );
+	add_theme_support( 'post-thumbnails' );
 }
 add_action( 'after_setup_theme', 'jcp_core_theme_setup' );
 
