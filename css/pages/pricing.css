@@ -416,36 +416,30 @@
 
 .jcp-plan-list {
   margin: 0;
-  padding-left: var(--jcp-space-lg);
+  padding: 0;
   color: var(--jcp-color-text-secondary);
-  display: grid;
-  gap: var(--jcp-space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   list-style: none;
 }
 
-.jcp-plan-list li {
-  font-size: var(--jcp-font-size-base);
-  line-height: 1.6;
+.jcp-plan-feature {
   display: flex;
   align-items: flex-start;
-  gap: var(--jcp-space-sm);
-  flex-wrap: wrap;
+  gap: 8px;
+  font-size: var(--jcp-font-size-base);
+  line-height: 1.5;
 }
 
-/* Bullet for every feature (fixes missing bullets on flex/tooltip items) */
-.jcp-plan-list li::before {
-  content: '\2022';
-  color: var(--jcp-color-text-secondary);
+.jcp-plan-feature__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.jcp-plan-feature--has-tip .jcp-feature-tooltip-trigger {
   flex-shrink: 0;
-  font-weight: bold;
-}
-
-/* Feature with tooltip: text + small info icon + custom tooltip bubble */
-.jcp-plan-feature-with-tooltip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  margin-top: 3px;
 }
 .jcp-feature-tooltip-trigger {
   position: relative;

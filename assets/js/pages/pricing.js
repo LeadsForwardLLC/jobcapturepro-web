@@ -61,6 +61,8 @@
         'WordPress plugin',
         { text: 'Advanced analytics', tooltip: 'Deeper reporting across check-ins, reviews, and performance by location.' },
         { text: 'Priority support', tooltip: 'Faster responses and escalation for time-sensitive issues.' },
+        'Social media posting',
+        'Google Business Profile posting',
         'Add more locations any time'
       ],
       featured: true
@@ -73,7 +75,7 @@
       pill: 'Enterprise',
       features: [
         'Everything in Scale',
-        { text: 'AI-powered check-in and review insights', tooltip: 'AI highlights patterns and opportunities from check-ins and reviews across locations.' },
+        { text: 'AI-powered insights', tooltip: 'AI highlights patterns and opportunities from check-ins and reviews across locations.' },
         { text: 'Custom integrations', tooltip: 'Custom API integrations and tailored workflows for complex stacks.' },
         { text: 'Dedicated account manager', tooltip: 'A single point of contact for rollout, strategy, and ongoing success.' },
         { text: 'SLA guarantee', tooltip: 'Priority handling with service-level commitments for support/uptime.' },
@@ -90,11 +92,11 @@
   // Render a single feature list item (string or { text, tooltip })
   const renderFeature = (feature) => {
     if (typeof feature === 'string') {
-      return `<li>${feature}</li>`;
+      return `<li class="jcp-plan-feature"><span class="jcp-plan-feature__label">${escapeHtml(feature)}</span></li>`;
     }
     const tip = escapeHtml(feature.tooltip);
     const ariaTip = escapeAttr(feature.tooltip);
-    return `<li class="jcp-plan-feature-with-tooltip"><span>${feature.text}</span> <span class="jcp-feature-tooltip-trigger" tabindex="0" role="button" aria-label="More info: ${ariaTip}"><img src="${icon('info')}" alt="" width="14" height="14" class="jcp-feature-tooltip-icon" /><span class="jcp-feature-tooltip-bubble">${tip}</span></span></li>`;
+    return `<li class="jcp-plan-feature jcp-plan-feature--has-tip"><span class="jcp-plan-feature__label">${escapeHtml(feature.text)}</span><span class="jcp-feature-tooltip-trigger" tabindex="0" role="button" aria-label="More info: ${ariaTip}"><img src="${icon('info')}" alt="" width="14" height="14" class="jcp-feature-tooltip-icon" /><span class="jcp-feature-tooltip-bubble">${tip}</span></span></li>`;
   };
 
   // Pricing-specific FAQ items
