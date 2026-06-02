@@ -48,6 +48,7 @@ $demo_btn      = 'Next step';
           <option value="cleaning-services">Cleaning Services</option>
           <option value="pool-service">Pool Service</option>
           <option value="roofing">Roofing</option>
+          <option value="remodeling">Remodeling</option>
           <option value="solar">Solar</option>
         </optgroup>
         <optgroup label="More services">
