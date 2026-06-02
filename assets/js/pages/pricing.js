@@ -75,7 +75,7 @@
       pill: 'Enterprise',
       features: [
         'Everything in Scale',
-        { text: 'AI-powered insights', tooltip: 'AI highlights patterns and opportunities from check-ins and reviews across locations.' },
+        { text: 'AI-powered insights', tooltip: 'Patterns and opportunities from your check-ins and reviews, surfaced by AI.' },
         { text: 'Custom integrations', tooltip: 'Custom API integrations and tailored workflows for complex stacks.' },
         { text: 'Dedicated account manager', tooltip: 'A single point of contact for rollout, strategy, and ongoing success.' },
         { text: 'SLA guarantee', tooltip: 'Priority handling with service-level commitments for support/uptime.' },
