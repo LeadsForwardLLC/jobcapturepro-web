@@ -59,10 +59,10 @@
         { text: 'Multi-location support', tooltip: 'Manage multiple operating locations under one account.' },
         { text: 'CRM integration', tooltip: 'Connect systems like Housecall Pro, Workiz, QuickBooks, and CompanyCam.' },
         'WordPress plugin',
+        'Social Media posting',
+        'Google Business Profile posting',
         { text: 'Advanced analytics', tooltip: 'Deeper reporting across check-ins, reviews, and performance by location.' },
         { text: 'Priority support', tooltip: 'Faster responses and escalation for time-sensitive issues.' },
-        'Social media posting',
-        'Google Business Profile posting',
         'Add more locations any time'
       ],
       featured: true
