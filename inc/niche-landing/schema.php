@@ -155,3 +155,20 @@ function jcp_niche_document_title( array $parts ): array {
 	return $parts;
 }
 add_filter( 'document_title_parts', 'jcp_niche_document_title' );
+
+/**
+ * Override full document title (wins over SEO plugins in many cases).
+ *
+ * @param string $title Document title.
+ * @return string
+ */
+function jcp_niche_pre_get_document_title( string $title ): string {
+	if ( is_singular( 'jcp_niche_landing' ) ) {
+		return jcp_niche_seo_title( (int) get_queried_object_id() );
+	}
+	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
+		return __( 'Marketing software for home service contractors', 'jcp-core' ) . ' | ' . get_bloginfo( 'name' );
+	}
+	return $title;
+}
+add_filter( 'pre_get_document_title', 'jcp_niche_pre_get_document_title', 100 );

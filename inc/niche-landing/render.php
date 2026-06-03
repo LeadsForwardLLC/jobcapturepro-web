@@ -24,7 +24,8 @@ function jcp_niche_render_page( int $post_id ): void {
 	$niche_key = ! empty( $c['niche_key'] ) ? (string) $c['niche_key'] : get_post_field( 'post_name', $post_id );
 	$niche_key = sanitize_title( $niche_key );
 
-	echo '<main class="jcp-marketing jcp-niche" data-niche="' . esc_attr( $niche_key ) . '">';
+	echo '<main class="jcp-marketing jcp-home jcp-niche" data-niche="' . esc_attr( $niche_key ) . '">';
+	jcp_niche_render_breadcrumb( $c );
 	jcp_niche_render_hero( $c, $niche_key );
 	jcp_niche_render_what_it_is( $c );
 	jcp_niche_render_core_mechanic( $c );
@@ -41,6 +42,27 @@ function jcp_niche_render_page( int $post_id ): void {
 
 /**
  * @param array<string, mixed> $c Content.
+ */
+function jcp_niche_render_breadcrumb( array $c ): void {
+	$label = ! empty( $c['niche_label'] ) ? (string) $c['niche_label'] : '';
+	if ( $label === '' ) {
+		return;
+	}
+	$hub = get_post_type_archive_link( 'jcp_niche_landing' );
+	if ( ! $hub ) {
+		$hub = home_url( '/industries/' );
+	}
+	?>
+	<nav class="jcp-niche-breadcrumb jcp-container" aria-label="<?php esc_attr_e( 'Breadcrumb', 'jcp-core' ); ?>">
+		<a href="<?php echo esc_url( $hub ); ?>"><?php esc_html_e( 'Industries', 'jcp-core' ); ?></a>
+		<span aria-hidden="true">/</span>
+		<span><?php echo esc_html( $label ); ?></span>
+	</nav>
+	<?php
+}
+
+/**
+ * @param array<string, mixed> $c Content.
  * @param string               $niche_key Niche key.
  */
 function jcp_niche_render_hero( array $c, string $niche_key ): void {
@@ -51,9 +73,12 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	$primary   = jcp_niche_resolve_cta( $h['cta_primary'] ?? [], $niche_key );
 	$secondary = jcp_niche_resolve_cta( $h['cta_secondary'] ?? [ 'label' => 'See how it works', 'url' => '#how-it-works' ], $niche_key );
 	?>
+	$demo_url = home_url( '/demo/' );
+	$photo    = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	?>
 	<section class="jcp-section jcp-hero jcp-niche-hero">
 		<div class="jcp-container">
-			<div class="jcp-hero-grid jcp-niche-hero-grid">
+			<div class="jcp-hero-grid">
 				<div class="jcp-hero-copy hero-copy">
 					<h1 class="jcp-hero-title"><?php jcp_niche_e( (string) $h['h1'] ); ?></h1>
 					<?php if ( ! empty( $h['subheadline'] ) ) : ?>
@@ -61,7 +86,9 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 					<?php endif; ?>
 					<div class="jcp-actions directory-cta-row">
 						<?php if ( $primary['label'] !== '' ) : ?>
-							<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>" data-cta="<?php echo esc_attr( $primary['label'] ); ?>" data-cta-location="niche_hero"><?php jcp_niche_e( $primary['label'] ); ?></a>
+							<div class="jcp-hero-primary-cta">
+								<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>" data-cta="<?php echo esc_attr( $primary['label'] ); ?>" data-cta-location="niche_hero"><?php jcp_niche_e( $primary['label'] ); ?></a>
+							</div>
 						<?php endif; ?>
 						<?php if ( $secondary['label'] !== '' ) : ?>
 							<a class="btn btn-secondary" href="<?php echo esc_url( $secondary['url'] ); ?>"><?php jcp_niche_e( $secondary['label'] ); ?></a>
@@ -70,6 +97,34 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 					<?php if ( ! empty( $h['trust_line'] ) ) : ?>
 						<p class="jcp-niche-trust-line"><?php jcp_niche_e( (string) $h['trust_line'] ); ?></p>
 					<?php endif; ?>
+				</div>
+				<div class="jcp-hero-visual hero-visual">
+					<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>">
+						<div class="phone-frame hero-phone-frame">
+							<div class="phone-screen">
+								<div class="phone-content">
+									<div class="phone-header hero-phone-header">
+										<div class="phone-status-bar"><span>9:41</span></div>
+										<div class="hero-phone-live-row"><span class="hero-phone-live-badge"><?php esc_html_e( 'Live', 'jcp-core' ); ?></span></div>
+									</div>
+									<div class="phone-body hero-phone-body">
+										<div class="hero-phone-image-wrap">
+											<img src="<?php echo esc_url( $photo ); ?>" alt="" class="hero-phone-image" width="390" height="292" loading="eager" />
+										</div>
+										<div class="demo-preview-item hero-phone-card hero-phone-card-1">
+											<div class="demo-item-content">
+												<div class="demo-item-title"><?php esc_html_e( 'Job captured', 'jcp-core' ); ?></div>
+												<div class="demo-item-subtitle"><?php esc_html_e( 'Photos from the field', 'jcp-core' ); ?></div>
+											</div>
+										</div>
+									</div>
+									<div class="phone-click-hint hero-phone-cta">
+										<span><?php esc_html_e( 'Try the demo', 'jcp-core' ); ?></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -130,14 +185,24 @@ function jcp_niche_render_core_mechanic( array $c ): void {
 		return;
 	}
 	?>
+	$icons = [ 'camera', 'map', 'clock' ];
+	?>
 	<section class="jcp-section rankings-section jcp-niche-mechanic-strip" aria-label="<?php esc_attr_e( 'How it scales', 'jcp-core' ); ?>">
 		<div class="jcp-container">
-			<div class="proof-flow jcp-niche-proof-flow">
-				<?php foreach ( $items as $item ) : ?>
-					<?php if ( ! is_array( $item ) ) { continue; } ?>
+			<div class="proof-flow jcp-niche-proof-flow" id="real-job-proof">
+				<?php foreach ( $items as $i => $item ) : ?>
+					<?php
+					if ( ! is_array( $item ) ) {
+						continue;
+					}
+					$icon = $icons[ $i ] ?? 'check';
+					?>
 					<div class="proof-flow-item">
+						<div class="factor-icon-wrapper">
+							<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="factor-icon" alt="" width="24" height="24" />
+						</div>
 						<div class="proof-flow-content">
-							<div class="proof-flow-label"><?php jcp_niche_e( (string) ( $item['value'] ?? '' ) . ' ' . ( $item['label'] ?? '' ) ); ?></div>
+							<h4 class="proof-flow-label"><?php jcp_niche_e( (string) ( $item['value'] ?? '' ) . ' ' . ( $item['label'] ?? '' ) ); ?></h4>
 							<?php if ( ! empty( $item['detail'] ) ) : ?>
 								<p class="proof-flow-copy"><?php jcp_niche_e( (string) $item['detail'] ); ?></p>
 							<?php endif; ?>
@@ -446,7 +511,7 @@ function jcp_niche_render_archive(): void {
 		]
 	);
 	?>
-	<main class="jcp-marketing jcp-niche jcp-niche-archive">
+	<main class="jcp-marketing jcp-home jcp-niche jcp-niche-archive">
 		<section class="jcp-section jcp-hero jcp-niche-hero jcp-niche-archive-hero">
 			<div class="jcp-container">
 				<div class="jcp-hero-copy hero-copy">
