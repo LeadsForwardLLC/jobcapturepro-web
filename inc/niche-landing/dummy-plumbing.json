@@ -156,6 +156,7 @@
     "headline": "Every plumbing job should help bring in the next one",
     "subheadline": "Turn completed service calls and repairs into visible proof that keeps bringing in more homeowners",
     "cta_primary": { "label": "Start free trial", "url": "" },
+    "cta_note": "No credit card required. Setup in under 10 minutes.",
     "cta_secondary": { "label": "See how it works", "url": "/demo" }
   }
 }

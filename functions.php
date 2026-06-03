@@ -33,7 +33,9 @@ require_once get_template_directory() . '/inc/acf-config.php';
 // Industry / niche landing pages (CPT, JSON content, /industries/ archive)
 require_once get_template_directory() . '/inc/niche-landing/cpt.php';
 require_once get_template_directory() . '/inc/niche-landing/schema.php';
+require_once get_template_directory() . '/inc/niche-landing/partials.php';
 require_once get_template_directory() . '/inc/niche-landing/render.php';
+require_once get_template_directory() . '/inc/niche-landing/rest-content.php';
 require_once get_template_directory() . '/inc/niche-landing/seed.php';
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/niche-landing/admin.php';

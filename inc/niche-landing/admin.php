@@ -10,13 +10,63 @@
  */
 function jcp_niche_register_meta_box(): void {
 	add_meta_box(
-		'jcp_niche_content',
-		__( 'Industry Page Content (JSON)', 'jcp-core' ),
-		'jcp_niche_render_meta_box',
+		'jcp_niche_quick',
+		__( 'Industry Page — Quick Edit', 'jcp-core' ),
+		'jcp_niche_render_quick_meta_box',
 		'jcp_niche_landing',
 		'normal',
 		'high'
 	);
+	add_meta_box(
+		'jcp_niche_content',
+		__( 'Industry Page — Advanced JSON', 'jcp-core' ),
+		'jcp_niche_render_meta_box',
+		'jcp_niche_landing',
+		'normal',
+		'default'
+	);
+}
+
+/**
+ * Quick-edit fields (merged into JSON on save).
+ *
+ * @param WP_Post $post Post.
+ */
+function jcp_niche_render_quick_meta_box( WP_Post $post ): void {
+	$c     = jcp_niche_get_content( (int) $post->ID );
+	$edit  = add_query_arg( 'jcp_edit', '1', get_permalink( $post ) );
+	$seo   = $c['seo'] ?? [];
+	$hero  = $c['hero'] ?? [];
+	$final = $c['final_cta'] ?? [];
+	?>
+	<p>
+		<a href="<?php echo esc_url( $edit ); ?>" class="button button-primary" target="_blank" rel="noopener">
+			<?php esc_html_e( 'Edit on live page (visual editor)', 'jcp-core' ); ?>
+		</a>
+	</p>
+	<table class="form-table" role="presentation">
+		<tr>
+			<th><label for="jcp_niche_seo_title"><?php esc_html_e( 'SEO title', 'jcp-core' ); ?></label></th>
+			<td><input type="text" class="large-text" id="jcp_niche_seo_title" name="jcp_niche_quick[seo_title]" value="<?php echo esc_attr( $seo['title'] ?? '' ); ?>" /></td>
+		</tr>
+		<tr>
+			<th><label for="jcp_niche_hero_h1"><?php esc_html_e( 'Hero H1', 'jcp-core' ); ?></label></th>
+			<td><input type="text" class="large-text" id="jcp_niche_hero_h1" name="jcp_niche_quick[hero_h1]" value="<?php echo esc_attr( $hero['h1'] ?? '' ); ?>" /></td>
+		</tr>
+		<tr>
+			<th><label for="jcp_niche_hero_sub"><?php esc_html_e( 'Hero subheadline', 'jcp-core' ); ?></label></th>
+			<td><textarea class="large-text" rows="3" id="jcp_niche_hero_sub" name="jcp_niche_quick[hero_sub]"><?php echo esc_textarea( $hero['subheadline'] ?? '' ); ?></textarea></td>
+		</tr>
+		<tr>
+			<th><label for="jcp_niche_final_h"><?php esc_html_e( 'Final CTA headline', 'jcp-core' ); ?></label></th>
+			<td><input type="text" class="large-text" id="jcp_niche_final_h" name="jcp_niche_quick[final_h]" value="<?php echo esc_attr( $final['headline'] ?? '' ); ?>" /></td>
+		</tr>
+		<tr>
+			<th><label for="jcp_niche_final_btn"><?php esc_html_e( 'Final CTA button', 'jcp-core' ); ?></label></th>
+			<td><input type="text" class="regular-text" id="jcp_niche_final_btn" name="jcp_niche_quick[final_btn]" value="<?php echo esc_attr( $final['cta_primary']['label'] ?? '' ); ?>" /></td>
+		</tr>
+	</table>
+	<?php
 }
 add_action( 'add_meta_boxes', 'jcp_niche_register_meta_box' );
 
@@ -89,6 +139,31 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
+	$content = jcp_niche_get_content( $post_id );
+	if ( isset( $_POST['jcp_niche_quick'] ) && is_array( $_POST['jcp_niche_quick'] ) ) {
+		$q = wp_unslash( $_POST['jcp_niche_quick'] );
+		$content['seo']       = $content['seo'] ?? [];
+		$content['hero']      = $content['hero'] ?? [];
+		$content['final_cta'] = $content['final_cta'] ?? [];
+		$content['final_cta']['cta_primary'] = $content['final_cta']['cta_primary'] ?? [];
+		if ( ! empty( $q['seo_title'] ) ) {
+			$content['seo']['title'] = sanitize_text_field( $q['seo_title'] );
+		}
+		if ( ! empty( $q['hero_h1'] ) ) {
+			$content['hero']['h1'] = sanitize_text_field( $q['hero_h1'] );
+		}
+		if ( isset( $q['hero_sub'] ) ) {
+			$content['hero']['subheadline'] = sanitize_textarea_field( $q['hero_sub'] );
+		}
+		if ( ! empty( $q['final_h'] ) ) {
+			$content['final_cta']['headline'] = sanitize_text_field( $q['final_h'] );
+		}
+		if ( ! empty( $q['final_btn'] ) ) {
+			$content['final_cta']['cta_primary']['label'] = sanitize_text_field( $q['final_btn'] );
+		}
+		jcp_niche_save_content( $post_id, $content );
+	}
+
 	if ( ! isset( $_POST['jcp_niche_content_json'] ) ) {
 		return;
 	}

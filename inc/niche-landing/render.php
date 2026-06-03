@@ -28,7 +28,6 @@ function jcp_niche_render_page( int $post_id ): void {
 	jcp_niche_render_breadcrumb( $c );
 	jcp_niche_render_hero( $c, $niche_key );
 	jcp_niche_render_what_it_is( $c );
-	jcp_niche_render_core_mechanic( $c );
 	jcp_niche_render_how_it_works( $c, $niche_key );
 	jcp_niche_render_check_ins( $c );
 	jcp_niche_render_problem( $c );
@@ -140,6 +139,7 @@ function jcp_niche_render_what_it_is( array $c ): void {
 	if ( empty( $w['headline'] ) ) {
 		return;
 	}
+	$lead = ! empty( $w['lead'] ) ? (string) $w['lead'] : __( 'But once the work is done, most of it disappears. JobCapturePro changes that.', 'jcp-core' );
 	?>
 	<section class="jcp-section rankings-section jcp-niche-what">
 		<div class="jcp-container">
@@ -149,67 +149,46 @@ function jcp_niche_render_what_it_is( array $c ): void {
 					<p class="rankings-subtitle"><?php jcp_niche_e( (string) $w['subheadline'] ); ?></p>
 				<?php endif; ?>
 			</div>
-			<div class="jcp-niche-two-col">
-				<div class="jcp-niche-card">
-					<h3 class="jcp-niche-card-title"><?php esc_html_e( 'Your team is already:', 'jcp-core' ); ?></h3>
-					<ul class="jcp-niche-list">
-						<?php foreach ( (array) ( $w['team_already'] ?? [] ) as $line ) : ?>
-							<li><?php jcp_niche_e( (string) $line ); ?></li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
-				<div class="jcp-niche-card">
-					<p class="jcp-niche-lead"><?php esc_html_e( 'But once the work is done, most of it disappears. JobCapturePro changes that.', 'jcp-core' ); ?></p>
-					<h3 class="jcp-niche-card-title"><?php esc_html_e( 'It automatically turns real jobs into:', 'jcp-core' ); ?></h3>
-					<ul class="jcp-niche-list">
-						<?php foreach ( (array) ( $w['turns_into'] ?? [] ) as $line ) : ?>
-							<li><?php jcp_niche_e( (string) $line ); ?></li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
-			</div>
-			<?php if ( ! empty( $w['closing'] ) ) : ?>
-				<p class="jcp-niche-closing"><?php jcp_niche_e( (string) $w['closing'] ); ?></p>
-			<?php endif; ?>
-		</div>
-	</section>
-	<?php
-}
-
-/**
- * @param array<string, mixed> $c Content.
- */
-function jcp_niche_render_core_mechanic( array $c ): void {
-	$items = $c['core_mechanic'] ?? [];
-	if ( empty( $items ) || ! is_array( $items ) ) {
-		return;
-	}
-	?>
-	$icons = [ 'camera', 'map', 'clock' ];
-	?>
-	<section class="jcp-section rankings-section jcp-niche-mechanic-strip" aria-label="<?php esc_attr_e( 'How it scales', 'jcp-core' ); ?>">
-		<div class="jcp-container">
-			<div class="proof-flow jcp-niche-proof-flow" id="real-job-proof">
-				<?php foreach ( $items as $i => $item ) : ?>
-					<?php
-					if ( ! is_array( $item ) ) {
-						continue;
+			<div class="ranking-factors-grid jcp-niche-split-grid">
+				<?php
+				jcp_niche_factor_card(
+					__( 'Your team is already', 'jcp-core' ),
+					'wrench',
+					'',
+					'',
+					function () use ( $w ) {
+						echo '<ul class="jcp-niche-checklist">';
+						foreach ( (array) ( $w['team_already'] ?? [] ) as $line ) {
+							echo '<li>' . esc_html( (string) $line ) . '</li>';
+						}
+						echo '</ul>';
 					}
-					$icon = $icons[ $i ] ?? 'check';
-					?>
-					<div class="proof-flow-item">
-						<div class="factor-icon-wrapper">
-							<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="factor-icon" alt="" width="24" height="24" />
-						</div>
-						<div class="proof-flow-content">
-							<h4 class="proof-flow-label"><?php jcp_niche_e( (string) ( $item['value'] ?? '' ) . ' ' . ( $item['label'] ?? '' ) ); ?></h4>
-							<?php if ( ! empty( $item['detail'] ) ) : ?>
-								<p class="proof-flow-copy"><?php jcp_niche_e( (string) $item['detail'] ); ?></p>
-							<?php endif; ?>
-						</div>
-					</div>
-				<?php endforeach; ?>
+				);
+				jcp_niche_factor_card(
+					__( 'Turns real jobs into', 'jcp-core' ),
+					'sparkles',
+					'',
+					'',
+					function () use ( $w, $lead ) {
+						echo '<p class="jcp-niche-card-lead">' . esc_html( $lead ) . '</p>';
+						echo '<ul class="jcp-niche-checklist">';
+						foreach ( (array) ( $w['turns_into'] ?? [] ) as $line ) {
+							echo '<li>' . esc_html( (string) $line ) . '</li>';
+						}
+						echo '</ul>';
+					}
+				);
+				?>
 			</div>
+			<?php
+			if ( ! empty( $w['closing'] ) ) {
+				jcp_niche_render_section_closing( (string) $w['closing'] );
+			}
+			$mechanic = $c['core_mechanic'] ?? [];
+			if ( ! empty( $mechanic ) && is_array( $mechanic ) ) {
+				jcp_niche_render_meta_strip( $mechanic );
+			}
+			?>
 		</div>
 	</section>
 	<?php
@@ -262,7 +241,10 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 			</div>
 			<?php if ( $cta['label'] !== '' ) : ?>
 				<div class="timeline-cta">
-					<a href="<?php echo esc_url( $cta['url'] ); ?>" class="btn btn-secondary"><?php jcp_niche_e( $cta['label'] ); ?></a>
+					<a href="<?php echo esc_url( $cta['url'] ); ?>" class="timeline-cta-link">
+						<?php jcp_niche_e( $cta['label'] ); ?>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+					</a>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -288,24 +270,38 @@ function jcp_niche_render_check_ins( array $c ): void {
 				<?php endif; ?>
 			</div>
 			<?php if ( ! empty( $ch['job_types'] ) ) : ?>
-				<ul class="jcp-niche-tags">
-					<?php foreach ( (array) $ch['job_types'] as $tag ) : ?>
-						<li><?php jcp_niche_e( (string) $tag ); ?></li>
-					<?php endforeach; ?>
-				</ul>
+				<div class="jcp-niche-tags-wrap">
+					<ul class="jcp-niche-tags">
+						<?php foreach ( (array) $ch['job_types'] as $tag ) : ?>
+							<li><?php jcp_niche_e( (string) $tag ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
 			<?php endif; ?>
-			<div class="jcp-niche-feature-grid">
-				<?php foreach ( (array) ( $ch['features'] ?? [] ) as $feat ) : ?>
-					<?php if ( ! is_array( $feat ) ) { continue; } ?>
-					<div class="jcp-niche-feature-card">
-						<h3><?php jcp_niche_e( (string) ( $feat['title'] ?? '' ) ); ?></h3>
-						<p><?php jcp_niche_e( (string) ( $feat['body'] ?? '' ) ); ?></p>
-					</div>
-				<?php endforeach; ?>
+			<div class="ranking-factors-grid">
+				<?php
+				$feat_icons = [ 'map-pin', 'camera', 'sparkles', 'star' ];
+				foreach ( (array) ( $ch['features'] ?? [] ) as $fi => $feat ) :
+					if ( ! is_array( $feat ) ) {
+						continue;
+					}
+					jcp_niche_factor_card(
+						(string) ( $feat['title'] ?? '' ),
+						$feat_icons[ $fi ] ?? 'badge-check',
+						'',
+						'',
+						function () use ( $feat ) {
+							echo '<p>' . esc_html( (string) ( $feat['body'] ?? '' ) ) . '</p>';
+						}
+					);
+				endforeach;
+				?>
 			</div>
-			<?php if ( ! empty( $ch['closing'] ) ) : ?>
-				<p class="jcp-niche-closing"><?php jcp_niche_e( (string) $ch['closing'] ); ?></p>
-			<?php endif; ?>
+			<?php
+			if ( ! empty( $ch['closing'] ) ) {
+				jcp_niche_render_section_closing( (string) $ch['closing'] );
+			}
+			?>
 		</div>
 	</section>
 	<?php
@@ -328,18 +324,30 @@ function jcp_niche_render_problem( array $c ): void {
 					<p class="rankings-subtitle"><?php jcp_niche_e( (string) $p['subheadline'] ); ?></p>
 				<?php endif; ?>
 			</div>
-			<div class="jcp-niche-pain-grid">
-				<?php foreach ( (array) ( $p['pain_points'] ?? [] ) as $pain ) : ?>
-					<?php if ( ! is_array( $pain ) ) { continue; } ?>
-					<div class="jcp-niche-pain-card">
-						<h3><?php jcp_niche_e( (string) ( $pain['title'] ?? '' ) ); ?></h3>
-						<p><?php jcp_niche_e( (string) ( $pain['body'] ?? '' ) ); ?></p>
-					</div>
-				<?php endforeach; ?>
+			<div class="ranking-factors-grid">
+				<?php
+				$pain_icons = [ 'image-off', 'clock', 'map-pin', 'users' ];
+				foreach ( (array) ( $p['pain_points'] ?? [] ) as $pi => $pain ) :
+					if ( ! is_array( $pain ) ) {
+						continue;
+					}
+					jcp_niche_factor_card(
+						(string) ( $pain['title'] ?? '' ),
+						$pain_icons[ $pi ] ?? 'circle-alert',
+						'',
+						'',
+						function () use ( $pain ) {
+							echo '<p>' . esc_html( (string) ( $pain['body'] ?? '' ) ) . '</p>';
+						}
+					);
+				endforeach;
+				?>
 			</div>
-			<?php if ( ! empty( $p['closing'] ) ) : ?>
-				<p class="jcp-niche-closing"><?php jcp_niche_e( (string) $p['closing'] ); ?></p>
-			<?php endif; ?>
+			<?php
+			if ( ! empty( $p['closing'] ) ) {
+				jcp_niche_render_section_closing( (string) $p['closing'] );
+			}
+			?>
 		</div>
 	</section>
 	<?php
@@ -359,18 +367,30 @@ function jcp_niche_render_benefits( array $c ): void {
 			<div class="rankings-header">
 				<h2><?php jcp_niche_e( (string) $b['headline'] ); ?></h2>
 			</div>
-			<div class="jcp-niche-benefit-grid">
-				<?php foreach ( (array) ( $b['items'] ?? [] ) as $item ) : ?>
-					<?php if ( ! is_array( $item ) ) { continue; } ?>
-					<div class="jcp-niche-benefit-card">
-						<h3><?php jcp_niche_e( (string) ( $item['title'] ?? '' ) ); ?></h3>
-						<p><?php jcp_niche_e( (string) ( $item['body'] ?? '' ) ); ?></p>
-					</div>
-				<?php endforeach; ?>
+			<div class="ranking-factors-grid">
+				<?php
+				$benefit_icons = [ 'map-pin', 'badge-check', 'star', 'share-2', 'trending-up', 'phone' ];
+				foreach ( (array) ( $b['items'] ?? [] ) as $bi => $item ) :
+					if ( ! is_array( $item ) ) {
+						continue;
+					}
+					jcp_niche_factor_card(
+						(string) ( $item['title'] ?? '' ),
+						$benefit_icons[ $bi ] ?? 'badge-check',
+						'',
+						'',
+						function () use ( $item ) {
+							echo '<p>' . esc_html( (string) ( $item['body'] ?? '' ) ) . '</p>';
+						}
+					);
+				endforeach;
+				?>
 			</div>
-			<?php if ( ! empty( $b['closing'] ) ) : ?>
-				<p class="jcp-niche-closing jcp-niche-closing--center"><?php jcp_niche_e( (string) $b['closing'] ); ?></p>
-			<?php endif; ?>
+			<?php
+			if ( ! empty( $b['closing'] ) ) {
+				jcp_niche_render_section_closing( (string) $b['closing'] );
+			}
+			?>
 		</div>
 	</section>
 	<?php
@@ -390,16 +410,12 @@ function jcp_niche_render_differentiation( array $c ): void {
 			<div class="rankings-header">
 				<h2><?php jcp_niche_e( (string) $d['headline'] ); ?></h2>
 			</div>
-			<?php if ( ! empty( $d['body'] ) ) : ?>
-				<p class="jcp-niche-prose"><?php jcp_niche_e( (string) $d['body'] ); ?></p>
-			<?php endif; ?>
-			<?php if ( ! empty( $d['bullets'] ) ) : ?>
-				<ul class="jcp-niche-inline-bullets">
-					<?php foreach ( (array) $d['bullets'] as $bullet ) : ?>
-						<li><?php jcp_niche_e( (string) $bullet ); ?></li>
-					<?php endforeach; ?>
-				</ul>
-			<?php endif; ?>
+			<div class="real-job-proof-callout jcp-niche-diff-callout">
+				<?php if ( ! empty( $d['body'] ) ) : ?>
+					<p class="real-job-proof-callout-text"><?php jcp_niche_e( (string) $d['body'] ); ?></p>
+				<?php endif; ?>
+				<?php jcp_niche_render_conversion_points( (array) ( $d['bullets'] ?? [] ) ); ?>
+			</div>
 		</div>
 	</section>
 	<?php
@@ -419,14 +435,24 @@ function jcp_niche_render_who_its_for( array $c ): void {
 			<div class="rankings-header">
 				<h2><?php jcp_niche_e( (string) $w['headline'] ); ?></h2>
 			</div>
-			<div class="jcp-niche-audience-grid">
-				<?php foreach ( (array) ( $w['audiences'] ?? [] ) as $aud ) : ?>
-					<?php if ( ! is_array( $aud ) ) { continue; } ?>
-					<div class="jcp-niche-audience-card">
-						<h3><?php jcp_niche_e( (string) ( $aud['title'] ?? '' ) ); ?></h3>
-						<p><?php jcp_niche_e( (string) ( $aud['body'] ?? '' ) ); ?></p>
-					</div>
-				<?php endforeach; ?>
+			<div class="ranking-factors-grid jcp-niche-split-grid">
+				<?php
+				$aud_icons = [ 'briefcase', 'hard-hat', 'trending-up' ];
+				foreach ( (array) ( $w['audiences'] ?? [] ) as $ai => $aud ) :
+					if ( ! is_array( $aud ) ) {
+						continue;
+					}
+					jcp_niche_factor_card(
+						(string) ( $aud['title'] ?? '' ),
+						$aud_icons[ $ai ] ?? 'users',
+						'',
+						'',
+						function () use ( $aud ) {
+							echo '<p>' . esc_html( (string) ( $aud['body'] ?? '' ) ) . '</p>';
+						}
+					);
+				endforeach;
+				?>
 			</div>
 		</div>
 	</section>
@@ -471,10 +497,12 @@ function jcp_niche_render_final_cta( array $c, string $niche_key ): void {
 	if ( empty( $f['headline'] ) ) {
 		return;
 	}
-	$primary   = jcp_niche_resolve_cta( $f['cta_primary'] ?? [], $niche_key );
-	$secondary = jcp_niche_resolve_cta( $f['cta_secondary'] ?? [ 'label' => 'See how it works', 'url' => '/demo' ], $niche_key );
+	$primary = jcp_niche_resolve_cta( $f['cta_primary'] ?? [], $niche_key );
+	$note    = ! empty( $f['cta_note'] ) ? (string) $f['cta_note'] : __( 'No signup required. Setup in minutes.', 'jcp-core' );
+	$btn     = $primary['label'] !== '' ? $primary['label'] : __( 'See your business in the live demo', 'jcp-core' );
+	$url     = $primary['url'] !== '' ? $primary['url'] : home_url( '/demo/' );
 	?>
-	<section class="jcp-section rankings-section conversion-section jcp-niche-final">
+	<section class="jcp-section rankings-section jcp-niche-final">
 		<div class="jcp-container">
 			<div class="rankings-cta">
 				<div class="cta-content">
@@ -484,12 +512,8 @@ function jcp_niche_render_final_cta( array $c, string $niche_key ): void {
 					<?php endif; ?>
 				</div>
 				<div class="cta-button-wrapper">
-					<?php if ( $primary['label'] !== '' ) : ?>
-						<a class="btn btn-primary rankings-cta-btn" href="<?php echo esc_url( $primary['url'] ); ?>" data-cta="<?php echo esc_attr( $primary['label'] ); ?>" data-cta-location="niche_footer"><?php jcp_niche_e( $primary['label'] ); ?></a>
-					<?php endif; ?>
-					<?php if ( $secondary['label'] !== '' ) : ?>
-						<a class="btn btn-secondary" href="<?php echo esc_url( $secondary['url'] ); ?>"><?php jcp_niche_e( $secondary['label'] ); ?></a>
-					<?php endif; ?>
+					<a class="btn btn-primary rankings-cta-btn" href="<?php echo esc_url( $url ); ?>" data-cta="<?php echo esc_attr( $btn ); ?>" data-cta-location="niche_footer"><?php echo esc_html( $btn ); ?></a>
+					<p class="cta-note"><?php echo esc_html( $note ); ?></p>
 				</div>
 			</div>
 		</div>

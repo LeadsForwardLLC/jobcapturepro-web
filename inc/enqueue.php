@@ -97,6 +97,21 @@ function jcp_core_enqueue_assets(): void {
 
     if ( ! empty( $pages['is_niche_landing'] ) ) {
         jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections' ] );
+        if ( is_singular( 'jcp_niche_landing' ) && current_user_can( 'edit_post', get_queried_object_id() ) ) {
+            jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js' );
+            $pid = get_queried_object_id();
+            wp_localize_script(
+                'jcp-niche-page-editor',
+                'JCP_NICHE_EDITOR',
+                [
+                    'postId'   => $pid,
+                    'restUrl'  => rest_url( 'jcp/v1/niche/' . $pid ),
+                    'nonce'    => wp_create_nonce( 'wp_rest' ),
+                    'adminUrl' => get_edit_post_link( $pid, 'raw' ),
+                    'url'      => get_permalink( $pid ),
+                ]
+            );
+        }
     }
 
     if ( $pages['is_early_access'] ) {

@@ -1,10 +1,9 @@
 /**
- * Industry / niche landing pages
+ * Industry / niche landing — layout tweaks only (components from sections.css).
  *
  * @package JCP_Core
  */
 
-/* Breadcrumb */
 .jcp-niche-breadcrumb {
   padding-top: calc(72px + var(--jcp-space-md));
   padding-bottom: 0;
@@ -26,7 +25,6 @@
   text-decoration: underline;
 }
 
-/* Hero: breadcrumb + hero spacing */
 .jcp-niche .jcp-niche-breadcrumb + .jcp-niche-hero {
   padding-top: var(--jcp-space-lg) !important;
 }
@@ -37,110 +35,56 @@
   color: var(--jcp-color-text-secondary);
 }
 
-/* Core mechanic strip */
-.jcp-niche-mechanic-strip {
-  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
+/* Two-column factor grid */
+.jcp-niche-split-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
 }
 
-.jcp-niche-mechanic-strip .rankings-section > .jcp-container {
-  padding-top: var(--jcp-space-2xl);
-  padding-bottom: var(--jcp-space-2xl);
-}
-
-.jcp-niche-proof-flow {
-  margin-top: 0 !important;
-}
-
-.jcp-niche-proof-flow .proof-flow-item {
-  align-items: center;
-  text-align: center;
-}
-
-.jcp-niche-proof-flow .proof-flow-content {
-  align-items: center;
-  text-align: center;
-}
-
-/* Alternating section backgrounds */
-.jcp-niche-what {
-  background: #fff !important;
-}
-
-.jcp-niche-checkins {
-  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
-}
-
-.jcp-niche-problem {
-  background: #fff !important;
-}
-
-.jcp-niche-benefits {
-  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
-}
-
-.jcp-niche-diff {
-  background: #fff !important;
-}
-
-.jcp-niche-audiences {
-  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
-}
-
-.jcp-niche-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--jcp-space-xl);
-  margin-top: var(--jcp-space-2xl);
-  text-align: left;
-}
-
-@media (max-width: 768px) {
-  .jcp-niche-two-col {
-    grid-template-columns: 1fr;
+@media (max-width: 900px) {
+  .jcp-niche-split-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 
-.jcp-niche-card {
-  padding: var(--jcp-space-xl);
-  border-radius: var(--jcp-radius-lg);
-  border: 1px solid var(--jcp-color-border);
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-}
-
-.jcp-niche-card-title {
-  font-size: var(--jcp-font-size-lg);
-  margin: 0 0 var(--jcp-space-md);
-}
-
-.jcp-niche-list {
+.jcp-niche-checklist {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 1.15rem;
+  list-style: disc;
 }
 
-.jcp-niche-list li {
+.jcp-niche-checklist li {
   margin-bottom: var(--jcp-space-sm);
   line-height: 1.5;
 }
 
-.jcp-niche-lead {
+.jcp-niche-checklist li:last-child {
+  margin-bottom: 0;
+}
+
+.jcp-niche-card-lead {
   margin: 0 0 var(--jcp-space-md);
   color: var(--jcp-color-text-secondary);
   line-height: 1.6;
 }
 
-.jcp-niche-closing {
-  margin-top: var(--jcp-space-xl);
-  font-size: var(--jcp-font-size-lg);
-  color: var(--jcp-color-text-primary);
-  max-width: 48rem;
-  line-height: 1.6;
+.jcp-niche-section-closing {
+  margin-top: var(--jcp-space-3xl) !important;
+  margin-bottom: var(--jcp-space-2xl) !important;
+  text-align: center;
+  max-width: 52rem;
 }
 
-.jcp-niche-closing--center {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+.jcp-niche-meta-strip {
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 56rem;
+}
+
+/* Centered job-type pills */
+.jcp-niche-tags-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--jcp-space-xl);
 }
 
 .jcp-niche-tags {
@@ -148,7 +92,7 @@
   flex-wrap: wrap;
   gap: var(--jcp-space-sm);
   list-style: none;
-  margin: var(--jcp-space-lg) 0 var(--jcp-space-xl);
+  margin: 0;
   padding: 0;
   justify-content: center;
 }
@@ -159,74 +103,40 @@
   background: #fff;
   border: 1px solid var(--jcp-color-border);
   font-size: var(--jcp-font-size-sm);
-  font-weight: 500;
+  font-weight: var(--jcp-font-weight-semibold);
 }
 
-.jcp-niche-feature-grid,
-.jcp-niche-pain-grid,
-.jcp-niche-benefit-grid,
-.jcp-niche-audience-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: var(--jcp-space-lg);
+/* Differentiation callout */
+.jcp-niche-diff-callout {
+  max-width: 52rem;
+  margin: var(--jcp-space-2xl) auto 0;
+  text-align: left;
+}
+
+.jcp-niche-conversion-points {
   margin-top: var(--jcp-space-xl);
 }
 
-.jcp-niche-feature-card,
-.jcp-niche-pain-card,
-.jcp-niche-benefit-card,
-.jcp-niche-audience-card {
-  padding: var(--jcp-space-lg);
-  border-radius: var(--jcp-radius-lg);
-  border: 1px solid var(--jcp-color-border);
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+/* Section backgrounds */
+.jcp-niche-checkins {
+  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
 }
 
-.jcp-niche-feature-card h3,
-.jcp-niche-pain-card h3,
-.jcp-niche-benefit-card h3,
-.jcp-niche-audience-card h3 {
-  margin: 0 0 var(--jcp-space-sm);
-  font-size: var(--jcp-font-size-base);
-  font-weight: var(--jcp-font-weight-bold);
+.jcp-niche-benefits {
+  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
 }
 
-.jcp-niche-prose {
-  max-width: 48rem;
-  margin: var(--jcp-space-lg) auto 0;
-  text-align: center;
-  color: var(--jcp-color-text-secondary);
-  line-height: 1.7;
-  font-size: var(--jcp-font-size-lg);
+.jcp-niche-audiences {
+  background: var(--jcp-color-bg-secondary, #f8fafc) !important;
 }
 
-.jcp-niche-inline-bullets {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--jcp-space-md) var(--jcp-space-xl);
-  list-style: none;
-  margin: var(--jcp-space-xl) 0 0;
-  padding: 0;
-  font-weight: 600;
+/* Final CTA: use global .rankings-cta — no overrides */
+.jcp-niche-final > .jcp-container {
+  padding-top: var(--jcp-space-lg);
+  padding-bottom: var(--jcp-space-lg);
 }
 
-.jcp-niche-final .rankings-cta {
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--jcp-space-lg);
-}
-
-.jcp-niche-final .cta-button-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--jcp-space-md);
-  justify-content: center;
-}
-
-/* Timeline: stack on tablet */
+/* Timeline responsive */
 @media (max-width: 1100px) {
   .jcp-niche .timeline-steps {
     grid-template-columns: repeat(2, minmax(220px, 1fr));
@@ -247,7 +157,7 @@
   }
 }
 
-/* Archive hub */
+/* Archive */
 .jcp-niche-archive-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
@@ -267,7 +177,7 @@
 }
 
 .jcp-niche-archive-card:hover {
-  border-color: var(--jcp-color-primary, #ff503e);
+  border-color: var(--jcp-color-primary);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
@@ -286,9 +196,100 @@
   display: inline-block;
   margin-top: var(--jcp-space-md);
   font-weight: 600;
-  color: var(--jcp-color-primary, #ff503e);
+  color: var(--jcp-color-primary);
 }
 
 .jcp-niche-archive-hero .jcp-hero-copy {
   max-width: 48rem;
+}
+
+/* Front-end editor chrome */
+.jcp-niche-edit-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  background: #0f172a;
+  color: #fff;
+  padding: var(--jcp-space-sm) var(--jcp-space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--jcp-space-md);
+  flex-wrap: wrap;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.jcp-niche-edit-bar a,
+.jcp-niche-edit-bar button {
+  font-size: var(--jcp-font-size-sm);
+}
+
+.jcp-niche-edit-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(420px, 100vw);
+  height: 100vh;
+  z-index: 100000;
+  background: #fff;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+  overflow-y: auto;
+  padding: var(--jcp-space-lg);
+  display: none;
+}
+
+.jcp-niche-edit-panel.is-open {
+  display: block;
+}
+
+.jcp-niche-edit-panel h2 {
+  margin: 0 0 var(--jcp-space-md);
+  font-size: var(--jcp-font-size-xl);
+}
+
+.jcp-niche-edit-panel label {
+  display: block;
+  font-weight: 600;
+  margin: var(--jcp-space-md) 0 var(--jcp-space-xs);
+  font-size: var(--jcp-font-size-sm);
+}
+
+.jcp-niche-edit-panel input[type="text"],
+.jcp-niche-edit-panel textarea {
+  width: 100%;
+  padding: var(--jcp-space-sm);
+  border: 1px solid var(--jcp-color-border);
+  border-radius: var(--jcp-radius-md);
+  font-size: var(--jcp-font-size-sm);
+}
+
+.jcp-niche-edit-panel textarea {
+  min-height: 4rem;
+}
+
+.jcp-niche-edit-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--jcp-space-xs);
+  margin-bottom: var(--jcp-space-md);
+}
+
+.jcp-niche-edit-tabs button {
+  padding: var(--jcp-space-xs) var(--jcp-space-sm);
+  border: 1px solid var(--jcp-color-border);
+  background: #f8fafc;
+  border-radius: var(--jcp-radius-md);
+  cursor: pointer;
+  font-size: var(--jcp-font-size-xs);
+}
+
+.jcp-niche-edit-tabs button.is-active {
+  background: var(--jcp-color-primary);
+  color: #fff;
+  border-color: var(--jcp-color-primary);
+}
+
+body.jcp-niche-editing {
+  padding-bottom: 56px;
 }
