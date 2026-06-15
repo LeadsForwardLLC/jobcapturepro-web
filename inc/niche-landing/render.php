@@ -720,7 +720,7 @@ function jcp_niche_render_archive(): void {
 			<div class="jcp-container">
 				<div class="rankings-header">
 					<h1><?php esc_html_e( 'Marketing Software for Home Service Contractors by Trade', 'jcp-core' ); ?></h1>
-					<p class="rankings-subtitle"><?php esc_html_e( 'JobCapturePro turns completed jobs into Google visibility, website proof, reviews, and local content—built for plumbers, roofers, HVAC crews, and every trade that runs real work in real neighborhoods.', 'jcp-core' ); ?></p>
+					<p class="rankings-subtitle"><?php esc_html_e( 'JobCapturePro turns completed jobs into Google visibility, website proof, reviews, and local content, built for plumbers, roofers, HVAC crews, and every trade that runs real work in real neighborhoods.', 'jcp-core' ); ?></p>
 				</div>
 			</div>
 		</section>
