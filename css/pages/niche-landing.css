@@ -147,12 +147,34 @@
   }
 }
 
-/* Archive */
+/* Archive hub — simple centered hero, no decorative background */
+.jcp-niche-archive .jcp-niche-archive-hero {
+  padding-top: calc(72px + var(--jcp-space-3xl));
+  padding-bottom: var(--jcp-space-sm);
+  background: none;
+}
+
+.jcp-niche-archive .jcp-niche-archive-hero .rankings-header {
+  text-align: center;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.jcp-niche-archive .jcp-niche-archive-hero h1 {
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  line-height: 1.15;
+}
+
+.jcp-niche-archive .jcp-industries-archive-section {
+  padding-top: var(--jcp-space-sm);
+}
+
 .jcp-niche-archive-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   gap: var(--jcp-space-lg);
-  margin-top: var(--jcp-space-xl);
+  margin-top: 0;
 }
 
 .jcp-niche-archive-card {
@@ -171,8 +193,11 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
+.jcp-niche-archive-card-title,
 .jcp-niche-archive-card h3 {
   margin: 0 0 var(--jcp-space-sm);
+  font-size: var(--jcp-font-size-xl);
+  line-height: 1.3;
 }
 
 .jcp-niche-archive-card p {
@@ -182,15 +207,22 @@
   line-height: 1.5;
 }
 
+.jcp-industries-no-results,
+.jcp-industries-empty {
+  text-align: center;
+  color: var(--jcp-color-text-secondary);
+  margin-top: var(--jcp-space-xl);
+}
+
+.jcp-industries-no-results.is-hidden {
+  display: none;
+}
+
 .jcp-niche-archive-link {
   display: inline-block;
   margin-top: var(--jcp-space-md);
   font-weight: 600;
   color: var(--jcp-color-primary);
-}
-
-.jcp-niche-archive-hero .jcp-hero-copy {
-  max-width: 48rem;
 }
 
 /* Inline editor chrome */

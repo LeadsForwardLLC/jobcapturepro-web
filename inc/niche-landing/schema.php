@@ -156,9 +156,30 @@ function jcp_niche_meta_description( int $post_id ): string {
 }
 
 /**
+ * SEO title for the industries hub archive.
+ */
+function jcp_niche_archive_seo_title(): string {
+	return __( 'Marketing Software for Home Service Contractors by Trade', 'jcp-core' ) . ' | ' . get_bloginfo( 'name' );
+}
+
+/**
+ * Meta description for the industries hub archive.
+ */
+function jcp_niche_archive_meta_description(): string {
+	return __( 'Browse marketing software built for your trade. See how JobCapturePro helps plumbers, roofers, HVAC companies, electricians, and home service contractors turn completed jobs into Google visibility, website proof, reviews, and more booked work.', 'jcp-core' );
+}
+
+/**
  * Output meta description in head.
  */
 function jcp_niche_output_meta_description(): void {
+	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
+		$desc = jcp_niche_archive_meta_description();
+		if ( $desc !== '' ) {
+			echo '<meta name="description" content="' . esc_attr( $desc ) . '">' . "\n";
+		}
+		return;
+	}
 	if ( ! jcp_niche_is_content_page() ) {
 		return;
 	}
@@ -181,7 +202,7 @@ function jcp_niche_document_title( array $parts ): array {
 		$parts['title'] = jcp_niche_seo_title( (int) get_queried_object_id() );
 	}
 	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
-		$parts['title'] = __( 'Marketing software for home service contractors', 'jcp-core' );
+		$parts['title'] = jcp_niche_archive_seo_title();
 	}
 	return $parts;
 }
@@ -198,7 +219,7 @@ function jcp_niche_pre_get_document_title( string $title ): string {
 		return jcp_niche_seo_title( (int) get_queried_object_id() );
 	}
 	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
-		return __( 'Marketing software for home service contractors', 'jcp-core' ) . ' | ' . get_bloginfo( 'name' );
+		return jcp_niche_archive_seo_title();
 	}
 	return $title;
 }

@@ -712,38 +712,79 @@ function jcp_niche_render_archive(): void {
 			'order'          => 'ASC',
 		]
 	);
+	$total = count( $posts );
 	?>
-	<main class="jcp-marketing jcp-home jcp-niche jcp-niche-archive">
-		<section class="jcp-section jcp-hero jcp-niche-hero jcp-niche-archive-hero">
+	<span id="jcp-app" data-jcp-page="industries" hidden aria-hidden="true"></span>
+	<main class="jcp-marketing jcp-niche jcp-niche-archive">
+		<section class="jcp-section rankings-section jcp-archive-hero-section jcp-niche-archive-hero">
 			<div class="jcp-container">
-				<div class="jcp-hero-copy hero-copy">
-					<h1 class="jcp-hero-title"><?php esc_html_e( 'Marketing software for home service contractors', 'jcp-core' ); ?></h1>
-					<p class="jcp-hero-subtitle"><?php esc_html_e( 'JobCapturePro turns completed jobs into Google visibility, website proof, social posts, and reviews — built for the trades you run every day.', 'jcp-core' ); ?></p>
+				<div class="rankings-header">
+					<h1><?php esc_html_e( 'Marketing Software for Home Service Contractors by Trade', 'jcp-core' ); ?></h1>
+					<p class="rankings-subtitle"><?php esc_html_e( 'JobCapturePro turns completed jobs into Google visibility, website proof, reviews, and local content—built for plumbers, roofers, HVAC crews, and every trade that runs real work in real neighborhoods.', 'jcp-core' ); ?></p>
 				</div>
 			</div>
 		</section>
-		<section class="jcp-section rankings-section">
+
+		<section class="jcp-section rankings-section jcp-blog-archive-section jcp-industries-archive-section">
 			<div class="jcp-container">
-				<div class="rankings-header">
-					<h2><?php esc_html_e( 'Browse by industry', 'jcp-core' ); ?></h2>
-					<p class="rankings-subtitle"><?php esc_html_e( 'See how JobCapturePro works for your trade.', 'jcp-core' ); ?></p>
-				</div>
-				<div class="jcp-niche-archive-grid">
-					<?php foreach ( $posts as $post ) : ?>
-						<?php
-						$content = jcp_niche_get_content( (int) $post->ID );
-						$label   = ! empty( $content['niche_label'] ) ? (string) $content['niche_label'] : get_the_title( $post );
-						$excerpt = $content['hero']['subheadline'] ?? get_the_excerpt( $post );
-						?>
-						<a class="jcp-niche-archive-card" href="<?php echo esc_url( get_permalink( $post ) ); ?>">
-							<h3><?php echo esc_html( $label ); ?></h3>
-							<p><?php echo esc_html( wp_strip_all_tags( (string) $excerpt ) ); ?></p>
-							<span class="jcp-niche-archive-link"><?php esc_html_e( 'Learn more', 'jcp-core' ); ?> →</span>
-						</a>
-					<?php endforeach; ?>
-				</div>
-				<?php if ( empty( $posts ) ) : ?>
-					<p><?php esc_html_e( 'Industry pages coming soon.', 'jcp-core' ); ?></p>
+				<?php if ( ! empty( $posts ) ) : ?>
+					<div class="blog-search-wrapper directory-search-wrapper">
+						<div class="directory-search blog-search-bar">
+							<div class="search-box blog-search-box industries-search-box">
+								<svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+									<circle cx="11" cy="11" r="8"/>
+									<path d="m21 21-4.35-4.35"/>
+								</svg>
+								<input
+									type="search"
+									class="search-input industries-search-input"
+									placeholder="<?php echo esc_attr( $total === 1 ? __( 'Search 1 trade', 'jcp-core' ) : sprintf( __( 'Search %d trades', 'jcp-core' ), $total ) ); ?>"
+									data-placeholder-singular="<?php esc_attr_e( 'Search 1 trade', 'jcp-core' ); ?>"
+									data-placeholder-plural="<?php echo esc_attr( __( 'Search %d trades', 'jcp-core' ) ); ?>"
+									autocomplete="off"
+									aria-label="<?php esc_attr_e( 'Search trades', 'jcp-core' ); ?>"
+								>
+								<button type="button" class="clear-search-btn is-hidden" aria-label="<?php esc_attr_e( 'Clear search', 'jcp-core' ); ?>">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+								</button>
+							</div>
+							<select class="filter-select industries-sort-filter blog-sort-filter" aria-label="<?php esc_attr_e( 'Sort trades', 'jcp-core' ); ?>">
+								<option value="az"><?php esc_html_e( 'A to Z', 'jcp-core' ); ?></option>
+								<option value="za"><?php esc_html_e( 'Z to A', 'jcp-core' ); ?></option>
+							</select>
+							<button type="button" class="clear-filters-btn is-hidden industries-clear-filters blog-clear-filters"><?php esc_html_e( 'Clear filters', 'jcp-core' ); ?></button>
+						</div>
+					</div>
+
+					<div class="jcp-niche-archive-grid" id="industries-archive-grid">
+						<?php foreach ( $posts as $post ) : ?>
+							<?php
+							$content  = jcp_niche_get_content( (int) $post->ID );
+							$label    = ! empty( $content['niche_label'] ) ? (string) $content['niche_label'] : get_the_title( $post );
+							$excerpt  = $content['hero']['subheadline'] ?? get_the_excerpt( $post );
+							$excerpt  = wp_strip_all_tags( (string) $excerpt );
+							$keywords = '';
+							if ( ! empty( $content['seo']['keywords'] ) && is_array( $content['seo']['keywords'] ) ) {
+								$keywords = implode( ' ', array_map( 'strval', $content['seo']['keywords'] ) );
+							}
+							?>
+							<a
+								class="jcp-niche-archive-card"
+								href="<?php echo esc_url( get_permalink( $post ) ); ?>"
+								data-title="<?php echo esc_attr( strtolower( $label . ' ' . $post->post_name ) ); ?>"
+								data-excerpt="<?php echo esc_attr( strtolower( $excerpt ) ); ?>"
+								data-keywords="<?php echo esc_attr( strtolower( $keywords ) ); ?>"
+								data-sort="<?php echo esc_attr( $label ); ?>"
+							>
+								<h2 class="jcp-niche-archive-card-title"><?php echo esc_html( $label ); ?></h2>
+								<p><?php echo esc_html( $excerpt ); ?></p>
+								<span class="jcp-niche-archive-link"><?php esc_html_e( 'See how it works', 'jcp-core' ); ?> →</span>
+							</a>
+						<?php endforeach; ?>
+					</div>
+					<p class="jcp-industries-no-results is-hidden" id="industries-no-results"><?php esc_html_e( 'No trades match your search. Try a different keyword.', 'jcp-core' ); ?></p>
+				<?php else : ?>
+					<p class="jcp-industries-empty"><?php esc_html_e( 'Trade pages coming soon.', 'jcp-core' ); ?></p>
 				<?php endif; ?>
 			</div>
 		</section>
