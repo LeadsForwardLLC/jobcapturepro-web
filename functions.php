@@ -59,6 +59,7 @@ require_once get_template_directory() . '/inc/rest-contact.php';
 require_once get_template_directory() . '/inc/demo-analytics.php';
 
 if ( is_admin() ) {
+    require_once get_template_directory() . '/inc/admin-theme-docs.php';
     require_once get_template_directory() . '/inc/admin-demo-analytics.php';
 }
 

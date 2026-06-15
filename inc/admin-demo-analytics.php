@@ -17,9 +17,9 @@ function jcp_demo_analytics_admin_menu(): void {
     add_menu_page(
         __( 'JCP Theme Settings', 'jcp-core' ),
         __( 'JCP', 'jcp-core' ),
-        'manage_options',
+        'edit_posts',
         'jcp-theme-settings',
-        'jcp_demo_analytics_render_page',
+        'jcp_theme_docs_render_page',
         'dashicons-chart-bar',
         59
     );

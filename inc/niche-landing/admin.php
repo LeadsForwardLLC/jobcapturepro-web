@@ -71,7 +71,13 @@ function jcp_niche_render_quick_meta_box( WP_Post $post ): void {
 		<div class="notice notice-info inline" style="margin: 0 0 1em; padding: 0.75em 1em;">
 			<p style="margin: 0;">
 				<strong><?php esc_html_e( 'Add a new trade page', 'jcp-core' ); ?></strong><br />
-				<?php esc_html_e( '1. Set the URL slug (e.g. roofing). 2. Paste your Google/Word doc in “Import from Document” below and click Build page. 3. Publish — or use “Edit on live page” to tweak copy. SEO title and meta description are managed in Rank Math.', 'jcp-core' ); ?>
+				<?php
+				printf(
+					/* translators: %s: link to JCP Industry Pages docs */
+					esc_html__( '1. Set the URL slug (e.g. roofing). 2. Paste your Google/Word doc in “Import from Document” below and click Build page. 3. Publish — or use “Edit on live page” to tweak copy. SEO title and meta description are managed in Rank Math. %s', 'jcp-core' ),
+					'<a href="' . esc_url( admin_url( 'admin.php?page=jcp-theme-settings' ) ) . '">' . esc_html__( 'Full SOP →', 'jcp-core' ) . '</a>'
+				);
+				?>
 			</p>
 		</div>
 	<?php endif; ?>
