@@ -101,7 +101,7 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 					<div class="jcp-actions directory-cta-row">
 						<?php if ( $primary['label'] !== '' ) : ?>
 							<div class="jcp-hero-primary-cta">
-								<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'hero.cta_primary' ); ?> data-cta-location="niche_hero"><?php jcp_niche_e( $primary['label'] ); ?></a>
+								<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'hero.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], str_contains( $primary['url'], 'firstpromoter.com' ) ? 'referral_hero' : 'niche_hero', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 							</div>
 						<?php endif; ?>
 						<?php if ( $secondary['label'] !== '' ) : ?>
@@ -164,7 +164,7 @@ function jcp_niche_render_cta_band( array $band, string $niche_key, string $path
 	<section class="jcp-section jcp-niche-cta-band">
 		<div class="jcp-container">
 			<div class="jcp-niche-cta-band-inner">
-				<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( $path . '.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+				<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( $path . '.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], 'referral_cta_band', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 			</div>
 		</div>
 	</section>
@@ -494,7 +494,7 @@ function jcp_niche_render_commission( array $c, string $niche_key ): void {
 			<?php endif; ?>
 			<?php if ( $primary['label'] !== '' ) : ?>
 				<div class="jcp-niche-cta-band-inner">
-					<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'commission.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+					<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'commission.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], 'referral_commission', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -524,7 +524,7 @@ function jcp_niche_render_partners( array $c, string $niche_key ): void {
 				<?php endif; ?>
 				<?php if ( $primary['label'] !== '' ) : ?>
 					<div class="jcp-niche-cta-band-inner">
-						<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'partners.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+						<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'partners.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], 'referral_partners', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 					</div>
 				<?php endif; ?>
 			</div>
@@ -563,10 +563,10 @@ function jcp_niche_render_share( array $c, string $niche_key ): void {
 			<?php endif; ?>
 			<div class="jcp-actions directory-cta-row jcp-niche-share-actions">
 				<?php if ( $primary['label'] !== '' ) : ?>
-					<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'share.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+					<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'share.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], 'referral_share', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 				<?php endif; ?>
 				<?php if ( $secondary['label'] !== '' ) : ?>
-					<a class="btn btn-secondary" href="<?php echo esc_url( $secondary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'share.cta_secondary' ); ?>><?php jcp_niche_e( $secondary['label'] ); ?></a>
+					<a class="btn btn-secondary" href="<?php echo esc_url( $secondary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'share.cta_secondary' ); jcp_niche_cta_tracking_attr( $secondary['url'], 'referral_share_demo', $secondary['label'] ); ?>><?php jcp_niche_e( $secondary['label'] ); ?></a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -690,7 +690,7 @@ function jcp_niche_render_final_cta( array $c, string $niche_key ): void {
 					<?php endif; ?>
 				</div>
 				<div class="cta-button-wrapper">
-					<a class="btn btn-primary rankings-cta-btn" href="<?php echo esc_url( $url ); ?>"<?php jcp_niche_editable_link_attr( 'final_cta.cta_primary' ); ?> data-cta-location="niche_footer"><?php echo esc_html( $btn ); ?></a>
+					<a class="btn btn-primary rankings-cta-btn" href="<?php echo esc_url( $url ); ?>"<?php jcp_niche_editable_link_attr( 'final_cta.cta_primary' ); jcp_niche_cta_tracking_attr( $url, str_contains( $url, 'firstpromoter.com' ) ? 'referral_footer' : 'niche_footer', $btn ); ?>><?php echo esc_html( $btn ); ?></a>
 					<p class="cta-note"<?php jcp_niche_editable_attr( 'final_cta.cta_note' ); ?>><?php echo esc_html( $note ); ?></p>
 				</div>
 			</div>

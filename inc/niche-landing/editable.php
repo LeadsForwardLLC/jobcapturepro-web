@@ -48,3 +48,35 @@ function jcp_niche_editable_link_paths( string $label_path, string $url_path ): 
 	}
 	echo ' data-jcp-path="' . esc_attr( $label_path ) . '" data-jcp-href-path="' . esc_attr( $url_path ) . '"';
 }
+
+/**
+ * Matomo CTA tracking attributes for outbound / key conversion links.
+ *
+ * @param string $url       Link URL.
+ * @param string $location  Section context (e.g. referral_hero).
+ * @param string $cta_name  Optional event name override.
+ */
+function jcp_niche_cta_tracking_attr( string $url, string $location, string $cta_name = '' ): void {
+	$url = trim( $url );
+	if ( $url === '' || $location === '' ) {
+		return;
+	}
+
+	$host = wp_parse_url( $url, PHP_URL_HOST );
+	$host = is_string( $host ) ? strtolower( $host ) : '';
+	$path = wp_parse_url( $url, PHP_URL_PATH );
+	$path = is_string( $path ) ? rtrim( $path, '/' ) : '';
+
+	$is_referral_outbound = $host !== '' && str_contains( $host, 'firstpromoter.com' );
+	$is_key_conversion    = in_array( $path, [ '/demo', '/early-access', '/referral-program' ], true );
+
+	if ( ! $is_referral_outbound && ! $is_key_conversion ) {
+		return;
+	}
+
+	$name = $cta_name !== '' ? $cta_name : ( $is_referral_outbound ? 'Join Referral Program' : '' );
+	if ( $name !== '' ) {
+		echo ' data-cta="' . esc_attr( $name ) . '"';
+	}
+	echo ' data-cta-location="' . esc_attr( $location ) . '"';
+}

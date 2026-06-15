@@ -253,14 +253,20 @@
     var ctaName = el.getAttribute('data-cta');
     var href = el.getAttribute('href');
     var isTargetHref = false;
+    var isReferralOutbound = false;
     if (el.tagName === 'A' && href) {
       var path = (href.charAt(0) === '/' ? href.split('?')[0] : (function () { try { return new URL(href, window.location.href).pathname; } catch (err) { return href; } })()).replace(/\/$/, '') || '/';
-      isTargetHref = path === '/demo' || path === '/early-access';
+      var host = '';
+      if (href.charAt(0) !== '/') {
+        try { host = new URL(href, window.location.href).hostname.toLowerCase(); } catch (err) {}
+      }
+      isTargetHref = path === '/demo' || path === '/early-access' || path === '/referral-program';
+      isReferralOutbound = host.indexOf('firstpromoter.com') !== -1;
     }
-    if (!ctaName && !isTargetHref) return;
-    ctaName = ctaName || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) || 'CTA';
+    if (!ctaName && !isTargetHref && !isReferralOutbound) return;
+    ctaName = ctaName || (isReferralOutbound ? 'Join Referral Program' : (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) || 'CTA');
     var pathname = (window.location.pathname || '/').replace(/\/$/, '') || '/';
-var ctaLocation = el.getAttribute('data-cta-location') || (el.closest('header') || el.closest('#jcpGlobalHeader') ? 'header' : el.closest('footer') ? 'footer' : pathname === '/' || pathname === '/home' ? 'homepage' : 'page');
+    var ctaLocation = el.getAttribute('data-cta-location') || (el.closest('header') || el.closest('#jcpGlobalHeader') ? 'header' : el.closest('footer') ? 'footer' : pathname === '/' || pathname === '/home' ? 'homepage' : pathname === '/referral-program' ? 'referral_program' : 'page');
     try {
       if (typeof _paq !== 'undefined') {
         _paq.push(['trackEvent', 'CTA Clicked', ctaName, ctaLocation]);
