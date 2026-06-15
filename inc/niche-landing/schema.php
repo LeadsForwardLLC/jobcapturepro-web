@@ -46,6 +46,11 @@ function jcp_niche_resolve_cta( array $cta, string $niche_key ): array {
 
 	if ( $url === '' ) {
 		$url = home_url( '/demo' );
+	} elseif ( preg_match( '#^https?://#i', $url ) ) {
+		return [
+			'label' => $label,
+			'url'   => $url,
+		];
 	}
 
 	if ( $url !== '' && $url[0] === '/' && strpos( $url, '//' ) !== 0 ) {
@@ -56,6 +61,29 @@ function jcp_niche_resolve_cta( array $cta, string $niche_key ): array {
 		'label' => $label,
 		'url'   => $url,
 	];
+}
+
+/**
+ * Whether a post uses the JSON landing content system.
+ *
+ * @param int|null $post_id Post ID (defaults to queried object).
+ */
+function jcp_niche_is_content_page( ?int $post_id = null ): bool {
+	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
+		return true;
+	}
+	$id = $post_id ?? ( is_singular() ? (int) get_queried_object_id() : 0 );
+	if ( $id <= 0 ) {
+		return false;
+	}
+	$post = get_post( $id );
+	if ( ! $post instanceof WP_Post ) {
+		return false;
+	}
+	if ( $post->post_type === 'jcp_niche_landing' ) {
+		return true;
+	}
+	return $post->post_type === 'page' && get_page_template_slug( $id ) === 'page-referral-program.php';
 }
 
 /**
@@ -76,6 +104,9 @@ function jcp_niche_get_content( int $post_id ): array {
 	$slug = get_post_field( 'post_name', $post_id );
 	if ( $slug === 'plumbing' ) {
 		return jcp_niche_load_preset( 'plumbing' );
+	}
+	if ( $slug === 'referral-program' || get_page_template_slug( $post_id ) === 'page-referral-program.php' ) {
+		return jcp_niche_load_preset( 'referral-program' );
 	}
 
 	return [];
@@ -128,7 +159,7 @@ function jcp_niche_meta_description( int $post_id ): string {
  * Output meta description in head.
  */
 function jcp_niche_output_meta_description(): void {
-	if ( ! is_singular( 'jcp_niche_landing' ) ) {
+	if ( ! jcp_niche_is_content_page() ) {
 		return;
 	}
 	$desc = jcp_niche_meta_description( (int) get_queried_object_id() );
@@ -146,7 +177,7 @@ add_action( 'wp_head', 'jcp_niche_output_meta_description', 2 );
  * @return array<int, string>
  */
 function jcp_niche_document_title( array $parts ): array {
-	if ( is_singular( 'jcp_niche_landing' ) ) {
+	if ( jcp_niche_is_content_page() && is_singular() ) {
 		$parts['title'] = jcp_niche_seo_title( (int) get_queried_object_id() );
 	}
 	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
@@ -163,7 +194,7 @@ add_filter( 'document_title_parts', 'jcp_niche_document_title' );
  * @return string
  */
 function jcp_niche_pre_get_document_title( string $title ): string {
-	if ( is_singular( 'jcp_niche_landing' ) ) {
+	if ( jcp_niche_is_content_page() && is_singular() ) {
 		return jcp_niche_seo_title( (int) get_queried_object_id() );
 	}
 	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {

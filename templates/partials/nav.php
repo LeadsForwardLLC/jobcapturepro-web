@@ -58,6 +58,7 @@ $dir_trust = $dir_url . '/#trust';
           <a href="<?php echo esc_url( home_url( '/blog' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="blog">Blog</a>
           <a href="<?php echo esc_url( home_url( '/help' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="help">Help Center</a>
           <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="contact">Contact</a>
+          <a href="<?php echo esc_url( home_url( '/referral-program' ) ); ?>" class="nav-dropdown-item nav-link" role="menuitem" data-page="referral-program">Referral Program</a>
         </div>
       </div>
     <?php endif; ?>
@@ -267,6 +268,15 @@ $dir_trust = $dir_url . '/#trust';
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
               <span>Contact</span>
+            </a>
+            <a href="<?php echo esc_url( home_url( '/referral-program' ) ); ?>" class="mobile-nav-link" data-page="referral-program">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Referral Program</span>
             </a>
           </div>
         </details>

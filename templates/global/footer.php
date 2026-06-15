@@ -81,6 +81,7 @@ $dir_trust = $dir_url . '/#trust';
           <a href="<?php echo esc_url( home_url( '/blog' ) ); ?>">Blog</a>
           <a href="<?php echo esc_url( home_url( '/help' ) ); ?>">Help Center</a>
           <a href="<?php echo esc_url( home_url( '/demo' ) ); ?>">Online Demo</a>
+          <a href="<?php echo esc_url( home_url( '/referral-program' ) ); ?>">Referral Program</a>
         </div>
         <div class="jcp-footer-col">
           <h4>Company</h4>

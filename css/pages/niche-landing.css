@@ -309,3 +309,135 @@ body.jcp-inline-editing [data-jcp-href-path]::after {
   gap: var(--jcp-space-sm);
   margin-top: var(--jcp-space-md);
 }
+
+/* Referral program page */
+.jcp-niche-referral .jcp-niche-hero--copy-only .jcp-hero-grid {
+  grid-template-columns: 1fr;
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.jcp-niche-referral .jcp-niche-hero--copy-only .jcp-actions {
+  justify-content: center;
+}
+
+.jcp-niche-referral .jcp-niche-trust-line {
+  font-weight: var(--jcp-font-weight-semibold);
+  color: var(--jcp-color-primary);
+}
+
+.jcp-niche-cta-band {
+  padding-top: 0 !important;
+  padding-bottom: var(--jcp-space-2xl) !important;
+}
+
+.jcp-niche-cta-band-inner {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--jcp-space-xl);
+}
+
+.jcp-niche-commission-lead {
+  max-width: 42rem;
+  margin: var(--jcp-space-md) auto 0;
+  text-align: center;
+  color: var(--jcp-color-text-secondary);
+  line-height: 1.6;
+}
+
+.jcp-niche-commission-table-wrap {
+  overflow-x: auto;
+  margin: var(--jcp-space-2xl) auto;
+  max-width: 56rem;
+}
+
+.jcp-niche-commission-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--jcp-font-size-sm);
+}
+
+.jcp-niche-commission-table th,
+.jcp-niche-commission-table td {
+  padding: var(--jcp-space-md) var(--jcp-space-lg);
+  border-bottom: 1px solid var(--jcp-color-border);
+  text-align: left;
+}
+
+.jcp-niche-commission-table th {
+  font-weight: var(--jcp-font-weight-semibold);
+  background: var(--jcp-color-surface-muted, #f8fafc);
+}
+
+.jcp-niche-commission-table td:nth-child(n+2),
+.jcp-niche-commission-table th:nth-child(n+2) {
+  text-align: right;
+}
+
+.jcp-niche-commission-footnote {
+  text-align: center;
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  margin: 0 0 var(--jcp-space-lg);
+}
+
+.jcp-niche-partners-callout .jcp-niche-cta-band-inner {
+  margin-top: var(--jcp-space-lg);
+}
+
+.jcp-niche-share-quote {
+  max-width: 40rem;
+  margin: var(--jcp-space-xl) auto;
+  padding: var(--jcp-space-xl) var(--jcp-space-2xl);
+  border-left: 4px solid var(--jcp-color-primary);
+  background: var(--jcp-color-surface-muted, #f8fafc);
+  border-radius: var(--jcp-radius-lg);
+}
+
+.jcp-niche-share-quote p {
+  margin: 0;
+  font-size: var(--jcp-font-size-lg);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.jcp-niche-share-note {
+  text-align: center;
+  color: var(--jcp-color-text-secondary);
+  max-width: 36rem;
+  margin: 0 auto var(--jcp-space-xl);
+}
+
+.jcp-niche-share-actions {
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .jcp-niche-commission-table thead {
+    display: none;
+  }
+
+  .jcp-niche-commission-table tr {
+    display: block;
+    margin-bottom: var(--jcp-space-lg);
+    border: 1px solid var(--jcp-color-border);
+    border-radius: var(--jcp-radius-md);
+    padding: var(--jcp-space-sm);
+  }
+
+  .jcp-niche-commission-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--jcp-space-md);
+    border-bottom: none;
+    padding: var(--jcp-space-sm) var(--jcp-space-md);
+    text-align: right !important;
+  }
+
+  .jcp-niche-commission-table td::before {
+    content: attr(data-label);
+    font-weight: var(--jcp-font-weight-semibold);
+    text-align: left;
+  }
+}

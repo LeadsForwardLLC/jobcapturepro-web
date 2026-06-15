@@ -11,7 +11,7 @@
 function jcp_niche_register_meta_box(): void {
 	add_meta_box(
 		'jcp_niche_quick',
-		__( 'Industry Page — Quick Edit', 'jcp-core' ),
+		__( 'Landing Page — Quick Edit', 'jcp-core' ),
 		'jcp_niche_render_quick_meta_box',
 		'jcp_niche_landing',
 		'normal',
@@ -19,9 +19,25 @@ function jcp_niche_register_meta_box(): void {
 	);
 	add_meta_box(
 		'jcp_niche_content',
-		__( 'Industry Page — Advanced JSON', 'jcp-core' ),
+		__( 'Landing Page — Advanced JSON', 'jcp-core' ),
 		'jcp_niche_render_meta_box',
 		'jcp_niche_landing',
+		'normal',
+		'default'
+	);
+	add_meta_box(
+		'jcp_niche_quick',
+		__( 'Landing Page — Quick Edit', 'jcp-core' ),
+		'jcp_niche_render_quick_meta_box',
+		'page',
+		'normal',
+		'high'
+	);
+	add_meta_box(
+		'jcp_niche_content',
+		__( 'Landing Page — Advanced JSON', 'jcp-core' ),
+		'jcp_niche_render_meta_box',
+		'page',
 		'normal',
 		'default'
 	);
@@ -33,6 +49,10 @@ function jcp_niche_register_meta_box(): void {
  * @param WP_Post $post Post.
  */
 function jcp_niche_render_quick_meta_box( WP_Post $post ): void {
+	if ( $post->post_type === 'page' && get_page_template_slug( $post->ID ) !== 'page-referral-program.php' ) {
+		echo '<p class="description">' . esc_html__( 'Assign the “Referral Program” page template to use structured landing content.', 'jcp-core' ) . '</p>';
+		return;
+	}
 	$c     = jcp_niche_get_content( (int) $post->ID );
 	$edit  = add_query_arg( 'jcp_edit', '1', get_permalink( $post ) );
 	$seo   = $c['seo'] ?? [];
@@ -75,6 +95,10 @@ add_action( 'add_meta_boxes', 'jcp_niche_register_meta_box' );
  * @param WP_Post $post Post.
  */
 function jcp_niche_render_meta_box( WP_Post $post ): void {
+	if ( $post->post_type === 'page' && get_page_template_slug( $post->ID ) !== 'page-referral-program.php' ) {
+		echo '<p class="description">' . esc_html__( 'Assign the “Referral Program” page template to edit JSON content.', 'jcp-core' ) . '</p>';
+		return;
+	}
 	wp_nonce_field( 'jcp_niche_content_save', 'jcp_niche_content_nonce' );
 	$raw     = get_post_meta( $post->ID, jcp_niche_content_meta_key(), true );
 	$display = is_string( $raw ) && $raw !== '' ? $raw : '';
@@ -82,27 +106,36 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 		$preset  = jcp_niche_load_preset( 'plumbing' );
 		$display = wp_json_encode( $preset, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
+	if ( $display === '' && ( $post->post_name === 'referral-program' || get_page_template_slug( $post->ID ) === 'page-referral-program.php' ) ) {
+		$preset  = jcp_niche_load_preset( 'referral-program' );
+		$display = wp_json_encode( $preset, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+	}
 	?>
 	<p class="description">
-		<?php esc_html_e( 'Structured page content. Edit JSON directly or use “Load plumbing demo” to reset from the preset file.', 'jcp-core' ); ?>
+		<?php esc_html_e( 'Structured page content. Edit JSON directly or use a preset loader below.', 'jcp-core' ); ?>
 	</p>
 	<p>
 		<button type="button" class="button" id="jcp-niche-load-plumbing-demo"><?php esc_html_e( 'Load plumbing demo JSON', 'jcp-core' ); ?></button>
+		<button type="button" class="button" id="jcp-niche-load-referral-demo"><?php esc_html_e( 'Load referral program JSON', 'jcp-core' ); ?></button>
 	</p>
 	<textarea name="jcp_niche_content_json" id="jcp_niche_content_json" rows="24" class="large-text code" style="width:100%;font-family:monospace;"><?php echo esc_textarea( $display ); ?></textarea>
 	<script>
 	(function () {
-		var btn = document.getElementById('jcp-niche-load-plumbing-demo');
-		var ta = document.getElementById('jcp_niche_content_json');
-		if (!btn || !ta) return;
-		btn.addEventListener('click', function () {
-			if (!confirm('Replace editor content with the plumbing demo preset?')) return;
-			fetch(ajaxurl + '?action=jcp_niche_plumbing_json&_wpnonce=<?php echo esc_js( wp_create_nonce( 'jcp_niche_plumbing_json' ) ); ?>')
-				.then(function (r) { return r.json(); })
-				.then(function (data) {
-					if (data && data.content) ta.value = data.content;
-				});
-		});
+		function bindPreset(btnId, action) {
+			var btn = document.getElementById(btnId);
+			var ta = document.getElementById('jcp_niche_content_json');
+			if (!btn || !ta) return;
+			btn.addEventListener('click', function () {
+				if (!confirm('Replace editor content with the selected preset?')) return;
+				fetch(ajaxurl + '?action=' + action + '&_wpnonce=<?php echo esc_js( wp_create_nonce( 'jcp_niche_preset_json' ) ); ?>')
+					.then(function (r) { return r.json(); })
+					.then(function (data) {
+						if (data && data.content) ta.value = data.content;
+					});
+			});
+		}
+		bindPreset('jcp-niche-load-plumbing-demo', 'jcp_niche_plumbing_json');
+		bindPreset('jcp-niche-load-referral-demo', 'jcp_niche_referral_json');
 	})();
 	</script>
 	<?php
@@ -112,18 +145,33 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
  * AJAX: return pretty-printed plumbing JSON for admin editor.
  */
 function jcp_niche_ajax_plumbing_json(): void {
-	check_ajax_referer( 'jcp_niche_plumbing_json' );
+	jcp_niche_ajax_preset_json( 'plumbing' );
+}
+add_action( 'wp_ajax_jcp_niche_plumbing_json', 'jcp_niche_ajax_plumbing_json' );
+
+/**
+ * AJAX: return pretty-printed referral program JSON for admin editor.
+ */
+function jcp_niche_ajax_referral_json(): void {
+	jcp_niche_ajax_preset_json( 'referral-program' );
+}
+add_action( 'wp_ajax_jcp_niche_referral_json', 'jcp_niche_ajax_referral_json' );
+
+/**
+ * @param string $preset Preset slug.
+ */
+function jcp_niche_ajax_preset_json( string $preset ): void {
+	check_ajax_referer( 'jcp_niche_preset_json' );
 	if ( ! current_user_can( 'edit_posts' ) ) {
 		wp_send_json_error();
 	}
-	$preset = jcp_niche_load_preset( 'plumbing' );
+	$data = jcp_niche_load_preset( $preset );
 	wp_send_json_success(
 		[
-			'content' => wp_json_encode( $preset, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
+			'content' => wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
 		]
 	);
 }
-add_action( 'wp_ajax_jcp_niche_plumbing_json', 'jcp_niche_ajax_plumbing_json' );
 
 /**
  * Save meta box.
@@ -181,3 +229,4 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 	jcp_niche_save_content( $post_id, $decoded );
 }
 add_action( 'save_post_jcp_niche_landing', 'jcp_niche_save_meta_box' );
+add_action( 'save_post_page', 'jcp_niche_save_meta_box' );

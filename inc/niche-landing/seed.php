@@ -63,15 +63,66 @@ function jcp_niche_plumbing_exists(): bool {
 }
 
 /**
+ * Create referral program page if missing.
+ *
+ * @return int Post ID or 0.
+ */
+function jcp_niche_seed_referral_program(): int {
+	$existing = get_page_by_path( 'referral-program', OBJECT, 'page' );
+	if ( $existing instanceof WP_Post ) {
+		$id = (int) $existing->ID;
+		if ( get_page_template_slug( $id ) !== 'page-referral-program.php' ) {
+			update_post_meta( $id, '_wp_page_template', 'page-referral-program.php' );
+		}
+		if ( ! get_post_meta( $id, jcp_niche_content_meta_key(), true ) ) {
+			jcp_niche_save_content( $id, jcp_niche_load_preset( 'referral-program' ) );
+		}
+		return $id;
+	}
+
+	$preset = jcp_niche_load_preset( 'referral-program' );
+	$id     = wp_insert_post(
+		[
+			'post_type'    => 'page',
+			'post_status'  => 'publish',
+			'post_name'    => 'referral-program',
+			'post_title'   => ! empty( $preset['niche_label'] ) ? (string) $preset['niche_label'] : 'Referral Program',
+			'post_excerpt' => ! empty( $preset['hero']['subheadline'] ) ? wp_strip_all_tags( (string) $preset['hero']['subheadline'] ) : '',
+		],
+		true
+	);
+	if ( is_wp_error( $id ) || ! $id ) {
+		return 0;
+	}
+	$id = (int) $id;
+	update_post_meta( $id, '_wp_page_template', 'page-referral-program.php' );
+	jcp_niche_save_content( $id, $preset );
+	return $id;
+}
+
+/**
+ * Whether the referral program page exists.
+ */
+function jcp_niche_referral_exists(): bool {
+	$page = get_page_by_path( 'referral-program', OBJECT, 'page' );
+	return $page instanceof WP_Post;
+}
+
+/**
  * Run seed after theme deploy; re-run if flag set but post was removed.
  */
 function jcp_niche_maybe_seed(): void {
-	if ( get_option( 'jcp_niche_plumbing_seeded' ) === '1' && jcp_niche_plumbing_exists() ) {
-		return;
+	if ( get_option( 'jcp_niche_plumbing_seeded' ) !== '1' || ! jcp_niche_plumbing_exists() ) {
+		$created = jcp_niche_seed_plumbing();
+		if ( $created > 0 ) {
+			update_option( 'jcp_niche_plumbing_seeded', '1' );
+		}
 	}
-	$created = jcp_niche_seed_plumbing();
-	if ( $created > 0 ) {
-		update_option( 'jcp_niche_plumbing_seeded', '1' );
+	if ( get_option( 'jcp_niche_referral_seeded' ) !== '1' || ! jcp_niche_referral_exists() ) {
+		$created = jcp_niche_seed_referral_program();
+		if ( $created > 0 ) {
+			update_option( 'jcp_niche_referral_seeded', '1' );
+		}
 	}
 }
 add_action( 'init', 'jcp_niche_maybe_seed', 20 );
@@ -85,7 +136,9 @@ function jcp_niche_admin_seed_notice(): void {
 	}
 	check_admin_referer( 'jcp_niche_seed' );
 	jcp_niche_seed_plumbing();
+	jcp_niche_seed_referral_program();
 	update_option( 'jcp_niche_plumbing_seeded', '1' );
+	update_option( 'jcp_niche_referral_seeded', '1' );
 	wp_safe_redirect( admin_url( 'edit.php?post_type=jcp_niche_landing&jcp_seeded=1' ) );
 	exit;
 }

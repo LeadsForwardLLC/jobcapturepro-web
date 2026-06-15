@@ -1,0 +1,163 @@
+{
+  "page_type": "referral",
+  "niche_key": "referral-program",
+  "niche_label": "Referral Program",
+  "hide_breadcrumb": true,
+  "seo": {
+    "title": "Referral Program | Earn Recurring Commission | JobCapturePro",
+    "meta_description": "Join the JobCapturePro referral program. Earn 20% recurring commission for 12 months when you refer contractors and home service businesses."
+  },
+  "hero": {
+    "h1": "Earn Recurring Commissions by Helping Contractors Turn Real Jobs Into Real Marketing",
+    "subheadline": "JobCapturePro helps contractors turn completed jobs, photos, reviews, and project proof into better online visibility — without adding a bunch of manual work. Refer contractors, remodelers, and home service businesses to JCP and earn recurring commission when they become customers.",
+    "cta_primary": {
+      "label": "Join the Referral Program",
+      "url": "https://jobcapturepro.firstpromoter.com"
+    },
+    "cta_secondary": { "label": "", "url": "" },
+    "trust_line": "Earn 20% recurring commission for 12 months.",
+    "show_visual": false
+  },
+  "what_it_is": {
+    "headline": "Why This Is Exciting",
+    "subheadline": "Most contractors are already sitting on a goldmine of marketing proof.",
+    "team_already_title": "Contractors already",
+    "turns_into_title": "JobCapturePro turns that into",
+    "team_already": [
+      "They finish jobs",
+      "They take photos",
+      "They get happy customers",
+      "They do real work in real neighborhoods"
+    ],
+    "turns_into": [
+      "Website proof from completed jobs",
+      "Local SEO content and check-ins",
+      "Google Business Profile activity",
+      "Review opportunities and social proof"
+    ],
+    "lead": "But most of that proof never turns into anything useful online. JobCapturePro fixes that.",
+    "closing": "If you know contractors, remodelers, or home service companies, this is an easy product to recommend."
+  },
+  "cta_band_1": {
+    "cta_primary": {
+      "label": "Start Referring Contractors",
+      "url": "https://jobcapturepro.firstpromoter.com"
+    }
+  },
+  "how_it_works": {
+    "headline": "How It Works",
+    "subheadline": "Three simple steps to start earning",
+    "steps": [
+      {
+        "title": "Join the program",
+        "lines": [
+          "Sign up for the JobCapturePro referral program and get your unique referral link."
+        ]
+      },
+      {
+        "title": "Share JobCapturePro",
+        "lines": [
+          "Send your link to contractors, remodelers, agencies, or home service businesses that could use more online proof from the work they already do."
+        ]
+      },
+      {
+        "title": "Earn commission",
+        "lines": [
+          "When someone you refer becomes a paid JobCapturePro customer, you earn 20% recurring commission for 12 months."
+        ]
+      }
+    ]
+  },
+  "check_ins": {
+    "headline": "Who Should You Refer?",
+    "subheadline": "JobCapturePro is a strong fit for:",
+    "job_types": [
+      "Kitchen and bath remodelers",
+      "Roofers",
+      "HVAC companies",
+      "Plumbers",
+      "Electricians",
+      "Pest control companies",
+      "Landscapers",
+      "Restoration companies",
+      "Home service businesses",
+      "Contractor marketing agencies",
+      "Local SEO consultants",
+      "Web designers serving contractors"
+    ],
+    "closing": "If they already take job photos but those photos are not turning into website content, Google proof, reviews, or local visibility, they should probably see JobCapturePro."
+  },
+  "benefits": {
+    "headline": "What JobCapturePro Helps Contractors Do",
+    "items": [
+      { "title": "Capture completed jobs from the field", "body": "Turn real work into assets you can publish" },
+      { "title": "Turn job photos into online proof", "body": "Show homeowners the work you actually do" },
+      { "title": "Publish SEO-friendly check-ins to their website", "body": "Fresh local content without manual writing" },
+      { "title": "Create fresh local content", "body": "Stay visible in the neighborhoods you serve" },
+      { "title": "Support Google Business Profile activity", "body": "Stay active where homeowners search" },
+      { "title": "Request more reviews", "body": "Right after the job while experience is fresh" },
+      { "title": "Build more trust with homeowners", "body": "Real proof beats generic marketing claims" },
+      { "title": "Show real work in real service areas", "body": "Local credibility that generic sites cannot fake" },
+      { "title": "Look active, credible, and established online", "body": "A company that looks busy wins more trust" }
+    ],
+    "closing": "This is not generic marketing software. It is built specifically for contractors and home service companies that want their real-world work to actually show up online."
+  },
+  "commission": {
+    "headline": "Commission Details",
+    "subheadline": "Standard Referral Program",
+    "body": "Earn 20% recurring commission for 12 months for each referred customer who signs up for a paid JobCapturePro account.",
+    "footnote": "Commissions are paid according to program terms and only apply to active paid customers.",
+    "rows": [
+      { "plan": "Starter", "price": "$99/mo", "monthly": "$19.80/mo", "twelve_month": "$237.60" },
+      { "plan": "Scale", "price": "$249/mo", "monthly": "$49.80/mo", "twelve_month": "$597.60" },
+      { "plan": "Enterprise", "price": "$399/mo", "monthly": "$79.80/mo", "twelve_month": "$957.60" }
+    ],
+    "cta_primary": {
+      "label": "Join the Referral Program",
+      "url": "https://jobcapturepro.firstpromoter.com"
+    }
+  },
+  "partners": {
+    "headline": "For Agencies, Consultants, and Strategic Partners",
+    "body": "Run an agency? Work with contractors? Manage SEO, websites, ads, CRM, or marketing for home service businesses? You may be a great fit for a deeper JobCapturePro partnership. Agencies and consultants may qualify for enhanced partner terms based on fit, volume, and level of involvement. Apply through the referral program and tell us how you plan to promote or use JobCapturePro with your clients.",
+    "cta_primary": {
+      "label": "Apply as a Partner",
+      "url": "https://jobcapturepro.firstpromoter.com"
+    }
+  },
+  "share": {
+    "headline": "Easy Ways to Share JCP",
+    "body": "You do not need a complicated pitch. Here is a simple message you can send:",
+    "quote": "Thought you might want to check this out. JobCapturePro helps contractors turn completed jobs, photos, reviews, and real project proof into better online visibility without adding a bunch of manual work.",
+    "note": "You can also send people to the demo page first so they can quickly see what JCP does and who it is for.",
+    "cta_primary": {
+      "label": "Join the Referral Program",
+      "url": "https://jobcapturepro.firstpromoter.com"
+    },
+    "cta_secondary": {
+      "label": "View the live demo",
+      "url": "/demo"
+    }
+  },
+  "faq": {
+    "headline": "FAQ",
+    "items": [
+      { "q": "How much can I earn?", "a": "You earn 20% recurring commission for 12 months for each referred customer who signs up for a paid JobCapturePro account." },
+      { "q": "Who should I refer?", "a": "Contractors, remodelers, home service companies, and agencies that work with those businesses." },
+      { "q": "Do I need to be a JobCapturePro customer?", "a": "No. You do not need to be a customer to join the referral program." },
+      { "q": "Can agencies join?", "a": "Yes. Agencies, consultants, web designers, local SEO providers, and contractor marketing partners are welcome to apply." },
+      { "q": "Can I use paid ads?", "a": "Paid ads require approval. Please do not bid on JobCapturePro branded terms or run misleading promotions." },
+      { "q": "Can I promise rankings or results?", "a": "No. Please do not guarantee SEO rankings, Google Maps rankings, leads, or revenue. JobCapturePro helps contractors create better proof and visibility assets, but results vary." },
+      { "q": "Where do I get my referral link?", "a": "After you join, you will get access to your referral dashboard where you can grab your link, track clicks, view referrals, and monitor commissions." }
+    ]
+  },
+  "final_cta": {
+    "headline": "Ready to Start Referring Contractors?",
+    "subheadline": "Join the JobCapturePro referral program and start earning recurring commission by helping contractors turn real completed jobs into real online proof.",
+    "cta_primary": {
+      "label": "Join the Referral Program",
+      "url": "https://jobcapturepro.firstpromoter.com"
+    },
+    "cta_note": "20% recurring commission for 12 months on paid referrals."
+  }
+}

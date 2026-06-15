@@ -23,17 +23,29 @@ function jcp_niche_render_page( int $post_id ): void {
 	$c         = jcp_niche_get_content( $post_id );
 	$niche_key = ! empty( $c['niche_key'] ) ? (string) $c['niche_key'] : get_post_field( 'post_name', $post_id );
 	$niche_key = sanitize_title( $niche_key );
+	$is_referral = ( $c['page_type'] ?? '' ) === 'referral';
 
-	echo '<main class="jcp-marketing jcp-home jcp-niche" data-niche="' . esc_attr( $niche_key ) . '">';
+	echo '<main class="jcp-marketing jcp-home jcp-niche' . ( $is_referral ? ' jcp-niche-referral' : '' ) . '" data-niche="' . esc_attr( $niche_key ) . '">';
 	jcp_niche_render_breadcrumb( $c );
 	jcp_niche_render_hero( $c, $niche_key );
 	jcp_niche_render_what_it_is( $c );
+	if ( $is_referral ) {
+		jcp_niche_render_cta_band( $c['cta_band_1'] ?? [], $niche_key, 'cta_band_1' );
+	}
 	jcp_niche_render_how_it_works( $c, $niche_key );
 	jcp_niche_render_check_ins( $c );
-	jcp_niche_render_problem( $c );
+	if ( ! $is_referral ) {
+		jcp_niche_render_problem( $c );
+	}
 	jcp_niche_render_benefits( $c );
-	jcp_niche_render_differentiation( $c );
-	jcp_niche_render_who_its_for( $c );
+	if ( $is_referral ) {
+		jcp_niche_render_commission( $c, $niche_key );
+		jcp_niche_render_partners( $c, $niche_key );
+		jcp_niche_render_share( $c, $niche_key );
+	} else {
+		jcp_niche_render_differentiation( $c );
+		jcp_niche_render_who_its_for( $c );
+	}
 	jcp_niche_render_faq( $c );
 	jcp_niche_render_final_cta( $c, $niche_key );
 	echo '</main>';
@@ -43,6 +55,9 @@ function jcp_niche_render_page( int $post_id ): void {
  * @param array<string, mixed> $c Content.
  */
 function jcp_niche_render_breadcrumb( array $c ): void {
+	if ( ! empty( $c['hide_breadcrumb'] ) ) {
+		return;
+	}
 	$label = ! empty( $c['niche_label'] ) ? (string) $c['niche_label'] : '';
 	if ( $label === '' ) {
 		return;
@@ -69,12 +84,13 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	if ( empty( $h['h1'] ) ) {
 		return;
 	}
-	$primary   = jcp_niche_resolve_cta( $h['cta_primary'] ?? [], $niche_key );
-	$secondary = jcp_niche_resolve_cta( $h['cta_secondary'] ?? [ 'label' => 'See how it works', 'url' => '#how-it-works' ], $niche_key );
-	$demo_url  = home_url( '/demo/' );
-	$photo     = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$primary     = jcp_niche_resolve_cta( $h['cta_primary'] ?? [], $niche_key );
+	$secondary   = jcp_niche_resolve_cta( $h['cta_secondary'] ?? [ 'label' => 'See how it works', 'url' => '#how-it-works' ], $niche_key );
+	$show_visual = ! isset( $h['show_visual'] ) || ! empty( $h['show_visual'] );
+	$demo_url    = home_url( '/demo/' );
+	$photo       = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
 	?>
-	<section class="jcp-section jcp-hero jcp-niche-hero">
+	<section class="jcp-section jcp-hero jcp-niche-hero<?php echo $show_visual ? '' : ' jcp-niche-hero--copy-only'; ?>">
 		<div class="jcp-container">
 			<div class="jcp-hero-grid">
 				<div class="jcp-hero-copy hero-copy">
@@ -96,6 +112,7 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						<p class="jcp-niche-trust-line"<?php jcp_niche_editable_attr( 'hero.trust_line' ); ?>><?php jcp_niche_e( (string) $h['trust_line'] ); ?></p>
 					<?php endif; ?>
 				</div>
+				<?php if ( $show_visual ) : ?>
 				<div class="jcp-hero-visual hero-visual">
 					<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>">
 						<div class="phone-frame hero-phone-frame">
@@ -124,6 +141,30 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						</div>
 					</a>
 				</div>
+				<?php endif; ?>
+			</div>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * Centered mid-page CTA band.
+ *
+ * @param array<string, mixed> $band      CTA band block.
+ * @param string               $niche_key Niche key.
+ * @param string               $path      JSON path prefix.
+ */
+function jcp_niche_render_cta_band( array $band, string $niche_key, string $path = 'cta_band' ): void {
+	$primary = jcp_niche_resolve_cta( $band['cta_primary'] ?? [], $niche_key );
+	if ( $primary['label'] === '' ) {
+		return;
+	}
+	?>
+	<section class="jcp-section jcp-niche-cta-band">
+		<div class="jcp-container">
+			<div class="jcp-niche-cta-band-inner">
+				<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( $path . '.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 			</div>
 		</div>
 	</section>
@@ -150,8 +191,10 @@ function jcp_niche_render_what_it_is( array $c ): void {
 			</div>
 			<div class="ranking-factors-grid jcp-niche-split-grid">
 				<?php
+				$team_title   = ! empty( $w['team_already_title'] ) ? (string) $w['team_already_title'] : __( 'Your team is already', 'jcp-core' );
+				$turns_title  = ! empty( $w['turns_into_title'] ) ? (string) $w['turns_into_title'] : __( 'Turns real jobs into', 'jcp-core' );
 				jcp_niche_factor_card(
-					__( 'Your team is already', 'jcp-core' ),
+					$team_title,
 					'wrench',
 					'',
 					'',
@@ -164,7 +207,7 @@ function jcp_niche_render_what_it_is( array $c ): void {
 					}
 				);
 				jcp_niche_factor_card(
-					__( 'Turns real jobs into', 'jcp-core' ),
+					$turns_title,
 					'sparkles',
 					'',
 					'',
@@ -202,13 +245,16 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 	if ( empty( $h['headline'] ) ) {
 		return;
 	}
-	$cta = jcp_niche_resolve_cta(
-		[
-			'label' => $h['cta_label'] ?? 'See it in action',
-			'url'   => $h['cta_url'] ?? '/demo',
-		],
-		$niche_key
-	);
+	$has_cta = ! empty( $h['cta_label'] ) || ! empty( $h['cta_url'] ) || ! empty( $h['cta_primary'] );
+	$cta     = $has_cta
+		? jcp_niche_resolve_cta(
+			[
+				'label' => $h['cta_label'] ?? ( $h['cta_primary']['label'] ?? 'See it in action' ),
+				'url'   => $h['cta_url'] ?? ( $h['cta_primary']['url'] ?? '/demo' ),
+			],
+			$niche_key
+		)
+		: [ 'label' => '', 'url' => '' ];
 	?>
 	<section class="jcp-section rankings-section" id="how-it-works">
 		<div class="jcp-container">
@@ -390,6 +436,139 @@ function jcp_niche_render_benefits( array $c ): void {
 				jcp_niche_render_section_closing( (string) $b['closing'], 'benefits.closing' );
 			}
 			?>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * @param array<string, mixed> $c Content.
+ * @param string               $niche_key Niche key.
+ */
+function jcp_niche_render_commission( array $c, string $niche_key ): void {
+	$m = $c['commission'] ?? [];
+	if ( empty( $m['headline'] ) ) {
+		return;
+	}
+	$rows    = (array) ( $m['rows'] ?? [] );
+	$primary = jcp_niche_resolve_cta( $m['cta_primary'] ?? [], $niche_key );
+	?>
+	<section class="jcp-section rankings-section jcp-niche-commission">
+		<div class="jcp-container">
+			<div class="rankings-header">
+				<h2<?php jcp_niche_editable_attr( 'commission.headline' ); ?>><?php jcp_niche_e( (string) $m['headline'] ); ?></h2>
+				<?php if ( ! empty( $m['subheadline'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'commission.subheadline' ); ?>><?php jcp_niche_e( (string) $m['subheadline'] ); ?></p>
+				<?php endif; ?>
+				<?php if ( ! empty( $m['body'] ) ) : ?>
+					<p class="jcp-niche-commission-lead"<?php jcp_niche_editable_attr( 'commission.body' ); ?>><?php jcp_niche_e( (string) $m['body'] ); ?></p>
+				<?php endif; ?>
+			</div>
+			<?php if ( ! empty( $rows ) ) : ?>
+				<div class="jcp-niche-commission-table-wrap">
+					<table class="jcp-niche-commission-table">
+						<thead>
+							<tr>
+								<th scope="col"><?php esc_html_e( 'Plan', 'jcp-core' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Monthly Price', 'jcp-core' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Your Monthly Commission', 'jcp-core' ); ?></th>
+								<th scope="col"><?php esc_html_e( '12-Month Potential', 'jcp-core' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $rows as $i => $row ) : ?>
+								<?php if ( ! is_array( $row ) ) { continue; } ?>
+								<tr>
+									<td data-label="<?php esc_attr_e( 'Plan', 'jcp-core' ); ?>"<?php jcp_niche_editable_attr( 'commission.rows.' . $i . '.plan' ); ?>><?php jcp_niche_e( (string) ( $row['plan'] ?? '' ) ); ?></td>
+									<td data-label="<?php esc_attr_e( 'Monthly Price', 'jcp-core' ); ?>"<?php jcp_niche_editable_attr( 'commission.rows.' . $i . '.price' ); ?>><?php jcp_niche_e( (string) ( $row['price'] ?? '' ) ); ?></td>
+									<td data-label="<?php esc_attr_e( 'Your Monthly Commission', 'jcp-core' ); ?>"<?php jcp_niche_editable_attr( 'commission.rows.' . $i . '.monthly' ); ?>><?php jcp_niche_e( (string) ( $row['monthly'] ?? '' ) ); ?></td>
+									<td data-label="<?php esc_attr_e( '12-Month Potential', 'jcp-core' ); ?>"<?php jcp_niche_editable_attr( 'commission.rows.' . $i . '.twelve_month' ); ?>><?php jcp_niche_e( (string) ( $row['twelve_month'] ?? '' ) ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			<?php endif; ?>
+			<?php if ( ! empty( $m['footnote'] ) ) : ?>
+				<p class="jcp-niche-commission-footnote"<?php jcp_niche_editable_attr( 'commission.footnote' ); ?>><?php jcp_niche_e( (string) $m['footnote'] ); ?></p>
+			<?php endif; ?>
+			<?php if ( $primary['label'] !== '' ) : ?>
+				<div class="jcp-niche-cta-band-inner">
+					<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'commission.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+				</div>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * @param array<string, mixed> $c Content.
+ * @param string               $niche_key Niche key.
+ */
+function jcp_niche_render_partners( array $c, string $niche_key ): void {
+	$p = $c['partners'] ?? [];
+	if ( empty( $p['headline'] ) ) {
+		return;
+	}
+	$primary = jcp_niche_resolve_cta( $p['cta_primary'] ?? [], $niche_key );
+	?>
+	<section class="jcp-section rankings-section jcp-niche-partners">
+		<div class="jcp-container">
+			<div class="rankings-header">
+				<h2<?php jcp_niche_editable_attr( 'partners.headline' ); ?>><?php jcp_niche_e( (string) $p['headline'] ); ?></h2>
+			</div>
+			<div class="real-job-proof-callout jcp-niche-partners-callout">
+				<?php if ( ! empty( $p['body'] ) ) : ?>
+					<p class="real-job-proof-callout-text"<?php jcp_niche_editable_attr( 'partners.body' ); ?>><?php jcp_niche_e( (string) $p['body'] ); ?></p>
+				<?php endif; ?>
+				<?php if ( $primary['label'] !== '' ) : ?>
+					<div class="jcp-niche-cta-band-inner">
+						<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'partners.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+					</div>
+				<?php endif; ?>
+			</div>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * @param array<string, mixed> $c Content.
+ * @param string               $niche_key Niche key.
+ */
+function jcp_niche_render_share( array $c, string $niche_key ): void {
+	$s = $c['share'] ?? [];
+	if ( empty( $s['headline'] ) ) {
+		return;
+	}
+	$primary   = jcp_niche_resolve_cta( $s['cta_primary'] ?? [], $niche_key );
+	$secondary = jcp_niche_resolve_cta( $s['cta_secondary'] ?? [], $niche_key );
+	?>
+	<section class="jcp-section rankings-section jcp-niche-share">
+		<div class="jcp-container">
+			<div class="rankings-header">
+				<h2<?php jcp_niche_editable_attr( 'share.headline' ); ?>><?php jcp_niche_e( (string) $s['headline'] ); ?></h2>
+				<?php if ( ! empty( $s['body'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'share.body' ); ?>><?php jcp_niche_e( (string) $s['body'] ); ?></p>
+				<?php endif; ?>
+			</div>
+			<?php if ( ! empty( $s['quote'] ) ) : ?>
+				<blockquote class="jcp-niche-share-quote"<?php jcp_niche_editable_attr( 'share.quote' ); ?>>
+					<p><?php jcp_niche_e( (string) $s['quote'] ); ?></p>
+				</blockquote>
+			<?php endif; ?>
+			<?php if ( ! empty( $s['note'] ) ) : ?>
+				<p class="jcp-niche-share-note"<?php jcp_niche_editable_attr( 'share.note' ); ?>><?php jcp_niche_e( (string) $s['note'] ); ?></p>
+			<?php endif; ?>
+			<div class="jcp-actions directory-cta-row jcp-niche-share-actions">
+				<?php if ( $primary['label'] !== '' ) : ?>
+					<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'share.cta_primary' ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+				<?php endif; ?>
+				<?php if ( $secondary['label'] !== '' ) : ?>
+					<a class="btn btn-secondary" href="<?php echo esc_url( $secondary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'share.cta_secondary' ); ?>><?php jcp_niche_e( $secondary['label'] ); ?></a>
+				<?php endif; ?>
+			</div>
 		</div>
 	</section>
 	<?php

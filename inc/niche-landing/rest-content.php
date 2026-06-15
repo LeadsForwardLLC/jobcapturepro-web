@@ -52,14 +52,24 @@ function jcp_niche_rest_can_edit( WP_REST_Request $request ): bool {
 }
 
 /**
+ * @param WP_Post $post Post.
+ */
+function jcp_niche_rest_is_content_post( WP_Post $post ): bool {
+	if ( $post->post_type === 'jcp_niche_landing' ) {
+		return true;
+	}
+	return $post->post_type === 'page' && get_page_template_slug( $post->ID ) === 'page-referral-program.php';
+}
+
+/**
  * @param WP_REST_Request $request Request.
  * @return WP_REST_Response|WP_Error
  */
 function jcp_niche_rest_get_content( WP_REST_Request $request ) {
 	$id   = (int) $request->get_param( 'id' );
 	$post = get_post( $id );
-	if ( ! $post || $post->post_type !== 'jcp_niche_landing' ) {
-		return new WP_Error( 'not_found', __( 'Industry page not found.', 'jcp-core' ), [ 'status' => 404 ] );
+	if ( ! $post || ! jcp_niche_rest_is_content_post( $post ) ) {
+		return new WP_Error( 'not_found', __( 'Landing page not found.', 'jcp-core' ), [ 'status' => 404 ] );
 	}
 	return new WP_REST_Response(
 		[
@@ -77,8 +87,8 @@ function jcp_niche_rest_get_content( WP_REST_Request $request ) {
 function jcp_niche_rest_save_content( WP_REST_Request $request ) {
 	$id   = (int) $request->get_param( 'id' );
 	$post = get_post( $id );
-	if ( ! $post || $post->post_type !== 'jcp_niche_landing' ) {
-		return new WP_Error( 'not_found', __( 'Industry page not found.', 'jcp-core' ), [ 'status' => 404 ] );
+	if ( ! $post || ! jcp_niche_rest_is_content_post( $post ) ) {
+		return new WP_Error( 'not_found', __( 'Landing page not found.', 'jcp-core' ), [ 'status' => 404 ] );
 	}
 	$body = $request->get_json_params();
 	if ( empty( $body['content'] ) || ! is_array( $body['content'] ) ) {

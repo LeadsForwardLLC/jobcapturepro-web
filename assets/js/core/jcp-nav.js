@@ -218,7 +218,8 @@
       const isBlogPage = page === 'blog' || pathname === '/blog' || (document.body && document.body.classList.contains('blog'));
       const isHelpPage = page === 'help' || pathname === '/help';
       const isContactPage = page === 'contact' || pathname === '/contact';
-      const isResourcesPage = isBlogPage || isHelpPage || isContactPage;
+      const isReferralPage = page === 'referral-program' || pathname === '/referral-program';
+      const isResourcesPage = isBlogPage || isHelpPage || isContactPage || isReferralPage;
       if (isResourcesPage) {
         if (resourcesTrigger) resourcesTrigger.classList.add('is-active');
         if (mobileResourcesSummary) mobileResourcesSummary.classList.add('is-active');
