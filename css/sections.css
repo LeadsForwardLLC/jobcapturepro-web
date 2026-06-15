@@ -656,8 +656,8 @@
 
 .timeline-steps {
   display: grid;
-  /* Make each step card comfortably wide on desktop */
-  grid-template-columns: repeat(4, minmax(260px, 1fr));
+  /* Fluid columns: match step count (2–4) instead of reserving a 4th empty column */
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: var(--jcp-space-3xl);
   position: relative;
   width: 100%;
@@ -665,6 +665,20 @@
   margin: var(--jcp-space-5xl) 0 0 0;
   overflow: visible;
   padding: var(--jcp-space-md) 0;
+}
+
+@media (min-width: 1025px) {
+  .timeline-steps:has(> .timeline-step:nth-child(4):last-child) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .timeline-steps:has(> .timeline-step:nth-child(3):last-child) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .timeline-steps:has(> .timeline-step:nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Card styles unified in components.css */
@@ -1300,9 +1314,13 @@
   }
 
   .timeline-steps {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
     gap: var(--jcp-space-xl);
     margin-top: var(--jcp-space-4xl);
+  }
+
+  .timeline-steps:has(> .timeline-step:nth-child(3):last-child) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .timeline-step:not(:last-child)::before,

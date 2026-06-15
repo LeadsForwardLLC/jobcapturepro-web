@@ -136,17 +136,7 @@
   padding-bottom: var(--jcp-space-lg);
 }
 
-/* Timeline responsive */
-@media (max-width: 1100px) {
-  .jcp-niche .timeline-steps {
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-  }
-
-  .jcp-niche .timeline-step:nth-child(2n)::after {
-    display: none;
-  }
-}
-
+/* Timeline responsive — inherit fluid grid from sections.css; stack on small screens */
 @media (max-width: 640px) {
   .jcp-niche .timeline-steps {
     grid-template-columns: 1fr;
