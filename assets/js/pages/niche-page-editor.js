@@ -37,10 +37,10 @@
   const bar = document.createElement('div');
   bar.className = 'jcp-niche-edit-bar';
   bar.innerHTML = `
-    <strong>Industry page editor</strong>
+    <strong class="jcp-niche-edit-bar-title">Industry page editor</strong>
     <button type="button" class="btn btn-primary" id="jcpNicheToggleEdit">Click to edit page</button>
-    <button type="button" class="btn btn-secondary" id="jcpNicheSave" disabled>Save changes</button>
-    <span id="jcpNicheStatus" class="jcp-niche-edit-status"></span>
+    <button type="button" class="btn btn-secondary" id="jcpNicheSave" disabled aria-label="Save changes">Save changes</button>
+    <span id="jcpNicheStatus" class="jcp-niche-edit-status" aria-live="polite"></span>
     <a href="${cfg.adminUrl || '#'}" class="jcp-niche-edit-link">WP Admin</a>
   `;
 
@@ -68,7 +68,14 @@
   const markDirty = () => {
     dirty = true;
     saveBtn.disabled = false;
+    saveBtn.classList.add('is-ready');
     statusEl.textContent = 'Unsaved changes';
+  };
+
+  const markClean = () => {
+    dirty = false;
+    saveBtn.disabled = true;
+    saveBtn.classList.remove('is-ready');
   };
 
   const load = async () => {
@@ -99,6 +106,9 @@
     document.body.classList.add('jcp-inline-editing');
     toggleBtn.textContent = 'Editing — click text to change';
     toggleBtn.classList.add('is-active');
+    if (!dirty) {
+      statusEl.textContent = 'Click highlighted text or buttons to edit';
+    }
 
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
       el.setAttribute('contenteditable', 'true');
@@ -136,6 +146,9 @@
 
   toggleBtn.addEventListener('click', () => {
     if (editing) {
+      if (dirty && !window.confirm('You have unsaved changes. Stop editing anyway?')) {
+        return;
+      }
       disableEditing();
     } else {
       enableEditing();
@@ -156,6 +169,7 @@
   });
 
   saveBtn.addEventListener('click', async () => {
+    if (saveBtn.disabled) return;
     collectFromDom();
     statusEl.textContent = 'Saving…';
     saveBtn.disabled = true;
@@ -166,12 +180,27 @@
       body: JSON.stringify({ content }),
     });
     if (res.ok) {
-      dirty = false;
+      markClean();
       statusEl.textContent = 'Saved';
       window.location.reload();
     } else {
-      statusEl.textContent = 'Save failed';
+      statusEl.textContent = 'Save failed — try again';
       saveBtn.disabled = false;
+      saveBtn.classList.add('is-ready');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's' && dirty && editing) {
+      e.preventDefault();
+      saveBtn.click();
+    }
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (dirty) {
+      e.preventDefault();
+      e.returnValue = '';
     }
   });
 

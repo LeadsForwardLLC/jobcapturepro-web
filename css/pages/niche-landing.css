@@ -251,6 +251,43 @@ body.jcp-niche-editing {
   padding: var(--jcp-space-xs) var(--jcp-space-md);
 }
 
+.jcp-niche-edit-bar-title {
+  font-weight: var(--jcp-font-weight-semibold);
+  white-space: nowrap;
+}
+
+/* Save button: readable on dark toolbar (secondary was dark-on-dark = invisible) */
+.jcp-niche-edit-bar .btn-secondary {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.45);
+  background: transparent;
+}
+
+.jcp-niche-edit-bar .btn-secondary:hover:not(:disabled) {
+  color: #0f172a;
+  background: #fff;
+  border-color: #fff;
+}
+
+.jcp-niche-edit-bar .btn-secondary:disabled {
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.22);
+  cursor: not-allowed;
+}
+
+.jcp-niche-edit-bar #jcpNicheSave.is-ready {
+  color: #0f172a;
+  background: #fff;
+  border-color: #fff;
+  font-weight: var(--jcp-font-weight-semibold);
+}
+
+.jcp-niche-edit-bar #jcpNicheSave.is-ready:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #f1f5f9;
+}
+
 .jcp-niche-edit-bar #jcpNicheToggleEdit.is-active {
   background: #22c55e;
   border-color: #22c55e;
