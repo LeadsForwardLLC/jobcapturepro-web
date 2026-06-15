@@ -10,6 +10,14 @@
  */
 function jcp_niche_register_meta_box(): void {
 	add_meta_box(
+		'jcp_niche_import',
+		__( 'Landing Page — Import from Document', 'jcp-core' ),
+		'jcp_niche_render_import_meta_box',
+		'jcp_niche_landing',
+		'normal',
+		'high'
+	);
+	add_meta_box(
 		'jcp_niche_quick',
 		__( 'Landing Page — Quick Edit', 'jcp-core' ),
 		'jcp_niche_render_quick_meta_box',
@@ -63,7 +71,7 @@ function jcp_niche_render_quick_meta_box( WP_Post $post ): void {
 		<div class="notice notice-info inline" style="margin: 0 0 1em; padding: 0.75em 1em;">
 			<p style="margin: 0;">
 				<strong><?php esc_html_e( 'Add a new trade page', 'jcp-core' ); ?></strong><br />
-				<?php esc_html_e( '1. Set the URL slug (e.g. roofing). 2. Load a template in Advanced JSON below and save. 3. Use “Edit on live page” to customize copy. SEO title and meta description are managed in Rank Math.', 'jcp-core' ); ?>
+				<?php esc_html_e( '1. Set the URL slug (e.g. roofing). 2. Paste your Google/Word doc in “Import from Document” below and click Build page. 3. Publish — or use “Edit on live page” to tweak copy. SEO title and meta description are managed in Rank Math.', 'jcp-core' ); ?>
 			</p>
 		</div>
 	<?php endif; ?>
@@ -94,6 +102,140 @@ function jcp_niche_render_quick_meta_box( WP_Post $post ): void {
 	<?php
 }
 add_action( 'add_meta_boxes', 'jcp_niche_register_meta_box' );
+
+/**
+ * Document import meta box for industry pages.
+ *
+ * @param WP_Post $post Post.
+ */
+function jcp_niche_render_import_meta_box( WP_Post $post ): void {
+	wp_nonce_field( 'jcp_niche_import_doc', 'jcp_niche_import_nonce' );
+	?>
+	<p class="description">
+		<?php esc_html_e( 'Paste a Google Doc or Word export using the standard section template (HERO, WHAT IT IS, HOW IT WORKS, etc.). The theme builds the page JSON automatically.', 'jcp-core' ); ?>
+	</p>
+	<p>
+		<label for="jcp_niche_import_doc"><strong><?php esc_html_e( 'Paste document text', 'jcp-core' ); ?></strong></label>
+		<textarea name="jcp_niche_import_doc" id="jcp_niche_import_doc" rows="14" class="large-text code" style="width:100%;font-family:monospace;" placeholder="<?php esc_attr_e( 'Paste content starting at HERO…', 'jcp-core' ); ?>"></textarea>
+	</p>
+	<p>
+		<label for="jcp_niche_import_file"><strong><?php esc_html_e( 'Or upload .docx / .txt', 'jcp-core' ); ?></strong></label><br />
+		<input type="file" name="jcp_niche_import_file" id="jcp_niche_import_file" accept=".docx,.txt,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+	</p>
+	<p>
+		<button type="button" class="button button-primary" id="jcp-niche-build-from-doc"><?php esc_html_e( 'Build page from document', 'jcp-core' ); ?></button>
+		<span class="description" id="jcp-niche-import-status" style="margin-left:8px;"></span>
+	</p>
+	<script>
+	(function () {
+		var btn = document.getElementById('jcp-niche-build-from-doc');
+		var ta = document.getElementById('jcp_niche_import_doc');
+		var jsonTa = document.getElementById('jcp_niche_content_json');
+		var status = document.getElementById('jcp-niche-import-status');
+		var fileInput = document.getElementById('jcp_niche_import_file');
+		if (!btn || !ta || !jsonTa) return;
+
+		btn.addEventListener('click', function () {
+			var body = new FormData();
+			body.append('action', 'jcp_niche_parse_document');
+			body.append('_wpnonce', '<?php echo esc_js( wp_create_nonce( 'jcp_niche_parse_document' ) ); ?>');
+			body.append('post_id', '<?php echo (int) $post->ID; ?>');
+			body.append('doc_text', ta.value || '');
+			if (fileInput && fileInput.files && fileInput.files[0]) {
+				body.append('doc_file', fileInput.files[0]);
+			}
+			status.textContent = '<?php echo esc_js( __( 'Building…', 'jcp-core' ) ); ?>';
+			btn.disabled = true;
+			fetch(ajaxurl, { method: 'POST', body: body, credentials: 'same-origin' })
+				.then(function (r) { return r.json(); })
+				.then(function (data) {
+					btn.disabled = false;
+					if (!data || !data.success) {
+						status.textContent = (data && data.data && data.data.message) ? data.data.message : '<?php echo esc_js( __( 'Import failed.', 'jcp-core' ) ); ?>';
+						return;
+					}
+					jsonTa.value = data.data.content;
+					status.textContent = '<?php echo esc_js( __( 'JSON ready — click Update to save.', 'jcp-core' ) ); ?>';
+					jsonTa.focus();
+				})
+				.catch(function () {
+					btn.disabled = false;
+					status.textContent = '<?php echo esc_js( __( 'Import failed.', 'jcp-core' ) ); ?>';
+				});
+		});
+	})();
+	</script>
+	<?php
+}
+
+/**
+ * AJAX: parse writer document into page JSON.
+ */
+function jcp_niche_ajax_parse_document(): void {
+	check_ajax_referer( 'jcp_niche_parse_document' );
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		wp_send_json_error( [ 'message' => __( 'Permission denied.', 'jcp-core' ) ] );
+	}
+
+	$post_id = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
+	$post    = $post_id > 0 ? get_post( $post_id ) : null;
+	$text    = isset( $_POST['doc_text'] ) ? jcp_niche_normalize_document_text( wp_unslash( (string) $_POST['doc_text'] ) ) : '';
+
+	if ( $text === '' && ! empty( $_FILES['doc_file']['tmp_name'] ) ) {
+		$file = $_FILES['doc_file'];
+		$name = isset( $file['name'] ) ? (string) $file['name'] : '';
+		$ext  = strtolower( pathinfo( $name, PATHINFO_EXTENSION ) );
+		if ( $ext === 'docx' ) {
+			$text = jcp_niche_extract_docx_text( (string) $file['tmp_name'] );
+		} elseif ( $ext === 'txt' ) {
+			$raw = file_get_contents( $file['tmp_name'] );
+			$text = is_string( $raw ) ? jcp_niche_normalize_document_text( $raw ) : '';
+		}
+	}
+
+	if ( $text === '' ) {
+		wp_send_json_error( [ 'message' => __( 'Paste document text or upload a .docx / .txt file.', 'jcp-core' ) ] );
+	}
+
+	$niche_key   = $post instanceof WP_Post ? $post->post_name : '';
+	$niche_label = $post instanceof WP_Post ? get_the_title( $post ) : '';
+	$parsed      = jcp_niche_parse_document( $text, $niche_key, $niche_label );
+	$parsed      = jcp_niche_merge_parsed_content( $parsed, $post_id > 0 ? jcp_niche_get_content( $post_id ) : [] );
+
+	wp_send_json_success(
+		[
+			'content' => wp_json_encode( $parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
+		]
+	);
+}
+add_action( 'wp_ajax_jcp_niche_parse_document', 'jcp_niche_ajax_parse_document' );
+
+/**
+ * Merge parsed document content with existing JSON (preserve CTA URLs, etc.).
+ *
+ * @param array<string, mixed> $parsed   Parsed document.
+ * @param array<string, mixed> $existing Existing content.
+ * @return array<string, mixed>
+ */
+function jcp_niche_merge_parsed_content( array $parsed, array $existing = [] ): array {
+	if ( empty( $existing ) ) {
+		return $parsed;
+	}
+	foreach ( [ 'hero', 'final_cta' ] as $section ) {
+		if ( empty( $parsed[ $section ] ) || empty( $existing[ $section ] ) ) {
+			continue;
+		}
+		foreach ( [ 'cta_primary', 'cta_secondary' ] as $cta_key ) {
+			if ( empty( $parsed[ $section ][ $cta_key ]['url'] ) && ! empty( $existing[ $section ][ $cta_key ]['url'] ) ) {
+				$parsed[ $section ][ $cta_key ]['url'] = $existing[ $section ][ $cta_key ]['url'];
+			}
+		}
+		if ( empty( $parsed[ $section ]['cta_url'] ) && ! empty( $existing[ $section ]['cta_url'] ) ) {
+			$parsed[ $section ]['cta_url'] = $existing[ $section ]['cta_url'];
+		}
+	}
+	return $parsed;
+}
 
 /**
  * @param WP_Post $post Post.
