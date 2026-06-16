@@ -389,6 +389,10 @@ body.jcp-structure-open {
   overflow: hidden;
 }
 
+.jcp-block-structure[hidden] {
+  display: none !important;
+}
+
 .jcp-block-structure__header {
   display: flex;
   align-items: center;
@@ -474,6 +478,16 @@ body.jcp-structure-open {
   width: calc(100% - var(--jcp-space-lg) * 2);
 }
 
+.jcp-block-structure__empty {
+  list-style: none;
+  margin: 0;
+  padding: var(--jcp-space-md);
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  background: #f8fafc;
+  border-radius: var(--jcp-radius-md);
+}
+
 .jcp-block-add-modal {
   position: fixed;
   inset: 0;
@@ -483,6 +497,10 @@ body.jcp-structure-open {
   align-items: center;
   justify-content: center;
   padding: var(--jcp-space-lg);
+}
+
+.jcp-block-add-modal[hidden] {
+  display: none !important;
 }
 
 .jcp-block-add-modal__dialog {
@@ -531,6 +549,15 @@ body.jcp-structure-open {
   display: block;
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
+}
+
+.jcp-block-add-modal__empty {
+  margin: 0 0 var(--jcp-space-md);
+  padding: var(--jcp-space-md);
+  font-size: var(--jcp-font-size-sm);
+  color: var(--jcp-color-text-secondary);
+  background: #f8fafc;
+  border-radius: var(--jcp-radius-md);
 }
 
 /* Referral program page */

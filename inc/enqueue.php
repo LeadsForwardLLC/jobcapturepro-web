@@ -104,6 +104,8 @@ function jcp_core_enqueue_assets(): void {
         $pid = is_singular() ? get_queried_object_id() : 0;
         if ( $pid > 0 && function_exists( 'jcp_page_is_content_page' ) && jcp_page_is_content_page( $pid ) && current_user_can( 'edit_post', $pid ) ) {
             jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js' );
+            $page_doc  = jcp_page_get_content( $pid );
+            $page_kind = jcp_page_resolve_kind( $page_doc, $pid );
             wp_localize_script(
                 'jcp-niche-page-editor',
                 'JCP_NICHE_EDITOR',
@@ -113,6 +115,12 @@ function jcp_core_enqueue_assets(): void {
                     'nonce'    => wp_create_nonce( 'wp_rest' ),
                     'adminUrl' => get_edit_post_link( $pid, 'raw' ),
                     'url'      => get_permalink( $pid ),
+                    'bootstrap' => [
+                        'blocks'   => $page_doc,
+                        'content'  => jcp_page_get_content_flat( $pid ),
+                        'registry' => jcp_block_registry_public( $page_kind ),
+                        'pageKind' => $page_kind,
+                    ],
                 ]
             );
         }

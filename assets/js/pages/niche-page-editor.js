@@ -2,13 +2,17 @@
   const cfg = window.JCP_NICHE_EDITOR;
   if (!cfg || !cfg.postId || !cfg.restUrl) return;
 
-  let flatContent = {};
-  let pageDocument = { version: 1, blocks: [] };
-  let registry = [];
+  const bootstrap = cfg.bootstrap || {};
+  let flatContent = bootstrap.content && typeof bootstrap.content === 'object' ? bootstrap.content : {};
+  let pageDocument = bootstrap.blocks && Array.isArray(bootstrap.blocks.blocks)
+    ? bootstrap.blocks
+    : { version: 1, blocks: [] };
+  let registry = Array.isArray(bootstrap.registry) ? bootstrap.registry : [];
   let editing = false;
   let dirty = false;
   let structureOpen = false;
   let dragIndex = null;
+  let loaded = Array.isArray(bootstrap.registry) && bootstrap.registry.length > 0;
 
   const defaultProps = {
     hero: { h1: 'Page headline', subheadline: '', cta_primary: { label: 'Start free trial', url: '' }, cta_secondary: { label: 'See how it works', url: '#how-it-works' }, trust_line: '' },
@@ -133,6 +137,10 @@
 
   const renderBlockList = () => {
     blockListEl.innerHTML = '';
+    if (!(pageDocument.blocks || []).length) {
+      blockListEl.innerHTML = '<li class="jcp-block-structure__empty">No sections listed yet. Use + Add block or refresh the page.</li>';
+      return;
+    }
     (pageDocument.blocks || []).forEach((block, index) => {
       const li = document.createElement('li');
       li.className = 'jcp-block-structure__item';
@@ -181,6 +189,10 @@
 
   const renderAddBlockList = () => {
     addBlockListEl.innerHTML = '';
+    if (!registry.length) {
+      addBlockListEl.innerHTML = '<li class="jcp-block-add-modal__empty">No blocks available for this page. Refresh the page or open WP Admin.</li>';
+      return;
+    }
     registry.forEach((item) => {
       const li = document.createElement('li');
       li.innerHTML = `<button type="button" class="jcp-block-add-modal__option"><strong>${item.label}</strong><span>${item.description || ''}</span></button>`;
@@ -188,12 +200,27 @@
         const props = defaultProps[item.type] ? JSON.parse(JSON.stringify(defaultProps[item.type])) : {};
         pageDocument.blocks = pageDocument.blocks || [];
         pageDocument.blocks.push({ id: newBlockId(item.type), type: item.type, props });
-        addModal.hidden = true;
+        closeAddModal();
         renderBlockList();
         markDirty();
       });
       addBlockListEl.appendChild(li);
     });
+  };
+
+  const closeAddModal = () => {
+    addModal.hidden = true;
+    addModal.setAttribute('hidden', '');
+  };
+
+  const openAddModal = () => {
+    if (!loaded) {
+      statusEl.textContent = 'Loading page data…';
+      return;
+    }
+    renderAddBlockList();
+    addModal.hidden = false;
+    addModal.removeAttribute('hidden');
   };
 
   const openStructure = () => {
@@ -207,18 +234,42 @@
     structureOpen = false;
     structurePanel.hidden = true;
     document.body.classList.remove('jcp-structure-open');
+    closeAddModal();
+  };
+
+  const applyLoadedData = (data) => {
+    if (!data || data.code) return false;
+    flatContent = data.content || flatContent;
+    if (data.blocks && Array.isArray(data.blocks.blocks)) {
+      pageDocument = data.blocks;
+    }
+    if (Array.isArray(data.registry) && data.registry.length) {
+      registry = data.registry;
+    }
+    return true;
   };
 
   const load = async () => {
-    const res = await fetch(cfg.restUrl, {
-      credentials: 'same-origin',
-      headers: { 'X-WP-Nonce': cfg.nonce },
-    });
-    const data = await res.json();
-    flatContent = data.content || {};
-    pageDocument = data.blocks && data.blocks.blocks ? data.blocks : { version: 1, blocks: [] };
-    if (!pageDocument.blocks) pageDocument.blocks = [];
-    registry = data.registry || [];
+    try {
+      const res = await fetch(cfg.restUrl, {
+        credentials: 'same-origin',
+        headers: { 'X-WP-Nonce': cfg.nonce },
+      });
+      const data = await res.json();
+      if (!res.ok || !applyLoadedData(data)) {
+        if (!registry.length) {
+          statusEl.textContent = 'Editor data unavailable — try refreshing';
+        }
+        return;
+      }
+      if (structureOpen) renderBlockList();
+    } catch (err) {
+      if (!registry.length) {
+        statusEl.textContent = 'Editor data unavailable — try refreshing';
+      }
+    } finally {
+      loaded = true;
+    }
   };
 
   const collectFromDom = () => {
@@ -280,15 +331,13 @@
   });
 
   structurePanel.querySelector('#jcpStructureClose').addEventListener('click', closeStructure);
-  structurePanel.querySelector('#jcpAddBlockBtn').addEventListener('click', () => {
-    renderAddBlockList();
-    addModal.hidden = false;
-  });
-  addModal.querySelector('#jcpAddBlockCancel').addEventListener('click', () => {
-    addModal.hidden = true;
+  structurePanel.querySelector('#jcpAddBlockBtn').addEventListener('click', openAddModal);
+  addModal.querySelector('#jcpAddBlockCancel').addEventListener('click', closeAddModal);
+  addModal.querySelector('.jcp-block-add-modal__dialog').addEventListener('click', (e) => {
+    e.stopPropagation();
   });
   addModal.addEventListener('click', (e) => {
-    if (e.target === addModal) addModal.hidden = true;
+    if (e.target === addModal) closeAddModal();
   });
 
   toggleBtn.addEventListener('click', () => {
@@ -339,7 +388,13 @@
       e.preventDefault();
       saveBtn.click();
     }
-    if (e.key === 'Escape' && structureOpen) closeStructure();
+    if (e.key === 'Escape') {
+      if (!addModal.hidden) {
+        closeAddModal();
+        return;
+      }
+      if (structureOpen) closeStructure();
+    }
   });
 
   window.addEventListener('beforeunload', (e) => {
@@ -349,12 +404,15 @@
     }
   });
 
-  load().then(() => {
-    if (new URLSearchParams(window.location.search).get('jcp_edit') === '1') {
-      enableEditing();
-    }
-    if (new URLSearchParams(window.location.search).get('jcp_structure') === '1') {
-      openStructure();
-    }
+  if (new URLSearchParams(window.location.search).get('jcp_edit') === '1') {
+    enableEditing();
+  }
+  if (new URLSearchParams(window.location.search).get('jcp_structure') === '1') {
+    openStructure();
+  }
+
+  load().finally(() => {
+    loaded = true;
+    if (structureOpen) renderBlockList();
   });
 })();
