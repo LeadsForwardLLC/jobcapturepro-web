@@ -294,6 +294,11 @@ body.jcp-niche-editing {
   color: #fff;
 }
 
+.jcp-niche-edit-bar #jcpNicheUndo,
+.jcp-niche-edit-bar #jcpNicheRedo {
+  min-width: 4.25rem;
+}
+
 .jcp-niche-edit-status {
   font-size: var(--jcp-font-size-sm);
   color: rgba(255, 255, 255, 0.75);
@@ -558,6 +563,34 @@ body.jcp-structure-open {
   color: var(--jcp-color-text-secondary);
   background: #f8fafc;
   border-radius: var(--jcp-radius-md);
+}
+
+.jcp-block-placeholder {
+  border: 2px dashed rgba(255, 80, 62, 0.35);
+  background: #fff8f7;
+  text-align: center;
+  padding: var(--jcp-space-2xl) var(--jcp-space-lg) !important;
+}
+
+.jcp-block-placeholder__label {
+  margin: 0 0 var(--jcp-space-sm);
+  font-weight: var(--jcp-font-weight-semibold);
+  font-size: var(--jcp-font-size-lg);
+}
+
+.jcp-block-placeholder__hint {
+  margin: 0;
+  color: var(--jcp-color-text-secondary);
+  font-size: var(--jcp-font-size-sm);
+}
+
+.jcp-block-hidden {
+  display: none !important;
+}
+
+body.jcp-has-unsaved .jcp-niche-edit-status {
+  color: #fbbf24;
+  font-weight: var(--jcp-font-weight-semibold);
 }
 
 /* Referral program page */

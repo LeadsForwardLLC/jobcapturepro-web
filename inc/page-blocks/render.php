@@ -78,6 +78,13 @@ function jcp_page_render_block( array $block, array $legacy, array $ctx ): void 
 	$page_key = (string) $ctx['page_key'];
 	$c        = array_merge( $legacy, [ $def['legacy_key'] ?? $type => $props ] );
 
+	$block_id = esc_attr( (string) ( $block['id'] ?? 'b-' . $type ) );
+	printf(
+		'<div class="jcp-block-root" data-jcp-block-id="%1$s" data-jcp-block-type="%2$s">',
+		$block_id,
+		esc_attr( $type )
+	);
+
 	switch ( $type ) {
 		case 'breadcrumb':
 			jcp_niche_render_breadcrumb( $legacy );
@@ -131,6 +138,8 @@ function jcp_page_render_block( array $block, array $legacy, array $ctx ): void 
 			jcp_niche_render_share( $c, $page_key );
 			break;
 	}
+
+	echo '</div>';
 }
 
 /**
