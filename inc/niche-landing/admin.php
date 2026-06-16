@@ -9,30 +9,33 @@
  * Register meta box.
  */
 function jcp_niche_register_meta_box(): void {
-	add_meta_box(
-		'jcp_niche_import',
-		__( 'Landing Page — Import from Document', 'jcp-core' ),
-		'jcp_niche_render_import_meta_box',
-		'jcp_niche_landing',
-		'normal',
-		'high'
-	);
-	add_meta_box(
-		'jcp_niche_quick',
-		__( 'Landing Page — Quick Edit', 'jcp-core' ),
-		'jcp_niche_render_quick_meta_box',
-		'jcp_niche_landing',
-		'normal',
-		'high'
-	);
-	add_meta_box(
-		'jcp_niche_content',
-		__( 'Landing Page — Advanced JSON', 'jcp-core' ),
-		'jcp_niche_render_meta_box',
-		'jcp_niche_landing',
-		'normal',
-		'default'
-	);
+	$structured_types = [ 'jcp_niche_landing', 'jcp_page' ];
+	foreach ( $structured_types as $post_type ) {
+		add_meta_box(
+			'jcp_niche_import',
+			__( 'Landing Page — Import from Document', 'jcp-core' ),
+			'jcp_niche_render_import_meta_box',
+			$post_type,
+			'normal',
+			'high'
+		);
+		add_meta_box(
+			'jcp_niche_quick',
+			__( 'Landing Page — Quick Edit', 'jcp-core' ),
+			'jcp_niche_render_quick_meta_box',
+			$post_type,
+			'normal',
+			'high'
+		);
+		add_meta_box(
+			'jcp_niche_content',
+			__( 'Landing Page — Advanced JSON', 'jcp-core' ),
+			'jcp_niche_render_meta_box',
+			$post_type,
+			'normal',
+			'default'
+		);
+	}
 	add_meta_box(
 		'jcp_niche_quick',
 		__( 'Landing Page — Quick Edit', 'jcp-core' ),
@@ -61,20 +64,20 @@ function jcp_niche_render_quick_meta_box( WP_Post $post ): void {
 		echo '<p class="description">' . esc_html__( 'Assign the “Referral Program” page template to use structured landing content.', 'jcp-core' ) . '</p>';
 		return;
 	}
-	$c     = jcp_niche_get_content( (int) $post->ID );
+	$c     = jcp_page_get_content_flat( (int) $post->ID );
 	$edit  = add_query_arg( 'jcp_edit', '1', get_permalink( $post ) );
 	$hero  = $c['hero'] ?? [];
 	$final = $c['final_cta'] ?? [];
 	$is_industry = $post->post_type === 'jcp_niche_landing';
+	$is_marketing = $post->post_type === 'jcp_page';
 	?>
-	<?php if ( $is_industry ) : ?>
+	<?php if ( $is_industry || $is_marketing ) : ?>
 		<div class="notice notice-info inline" style="margin: 0 0 1em; padding: 0.75em 1em;">
 			<p style="margin: 0;">
-				<strong><?php esc_html_e( 'Add a new trade page', 'jcp-core' ); ?></strong><br />
+				<strong><?php echo $is_industry ? esc_html__( 'Add a new trade page', 'jcp-core' ) : esc_html__( 'Build a marketing page', 'jcp-core' ); ?></strong><br />
 				<?php
 				printf(
-					/* translators: %s: link to JCP Industry Pages docs */
-					esc_html__( '1. Set the URL slug (e.g. roofing). 2. Paste your Google/Word doc in “Import from Document” below and click Build page. 3. Publish — or use “Edit on live page” to tweak copy. SEO title and meta description are managed in Rank Math. %s', 'jcp-core' ),
+					esc_html__( '1. Set the URL slug. 2. Paste your Google/Word doc below and click Build page. 3. Publish — or use “Edit on live page” to tweak copy. SEO is managed in Rank Math. %s', 'jcp-core' ),
 					'<a href="' . esc_url( admin_url( 'admin.php?page=jcp-theme-settings' ) ) . '">' . esc_html__( 'Full SOP →', 'jcp-core' ) . '</a>'
 				);
 				?>
@@ -205,8 +208,16 @@ function jcp_niche_ajax_parse_document(): void {
 
 	$niche_key   = $post instanceof WP_Post ? $post->post_name : '';
 	$niche_label = $post instanceof WP_Post ? get_the_title( $post ) : '';
-	$parsed      = jcp_niche_parse_document( $text, $niche_key, $niche_label );
-	$parsed      = jcp_niche_merge_parsed_content( $parsed, $post_id > 0 ? jcp_niche_get_content( $post_id ) : [] );
+	$page_kind   = 'marketing';
+	if ( $post instanceof WP_Post ) {
+		if ( $post->post_type === 'jcp_niche_landing' ) {
+			$page_kind = 'industry';
+		} elseif ( get_page_template_slug( $post ) === 'page-referral-program.php' ) {
+			$page_kind = 'referral';
+		}
+	}
+	$parsed = jcp_page_parse_document( $text, $niche_key, $niche_label, $page_kind );
+	$parsed = jcp_page_merge_parsed_content( $parsed, $post_id > 0 ? jcp_page_get_content( $post_id ) : [] );
 
 	wp_send_json_success(
 		[
@@ -215,33 +226,7 @@ function jcp_niche_ajax_parse_document(): void {
 	);
 }
 add_action( 'wp_ajax_jcp_niche_parse_document', 'jcp_niche_ajax_parse_document' );
-
-/**
- * Merge parsed document content with existing JSON (preserve CTA URLs, etc.).
- *
- * @param array<string, mixed> $parsed   Parsed document.
- * @param array<string, mixed> $existing Existing content.
- * @return array<string, mixed>
- */
-function jcp_niche_merge_parsed_content( array $parsed, array $existing = [] ): array {
-	if ( empty( $existing ) ) {
-		return $parsed;
-	}
-	foreach ( [ 'hero', 'final_cta' ] as $section ) {
-		if ( empty( $parsed[ $section ] ) || empty( $existing[ $section ] ) ) {
-			continue;
-		}
-		foreach ( [ 'cta_primary', 'cta_secondary' ] as $cta_key ) {
-			if ( empty( $parsed[ $section ][ $cta_key ]['url'] ) && ! empty( $existing[ $section ][ $cta_key ]['url'] ) ) {
-				$parsed[ $section ][ $cta_key ]['url'] = $existing[ $section ][ $cta_key ]['url'];
-			}
-		}
-		if ( empty( $parsed[ $section ]['cta_url'] ) && ! empty( $existing[ $section ]['cta_url'] ) ) {
-			$parsed[ $section ]['cta_url'] = $existing[ $section ]['cta_url'];
-		}
-	}
-	return $parsed;
-}
+add_action( 'wp_ajax_jcp_page_parse_document', 'jcp_niche_ajax_parse_document' );
 
 /**
  * @param WP_Post $post Post.
@@ -252,25 +237,37 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 		return;
 	}
 	wp_nonce_field( 'jcp_niche_content_save', 'jcp_niche_content_nonce' );
-	$raw     = get_post_meta( $post->ID, jcp_niche_content_meta_key(), true );
-	$display = is_string( $raw ) && $raw !== '' ? $raw : '';
+	$stored  = jcp_page_get_content( (int) $post->ID );
+	$display = ! empty( $stored['blocks'] ) ? wp_json_encode( $stored, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) : '';
 	if ( $display === '' && $post->post_name === 'plumbing' ) {
-		$preset  = jcp_niche_load_preset( 'plumbing' );
-		$display = wp_json_encode( $preset, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'plumbing' ), 0 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
 	if ( $display === '' && $post->post_name === 'hvac' ) {
-		$preset  = jcp_niche_load_preset( 'hvac' );
-		$display = wp_json_encode( $preset, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'hvac' ), 0 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
 	if ( $display === '' && ( $post->post_name === 'referral-program' || get_page_template_slug( $post->ID ) === 'page-referral-program.php' ) ) {
-		$preset  = jcp_niche_load_preset( 'referral-program' );
-		$display = wp_json_encode( $preset, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'referral-program' ), 0 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+	}
+	if ( $display === '' && $post->post_type === 'jcp_page' ) {
+		$empty = jcp_page_legacy_to_blocks(
+			[
+				'page_kind'  => 'marketing',
+				'page_key'   => $post->post_name,
+				'page_label' => get_the_title( $post ),
+				'preset'     => 'marketing',
+			],
+			(int) $post->ID
+		);
+		$empty['blocks'] = jcp_page_blocks_from_preset( 'marketing' );
+		$display         = wp_json_encode( $empty, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
 	?>
 	<p class="description">
 		<?php
 		if ( $post->post_type === 'jcp_niche_landing' ) {
-			esc_html_e( 'Page content as JSON. Load a trade template to start, then customize. The page appears on /industries/ automatically when published.', 'jcp-core' );
+			esc_html_e( 'Page content as JSON blocks. Load a trade template to start. Published pages appear on /industries/ automatically.', 'jcp-core' );
+		} elseif ( $post->post_type === 'jcp_page' ) {
+			esc_html_e( 'Page content as JSON blocks. Load a preset or import a writer document. Published at /pages/{slug}/.', 'jcp-core' );
 		} else {
 			esc_html_e( 'Structured page content. Edit JSON directly or use a preset loader below.', 'jcp-core' );
 		}
@@ -280,6 +277,11 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 	<p>
 		<button type="button" class="button" id="jcp-niche-load-plumbing-demo"><?php esc_html_e( 'Use plumbing as template', 'jcp-core' ); ?></button>
 		<button type="button" class="button" id="jcp-niche-load-hvac-demo"><?php esc_html_e( 'Use HVAC as template', 'jcp-core' ); ?></button>
+	</p>
+	<?php elseif ( $post->post_type === 'jcp_page' ) : ?>
+	<p>
+		<button type="button" class="button" id="jcp-niche-load-marketing-demo"><?php esc_html_e( 'Use marketing preset', 'jcp-core' ); ?></button>
+		<button type="button" class="button" id="jcp-niche-load-minimal-demo"><?php esc_html_e( 'Use minimal preset', 'jcp-core' ); ?></button>
 	</p>
 	<?php else : ?>
 	<p>
@@ -305,6 +307,8 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 		bindPreset('jcp-niche-load-plumbing-demo', 'jcp_niche_plumbing_json');
 		bindPreset('jcp-niche-load-hvac-demo', 'jcp_niche_hvac_json');
 		bindPreset('jcp-niche-load-referral-demo', 'jcp_niche_referral_json');
+		bindPreset('jcp-niche-load-marketing-demo', 'jcp_page_marketing_json');
+		bindPreset('jcp-niche-load-minimal-demo', 'jcp_page_minimal_json');
 	})();
 	</script>
 	<?php
@@ -342,13 +346,35 @@ function jcp_niche_ajax_preset_json( string $preset ): void {
 	if ( ! current_user_can( 'edit_posts' ) ) {
 		wp_send_json_error();
 	}
-	$data = jcp_niche_load_preset( $preset );
+	$legacy = jcp_page_load_preset( $preset );
+	if ( empty( $legacy ) ) {
+		$legacy = [
+			'page_kind' => $preset === 'referral-program' ? 'referral' : ( in_array( $preset, [ 'plumbing', 'hvac' ], true ) ? 'industry' : 'marketing' ),
+			'preset'    => $preset,
+		];
+		$data = array_merge( jcp_page_legacy_to_blocks( $legacy, 0 ), [ 'blocks' => jcp_page_blocks_from_preset( $preset ) ] );
+	} else {
+		$data = jcp_page_legacy_to_blocks( $legacy, 0 );
+	}
 	wp_send_json_success(
 		[
 			'content' => wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
 		]
 	);
 }
+
+/**
+ * AJAX: marketing / minimal empty presets.
+ */
+function jcp_page_ajax_marketing_json(): void {
+	jcp_niche_ajax_preset_json( 'marketing' );
+}
+add_action( 'wp_ajax_jcp_page_marketing_json', 'jcp_page_ajax_marketing_json' );
+
+function jcp_page_ajax_minimal_json(): void {
+	jcp_niche_ajax_preset_json( 'minimal' );
+}
+add_action( 'wp_ajax_jcp_page_minimal_json', 'jcp_page_ajax_minimal_json' );
 
 /**
  * Save meta box.
@@ -365,7 +391,7 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
-	$content = jcp_niche_get_content( $post_id );
+	$content = jcp_page_get_content_flat( $post_id );
 	if ( isset( $_POST['jcp_niche_quick'] ) && is_array( $_POST['jcp_niche_quick'] ) ) {
 		$q = wp_unslash( $_POST['jcp_niche_quick'] );
 		$content['hero']      = $content['hero'] ?? [];
@@ -383,7 +409,7 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 		if ( ! empty( $q['final_btn'] ) ) {
 			$content['final_cta']['cta_primary']['label'] = sanitize_text_field( $q['final_btn'] );
 		}
-		jcp_niche_save_content( $post_id, $content );
+		jcp_page_save_content( $post_id, $content );
 	}
 
 	if ( ! isset( $_POST['jcp_niche_content_json'] ) ) {
@@ -392,7 +418,8 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 	$json = wp_unslash( $_POST['jcp_niche_content_json'] );
 	$json = is_string( $json ) ? trim( $json ) : '';
 	if ( $json === '' ) {
-		delete_post_meta( $post_id, jcp_niche_content_meta_key() );
+		delete_post_meta( $post_id, jcp_page_content_meta_key() );
+		delete_post_meta( $post_id, jcp_page_legacy_meta_key() );
 		return;
 	}
 	$decoded = json_decode( $json, true );
@@ -400,15 +427,24 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 		return;
 	}
 	$post = get_post( $post_id );
-	if ( $post instanceof WP_Post && $post->post_type === 'jcp_niche_landing' ) {
-		if ( empty( $decoded['niche_key'] ) ) {
+	if ( $post instanceof WP_Post ) {
+		if ( empty( $decoded['page_key'] ) && empty( $decoded['niche_key'] ) ) {
+			$decoded['page_key'] = $post->post_name;
 			$decoded['niche_key'] = $post->post_name;
 		}
-		if ( empty( $decoded['niche_label'] ) ) {
+		if ( empty( $decoded['page_label'] ) && empty( $decoded['niche_label'] ) ) {
+			$decoded['page_label'] = get_the_title( $post_id );
 			$decoded['niche_label'] = get_the_title( $post_id );
 		}
+		if ( empty( $decoded['page_kind'] ) && $post->post_type === 'jcp_niche_landing' ) {
+			$decoded['page_kind'] = 'industry';
+		}
+		if ( empty( $decoded['page_kind'] ) && $post->post_type === 'jcp_page' ) {
+			$decoded['page_kind'] = 'marketing';
+		}
 	}
-	jcp_niche_save_content( $post_id, $decoded );
+	jcp_page_save_content( $post_id, $decoded );
 }
 add_action( 'save_post_jcp_niche_landing', 'jcp_niche_save_meta_box' );
+add_action( 'save_post_jcp_page', 'jcp_niche_save_meta_box' );
 add_action( 'save_post_page', 'jcp_niche_save_meta_box' );

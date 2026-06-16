@@ -52,7 +52,7 @@ add_action( 'init', 'jcp_niche_register_post_type' );
  * Meta key for JSON page content.
  */
 function jcp_niche_content_meta_key(): string {
-	return '_jcp_niche_content';
+	return jcp_page_legacy_meta_key();
 }
 
 /**

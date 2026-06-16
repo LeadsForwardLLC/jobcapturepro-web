@@ -22,7 +22,7 @@ function jcp_niche_seed_plumbing(): int {
 	);
 	if ( ! empty( $existing[0] ) ) {
 		$id = (int) $existing[0];
-		if ( ! get_post_meta( $id, jcp_niche_content_meta_key(), true ) ) {
+		if ( ! get_post_meta( $id, jcp_page_content_meta_key(), true ) && ! get_post_meta( $id, jcp_page_legacy_meta_key(), true ) ) {
 			jcp_niche_save_content( $id, jcp_niche_load_preset( 'plumbing' ) );
 		}
 		return $id;
@@ -95,7 +95,7 @@ function jcp_niche_seed_hvac(): int {
 	);
 	if ( ! empty( $existing[0] ) ) {
 		$id = (int) $existing[0];
-		if ( ! get_post_meta( $id, jcp_niche_content_meta_key(), true ) ) {
+		if ( ! get_post_meta( $id, jcp_page_content_meta_key(), true ) && ! get_post_meta( $id, jcp_page_legacy_meta_key(), true ) ) {
 			jcp_niche_save_content( $id, jcp_niche_load_preset( 'hvac' ) );
 		}
 		return $id;
@@ -131,7 +131,7 @@ function jcp_niche_seed_referral_program(): int {
 		if ( get_page_template_slug( $id ) !== 'page-referral-program.php' ) {
 			update_post_meta( $id, '_wp_page_template', 'page-referral-program.php' );
 		}
-		if ( ! get_post_meta( $id, jcp_niche_content_meta_key(), true ) ) {
+		if ( ! get_post_meta( $id, jcp_page_content_meta_key(), true ) && ! get_post_meta( $id, jcp_page_legacy_meta_key(), true ) ) {
 			jcp_niche_save_content( $id, jcp_niche_load_preset( 'referral-program' ) );
 		}
 		return $id;

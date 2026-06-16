@@ -6,25 +6,6 @@
  */
 
 /**
- * Load default content JSON for a preset niche.
- *
- * @param string $preset e.g. plumbing.
- * @return array<string, mixed>
- */
-function jcp_niche_load_preset( string $preset ): array {
-	$path = get_template_directory() . '/inc/niche-landing/dummy-' . sanitize_file_name( $preset ) . '.json';
-	if ( ! is_readable( $path ) ) {
-		return [];
-	}
-	$raw = file_get_contents( $path );
-	if ( ! is_string( $raw ) || $raw === '' ) {
-		return [];
-	}
-	$data = json_decode( $raw, true );
-	return is_array( $data ) ? $data : [];
-}
-
-/**
  * Resolve CTA URLs (empty url = onboarding with UTM).
  *
  * @param array<string, mixed> $cta CTA block with label, url.
@@ -61,72 +42,6 @@ function jcp_niche_resolve_cta( array $cta, string $niche_key ): array {
 		'label' => $label,
 		'url'   => $url,
 	];
-}
-
-/**
- * Whether a post uses the JSON landing content system.
- *
- * @param int|null $post_id Post ID (defaults to queried object).
- */
-function jcp_niche_is_content_page( ?int $post_id = null ): bool {
-	if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
-		return true;
-	}
-	$id = $post_id ?? ( is_singular() ? (int) get_queried_object_id() : 0 );
-	if ( $id <= 0 ) {
-		return false;
-	}
-	$post = get_post( $id );
-	if ( ! $post instanceof WP_Post ) {
-		return false;
-	}
-	if ( $post->post_type === 'jcp_niche_landing' ) {
-		return true;
-	}
-	return $post->post_type === 'page' && get_page_template_slug( $id ) === 'page-referral-program.php';
-}
-
-/**
- * Get parsed content for a niche landing post.
- *
- * @param int $post_id Post ID.
- * @return array<string, mixed>
- */
-function jcp_niche_get_content( int $post_id ): array {
-	$raw = get_post_meta( $post_id, jcp_niche_content_meta_key(), true );
-	if ( is_string( $raw ) && $raw !== '' ) {
-		$decoded = json_decode( $raw, true );
-		if ( is_array( $decoded ) && ! empty( $decoded ) ) {
-			return $decoded;
-		}
-	}
-
-	$slug = get_post_field( 'post_name', $post_id );
-	if ( $slug === 'plumbing' ) {
-		return jcp_niche_load_preset( 'plumbing' );
-	}
-	if ( $slug === 'hvac' ) {
-		return jcp_niche_load_preset( 'hvac' );
-	}
-	if ( $slug === 'referral-program' || get_page_template_slug( $post_id ) === 'page-referral-program.php' ) {
-		return jcp_niche_load_preset( 'referral-program' );
-	}
-
-	return [];
-}
-
-/**
- * Save JSON content for a post.
- *
- * @param int                  $post_id Post ID.
- * @param array<string, mixed> $content Content array.
- */
-function jcp_niche_save_content( int $post_id, array $content ): void {
-	update_post_meta(
-		$post_id,
-		jcp_niche_content_meta_key(),
-		wp_json_encode( $content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
-	);
 }
 
 /**

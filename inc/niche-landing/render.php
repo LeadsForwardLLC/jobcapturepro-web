@@ -15,43 +15,6 @@ function jcp_niche_e( string $text ): void {
 }
 
 /**
- * Render full niche landing page.
- *
- * @param int $post_id Post ID.
- */
-function jcp_niche_render_page( int $post_id ): void {
-	$c         = jcp_niche_get_content( $post_id );
-	$niche_key = ! empty( $c['niche_key'] ) ? (string) $c['niche_key'] : get_post_field( 'post_name', $post_id );
-	$niche_key = sanitize_title( $niche_key );
-	$is_referral = ( $c['page_type'] ?? '' ) === 'referral';
-
-	echo '<main class="jcp-marketing jcp-home jcp-niche' . ( $is_referral ? ' jcp-niche-referral' : '' ) . '" data-niche="' . esc_attr( $niche_key ) . '">';
-	jcp_niche_render_breadcrumb( $c );
-	jcp_niche_render_hero( $c, $niche_key );
-	jcp_niche_render_what_it_is( $c );
-	if ( $is_referral ) {
-		jcp_niche_render_cta_band( $c['cta_band_1'] ?? [], $niche_key, 'cta_band_1' );
-	}
-	jcp_niche_render_how_it_works( $c, $niche_key );
-	jcp_niche_render_check_ins( $c );
-	if ( ! $is_referral ) {
-		jcp_niche_render_problem( $c );
-	}
-	jcp_niche_render_benefits( $c );
-	if ( $is_referral ) {
-		jcp_niche_render_commission( $c, $niche_key );
-		jcp_niche_render_partners( $c, $niche_key );
-		jcp_niche_render_share( $c, $niche_key );
-	} else {
-		jcp_niche_render_differentiation( $c );
-		jcp_niche_render_who_its_for( $c );
-	}
-	jcp_niche_render_faq( $c );
-	jcp_niche_render_final_cta( $c, $niche_key );
-	echo '</main>';
-}
-
-/**
  * @param array<string, mixed> $c Content.
  */
 function jcp_niche_render_breadcrumb( array $c ): void {

@@ -31,13 +31,19 @@ require_once get_template_directory() . '/inc/seo-directory.php';
 require_once get_template_directory() . '/inc/acf-config.php';
 
 // Industry / niche landing pages (CPT, JSON content, /industries/ archive)
+require_once get_template_directory() . '/inc/page-blocks/registry.php';
+require_once get_template_directory() . '/inc/page-blocks/presets.php';
+require_once get_template_directory() . '/inc/page-blocks/schema.php';
 require_once get_template_directory() . '/inc/niche-landing/cpt.php';
 require_once get_template_directory() . '/inc/niche-landing/schema.php';
 require_once get_template_directory() . '/inc/niche-landing/doc-parser.php';
+require_once get_template_directory() . '/inc/page-blocks/doc-parser.php';
 require_once get_template_directory() . '/inc/niche-landing/partials.php';
 require_once get_template_directory() . '/inc/niche-landing/editable.php';
 require_once get_template_directory() . '/inc/niche-landing/render.php';
-require_once get_template_directory() . '/inc/niche-landing/rest-content.php';
+require_once get_template_directory() . '/inc/page-blocks/render.php';
+require_once get_template_directory() . '/inc/page-blocks/rest-content.php';
+require_once get_template_directory() . '/inc/page-blocks/cpt.php';
 require_once get_template_directory() . '/inc/niche-landing/seed.php';
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/niche-landing/admin.php';

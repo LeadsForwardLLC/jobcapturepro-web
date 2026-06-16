@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 function jcp_theme_docs_admin_menu(): void {
 	add_submenu_page(
 		'jcp-theme-settings',
-		__( 'Industry Pages', 'jcp-core' ),
-		__( 'Industry Pages', 'jcp-core' ),
+		__( 'Page System', 'jcp-core' ),
+		__( 'Page System', 'jcp-core' ),
 		'edit_posts',
 		'jcp-theme-settings',
 		'jcp_theme_docs_render_page'
@@ -35,17 +35,21 @@ function jcp_theme_docs_render_page(): void {
 	$industries_url = admin_url( 'edit.php?post_type=jcp_niche_landing' );
 	$add_new_url    = admin_url( 'post-new.php?post_type=jcp_niche_landing' );
 	$hub_url        = home_url( '/industries/' );
-	$docs_url       = admin_url( 'admin.php?page=jcp-theme-settings' );
+	$marketing_url = admin_url( 'edit.php?post_type=jcp_page' );
+	$marketing_new = admin_url( 'post-new.php?post_type=jcp_page' );
+	$docs_url      = admin_url( 'admin.php?page=jcp-theme-settings' );
 	?>
 	<div class="wrap jcp-theme-docs">
-		<h1><?php esc_html_e( 'Industry Pages — Standard Operating Procedure', 'jcp-core' ); ?></h1>
+		<h1><?php esc_html_e( 'JCP Page System — Standard Operating Procedure', 'jcp-core' ); ?></h1>
 		<p class="description">
-			<?php esc_html_e( 'How to create, import, and edit trade landing pages (plumbing, HVAC, roofing, etc.) using the JobCapturePro theme.', 'jcp-core' ); ?>
+			<?php esc_html_e( 'How to build structured marketing pages using the global block library: industry trade pages, marketing landers, and referral pages.', 'jcp-core' ); ?>
 		</p>
 
 		<div class="jcp-theme-docs__actions">
 			<a href="<?php echo esc_url( $add_new_url ); ?>" class="button button-primary"><?php esc_html_e( 'Add Industry Page', 'jcp-core' ); ?></a>
-			<a href="<?php echo esc_url( $industries_url ); ?>" class="button"><?php esc_html_e( 'All Industry Pages', 'jcp-core' ); ?></a>
+			<a href="<?php echo esc_url( $marketing_new ); ?>" class="button button-primary"><?php esc_html_e( 'Add Marketing Page', 'jcp-core' ); ?></a>
+			<a href="<?php echo esc_url( $industries_url ); ?>" class="button"><?php esc_html_e( 'All Industries', 'jcp-core' ); ?></a>
+			<a href="<?php echo esc_url( $marketing_url ); ?>" class="button"><?php esc_html_e( 'All Marketing Pages', 'jcp-core' ); ?></a>
 			<a href="<?php echo esc_url( $hub_url ); ?>" class="button" target="_blank" rel="noopener"><?php esc_html_e( 'View /industries/ hub', 'jcp-core' ); ?></a>
 		</div>
 
