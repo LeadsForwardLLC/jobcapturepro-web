@@ -30,6 +30,15 @@ function jcp_block_registry(): array {
 			'doc_sections' => [ 'HERO' ],
 			'page_kinds'   => [ 'industry', 'marketing', 'referral' ],
 		],
+		'media_text' => [
+			'type'         => 'media_text',
+			'label'        => __( 'Media + text', 'jcp-core' ),
+			'description'  => __( 'Split row — copy on one side, image or video on the other', 'jcp-core' ),
+			'category'     => 'content',
+			'legacy_key'   => 'media_text',
+			'doc_sections' => [],
+			'page_kinds'   => [ 'industry', 'marketing', 'referral' ],
+		],
 		'what_it_is' => [
 			'type'         => 'what_it_is',
 			'label'        => __( 'What it is', 'jcp-core' ),
@@ -226,6 +235,16 @@ function jcp_page_default_block_props( string $type ): array {
 			'cta_primary' => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
 			'cta_secondary' => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
 			'trust_line'  => '',
+		],
+		'media_text' => [
+			'headline'        => __( 'Section headline', 'jcp-core' ),
+			'subheadline'     => '',
+			'body'            => __( 'Supporting copy for this section.', 'jcp-core' ),
+			'media_type'      => 'image',
+			'media_url'       => '',
+			'media_alt'       => '',
+			'media_position'  => 'right',
+			'cta'             => [ 'label' => '', 'url' => '' ],
 		],
 		'what_it_is' => [
 			'headline'    => __( 'Section headline', 'jcp-core' ),

@@ -47,13 +47,16 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	if ( empty( $h['h1'] ) ) {
 		return;
 	}
-	$primary     = jcp_niche_resolve_cta( $h['cta_primary'] ?? [], $niche_key );
-	$secondary   = jcp_niche_resolve_cta( $h['cta_secondary'] ?? [ 'label' => 'See how it works', 'url' => '#how-it-works' ], $niche_key );
-	$show_visual = ! isset( $h['show_visual'] ) || ! empty( $h['show_visual'] );
-	$demo_url    = home_url( '/demo/' );
-	$photo       = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$primary   = jcp_niche_resolve_cta( $h['cta_primary'] ?? [], $niche_key );
+	$secondary = jcp_niche_resolve_cta( $h['cta_secondary'] ?? [ 'label' => 'See how it works', 'url' => '#how-it-works' ], $niche_key );
+	$variant   = (string) ( $c['_hero_variant'] ?? '' );
+	if ( ! in_array( $variant, jcp_block_hero_variants(), true ) ) {
+		$variant = ! isset( $h['show_visual'] ) || ! empty( $h['show_visual'] ) ? 'split' : 'centered';
+	}
+	$demo_url = home_url( '/demo/' );
+	$photo    = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
 	?>
-	<section class="jcp-section jcp-hero jcp-niche-hero<?php echo $show_visual ? '' : ' jcp-niche-hero--copy-only'; ?>">
+	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?>">
 		<div class="jcp-container">
 			<div class="jcp-hero-grid">
 				<div class="jcp-hero-copy hero-copy">
@@ -75,9 +78,8 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						<p class="jcp-niche-trust-line"<?php jcp_niche_editable_attr( 'hero.trust_line' ); ?>><?php jcp_niche_e( (string) $h['trust_line'] ); ?></p>
 					<?php endif; ?>
 				</div>
-				<?php if ( $show_visual ) : ?>
-				<div class="jcp-hero-visual hero-visual">
-					<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>">
+				<div class="jcp-hero-visual hero-visual" aria-hidden="<?php echo $variant === 'centered' ? 'true' : 'false'; ?>">
+					<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>" tabindex="<?php echo $variant === 'centered' ? '-1' : '0'; ?>">
 						<div class="phone-frame hero-phone-frame">
 							<div class="phone-screen">
 								<div class="phone-content">
@@ -104,7 +106,76 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						</div>
 					</a>
 				</div>
-				<?php endif; ?>
+			</div>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * Media + text split section (image or video opposite copy).
+ *
+ * @param array<string, mixed> $props Block props.
+ * @param string               $path  JSON path prefix.
+ */
+function jcp_niche_render_media_text( array $props, string $path = 'media_text' ): void {
+	$headline = trim( (string) ( $props['headline'] ?? '' ) );
+	$body     = trim( (string) ( $props['body'] ?? '' ) );
+	if ( $headline === '' && $body === '' ) {
+		return;
+	}
+
+	$position   = (string) ( $props['media_position'] ?? 'right' );
+	$position   = in_array( $position, [ 'left', 'right' ], true ) ? $position : 'right';
+	$media_type = (string) ( $props['media_type'] ?? 'image' ) === 'video' ? 'video' : 'image';
+	$media_url  = trim( (string) ( $props['media_url'] ?? '' ) );
+	$media_alt  = trim( (string) ( $props['media_alt'] ?? '' ) );
+	$default_image = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$cta        = is_array( $props['cta'] ?? null ) ? $props['cta'] : [];
+	$cta_label  = trim( (string) ( $cta['label'] ?? '' ) );
+	$cta_url    = trim( (string) ( $cta['url'] ?? '' ) );
+	?>
+	<section class="jcp-section rankings-section jcp-media-text jcp-media-text--media-<?php echo esc_attr( $position ); ?>">
+		<div class="jcp-container">
+			<div class="jcp-media-text-grid">
+				<div class="jcp-media-text-copy">
+					<?php if ( $headline !== '' ) : ?>
+						<h2<?php jcp_niche_editable_attr( $path . '.headline' ); ?>><?php jcp_niche_e( $headline ); ?></h2>
+					<?php endif; ?>
+					<?php if ( ! empty( $props['subheadline'] ) ) : ?>
+						<p class="rankings-subtitle"<?php jcp_niche_editable_attr( $path . '.subheadline' ); ?>><?php jcp_niche_e( (string) $props['subheadline'] ); ?></p>
+					<?php endif; ?>
+					<?php if ( $body !== '' ) : ?>
+						<p class="jcp-media-text-body"<?php jcp_niche_editable_attr( $path . '.body' ); ?>><?php jcp_niche_e( $body ); ?></p>
+					<?php endif; ?>
+					<?php if ( $cta_label !== '' ) : ?>
+						<div class="jcp-actions directory-cta-row jcp-media-text-cta">
+							<a class="btn btn-primary" href="<?php echo esc_url( $cta_url !== '' ? $cta_url : '#' ); ?>"<?php jcp_niche_editable_link_attr( $path . '.cta' ); ?>><?php jcp_niche_e( $cta_label ); ?></a>
+						</div>
+					<?php endif; ?>
+				</div>
+				<div class="jcp-media-text-media">
+					<?php if ( $media_type === 'video' && $media_url !== '' ) : ?>
+						<div class="jcp-media-text-video-wrap">
+							<?php if ( preg_match( '/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $media_url, $yt ) ) : ?>
+								<iframe src="https://www.youtube.com/embed/<?php echo esc_attr( $yt[1] ); ?>" title="<?php esc_attr_e( 'Video', 'jcp-core' ); ?>" allowfullscreen loading="lazy"></iframe>
+							<?php elseif ( preg_match( '/vimeo\.com\/(\d+)/', $media_url, $vm ) ) : ?>
+								<iframe src="https://player.vimeo.com/video/<?php echo esc_attr( $vm[1] ); ?>" title="<?php esc_attr_e( 'Video', 'jcp-core' ); ?>" allowfullscreen loading="lazy"></iframe>
+							<?php else : ?>
+								<video class="jcp-media-text-video" src="<?php echo esc_url( $media_url ); ?>" controls playsinline preload="metadata"></video>
+							<?php endif; ?>
+						</div>
+					<?php else : ?>
+						<img
+							class="jcp-media-text-image"
+							src="<?php echo esc_url( $media_url !== '' ? $media_url : $default_image ); ?>"
+							alt="<?php echo esc_attr( $media_alt ); ?>"
+							width="640"
+							height="480"
+							loading="lazy"
+						/>
+					<?php endif; ?>
+				</div>
 			</div>
 		</div>
 	</section>

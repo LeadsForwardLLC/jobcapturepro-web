@@ -286,7 +286,7 @@ function jcp_page_legacy_to_blocks( array $legacy, int $post_id ): array {
 		}
 		$block_layout = jcp_block_default_layout( (string) $type, $page_kind );
 		if ( $type === 'hero' && is_array( $props ) && isset( $props['show_visual'] ) ) {
-			$block_layout['hero_visual'] = ! empty( $props['show_visual'] );
+			$block_layout['hero_variant'] = ! empty( $props['show_visual'] ) ? 'split' : 'centered';
 		}
 		$blocks[] = [
 			'id'     => 'b-' . sanitize_title( (string) $type ),

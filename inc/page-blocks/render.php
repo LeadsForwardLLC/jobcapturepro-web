@@ -93,7 +93,11 @@ function jcp_page_render_block( array $block, array $legacy, array $ctx ): void 
 			jcp_niche_render_breadcrumb( $legacy );
 			break;
 		case 'hero':
+			$c['_hero_variant'] = jcp_block_resolve_hero_variant( $layout );
 			jcp_niche_render_hero( $c, $page_key );
+			break;
+		case 'media_text':
+			jcp_niche_render_media_text( $props );
 			break;
 		case 'what_it_is':
 			$c_what = $c;

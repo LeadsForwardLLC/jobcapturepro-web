@@ -24,7 +24,14 @@
     commission: '.jcp-niche-commission',
     partners: '.jcp-niche-partners',
     share: '.jcp-niche-share',
+    media_text: '.jcp-media-text',
   };
+
+  const HERO_VARIANTS = [
+    { value: 'split', label: 'Split', hint: 'Copy + demo image' },
+    { value: 'centered', label: 'Centered', hint: 'Headline & CTA focus' },
+    { value: 'stacked', label: 'Stacked', hint: 'Copy above visual' },
+  ];
 
   let flatContent = bootstrap.content && typeof bootstrap.content === 'object' ? bootstrap.content : {};
   let pageDocument = bootstrap.blocks && Array.isArray(bootstrap.blocks.blocks)
@@ -60,6 +67,16 @@
     commission: {},
     partners: {},
     share: {},
+    media_text: {
+      headline: 'Section headline',
+      subheadline: '',
+      body: 'Supporting copy for this section.',
+      media_type: 'image',
+      media_url: '',
+      media_alt: '',
+      media_position: 'right',
+      cta: { label: '', url: '' },
+    },
   };
 
   const getPath = (obj, path) => path.split('.').reduce((cur, key) => {
@@ -172,54 +189,96 @@
     'jcp-layout-width-contained',
     'jcp-layout-width-wide',
     'jcp-layout-width-full',
-    'jcp-layout-hero-copy-only',
+    'jcp-hero-variant-split',
+    'jcp-hero-variant-centered',
+    'jcp-hero-variant-stacked',
   ];
 
   const defaultLayout = (type) => {
-    const layout = { align: 'center', width: 'contained' };
     if (type === 'hero') {
-      layout.align = PAGE_KIND === 'referral' ? 'center' : 'left';
-      layout.hero_visual = PAGE_KIND !== 'referral';
+      return { hero_variant: PAGE_KIND === 'referral' ? 'centered' : 'split' };
     }
+    const layout = { align: 'center', width: 'contained' };
     if (type === 'breadcrumb') layout.align = 'left';
     return layout;
   };
 
+  const resolveHeroVariant = (block) => {
+    const layout = { ...defaultLayout('hero'), ...(block.layout || {}) };
+    const variant = layout.hero_variant;
+    if (['split', 'centered', 'stacked'].includes(variant)) return variant;
+    if (block.layout?.hero_visual === false || block.props?.show_visual === false) return 'centered';
+    return 'split';
+  };
+
   const resolveLayout = (block) => {
-    const layout = { ...defaultLayout(block.type), ...(block.layout || {}) };
-    if (block.type === 'hero' && block.props && typeof block.props.show_visual === 'boolean' && block.layout?.hero_visual === undefined) {
-      layout.hero_visual = block.props.show_visual;
+    if (block.type === 'hero') {
+      return { hero_variant: resolveHeroVariant(block) };
     }
-    if (block.type === 'hero') layout.hero_visual = !!layout.hero_visual;
+    const layout = { ...defaultLayout(block.type), ...(block.layout || {}) };
     return layout;
   };
 
   const layoutClassNames = (block) => {
+    if (block.type === 'hero') {
+      return `jcp-hero-variant-${resolveHeroVariant(block)}`;
+    }
     const layout = resolveLayout(block);
-    const classes = [`jcp-layout-align-${layout.align}`, `jcp-layout-width-${layout.width}`];
-    if (block.type === 'hero' && !layout.hero_visual) classes.push('jcp-layout-hero-copy-only');
-    return classes.join(' ');
+    return `jcp-layout-align-${layout.align} jcp-layout-width-${layout.width}`;
   };
 
   const layoutOptionsFor = (type) => {
     const found = registry.find((b) => b.type === type);
-    return found?.layout_options || { align: true, width: true, hero_visual: type === 'hero' };
+    return found?.layout_options || (type === 'hero'
+      ? { hero_variant: true }
+      : type === 'media_text'
+        ? { media_position: true, align: true, width: true }
+        : { align: true, width: true });
   };
 
   const applyLayoutToDom = () => {
     (pageDocument.blocks || []).forEach((block) => {
       const root = document.querySelector(`[data-jcp-block-id="${block.id}"]`);
       if (!root) return;
-      LAYOUT_CLASS_NAMES.forEach((cls) => root.classList.remove(cls));
+
+      if (block.type === 'hero') {
+        const variant = resolveHeroVariant(block);
+        ['split', 'centered', 'stacked'].forEach((v) => {
+          root.classList.remove(`jcp-hero-variant-${v}`);
+          root.querySelector('.jcp-niche-hero')?.classList.remove(`jcp-hero-variant-${v}`);
+        });
+        root.classList.add(`jcp-hero-variant-${variant}`);
+        root.querySelector('.jcp-niche-hero')?.classList.add(`jcp-hero-variant-${variant}`);
+        const visual = root.querySelector('.jcp-hero-visual');
+        if (visual) visual.setAttribute('aria-hidden', variant === 'centered' ? 'true' : 'false');
+        return;
+      }
+
+      LAYOUT_CLASS_NAMES.filter((cls) => cls.startsWith('jcp-layout-')).forEach((cls) => root.classList.remove(cls));
       layoutClassNames(block).split(' ').filter(Boolean).forEach((cls) => root.classList.add(cls));
+
+      if (block.type === 'media_text') {
+        const section = root.querySelector('.jcp-media-text') || root;
+        section.classList.remove('jcp-media-text--media-left', 'jcp-media-text--media-right');
+        const pos = block.props?.media_position === 'left' ? 'left' : 'right';
+        section.classList.add(`jcp-media-text--media-${pos}`);
+      }
     });
   };
 
   const setBlockLayout = (block, key, value) => {
-    block.layout = { ...resolveLayout(block), [key]: value };
-    if (block.type === 'hero' && key === 'hero_visual') {
+    if (key === 'media_position') {
       block.props = block.props || {};
-      block.props.show_visual = !!value;
+      block.props.media_position = value;
+      applyLayoutToDom();
+      renderBlockList();
+      recordChange();
+      return;
+    }
+    block.layout = { ...resolveLayout(block), [key]: value };
+    if (block.type === 'hero' && key === 'hero_variant') {
+      block.props = block.props || {};
+      block.props.show_visual = value !== 'centered';
     }
     applyLayoutToDom();
     renderBlockList();
@@ -230,6 +289,24 @@
     const layout = resolveLayout(block);
     const options = layoutOptionsFor(block.type);
     let html = '<div class="jcp-block-structure__layout">';
+
+    if (options.hero_variant) {
+      const variant = resolveHeroVariant(block);
+      html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Hero style</span><div class="jcp-layout-btns jcp-layout-btns--stacked" data-setting="hero_variant">';
+      HERO_VARIANTS.forEach((item) => {
+        const active = variant === item.value ? ' is-active' : '';
+        html += `<button type="button" class="jcp-layout-btn jcp-layout-btn--variant${active}" data-value="${item.value}" title="${item.hint}">${item.label}</button>`;
+      });
+      html += '</div></div>';
+    }
+
+    if (options.media_position) {
+      const pos = block.props?.media_position === 'left' ? 'left' : 'right';
+      html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Media</span><div class="jcp-layout-btns" data-setting="media_position">';
+      html += `<button type="button" class="jcp-layout-btn${pos === 'left' ? ' is-active' : ''}" data-value="left">Left</button>`;
+      html += `<button type="button" class="jcp-layout-btn${pos === 'right' ? ' is-active' : ''}" data-value="right">Right</button>`;
+      html += '</div></div>';
+    }
 
     if (options.align) {
       html += `<div class="jcp-layout-group"><span class="jcp-layout-group__label">Align</span><div class="jcp-layout-btns" data-setting="align">`;
@@ -248,13 +325,6 @@
         const active = layout.width === value ? ' is-active' : '';
         return `<button type="button" class="jcp-layout-btn${active}" data-value="${value}">${label}</button>`;
       }).join('');
-      html += '</div></div>';
-    }
-
-    if (options.hero_visual) {
-      html += `<div class="jcp-layout-group"><span class="jcp-layout-group__label">Image</span><div class="jcp-layout-btns" data-setting="hero_visual">`;
-      html += `<button type="button" class="jcp-layout-btn${layout.hero_visual ? ' is-active' : ''}" data-value="1">Show</button>`;
-      html += `<button type="button" class="jcp-layout-btn${!layout.hero_visual ? ' is-active' : ''}" data-value="0">Hide</button>`;
       html += '</div></div>';
     }
 
@@ -504,7 +574,14 @@
           e.stopPropagation();
           const setting = btn.closest('[data-setting]').dataset.setting;
           let value = btn.dataset.value;
-          if (setting === 'hero_visual') value = value === '1';
+          if (setting === 'hero_variant') {
+            setBlockLayout(block, setting, value);
+            return;
+          }
+          if (setting === 'media_position') {
+            setBlockLayout(block, setting, value);
+            return;
+          }
           setBlockLayout(block, setting, value);
         });
       });
@@ -768,6 +845,16 @@
   initHistory();
   (pageDocument.blocks || []).forEach((block) => {
     if (!block.layout) block.layout = defaultLayout(block.type);
+    if (block.type === 'hero') {
+      if (!block.layout.hero_variant) {
+        block.layout.hero_variant = resolveHeroVariant(block);
+      }
+      block.props = block.props || {};
+      block.props.show_visual = block.layout.hero_variant !== 'centered';
+    }
+    if (block.type === 'media_text' && !block.props?.media_position) {
+      block.props = { ...defaultProps.media_text, ...(block.props || {}) };
+    }
   });
   indexBlockSections();
   applyLayoutToDom();
