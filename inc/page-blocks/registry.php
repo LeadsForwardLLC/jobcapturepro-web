@@ -201,11 +201,12 @@ function jcp_block_registry_public( string $page_kind = '' ): array {
 			}
 		}
 		$out[] = [
-			'type'         => $block['type'],
-			'label'        => $block['label'],
-			'description'  => $block['description'],
-			'category'     => $block['category'],
-			'doc_sections' => $block['doc_sections'] ?? [],
+			'type'           => $block['type'],
+			'label'          => $block['label'],
+			'description'    => $block['description'],
+			'category'       => $block['category'],
+			'doc_sections'   => $block['doc_sections'] ?? [],
+			'layout_options' => jcp_block_layout_options( (string) $block['type'] ),
 		];
 	}
 	return $out;
@@ -284,11 +285,12 @@ function jcp_page_default_block_props( string $type ): array {
  * @param string $type Block type.
  * @return array<string, mixed>
  */
-function jcp_page_new_block( string $type ): array {
+function jcp_page_new_block( string $type, string $page_kind = 'industry' ): array {
 	return [
-		'id'    => 'b-' . sanitize_title( $type ) . '-' . wp_generate_password( 6, false, false ),
-		'type'  => $type,
-		'props' => jcp_page_default_block_props( $type ),
+		'id'     => 'b-' . sanitize_title( $type ) . '-' . wp_generate_password( 6, false, false ),
+		'type'   => $type,
+		'layout' => jcp_block_default_layout( $type, $page_kind ),
+		'props'  => jcp_page_default_block_props( $type ),
 	];
 }
 

@@ -3,6 +3,7 @@
   if (!cfg || !cfg.postId || !cfg.restUrl) return;
 
   const bootstrap = cfg.bootstrap || {};
+  const PAGE_KIND = bootstrap.pageKind || 'industry';
   const HISTORY_MAX = 50;
   const UNSAVED_MSG = 'You have unsaved changes. Leave this page anyway?';
 
@@ -164,6 +165,103 @@
     return found ? found.label : type;
   };
 
+  const LAYOUT_CLASS_NAMES = [
+    'jcp-layout-align-left',
+    'jcp-layout-align-center',
+    'jcp-layout-align-right',
+    'jcp-layout-width-contained',
+    'jcp-layout-width-wide',
+    'jcp-layout-width-full',
+    'jcp-layout-hero-copy-only',
+  ];
+
+  const defaultLayout = (type) => {
+    const layout = { align: 'center', width: 'contained' };
+    if (type === 'hero') {
+      layout.align = PAGE_KIND === 'referral' ? 'center' : 'left';
+      layout.hero_visual = PAGE_KIND !== 'referral';
+    }
+    if (type === 'breadcrumb') layout.align = 'left';
+    return layout;
+  };
+
+  const resolveLayout = (block) => {
+    const layout = { ...defaultLayout(block.type), ...(block.layout || {}) };
+    if (block.type === 'hero' && block.props && typeof block.props.show_visual === 'boolean' && block.layout?.hero_visual === undefined) {
+      layout.hero_visual = block.props.show_visual;
+    }
+    if (block.type === 'hero') layout.hero_visual = !!layout.hero_visual;
+    return layout;
+  };
+
+  const layoutClassNames = (block) => {
+    const layout = resolveLayout(block);
+    const classes = [`jcp-layout-align-${layout.align}`, `jcp-layout-width-${layout.width}`];
+    if (block.type === 'hero' && !layout.hero_visual) classes.push('jcp-layout-hero-copy-only');
+    return classes.join(' ');
+  };
+
+  const layoutOptionsFor = (type) => {
+    const found = registry.find((b) => b.type === type);
+    return found?.layout_options || { align: true, width: true, hero_visual: type === 'hero' };
+  };
+
+  const applyLayoutToDom = () => {
+    (pageDocument.blocks || []).forEach((block) => {
+      const root = document.querySelector(`[data-jcp-block-id="${block.id}"]`);
+      if (!root) return;
+      LAYOUT_CLASS_NAMES.forEach((cls) => root.classList.remove(cls));
+      layoutClassNames(block).split(' ').filter(Boolean).forEach((cls) => root.classList.add(cls));
+    });
+  };
+
+  const setBlockLayout = (block, key, value) => {
+    block.layout = { ...resolveLayout(block), [key]: value };
+    if (block.type === 'hero' && key === 'hero_visual') {
+      block.props = block.props || {};
+      block.props.show_visual = !!value;
+    }
+    applyLayoutToDom();
+    renderBlockList();
+    recordChange();
+  };
+
+  const buildLayoutControlsHtml = (block) => {
+    const layout = resolveLayout(block);
+    const options = layoutOptionsFor(block.type);
+    let html = '<div class="jcp-block-structure__layout">';
+
+    if (options.align) {
+      html += `<div class="jcp-layout-group"><span class="jcp-layout-group__label">Align</span><div class="jcp-layout-btns" data-setting="align">`;
+      html += ['left', 'center', 'right'].map((value) => {
+        const label = value === 'left' ? 'Left' : value === 'center' ? 'Center' : 'Right';
+        const active = layout.align === value ? ' is-active' : '';
+        return `<button type="button" class="jcp-layout-btn${active}" data-value="${value}">${label}</button>`;
+      }).join('');
+      html += '</div></div>';
+    }
+
+    if (options.width) {
+      html += `<div class="jcp-layout-group"><span class="jcp-layout-group__label">Width</span><div class="jcp-layout-btns" data-setting="width">`;
+      html += ['contained', 'wide', 'full'].map((value) => {
+        const label = value === 'contained' ? 'Box' : value === 'wide' ? 'Wide' : 'Full';
+        const active = layout.width === value ? ' is-active' : '';
+        return `<button type="button" class="jcp-layout-btn${active}" data-value="${value}">${label}</button>`;
+      }).join('');
+      html += '</div></div>';
+    }
+
+    if (options.hero_visual) {
+      html += `<div class="jcp-layout-group"><span class="jcp-layout-group__label">Image</span><div class="jcp-layout-btns" data-setting="hero_visual">`;
+      html += `<button type="button" class="jcp-layout-btn${layout.hero_visual ? ' is-active' : ''}" data-value="1">Show</button>`;
+      html += `<button type="button" class="jcp-layout-btn${!layout.hero_visual ? ' is-active' : ''}" data-value="0">Hide</button>`;
+      html += '</div></div>';
+    }
+
+    html += '</div>';
+    return html;
+  };
+
   const updateDirtyState = () => {
     dirty = savedSnapshot ? !statesEqual(snapshot(), savedSnapshot) : false;
     saveBtn.disabled = !dirty;
@@ -263,17 +361,20 @@
   };
 
   const createPlaceholder = (block) => {
+    const wrap = document.createElement('div');
+    wrap.className = `jcp-block-root ${layoutClassNames(block)}`;
+    wrap.dataset.jcpBlockId = block.id;
+    wrap.dataset.jcpBlockType = block.type;
     const section = document.createElement('section');
     section.className = 'jcp-section jcp-block-placeholder';
-    section.dataset.jcpBlockId = block.id;
-    section.dataset.jcpBlockType = block.type;
     section.innerHTML = `
       <div class="jcp-container">
         <p class="jcp-block-placeholder__label">${blockLabel(block.type)}</p>
         <p class="jcp-block-placeholder__hint">New section — click to edit after adding, then save to publish.</p>
       </div>
     `;
-    return section;
+    wrap.appendChild(section);
+    return wrap;
   };
 
   const applyStructureToDom = () => {
@@ -324,6 +425,7 @@
     });
 
     ordered.forEach((node) => main.appendChild(node));
+    applyLayoutToDom();
   };
 
   const applyFlatContentToDom = () => {
@@ -356,19 +458,23 @@
     (pageDocument.blocks || []).forEach((block, index) => {
       const li = document.createElement('li');
       li.className = 'jcp-block-structure__item';
-      li.draggable = true;
       li.dataset.index = String(index);
       li.innerHTML = `
-        <span class="jcp-block-structure__handle" aria-hidden="true">⋮⋮</span>
-        <span class="jcp-block-structure__label">${blockLabel(block.type)}</span>
-        <button type="button" class="jcp-block-structure__remove" data-index="${index}" aria-label="Remove block">Remove</button>
+        <div class="jcp-block-structure__row">
+          <span class="jcp-block-structure__handle" aria-hidden="true">⋮⋮</span>
+          <span class="jcp-block-structure__label">${blockLabel(block.type)}</span>
+          <button type="button" class="jcp-block-structure__remove" data-index="${index}" aria-label="Remove block">Remove</button>
+        </div>
+        ${buildLayoutControlsHtml(block)}
       `;
-      li.addEventListener('dragstart', (e) => {
+      const row = li.querySelector('.jcp-block-structure__row');
+      row.draggable = true;
+      row.addEventListener('dragstart', (e) => {
         dragIndex = index;
         li.classList.add('is-dragging');
         e.dataTransfer.effectAllowed = 'move';
       });
-      li.addEventListener('dragend', () => {
+      row.addEventListener('dragend', () => {
         dragIndex = null;
         li.classList.remove('is-dragging');
       });
@@ -393,6 +499,15 @@
         pageDocument.blocks = pageDocument.blocks.filter((_, i) => i !== index);
         applyStructureChange();
       });
+      li.querySelectorAll('.jcp-layout-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const setting = btn.closest('[data-setting]').dataset.setting;
+          let value = btn.dataset.value;
+          if (setting === 'hero_visual') value = value === '1';
+          setBlockLayout(block, setting, value);
+        });
+      });
       blockListEl.appendChild(li);
     });
   };
@@ -409,7 +524,12 @@
       li.querySelector('button').addEventListener('click', () => {
         const props = defaultProps[item.type] ? JSON.parse(JSON.stringify(defaultProps[item.type])) : {};
         pageDocument.blocks = pageDocument.blocks || [];
-        pageDocument.blocks.push({ id: newBlockId(item.type), type: item.type, props });
+        pageDocument.blocks.push({
+          id: newBlockId(item.type),
+          type: item.type,
+          layout: defaultLayout(item.type),
+          props,
+        });
         closeAddModal();
         applyStructureChange();
       });
@@ -646,7 +766,11 @@
   });
 
   initHistory();
+  (pageDocument.blocks || []).forEach((block) => {
+    if (!block.layout) block.layout = defaultLayout(block.type);
+  });
   indexBlockSections();
+  applyLayoutToDom();
 
   if (new URLSearchParams(window.location.search).get('jcp_edit') === '1') {
     enableEditing();

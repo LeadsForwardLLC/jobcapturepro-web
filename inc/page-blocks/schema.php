@@ -270,9 +270,10 @@ function jcp_page_legacy_to_blocks( array $legacy, int $post_id ): array {
 				continue;
 			}
 			$blocks[] = [
-				'id'    => 'b-breadcrumb',
-				'type'  => 'breadcrumb',
-				'props' => [],
+				'id'     => 'b-breadcrumb',
+				'type'   => 'breadcrumb',
+				'layout' => jcp_block_default_layout( 'breadcrumb', $page_kind ),
+				'props'  => [],
 			];
 			continue;
 		}
@@ -283,10 +284,15 @@ function jcp_page_legacy_to_blocks( array $legacy, int $post_id ): array {
 		if ( $props === null || $props === [] || $props === '' ) {
 			continue;
 		}
+		$block_layout = jcp_block_default_layout( (string) $type, $page_kind );
+		if ( $type === 'hero' && is_array( $props ) && isset( $props['show_visual'] ) ) {
+			$block_layout['hero_visual'] = ! empty( $props['show_visual'] );
+		}
 		$blocks[] = [
-			'id'    => 'b-' . sanitize_title( (string) $type ),
-			'type'  => (string) $type,
-			'props' => is_array( $props ) ? $props : [ 'value' => $props ],
+			'id'     => 'b-' . sanitize_title( (string) $type ),
+			'type'   => (string) $type,
+			'layout' => $block_layout,
+			'props'  => is_array( $props ) ? $props : [ 'value' => $props ],
 		];
 	}
 

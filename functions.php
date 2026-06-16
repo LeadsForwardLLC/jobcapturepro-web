@@ -32,6 +32,7 @@ require_once get_template_directory() . '/inc/acf-config.php';
 
 // Industry / niche landing pages (CPT, JSON content, /industries/ archive)
 require_once get_template_directory() . '/inc/page-blocks/registry.php';
+require_once get_template_directory() . '/inc/page-blocks/layout.php';
 require_once get_template_directory() . '/inc/page-blocks/presets.php';
 require_once get_template_directory() . '/inc/page-blocks/schema.php';
 require_once get_template_directory() . '/inc/niche-landing/cpt.php';

@@ -79,8 +79,11 @@ function jcp_page_render_block( array $block, array $legacy, array $ctx ): void 
 	$c        = array_merge( $legacy, [ $def['legacy_key'] ?? $type => $props ] );
 
 	$block_id = esc_attr( (string) ( $block['id'] ?? 'b-' . $type ) );
+	$layout   = jcp_block_resolve_layout( $block, (string) ( $ctx['page_kind'] ?? 'industry' ) );
+	$classes  = 'jcp-block-root ' . jcp_block_layout_classes( $layout, $type );
 	printf(
-		'<div class="jcp-block-root" data-jcp-block-id="%1$s" data-jcp-block-type="%2$s">',
+		'<div class="%1$s" data-jcp-block-id="%2$s" data-jcp-block-type="%3$s">',
+		esc_attr( $classes ),
 		$block_id,
 		esc_attr( $type )
 	);
