@@ -49,13 +49,6 @@ function jcp_niche_register_post_type(): void {
 add_action( 'init', 'jcp_niche_register_post_type' );
 
 /**
- * Meta key for JSON page content.
- */
-function jcp_niche_content_meta_key(): string {
-	return jcp_page_legacy_meta_key();
-}
-
-/**
  * Flush rewrite rules once after CPT registration.
  */
 function jcp_niche_maybe_flush_rewrites(): void {
