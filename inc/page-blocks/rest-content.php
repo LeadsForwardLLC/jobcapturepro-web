@@ -67,12 +67,17 @@ function jcp_page_rest_get_content( WP_REST_Request $request ) {
 	if ( ! $post || ! jcp_page_rest_is_content_post( $post ) ) {
 		return new WP_Error( 'not_found', __( 'Page not found.', 'jcp-core' ), [ 'status' => 404 ] );
 	}
+	$doc        = jcp_page_get_content( $id );
+	$page_kind  = jcp_page_resolve_kind( $doc, $id );
+
 	return new WP_REST_Response(
 		[
-			'id'      => $id,
-			'content' => jcp_page_get_content_flat( $id ),
-			'blocks'  => jcp_page_get_content( $id ),
-			'url'     => get_permalink( $id ),
+			'id'         => $id,
+			'content'    => jcp_page_get_content_flat( $id ),
+			'blocks'     => $doc,
+			'url'        => get_permalink( $id ),
+			'page_kind'  => $page_kind,
+			'registry'   => jcp_block_registry_public( $page_kind ),
 		]
 	);
 }
@@ -88,10 +93,17 @@ function jcp_page_rest_save_content( WP_REST_Request $request ) {
 		return new WP_Error( 'not_found', __( 'Page not found.', 'jcp-core' ), [ 'status' => 404 ] );
 	}
 	$body = $request->get_json_params();
-	if ( empty( $body['content'] ) || ! is_array( $body['content'] ) ) {
+	if ( ! empty( $body['blocks'] ) && is_array( $body['blocks'] ) ) {
+		$content = $body['blocks'];
+		if ( ! empty( $body['content'] ) && is_array( $body['content'] ) ) {
+			$content = jcp_page_merge_flat_into_blocks( $content, $body['content'] );
+		}
+	} elseif ( ! empty( $body['content'] ) && is_array( $body['content'] ) ) {
+		$content = $body['content'];
+	} else {
 		return new WP_Error( 'invalid', __( 'Missing content object.', 'jcp-core' ), [ 'status' => 400 ] );
 	}
-	jcp_page_save_content( $id, $body['content'] );
+	jcp_page_save_content( $id, $content );
 	return new WP_REST_Response( [ 'success' => true, 'id' => $id ] );
 }
 

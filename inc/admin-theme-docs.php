@@ -37,6 +37,7 @@ function jcp_theme_docs_render_page(): void {
 	$hub_url        = home_url( '/industries/' );
 	$marketing_url = admin_url( 'edit.php?post_type=jcp_page' );
 	$marketing_new = admin_url( 'post-new.php?post_type=jcp_page' );
+	$block_lib_url = admin_url( 'admin.php?page=jcp-block-library' );
 	$docs_url      = admin_url( 'admin.php?page=jcp-theme-settings' );
 	?>
 	<div class="wrap jcp-theme-docs">
@@ -62,6 +63,8 @@ function jcp_theme_docs_render_page(): void {
 				<li><a href="#document-template"><?php esc_html_e( 'Writer document template', 'jcp-core' ); ?></a></li>
 				<li><a href="#backend-editor"><?php esc_html_e( 'Backend editor (WP Admin)', 'jcp-core' ); ?></a></li>
 				<li><a href="#frontend-editor"><?php esc_html_e( 'Front-end editor (live page)', 'jcp-core' ); ?></a></li>
+				<li><a href="#page-structure"><?php esc_html_e( 'Page structure (reorder blocks)', 'jcp-core' ); ?></a></li>
+				<li><a href="#block-library"><?php esc_html_e( 'Block Library', 'jcp-core' ); ?></a></li>
 				<li><a href="#seo"><?php esc_html_e( 'SEO (Rank Math)', 'jcp-core' ); ?></a></li>
 				<li><a href="#hub"><?php esc_html_e( 'Industries hub', 'jcp-core' ); ?></a></li>
 				<li><a href="#troubleshooting"><?php esc_html_e( 'Troubleshooting', 'jcp-core' ); ?></a></li>
@@ -258,6 +261,10 @@ function jcp_theme_docs_render_page(): void {
 						<td><?php esc_html_e( 'Turns on inline editing mode', 'jcp-core' ); ?></td>
 					</tr>
 					<tr>
+						<td><?php esc_html_e( 'Page structure', 'jcp-core' ); ?></td>
+						<td><?php esc_html_e( 'Opens the layout sidebar to reorder, add, or remove sections', 'jcp-core' ); ?></td>
+					</tr>
+					<tr>
 						<td><?php esc_html_e( 'Save changes', 'jcp-core' ); ?></td>
 						<td><?php esc_html_e( 'Writes JSON back via REST API (enabled when there are unsaved edits)', 'jcp-core' ); ?></td>
 					</tr>
@@ -268,12 +275,57 @@ function jcp_theme_docs_render_page(): void {
 				</tbody>
 			</table>
 
+			<div class="notice notice-info inline jcp-theme-docs__notice">
+				<p>
+					<?php
+					printf(
+						/* translators: %s: block library admin link */
+						esc_html__( 'To reorder sections or add/remove blocks, use Page structure on the live toolbar, or see %s for all available block types.', 'jcp-core' ),
+						'<a href="' . esc_url( $block_lib_url ) . '">' . esc_html__( 'JCP → Block Library', 'jcp-core' ) . '</a>'
+					);
+					?>
+				</p>
+			</div>
+		</section>
+
+		<section id="page-structure" class="jcp-theme-docs__section">
+			<h2><?php esc_html_e( 'Page structure (reorder blocks)', 'jcp-core' ); ?></h2>
+			<p><?php esc_html_e( 'The front-end editor includes a layout panel for changing which sections appear on the page and in what order — without editing JSON by hand.', 'jcp-core' ); ?></p>
+
+			<h3><?php esc_html_e( 'How to open', 'jcp-core' ); ?></h3>
+			<ul>
+				<li><?php esc_html_e( 'On the live page toolbar, click “Page structure”.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Or add ?jcp_structure=1 to the page URL while logged in.', 'jcp-core' ); ?></li>
+			</ul>
+
+			<h3><?php esc_html_e( 'What you can do', 'jcp-core' ); ?></h3>
+			<ol>
+				<li><?php esc_html_e( 'Drag blocks in the sidebar to reorder sections.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click “+ Add block” to insert a section from the block library (filtered for this page type).', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click “Remove” on a block to delete that section (confirmation required).', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click “Save changes” — the page reloads with the new layout.', 'jcp-core' ); ?></li>
+			</ol>
+
 			<div class="notice notice-warning inline jcp-theme-docs__notice">
 				<p>
 					<strong><?php esc_html_e( 'Note:', 'jcp-core' ); ?></strong>
-					<?php esc_html_e( 'The front-end editor changes text and button URLs only. To restructure sections (add/remove FAQ items, etc.), use document import or Advanced JSON in WP Admin.', 'jcp-core' ); ?>
+					<?php esc_html_e( 'New blocks are inserted with placeholder copy. Use click-to-edit or document import to fill in content. Reordering does not change text until you save.', 'jcp-core' ); ?>
 				</p>
 			</div>
+		</section>
+
+		<section id="block-library" class="jcp-theme-docs__section">
+			<h2><?php esc_html_e( 'Block Library', 'jcp-core' ); ?></h2>
+			<p>
+				<?php
+				printf(
+					/* translators: %s: admin link */
+					esc_html__( 'All registered page blocks (Hero, FAQ, Final CTA, etc.) are listed in %s with descriptions, page types, and doc-import section names.', 'jcp-core' ),
+					'<a href="' . esc_url( $block_lib_url ) . '">' . esc_html__( 'JCP → Block Library', 'jcp-core' ) . '</a>'
+				);
+				?>
+			</p>
+			<p><?php esc_html_e( 'Blocks are shared across Industry pages, Marketing pages, and the referral program. Each page type only shows blocks allowed for that kind in the “Add block” modal.', 'jcp-core' ); ?></p>
 		</section>
 
 		<section id="seo" class="jcp-theme-docs__section">

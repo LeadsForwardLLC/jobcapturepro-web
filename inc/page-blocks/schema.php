@@ -397,3 +397,50 @@ function jcp_page_merge_parsed_content( array $parsed, array $existing = [] ): a
 function jcp_niche_merge_parsed_content( array $parsed, array $existing = [] ): array {
 	return jcp_page_merge_parsed_content( $parsed, $existing );
 }
+
+/**
+ * Merge flat legacy content (hero.h1 paths) into a blocks document before save.
+ *
+ * @param array<string, mixed> $doc  Blocks document.
+ * @param array<string, mixed> $flat Flat legacy content from inline editor.
+ * @return array<string, mixed>
+ */
+function jcp_page_merge_flat_into_blocks( array $doc, array $flat ): array {
+	if ( empty( $doc['blocks'] ) || ! is_array( $doc['blocks'] ) ) {
+		return jcp_page_normalize_content( $flat, 0 );
+	}
+
+	foreach ( $doc['blocks'] as $i => $block ) {
+		if ( ! is_array( $block ) ) {
+			continue;
+		}
+		$type = (string) ( $block['type'] ?? '' );
+		$def  = jcp_block_get( $type );
+		if ( ! $def ) {
+			continue;
+		}
+		$key = $def['legacy_key'] ?? $type;
+		if ( $key && isset( $flat[ $key ] ) && is_array( $flat[ $key ] ) ) {
+			$doc['blocks'][ $i ]['props'] = array_replace_recursive(
+				$block['props'] ?? [],
+				$flat[ $key ]
+			);
+		}
+	}
+
+	if ( ! empty( $flat['niche_key'] ) ) {
+		$doc['page_key'] = (string) $flat['niche_key'];
+	}
+	if ( ! empty( $flat['niche_label'] ) ) {
+		$doc['page_label'] = (string) $flat['niche_label'];
+	}
+	if ( isset( $flat['hide_breadcrumb'] ) ) {
+		$doc['settings'] = $doc['settings'] ?? [];
+		$doc['settings']['hide_breadcrumb'] = (bool) $flat['hide_breadcrumb'];
+	}
+	if ( ! empty( $flat['seo'] ) && is_array( $flat['seo'] ) ) {
+		$doc['seo'] = array_replace_recursive( $doc['seo'] ?? [], $flat['seo'] );
+	}
+
+	return $doc;
+}

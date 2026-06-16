@@ -186,6 +186,113 @@ function jcp_block_types_for_kind( string $page_kind ): array {
 }
 
 /**
+ * Registry entries safe for REST / editor (no PHP callbacks).
+ *
+ * @param string $page_kind Optional filter.
+ * @return array<int, array<string, mixed>>
+ */
+function jcp_block_registry_public( string $page_kind = '' ): array {
+	$out = [];
+	foreach ( jcp_block_registry() as $block ) {
+		if ( $page_kind !== '' ) {
+			$kinds = $block['page_kinds'] ?? [];
+			if ( $kinds && ! in_array( $page_kind, $kinds, true ) ) {
+				continue;
+			}
+		}
+		$out[] = [
+			'type'         => $block['type'],
+			'label'        => $block['label'],
+			'description'  => $block['description'],
+			'category'     => $block['category'],
+			'doc_sections' => $block['doc_sections'] ?? [],
+		];
+	}
+	return $out;
+}
+
+/**
+ * Default props when inserting a new block in the editor.
+ *
+ * @param string $type Block type.
+ * @return array<string, mixed>
+ */
+function jcp_page_default_block_props( string $type ): array {
+	$defaults = [
+		'hero' => [
+			'h1'          => __( 'Page headline', 'jcp-core' ),
+			'subheadline' => '',
+			'cta_primary' => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
+			'cta_secondary' => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
+			'trust_line'  => '',
+		],
+		'what_it_is' => [
+			'headline'    => __( 'Section headline', 'jcp-core' ),
+			'subheadline' => '',
+		],
+		'how_it_works' => [
+			'headline'    => __( 'How it works', 'jcp-core' ),
+			'subheadline' => '',
+			'cta_label'   => __( 'See it in action', 'jcp-core' ),
+			'cta_url'     => '/demo',
+			'steps'       => [],
+		],
+		'check_ins' => [
+			'headline'    => __( 'Section headline', 'jcp-core' ),
+			'subheadline' => '',
+			'features'    => [],
+		],
+		'problem' => [
+			'headline'    => __( 'Section headline', 'jcp-core' ),
+			'subheadline' => '',
+			'pain_points' => [],
+		],
+		'benefits' => [
+			'headline' => __( 'Section headline', 'jcp-core' ),
+			'items'    => [],
+		],
+		'differentiation' => [
+			'headline' => __( 'Section headline', 'jcp-core' ),
+			'body'     => '',
+			'bullets'  => [],
+		],
+		'who_its_for' => [
+			'headline'  => __( 'Who it\'s for', 'jcp-core' ),
+			'audiences' => [],
+		],
+		'faq' => [
+			'headline' => __( 'Frequently asked questions', 'jcp-core' ),
+			'items'    => [],
+		],
+		'final_cta' => [
+			'headline'    => __( 'Ready to get started?', 'jcp-core' ),
+			'subheadline' => '',
+			'cta_primary' => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
+			'cta_secondary' => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '/demo' ],
+		],
+		'cta_band' => [
+			'cta_primary' => [ 'label' => __( 'Get started', 'jcp-core' ), 'url' => '' ],
+			'band_key'    => 'cta_band_1',
+		],
+	];
+	return $defaults[ $type ] ?? [];
+}
+
+/**
+ * Create a new block array for the editor.
+ *
+ * @param string $type Block type.
+ * @return array<string, mixed>
+ */
+function jcp_page_new_block( string $type ): array {
+	return [
+		'id'    => 'b-' . sanitize_title( $type ) . '-' . wp_generate_password( 6, false, false ),
+		'type'  => $type,
+		'props' => jcp_page_default_block_props( $type ),
+	];
+}
+
+/**
  * Map doc section header to block type.
  *
  * @param string $section Section header.
