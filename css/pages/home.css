@@ -698,36 +698,36 @@
   filter: brightness(0) invert(1);
 }
 
-/* Ensure consistent section spacing */
-.jcp-section {
+/* Ensure consistent section spacing (homepage only — niche pages use niche-landing.css) */
+.jcp-home .jcp-section {
   padding: var(--jcp-space-6xl) 0;
 }
 
-.jcp-section:first-child {
+.jcp-home .jcp-section:first-child {
   padding-top: var(--jcp-space-4xl);
 }
 
 /* Container spacing */
-.jcp-container {
+.jcp-home .jcp-container {
   padding: 0 var(--jcp-space-lg);
 }
 
 @media (max-width: 768px) {
-  .jcp-section {
+  .jcp-home .jcp-section {
     padding: var(--jcp-space-5xl) 0;
   }
 
-  .jcp-container {
+  .jcp-home .jcp-container {
     padding: 0 var(--jcp-space-md);
   }
 }
 
 @media (max-width: 640px) {
-  .jcp-section {
+  .jcp-home .jcp-section {
     padding: var(--jcp-space-4xl) 0;
   }
 
-  .jcp-container {
+  .jcp-home .jcp-container {
     padding: 0 var(--jcp-space-md);
   }
 }

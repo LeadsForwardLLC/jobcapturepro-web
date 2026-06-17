@@ -15,22 +15,37 @@ function jcp_niche_e( string $text ): void {
 }
 
 /**
+ * Whether the industries hub breadcrumb should render.
+ *
  * @param array<string, mixed> $c Content.
  */
-function jcp_niche_render_breadcrumb( array $c ): void {
+function jcp_niche_should_show_breadcrumb( array $c ): bool {
 	if ( ! empty( $c['hide_breadcrumb'] ) ) {
-		return;
+		return false;
 	}
 	$label = ! empty( $c['niche_label'] ) ? (string) $c['niche_label'] : '';
-	if ( $label === '' ) {
+	return $label !== '';
+}
+
+/**
+ * @param array<string, mixed> $c Content.
+ * @param bool                 $inside_hero Render at top of hero (no separate header band).
+ */
+function jcp_niche_render_breadcrumb( array $c, bool $inside_hero = false ): void {
+	if ( ! jcp_niche_should_show_breadcrumb( $c ) ) {
 		return;
 	}
+	$label = (string) $c['niche_label'];
 	$hub = get_post_type_archive_link( 'jcp_niche_landing' );
 	if ( ! $hub ) {
 		$hub = home_url( '/industries/' );
 	}
+	$classes = 'jcp-niche-breadcrumb jcp-container';
+	if ( $inside_hero ) {
+		$classes .= ' jcp-niche-breadcrumb--in-hero';
+	}
 	?>
-	<nav class="jcp-niche-breadcrumb jcp-container" aria-label="<?php esc_attr_e( 'Breadcrumb', 'jcp-core' ); ?>">
+	<nav class="<?php echo esc_attr( $classes ); ?>" aria-label="<?php esc_attr_e( 'Breadcrumb', 'jcp-core' ); ?>">
 		<a href="<?php echo esc_url( $hub ); ?>"><?php esc_html_e( 'Industries', 'jcp-core' ); ?></a>
 		<span aria-hidden="true">/</span>
 		<span><?php echo esc_html( $label ); ?></span>
@@ -66,8 +81,12 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	$phone_image = jcp_media_resolve_phone_image( $h );
 	$phone_alt   = trim( (string) ( $h['phone_image_alt'] ?? $h['media_alt'] ?? '' ) );
 	$show_visual = $variant !== 'centered';
+	$is_internal = $variant !== 'home';
 	?>
-	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?>">
+	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?><?php echo $is_internal ? ' jcp-niche-hero--internal' : ''; ?>">
+		<?php if ( $is_internal && jcp_niche_should_show_breadcrumb( $c ) ) : ?>
+			<?php jcp_niche_render_breadcrumb( $c, true ); ?>
+		<?php endif; ?>
 		<div class="jcp-container">
 			<div class="jcp-hero-grid jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $media['media_position'] ) ); ?>" data-jcp-split-path="hero" data-jcp-media-position-path="hero.media_position">
 				<div class="jcp-hero-copy hero-copy jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">

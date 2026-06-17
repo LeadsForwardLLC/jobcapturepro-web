@@ -93,7 +93,7 @@ function jcp_page_render_block( array $block, array $legacy, array $ctx ): void 
 
 	switch ( $type ) {
 		case 'breadcrumb':
-			jcp_niche_render_breadcrumb( $legacy );
+			// Breadcrumb markup is rendered inside the industry hero section.
 			break;
 		case 'hero':
 			$c['_hero_variant'] = jcp_block_resolve_hero_variant( $layout );
@@ -191,7 +191,6 @@ function jcp_page_render_core_mechanic_block( array $items ): void {
  * @param bool                 $is_ref    Referral page.
  */
 function jcp_niche_render_content( array $c, int $post_id, string $page_key, bool $is_ref ): void {
-	jcp_niche_render_breadcrumb( $c );
 	jcp_niche_render_hero( $c, $page_key );
 	jcp_niche_render_what_it_is( $c );
 	if ( $is_ref ) {
