@@ -10,8 +10,9 @@
 
   let api = null;
   let popover = null;
-  let activeTarget = null;
+  let activeMediaContext = null;
   let mediaFrame = null;
+  let mediaFrameOpen = false;
   let dragSourceCol = null;
 
   const legacyKey = (type) => {
@@ -20,6 +21,7 @@
   };
 
   const syncFlatProp = (path, value) => {
+    if (!path) return;
     api.setPath(api.flatContent, path, value);
     (api.pageDocument.blocks || []).forEach((block) => {
       const key = legacyKey(block.type);
@@ -29,6 +31,10 @@
       if (rel) api.setPath(block.props, rel, value);
     });
   };
+
+  const isWpMediaClick = (target) => !!target?.closest?.(
+    '.media-modal, .media-frame, .uploader-window, #wp-media-grid, .attachments-browser'
+  );
 
   const getMediaPaths = (el) => {
     const slot = el.closest('.jcp-media-slot');
@@ -41,9 +47,21 @@
       || (basePath ? `${basePath}.media_alt` : null);
     const typePath = basePath
       ? `${basePath}.media_type`
-      : (el.dataset.jcpMediaUrlPath ? el.dataset.jcpMediaUrlPath.replace(/\.(media_url|image_url)$/, '.media_type') : null);
+      : (el.dataset.jcpMediaUrlPath ? el.dataset.jcpMediaUrlPath.replace(/\.(media_url|image_url|phone_image_url)$/, '.media_type') : null);
     const linkPath = basePath ? `${basePath}.media_link_url` : null;
-    return { slot, urlPath, altPath, typePath, linkPath, basePath };
+    const isPhoneScreen = el.dataset.jcpMediaRole === 'phone_screen'
+      || el.classList?.contains('hero-phone-image');
+    return { slot, urlPath, altPath, typePath, linkPath, basePath, isPhoneScreen, el };
+  };
+
+  const resolveWritePaths = (paths, mediaType) => {
+    if (paths.isPhoneScreen || (paths.basePath === 'hero' && mediaType === 'phone_mockup')) {
+      return {
+        urlPath: 'hero.phone_image_url',
+        altPath: 'hero.phone_image_alt',
+      };
+    }
+    return { urlPath: paths.urlPath, altPath: paths.altPath };
   };
 
   const resolveMediaClickTarget = (el) => {
@@ -56,25 +74,26 @@
     }
     const img = el.querySelector?.('.jcp-editable-media-image');
     if (img) return img;
-    if (el.matches('.guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media, .jcp-editable-media-wrap')) {
+    if (el.matches('.guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media, .jcp-editable-media-wrap, .guarantee-image-wrapper')) {
       return el.querySelector('.jcp-editable-media-image, .jcp-media-slot') || el;
     }
     return el.closest('.jcp-editable-media-image, .jcp-media-slot') || null;
   };
 
-  const allowedTypes = (el) => {
-    const raw = el.dataset.jcpMediaTypes || el.closest('.jcp-media-slot')?.dataset.jcpMediaTypes;
+  const allowedTypes = (ctx) => {
+    const raw = ctx.el?.dataset.jcpMediaTypes || ctx.slot?.dataset.jcpMediaTypes;
     if (!raw) return MEDIA_TYPES;
     const allowed = raw.split(',').map((s) => s.trim()).filter(Boolean);
     return MEDIA_TYPES.filter((t) => allowed.includes(t.value));
   };
 
-  const currentMediaType = (paths) => {
-    if (paths.typePath) {
-      const stored = api.getPath(api.flatContent, paths.typePath);
+  const currentMediaType = (ctx) => {
+    if (ctx.isPhoneScreen) return 'phone_mockup';
+    if (ctx.typePath) {
+      const stored = api.getPath(api.flatContent, ctx.typePath);
       if (stored) return stored;
     }
-    if (paths.slot?.dataset.jcpMediaType) return paths.slot.dataset.jcpMediaType;
+    if (ctx.slot?.dataset.jcpMediaType) return ctx.slot.dataset.jcpMediaType;
     return 'image';
   };
 
@@ -107,7 +126,7 @@
       }
     });
     if (urlPath && url) {
-      const base = urlPath.replace(/\.(media_url|image_url)$/, '');
+      const base = urlPath.replace(/\.(media_url|image_url|phone_image_url)$/, '');
       const slot = document.querySelector(`.jcp-media-slot[data-jcp-media-path="${base}"]`);
       const videoWrap = slot?.querySelector('.jcp-media-variant--video');
       if (videoWrap) {
@@ -139,6 +158,10 @@
         <span>Media type</span>
         <select id="jcpMediaTypeSelect"></select>
       </label>
+      <label class="jcp-media-popover__field jcp-media-popover__field--image">
+        <span id="jcpMediaImageUrlLabel">Image URL</span>
+        <input type="url" id="jcpMediaImageUrlInput" placeholder="Or choose from library below">
+      </label>
       <label class="jcp-media-popover__field">
         <span>ALT text <small>(this page only)</small></span>
         <input type="text" id="jcpMediaAltInput" placeholder="Describe this image for accessibility and SEO">
@@ -164,7 +187,8 @@
     popover.querySelector('#jcpMediaTypeSelect').addEventListener('change', onTypeSelectChange);
 
     document.addEventListener('click', (e) => {
-      if (!popover || popover.hidden) return;
+      if (!popover || popover.hidden || mediaFrameOpen) return;
+      if (isWpMediaClick(e.target)) return;
       if (popover.contains(e.target)) return;
       if (e.target.closest('.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .jcp-editable-media-wrap, .conversion-image-wrapper, .jcp-split-col--media')) return;
       closePopover();
@@ -176,33 +200,45 @@
   const onTypeSelectChange = () => {
     const type = popover.querySelector('#jcpMediaTypeSelect').value;
     const videoField = popover.querySelector('.jcp-media-popover__field--video');
+    const imageField = popover.querySelector('.jcp-media-popover__field--image');
     const replaceBtn = popover.querySelector('#jcpMediaReplaceBtn');
+    const imageLabel = popover.querySelector('#jcpMediaImageUrlLabel');
+
     const showVideo = type === 'video';
+    const showImage = type === 'image' || type === 'phone_mockup';
     videoField.hidden = !showVideo;
+    imageField.hidden = !showImage;
     if (showVideo) videoField.removeAttribute('hidden');
     else videoField.setAttribute('hidden', '');
-    replaceBtn.hidden = type === 'phone_mockup';
-    if (type === 'phone_mockup') replaceBtn.setAttribute('hidden', '');
-    else replaceBtn.removeAttribute('hidden');
+    if (showImage) imageField.removeAttribute('hidden');
+    else imageField.setAttribute('hidden', '');
+
+    imageLabel.textContent = type === 'phone_mockup' ? 'Phone screen photo URL' : 'Image URL';
+    replaceBtn.textContent = type === 'phone_mockup' ? 'Choose phone photo from library' : 'Choose from library';
+    replaceBtn.hidden = false;
+    replaceBtn.removeAttribute('hidden');
   };
 
   const openPopover = (el) => {
     if (!api?.editing()) return;
     const target = resolveMediaClickTarget(el);
     if (!target) return;
-    activeTarget = target;
     const paths = getMediaPaths(target);
-    if (!paths.urlPath && !paths.altPath) return;
+    if (!paths.urlPath && !paths.altPath && !paths.isPhoneScreen) return;
+
+    activeMediaContext = { ...paths, el: target };
 
     ensurePopover();
-    const types = allowedTypes(target);
+    const types = allowedTypes(activeMediaContext);
     const select = popover.querySelector('#jcpMediaTypeSelect');
     select.innerHTML = types.map((t) => `<option value="${t.value}">${t.label}</option>`).join('');
 
-    const type = currentMediaType(paths);
+    const type = currentMediaType(activeMediaContext);
     select.value = types.some((t) => t.value === type) ? type : (types[0]?.value || 'image');
 
-    popover.querySelector('#jcpMediaAltInput').value = paths.altPath ? (api.getPath(api.flatContent, paths.altPath) || '') : '';
+    const writePaths = resolveWritePaths(activeMediaContext, select.value);
+    popover.querySelector('#jcpMediaAltInput').value = writePaths.altPath ? (api.getPath(api.flatContent, writePaths.altPath) || '') : '';
+    popover.querySelector('#jcpMediaImageUrlInput').value = writePaths.urlPath ? (api.getPath(api.flatContent, writePaths.urlPath) || '') : '';
     popover.querySelector('#jcpMediaVideoUrlInput').value = paths.urlPath ? (api.getPath(api.flatContent, paths.urlPath) || '') : '';
     popover.querySelector('#jcpMediaLinkInput').value = paths.linkPath ? (api.getPath(api.flatContent, paths.linkPath) || '') : '';
 
@@ -216,41 +252,54 @@
     const rect = (target.getBoundingClientRect ? target : el).getBoundingClientRect();
     popover.hidden = false;
     popover.removeAttribute('hidden');
-    popover.style.top = `${Math.min(window.innerHeight - 320, rect.bottom + 8)}px`;
+    popover.style.top = `${Math.min(window.innerHeight - 360, rect.bottom + 8)}px`;
     popover.style.left = `${Math.max(8, Math.min(window.innerWidth - 340, rect.left))}px`;
   };
 
   const closePopover = () => {
-    if (!popover) return;
+    if (!popover || mediaFrameOpen) return;
     popover.hidden = true;
     popover.setAttribute('hidden', '');
-    activeTarget = null;
+    if (!mediaFrameOpen) activeMediaContext = null;
+  };
+
+  const applyMediaValues = (mediaType, url, alt) => {
+    if (!activeMediaContext) return;
+    const writePaths = resolveWritePaths(activeMediaContext, mediaType);
+
+    if (mediaType === 'video') {
+      if (activeMediaContext.urlPath) syncFlatProp(activeMediaContext.urlPath, url);
+    } else if (url && writePaths.urlPath) {
+      syncFlatProp(writePaths.urlPath, url);
+    }
+
+    if (writePaths.altPath) syncFlatProp(writePaths.altPath, alt);
+    if (activeMediaContext.typePath) syncFlatProp(activeMediaContext.typePath, mediaType);
+    if (activeMediaContext.linkPath) {
+      syncFlatProp(activeMediaContext.linkPath, popover.querySelector('#jcpMediaLinkInput').value.trim());
+    }
+
+    updateVariantVisibility(activeMediaContext.slot, mediaType);
+    updateMediaDom(writePaths.urlPath, url, writePaths.altPath, alt);
+    if (mediaType === 'video' && activeMediaContext.urlPath) {
+      updateMediaDom(activeMediaContext.urlPath, url, writePaths.altPath, alt);
+    }
+    api.recordChange();
   };
 
   const applyPopover = () => {
-    if (!activeTarget) return;
-    const paths = getMediaPaths(activeTarget);
-    const type = popover.querySelector('#jcpMediaTypeSelect').value;
+    if (!activeMediaContext) return;
+    const mediaType = popover.querySelector('#jcpMediaTypeSelect').value;
     const alt = popover.querySelector('#jcpMediaAltInput').value.trim();
-    let url = paths.urlPath ? (api.getPath(api.flatContent, paths.urlPath) || '') : '';
-
-    if (type === 'video') {
+    let url = '';
+    if (mediaType === 'video') {
       url = popover.querySelector('#jcpMediaVideoUrlInput').value.trim();
-      if (paths.urlPath) syncFlatProp(paths.urlPath, url);
+    } else {
+      url = popover.querySelector('#jcpMediaImageUrlInput').value.trim();
     }
-
-    if (paths.altPath) syncFlatProp(paths.altPath, alt);
-    if (paths.typePath) syncFlatProp(paths.typePath, type);
-    if (paths.linkPath) syncFlatProp(paths.linkPath, popover.querySelector('#jcpMediaLinkInput').value.trim());
-
-    if (paths.urlPath && type === 'image' && url) {
-      syncFlatProp(paths.urlPath, url);
-    }
-
-    updateVariantVisibility(paths.slot, type);
-    updateMediaDom(paths.urlPath, url, paths.altPath, alt);
-    api.recordChange();
+    applyMediaValues(mediaType, url, alt);
     closePopover();
+    activeMediaContext = null;
   };
 
   const openLibrary = () => {
@@ -258,35 +307,46 @@
       window.alert('Media library is not available. Try refreshing the page.');
       return;
     }
+    if (!activeMediaContext) return;
+
     if (!mediaFrame) {
       mediaFrame = window.wp.media({
         title: api.strings?.mediaTitle || 'Choose or upload media',
         button: { text: api.strings?.mediaButton || 'Use this media' },
         multiple: false,
+        library: { type: 'image' },
       });
-      mediaFrame.on('select', () => {
-        const attachment = mediaFrame.state().get('selection').first().toJSON();
-        if (!activeTarget) return;
-        const paths = getMediaPaths(activeTarget);
-        const url = attachment.url || '';
-        const mime = attachment.mime || '';
-        const type = mime.startsWith('video/') ? 'video' : 'image';
-        const libAlt = attachment.alt || attachment.title || '';
 
-        if (paths.urlPath) syncFlatProp(paths.urlPath, url);
-        if (paths.typePath) syncFlatProp(paths.typePath, type);
-        if (paths.altPath && !popover.querySelector('#jcpMediaAltInput').value.trim() && libAlt) {
+      mediaFrame.on('open', () => {
+        mediaFrameOpen = true;
+      });
+      mediaFrame.on('close', () => {
+        mediaFrameOpen = false;
+      });
+
+      mediaFrame.on('select', () => {
+        const ctx = activeMediaContext;
+        if (!ctx) return;
+        const attachment = mediaFrame.state().get('selection').first().toJSON();
+        const url = attachment.url || '';
+        const libAlt = attachment.alt || attachment.title || '';
+        const selectedType = popover.querySelector('#jcpMediaTypeSelect').value;
+        const mediaType = selectedType === 'phone_mockup'
+          ? 'phone_mockup'
+          : (attachment.mime?.startsWith('video/') ? 'video' : 'image');
+
+        popover.querySelector('#jcpMediaTypeSelect').value = mediaType;
+        popover.querySelector('#jcpMediaImageUrlInput').value = url;
+        if (mediaType === 'video') popover.querySelector('#jcpMediaVideoUrlInput').value = url;
+        if (libAlt && !popover.querySelector('#jcpMediaAltInput').value.trim()) {
           popover.querySelector('#jcpMediaAltInput').value = libAlt;
         }
-
-        popover.querySelector('#jcpMediaTypeSelect').value = type;
-        if (type === 'video') popover.querySelector('#jcpMediaVideoUrlInput').value = url;
         onTypeSelectChange();
-        updateVariantVisibility(paths.slot, type);
-        updateMediaDom(paths.urlPath, url, paths.altPath, popover.querySelector('#jcpMediaAltInput').value.trim());
-        api.recordChange();
+        applyMediaValues(mediaType, url, popover.querySelector('#jcpMediaAltInput').value.trim());
       });
     }
+
+    mediaFrameOpen = true;
     mediaFrame.open();
   };
 
@@ -377,11 +437,8 @@
 
   const markMediaHitAreas = () => {
     document.querySelectorAll(
-      '.jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media .jcp-media-slot'
+      '.jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .hero-phone-image-wrap'
     ).forEach((el) => {
-      el.classList.add('jcp-media-hit');
-    });
-    document.querySelectorAll('.guarantee-image-wrapper').forEach((el) => {
       el.classList.add('jcp-media-hit');
     });
   };
@@ -389,9 +446,10 @@
   const onDocumentClickCapture = (e) => {
     if (!api?.editing()) return;
     if (e.target.closest('.jcp-col-drag-handle, .jcp-media-popover, .jcp-niche-link-popover')) return;
+    if (isWpMediaClick(e.target)) return;
 
     const mediaHit = e.target.closest(
-      '.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .jcp-split-col--media'
+      '.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .hero-phone-image-wrap, .jcp-split-col--media'
     );
 
     if (mediaHit) {
@@ -402,7 +460,7 @@
     }
 
     const link = e.target.closest('a');
-    if (link && link.querySelector('.jcp-editable-media-image, .jcp-media-slot')) {
+    if (link && link.querySelector('.jcp-editable-media-image, .jcp-media-slot, .hero-phone-image')) {
       e.preventDefault();
       e.stopPropagation();
     }

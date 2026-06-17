@@ -170,20 +170,45 @@ function jcp_media_position_class( string $position ): string {
 }
 
 /**
+ * Default photo shown inside the hero phone mockup.
+ */
+function jcp_media_default_phone_image(): string {
+	return 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+}
+
+/**
+ * Resolve the image URL for a phone mockup screen photo.
+ *
+ * @param array<string, mixed> $props Block / hero props.
+ */
+function jcp_media_resolve_phone_image( array $props ): string {
+	$url = trim( (string) ( $props['phone_image_url'] ?? '' ) );
+	if ( $url !== '' ) {
+		return $url;
+	}
+	return jcp_media_default_phone_image();
+}
+
+/**
  * Read media fields from props with legacy image_url / image_alt aliases.
  *
  * @param array<string, mixed> $props Block props.
- * @return array{media_type:string,media_url:string,media_alt:string,media_position:string}
+ * @return array{media_type:string,media_url:string,media_alt:string,media_position:string,phone_image_url:string}
  */
 function jcp_media_props_from_block( array $props ): array {
 	$url = trim( (string) ( $props['media_url'] ?? $props['image_url'] ?? '' ) );
 	$alt = trim( (string) ( $props['media_alt'] ?? $props['image_alt'] ?? '' ) );
+	$type = (string) ( $props['media_type'] ?? '' );
+	if ( $type === '' && ! empty( $props['phone_image_url'] ) ) {
+		$type = 'phone_mockup';
+	}
 
 	return [
-		'media_type'     => jcp_media_normalize_type( (string) ( $props['media_type'] ?? 'image' ) ),
-		'media_url'      => $url,
-		'media_alt'      => $alt,
-		'media_position' => in_array( (string) ( $props['media_position'] ?? 'right' ), [ 'left', 'right' ], true )
+		'media_type'       => $type !== '' ? jcp_media_normalize_type( $type ) : 'image',
+		'media_url'        => $url,
+		'media_alt'        => $alt,
+		'phone_image_url'  => trim( (string) ( $props['phone_image_url'] ?? '' ) ),
+		'media_position'   => in_array( (string) ( $props['media_position'] ?? 'right' ), [ 'left', 'right' ], true )
 			? (string) $props['media_position']
 			: 'right',
 	];

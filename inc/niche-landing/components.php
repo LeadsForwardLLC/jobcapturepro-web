@@ -61,10 +61,9 @@ function jcp_component_home_meta_stats( array $items, string $path = 'hero.meta_
  *
  * @param string $demo_url Demo link.
  */
-function jcp_component_hero_home_visual( string $demo_url = '', string $photo_url = '', bool $wrap_visual = true ): void {
-	$demo_url  = $demo_url !== '' ? $demo_url : home_url( '/demo/' );
-	$photo     = $photo_url !== '' ? $photo_url : 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
-	$photo_alt = '';
+function jcp_component_hero_home_visual( string $demo_url = '', string $photo_url = '', string $photo_alt = '', bool $wrap_visual = true ): void {
+	$demo_url = $demo_url !== '' ? $demo_url : home_url( '/demo/' );
+	$photo    = $photo_url !== '' ? $photo_url : jcp_media_default_phone_image();
 	if ( $wrap_visual ) {
 		?>
 	<div class="jcp-hero-visual hero-visual">
@@ -105,8 +104,9 @@ function jcp_component_hero_home_visual( string $demo_url = '', string $photo_ur
 										width="390"
 										height="292"
 										fetchpriority="high"
-										data-jcp-media-url-path="hero.media_url"
-										data-jcp-media-alt-path="hero.media_alt"
+										data-jcp-media-url-path="hero.phone_image_url"
+										data-jcp-media-alt-path="hero.phone_image_alt"
+										data-jcp-media-role="phone_screen"
 									/>
 								</div>
 								<div class="demo-preview-item hero-phone-card hero-phone-card-1">

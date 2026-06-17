@@ -273,6 +273,8 @@ function jcp_page_default_block_props( string $type ): array {
 			'trust_line'      => '',
 			'media_type'      => 'phone_mockup',
 			'media_position'  => 'right',
+			'phone_image_url' => '',
+			'phone_image_alt' => '',
 		],
 		'media_text' => [
 			'headline'        => __( 'Section headline', 'jcp-core' ),

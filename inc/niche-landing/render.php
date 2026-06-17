@@ -57,13 +57,14 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 		$variant = 'home';
 	}
 	$demo_url = home_url( '/demo/' );
-	$default_photo = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$default_photo = jcp_media_default_phone_image();
 	$is_home  = $variant === 'home';
 	$media    = jcp_media_props_from_block( $h );
 	if ( empty( $h['media_type'] ) ) {
 		$media['media_type'] = 'phone_mockup';
 	}
-	$photo = $media['media_url'] !== '' ? $media['media_url'] : $default_photo;
+	$phone_image = jcp_media_resolve_phone_image( $h );
+	$phone_alt   = trim( (string) ( $h['phone_image_alt'] ?? $h['media_alt'] ?? '' ) );
 	$show_visual = $variant !== 'centered';
 	?>
 	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?>">
@@ -123,9 +124,9 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 								'height'  => '480',
 								'loading' => 'eager',
 							],
-							'phone_render'  => function () use ( $is_home, $hero_demo, $photo ) {
+							'phone_render'  => function () use ( $is_home, $hero_demo, $phone_image, $phone_alt ) {
 								if ( $is_home ) {
-									jcp_component_hero_home_visual( $hero_demo, $photo, true );
+									jcp_component_hero_home_visual( $hero_demo, $phone_image, $phone_alt, true );
 									return;
 								}
 								?>
@@ -140,7 +141,7 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 													</div>
 													<div class="phone-body hero-phone-body">
 														<div class="hero-phone-image-wrap">
-															<img src="<?php echo esc_url( $photo ); ?>" alt="" class="hero-phone-image jcp-editable-media-image" width="390" height="292" loading="eager" data-jcp-media-url-path="hero.media_url" data-jcp-media-alt-path="hero.media_alt" />
+															<img src="<?php echo esc_url( $phone_image ); ?>" alt="<?php echo esc_attr( $phone_alt ); ?>" class="hero-phone-image jcp-editable-media-image" width="390" height="292" loading="eager" data-jcp-media-url-path="hero.phone_image_url" data-jcp-media-alt-path="hero.phone_image_alt" data-jcp-media-role="phone_screen" />
 														</div>
 														<div class="demo-preview-item hero-phone-card hero-phone-card-1">
 															<div class="demo-item-content">
