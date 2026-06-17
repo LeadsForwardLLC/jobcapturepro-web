@@ -154,26 +154,28 @@
         <strong>Edit media</strong>
         <button type="button" class="jcp-media-popover__close" aria-label="Close">×</button>
       </div>
-      <label class="jcp-media-popover__field">
-        <span>Media type</span>
-        <select id="jcpMediaTypeSelect"></select>
-      </label>
-      <label class="jcp-media-popover__field jcp-media-popover__field--image">
-        <span id="jcpMediaImageUrlLabel">Image URL</span>
-        <input type="url" id="jcpMediaImageUrlInput" placeholder="Or choose from library below">
-      </label>
-      <label class="jcp-media-popover__field">
-        <span>ALT text <small>(this page only)</small></span>
-        <input type="text" id="jcpMediaAltInput" placeholder="Describe this image for accessibility and SEO">
-      </label>
-      <label class="jcp-media-popover__field jcp-media-popover__field--video" hidden>
-        <span>Video URL</span>
-        <input type="url" id="jcpMediaVideoUrlInput" placeholder="YouTube, Vimeo, or MP4 URL">
-      </label>
-      <label class="jcp-media-popover__field jcp-media-popover__field--link">
-        <span>Link URL <small>(optional)</small></span>
-        <input type="url" id="jcpMediaLinkInput" placeholder="Leave empty for no link">
-      </label>
+      <div class="jcp-media-popover__body">
+        <label class="jcp-media-popover__field">
+          <span>Media type</span>
+          <select id="jcpMediaTypeSelect"></select>
+        </label>
+        <label class="jcp-media-popover__field jcp-media-popover__field--image">
+          <span id="jcpMediaImageUrlLabel">Image URL</span>
+          <input type="url" id="jcpMediaImageUrlInput" placeholder="Or choose from library below">
+        </label>
+        <label class="jcp-media-popover__field">
+          <span>ALT text <small>(this page only)</small></span>
+          <input type="text" id="jcpMediaAltInput" placeholder="Describe this image for accessibility and SEO">
+        </label>
+        <label class="jcp-media-popover__field jcp-media-popover__field--video" hidden>
+          <span>Video URL</span>
+          <input type="url" id="jcpMediaVideoUrlInput" placeholder="YouTube, Vimeo, or MP4 URL">
+        </label>
+        <label class="jcp-media-popover__field jcp-media-popover__field--link">
+          <span>Link URL <small>(optional)</small></span>
+          <input type="url" id="jcpMediaLinkInput" placeholder="Leave empty for no link">
+        </label>
+      </div>
       <div class="jcp-media-popover__actions">
         <button type="button" class="btn btn-secondary" id="jcpMediaReplaceBtn">Choose from library</button>
         <button type="button" class="btn btn-primary" id="jcpMediaApplyBtn">Apply</button>
@@ -217,6 +219,10 @@
     replaceBtn.textContent = type === 'phone_mockup' ? 'Choose phone photo from library' : 'Choose from library';
     replaceBtn.hidden = false;
     replaceBtn.removeAttribute('hidden');
+    if (activeMediaContext) {
+      const rect = activeMediaContext.el.getBoundingClientRect?.() || { top: 0, left: 0, bottom: 0 };
+      window.requestAnimationFrame(() => positionPopover(rect));
+    }
   };
 
   const openPopover = (el) => {
@@ -250,10 +256,42 @@
     onTypeSelectChange();
 
     const rect = (target.getBoundingClientRect ? target : el).getBoundingClientRect();
+    positionPopover(rect);
+  };
+
+  const positionPopover = (anchorRect) => {
+    if (!popover) return;
+    const pad = 12;
+    const bar = document.querySelector('.jcp-niche-edit-bar');
+    const topInset = (bar?.offsetHeight || 0) + pad;
+
     popover.hidden = false;
     popover.removeAttribute('hidden');
-    popover.style.top = `${Math.min(window.innerHeight - 360, rect.bottom + 8)}px`;
-    popover.style.left = `${Math.max(8, Math.min(window.innerWidth - 340, rect.left))}px`;
+    popover.style.visibility = 'hidden';
+    popover.style.maxHeight = '';
+    popover.style.left = `${pad}px`;
+    popover.style.top = `${topInset}px`;
+
+    const width = popover.offsetWidth;
+    let height = popover.offsetHeight;
+    const maxHeight = window.innerHeight - topInset - pad;
+    popover.style.maxHeight = `${maxHeight}px`;
+
+    height = Math.min(popover.offsetHeight, maxHeight);
+
+    let top = anchorRect.bottom + 8;
+    if (top + height > window.innerHeight - pad) {
+      top = anchorRect.top - height - 8;
+    }
+    if (top < topInset) {
+      top = topInset;
+    }
+
+    const left = Math.max(pad, Math.min(anchorRect.left, window.innerWidth - width - pad));
+
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
+    popover.style.visibility = '';
   };
 
   const closePopover = () => {
