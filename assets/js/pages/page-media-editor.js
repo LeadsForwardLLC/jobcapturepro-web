@@ -107,8 +107,64 @@
     slot.dataset.jcpMediaType = type;
   };
 
-  const updateMediaDom = (urlPath, url, altPath, alt) => {
+  const attachmentUrl = (attachment) => {
+    if (!attachment) return '';
+    if (attachment.url) return attachment.url;
+    const sizes = attachment.sizes || {};
+    return sizes.full?.url || sizes.large?.url || sizes.medium?.url || attachment.guid || '';
+  };
+
+  const syncMediaUrl = (urlPath, url) => {
+    if (!urlPath || !url) return;
+    syncFlatProp(urlPath, url);
+    if (urlPath.endsWith('.image_url')) {
+      syncFlatProp(urlPath.replace(/\.image_url$/, '.media_url'), url);
+    } else if (urlPath.endsWith('.media_url')) {
+      syncFlatProp(urlPath.replace(/\.media_url$/, '.image_url'), url);
+    }
+  };
+
+  const syncMediaAlt = (altPath, alt) => {
+    if (!altPath) return;
+    syncFlatProp(altPath, alt);
+    if (altPath.endsWith('.image_alt')) {
+      syncFlatProp(altPath.replace(/\.image_alt$/, '.media_alt'), alt);
+    } else if (altPath.endsWith('.media_alt')) {
+      syncFlatProp(altPath.replace(/\.media_alt$/, '.image_alt'), alt);
+    }
+  };
+
+  const ensureSlotImage = (slot, urlPath, altPath, url, alt, extraClass = '') => {
+    if (!slot || !urlPath || !url) return null;
+    let img = slot.querySelector(`[data-jcp-media-url-path="${urlPath}"]`);
+    if (!img) {
+      const variant = slot.querySelector('.jcp-media-variant--image');
+      if (!variant) return null;
+      img = document.createElement('img');
+      img.className = `jcp-editable-media-image${extraClass ? ` ${extraClass}` : ''}`;
+      img.dataset.jcpMediaUrlPath = urlPath;
+      if (altPath) img.dataset.jcpMediaAltPath = altPath;
+      img.loading = 'lazy';
+      variant.appendChild(img);
+    }
+    img.src = url;
+    if (alt !== undefined) img.alt = alt;
+    img.removeAttribute('hidden');
+    return img;
+  };
+
+  const updateMediaDom = (urlPath, url, altPath, alt, slot = null) => {
     if (!urlPath) return;
+    const targetSlot = slot || document.querySelector(
+      `.jcp-media-slot[data-jcp-media-url-path="${urlPath}"], .jcp-media-slot[data-jcp-media-path="${urlPath.replace(/\.(media_url|image_url|phone_image_url)$/, '')}"]`
+    );
+
+    if (url && targetSlot) {
+      const extraClass = targetSlot.closest('.conversion-image-wrapper') ? 'conversion-image'
+        : (targetSlot.closest('.jcp-media-text-media') ? 'jcp-media-text-image' : '');
+      ensureSlotImage(targetSlot, urlPath, altPath, url, alt, extraClass);
+    }
+
     document.querySelectorAll(`[data-jcp-media-url-path="${urlPath}"]`).forEach((node) => {
       if (node.tagName === 'IMG') {
         if (url) node.src = url;
@@ -161,7 +217,7 @@
         </label>
         <label class="jcp-media-popover__field jcp-media-popover__field--image">
           <span id="jcpMediaImageUrlLabel">Image URL</span>
-          <input type="url" id="jcpMediaImageUrlInput" placeholder="Or choose from library below">
+          <input type="text" id="jcpMediaImageUrlInput" placeholder="Or choose from library below">
         </label>
         <label class="jcp-media-popover__field">
           <span>ALT text <small>(this page only)</small></span>
@@ -289,6 +345,11 @@
 
     const left = Math.max(pad, Math.min(anchorRect.left, window.innerWidth - width - pad));
 
+    // If still overflowing, anchor from bottom of viewport.
+    if (top + height > window.innerHeight - pad) {
+      top = Math.max(topInset, window.innerHeight - pad - height);
+    }
+
     popover.style.top = `${top}px`;
     popover.style.left = `${left}px`;
     popover.style.visibility = '';
@@ -306,19 +367,19 @@
     const writePaths = resolveWritePaths(activeMediaContext, mediaType);
 
     if (mediaType === 'video') {
-      if (activeMediaContext.urlPath) syncFlatProp(activeMediaContext.urlPath, url);
+      if (activeMediaContext.urlPath) syncMediaUrl(activeMediaContext.urlPath, url);
     } else if (url && writePaths.urlPath) {
-      syncFlatProp(writePaths.urlPath, url);
+      syncMediaUrl(writePaths.urlPath, url);
     }
 
-    if (writePaths.altPath) syncFlatProp(writePaths.altPath, alt);
+    if (writePaths.altPath) syncMediaAlt(writePaths.altPath, alt);
     if (activeMediaContext.typePath) syncFlatProp(activeMediaContext.typePath, mediaType);
-    if (activeMediaContext.linkPath) {
+    if (activeMediaContext.linkPath && popover) {
       syncFlatProp(activeMediaContext.linkPath, popover.querySelector('#jcpMediaLinkInput').value.trim());
     }
 
     updateVariantVisibility(activeMediaContext.slot, mediaType);
-    updateMediaDom(writePaths.urlPath, url, writePaths.altPath, alt);
+    updateMediaDom(writePaths.urlPath, url, writePaths.altPath, alt, activeMediaContext.slot);
     if (mediaType === 'video' && activeMediaContext.urlPath) {
       updateMediaDom(activeMediaContext.urlPath, url, writePaths.altPath, alt);
     }
@@ -366,8 +427,9 @@
         const ctx = activeMediaContext;
         if (!ctx) return;
         const attachment = mediaFrame.state().get('selection').first().toJSON();
-        const url = attachment.url || '';
-        const libAlt = attachment.alt || attachment.title || '';
+        const url = attachmentUrl(attachment);
+        if (!url) return;
+        const libAlt = attachment.alt || attachment.title || attachment.filename || '';
         const selectedType = popover.querySelector('#jcpMediaTypeSelect').value;
         const mediaType = selectedType === 'phone_mockup'
           ? 'phone_mockup'

@@ -71,9 +71,6 @@ function jcp_media_render_video( string $url, string $title = '' ): void {
  */
 function jcp_media_render_image( string $url, string $alt, string $url_path, string $alt_path, array $img_attrs = [] ): void {
 	$url = trim( $url );
-	if ( $url === '' ) {
-		return;
-	}
 	$class = 'jcp-editable-media-image';
 	if ( ! empty( $img_attrs['class'] ) ) {
 		$class .= ' ' . (string) $img_attrs['class'];
@@ -81,7 +78,7 @@ function jcp_media_render_image( string $url, string $alt, string $url_path, str
 	}
 	?>
 	<img
-		src="<?php echo esc_url( $url ); ?>"
+		<?php if ( $url !== '' ) : ?>src="<?php echo esc_url( $url ); ?>" <?php endif; ?>
 		alt="<?php echo esc_attr( $alt ); ?>"
 		class="<?php echo esc_attr( $class ); ?>"
 		data-jcp-media-url-path="<?php echo esc_attr( $url_path ); ?>"
@@ -148,7 +145,7 @@ function jcp_media_render_slot( array $config ): void {
 		<?php endif; ?>
 		<div class="jcp-media-variant jcp-media-variant--image"<?php echo $media_type !== 'image' ? ' hidden' : ''; ?>>
 			<?php
-			if ( $image_url !== '' && $url_path !== '' && $alt_path !== '' ) {
+			if ( $url_path !== '' && $alt_path !== '' ) {
 				jcp_media_render_image( $image_url, $media_alt, $url_path, $alt_path, $img_attrs );
 			}
 			?>
