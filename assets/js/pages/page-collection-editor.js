@@ -64,26 +64,6 @@
     api.setPath(api.flatContent, path, arr);
   };
 
-  const replacePathIndex = (path, basePath, index) => {
-    if (!path || !path.startsWith(`${basePath}.`)) return path;
-    const rest = path.slice(basePath.length + 1).split('.');
-    rest[0] = String(index);
-    return `${basePath}.${rest.join('.')}`;
-  };
-
-  const reindexContainer = (container, basePath) => {
-    const items = [...container.querySelectorAll(':scope > [data-jcp-array-item]')];
-    items.forEach((item, index) => {
-      item.dataset.jcpArrayItem = String(index);
-      item.querySelectorAll('[data-jcp-path]').forEach((el) => {
-        el.setAttribute('data-jcp-path', replacePathIndex(el.getAttribute('data-jcp-path'), basePath, index));
-      });
-      item.querySelectorAll('[data-jcp-href-path]').forEach((el) => {
-        el.setAttribute('data-jcp-href-path', replacePathIndex(el.getAttribute('data-jcp-href-path'), basePath, index));
-      });
-    });
-  };
-
   const iconUrl = (name) => {
     const base = window.JCP_ASSET_BASE || '';
     return `${base}/shared/assets/icons/lucide/${name}.svg`;
@@ -144,66 +124,114 @@
       </details>`;
   };
 
-  const insertBeforeAddButton = (container, node) => {
-    const addBtn = container.querySelector(':scope > .jcp-collection-add');
-    if (addBtn) container.insertBefore(node, addBtn);
-    else container.appendChild(node);
+  const buildGuaranteeCard = (basePath, index, data) => {
+    const path = `${basePath}.${index}`;
+    const imageBlock = data.image_url
+      ? `<img src="${esc(data.image_url)}" alt="${esc(data.image_alt || '')}" class="guarantee-image jcp-editable-media-image" loading="lazy" data-jcp-media-url-path="${path}.image_url" data-jcp-media-alt-path="${path}.image_alt" data-jcp-media-types="image" />`
+      : `<div class="guarantee-image guarantee-image--empty" data-jcp-media-url-path="${path}.image_url" data-jcp-media-alt-path="${path}.image_alt" data-jcp-media-types="image"></div>`;
+    const badge = data.badge
+      ? `<div class="guarantee-badge" data-jcp-path="${path}.badge">${esc(data.badge)}</div>`
+      : '';
+    const stat = data.stat_number
+      ? `<div class="guarantee-stat"><span class="stat-number" data-jcp-path="${path}.stat_number">${esc(data.stat_number)}</span><span class="stat-label" data-jcp-path="${path}.stat_label">${esc(data.stat_label || '')}</span></div>`
+      : '';
+    const faqTarget = data.faq_target ? ` data-faq-target="${esc(data.faq_target)}"` : '';
+    return `
+      <a href="#faq" class="guarantee-item" data-jcp-array-item="${index}"${faqTarget}>
+        <div class="guarantee-image-wrapper jcp-editable-media-wrap">${imageBlock}${badge}</div>
+        <div class="guarantee-content">
+          <strong data-jcp-path="${path}.title">${esc(data.title || '')}</strong>
+          <p data-jcp-path="${path}.body">${esc(data.body || '')}</p>
+          ${stat}
+        </div>
+      </a>`;
   };
 
-  const cloneArrayItem = (container, basePath, index, data) => {
-    const sample = container.querySelector('[data-jcp-array-item]');
-    if (sample) {
-      const clone = sample.cloneNode(true);
-      clone.querySelectorAll('.jcp-collection-remove').forEach((el) => el.remove());
-      clone.classList.remove('jcp-collection-item');
-      clone.querySelectorAll('[data-jcp-path]').forEach((el) => { el.textContent = ''; });
-      insertBeforeAddButton(container, clone);
-      reindexContainer(container, basePath);
-      applyDefaultsToItem(container, basePath, index, data);
-      return clone;
-    }
-
-    let html = '';
-    if (basePath.endsWith('.points') || basePath.endsWith('.bullets')) {
-      html = buildConversionPoint(basePath, index, String(data));
-    } else if (basePath.includes('team_already') || basePath.includes('turns_into')) {
-      html = buildChecklistItem(basePath, index, String(data));
-    } else if (basePath.endsWith('.job_types')) {
-      html = buildTagItem(basePath, index, String(data));
-    } else if (basePath === 'faq.items') {
-      html = buildFaqItem(index, data);
-    } else if (basePath === 'how_it_works.steps') {
-      html = buildTimelineStep(basePath, index, data);
-    } else if (basePath.endsWith('.items') || basePath.endsWith('.features') || basePath.endsWith('.pain_points') || basePath.endsWith('.audiences')) {
-      html = buildFactorCard(basePath, index, data);
-    }
-    if (!html) return null;
-    const addBtn = container.querySelector(':scope > .jcp-collection-add');
-    if (addBtn) addBtn.insertAdjacentHTML('beforebegin', html);
-    else container.insertAdjacentHTML('beforeend', html);
-    return container.querySelector(`[data-jcp-array-item="${index}"]`);
-  };
-
-  const applyDefaultsToItem = (container, basePath, index, data) => {
-    const item = container.querySelector(`[data-jcp-array-item="${index}"]`);
-    if (!item) return;
+  const buildItemHtml = (basePath, index, data, container) => {
     if (typeof data === 'string') {
-      const el = item.querySelector('[data-jcp-path]') || item;
-      if (el) el.textContent = data;
-      return;
+      if (basePath.endsWith('.points') || basePath.endsWith('.bullets')) return buildConversionPoint(basePath, index, data);
+      if (basePath.includes('team_already') || basePath.includes('turns_into')) return buildChecklistItem(basePath, index, data);
+      if (basePath.endsWith('.job_types')) return buildTagItem(basePath, index, data);
+      return '';
     }
-    if (basePath === 'faq.items') {
-      const q = item.querySelector('[data-jcp-path$=".q"]');
-      const a = item.querySelector('[data-jcp-path$=".a"]');
-      if (q) q.textContent = data.q || '';
-      if (a) a.textContent = data.a || '';
-      return;
+    if (basePath === 'faq.items') return buildFaqItem(index, data);
+    if (basePath === 'how_it_works.steps') return buildTimelineStep(basePath, index, data);
+    if (basePath === 'who_its_for.audiences' && container.classList.contains('guarantees-grid')) {
+      return buildGuaranteeCard(basePath, index, data);
     }
-    item.querySelectorAll('[data-jcp-path]').forEach((el) => {
-      const path = el.getAttribute('data-jcp-path') || '';
-      const key = path.split('.').pop();
-      if (key && data[key] !== undefined) el.textContent = String(data[key]);
+    if (basePath.endsWith('.items') || basePath.endsWith('.features') || basePath.endsWith('.pain_points') || basePath.endsWith('.audiences')) {
+      return buildFactorCard(basePath, index, data);
+    }
+    return '';
+  };
+
+  const formatStepNumber = (position) => {
+    const numeric = api?.getPath?.(api.flatContent, 'how_it_works.numeric_steps');
+    const n = position + 1;
+    return numeric ? String(n) : String(n).padStart(2, '0');
+  };
+
+  const updateTimelineStepNumbers = (container) => {
+    const basePath = 'how_it_works.steps';
+    const containers = container
+      ? [container]
+      : [...document.querySelectorAll(`.timeline-steps[data-jcp-array="${basePath}"]`)];
+    containers.forEach((stepsContainer) => {
+      const steps = stepsContainer.querySelectorAll(':scope > .timeline-step');
+      steps.forEach((step, index) => {
+        step.dataset.jcpArrayItem = String(index);
+        const numEl = step.querySelector(':scope > .step-number');
+        if (numEl) numEl.textContent = formatStepNumber(index);
+        step.querySelectorAll('[data-jcp-path]').forEach((el) => {
+          const path = el.getAttribute('data-jcp-path');
+          if (!path || !path.startsWith(`${basePath}.`)) return;
+          const rest = path.slice(basePath.length + 1).split('.');
+          rest[0] = String(index);
+          el.setAttribute('data-jcp-path', `${basePath}.${rest.join('.')}`);
+        });
+      });
     });
+  };
+
+  const rebuildArrayContainer = (container) => {
+    const basePath = container.dataset.jcpArray;
+    if (!basePath || !api) return;
+    const arr = getArray(basePath);
+    container.querySelectorAll(':scope > [data-jcp-array-item], :scope > .jcp-collection-add').forEach((el) => el.remove());
+    const temp = document.createElement('div');
+    arr.forEach((item, index) => {
+      const html = buildItemHtml(basePath, index, item, container);
+      if (!html) return;
+      temp.innerHTML = html.trim();
+      if (temp.firstElementChild) container.appendChild(temp.firstElementChild);
+    });
+    if (basePath === 'how_it_works.steps') updateTimelineStepNumbers(container);
+  };
+
+  const syncOptionalSlotsFromContent = () => {
+    if (!api) return;
+    document.querySelectorAll('[data-jcp-optional]').forEach((slot) => {
+      const path = slot.dataset.jcpOptional;
+      if (!path) return;
+      const kind = slot.dataset.jcpOptionalKind || 'cta';
+      const data = api.getPath(api.flatContent, path);
+      const hasLabel = data && typeof data === 'object' && String(data.label || '').trim() !== '';
+      if (!hasLabel) {
+        slot.innerHTML = '';
+        slot.classList.add('is-empty');
+      } else {
+        const tpl = OPTIONAL_TEMPLATES[kind] || OPTIONAL_TEMPLATES.cta;
+        slot.innerHTML = tpl(path, data);
+        slot.classList.remove('is-empty');
+      }
+    });
+  };
+
+  const syncCollectionsFromContent = () => {
+    if (!api) return;
+    document.querySelectorAll('[data-jcp-array]').forEach(rebuildArrayContainer);
+    syncOptionalSlotsFromContent();
+    updateTimelineStepNumbers();
   };
 
   const addArrayItem = (container, basePath) => {
@@ -211,14 +239,16 @@
     api.collectFromDom();
     const arr = getArray(basePath);
     const factory = ARRAY_DEFAULTS[basePath] || (() => 'New item');
-    const index = arr.length;
-    const data = factory(index);
+    const data = factory(arr.length);
     arr.push(data);
     setArray(basePath, arr);
-    cloneArrayItem(container, basePath, index, data);
+    rebuildArrayContainer(container);
     refreshCollections();
     if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
       window.JCP_REFRESH_INLINE_EDITABLE();
+    }
+    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
+      window.JCP_REFRESH_PAGE_MEDIA_UI();
     }
     api.recordChange();
   };
@@ -230,12 +260,13 @@
     if (index < 0 || index >= arr.length) return;
     arr.splice(index, 1);
     setArray(basePath, arr);
-    const item = container.querySelector(`[data-jcp-array-item="${index}"]`);
-    if (item) item.remove();
-    reindexContainer(container, basePath);
+    rebuildArrayContainer(container);
     refreshCollections();
     if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
       window.JCP_REFRESH_INLINE_EDITABLE();
+    }
+    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
+      window.JCP_REFRESH_PAGE_MEDIA_UI();
     }
     api.recordChange();
   };
@@ -349,12 +380,14 @@
     });
 
     document.querySelectorAll('[data-jcp-optional]').forEach(injectOptionalControls);
+    updateTimelineStepNumbers();
   };
 
   const init = (editorApi) => {
     api = editorApi;
     window.JCP_REFRESH_COLLECTIONS = refreshCollections;
     window.JCP_TEARDOWN_COLLECTIONS = teardownCollections;
+    window.JCP_SYNC_COLLECTIONS_FROM_CONTENT = syncCollectionsFromContent;
 
     if (!document.body.dataset.jcpCollectionBound) {
       document.body.dataset.jcpCollectionBound = '1';

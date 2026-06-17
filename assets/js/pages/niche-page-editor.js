@@ -444,10 +444,16 @@
     suppressRecord = true;
     pageDocument = JSON.parse(JSON.stringify(snap.pageDocument));
     flatContent = JSON.parse(JSON.stringify(snap.flatContent));
-    applyFlatContentToDom();
     applyStructureToDom();
+    if (typeof window.JCP_SYNC_COLLECTIONS_FROM_CONTENT === 'function') {
+      window.JCP_SYNC_COLLECTIONS_FROM_CONTENT();
+    }
+    applyFlatContentToDom();
     applyMediaPositionToDom();
     renderBlockList();
+    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
+      window.JCP_REFRESH_PAGE_MEDIA_UI();
+    }
     if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
       window.JCP_REFRESH_COLLECTIONS();
     }
