@@ -114,14 +114,15 @@ function jcp_block_layout_classes( array $layout, string $type ): string {
 function jcp_block_layout_options( string $type ): array {
 	if ( $type === 'hero' ) {
 		return [
-			'hero_variant' => true,
+			'hero_variant'   => true,
+			'media_position' => true,
 		];
 	}
-	if ( $type === 'media_text' ) {
+	if ( in_array( $type, [ 'media_text', 'demo_preview', 'conversion' ], true ) ) {
 		return [
 			'media_position' => true,
-			'align'          => true,
-			'width'          => true,
+			'align'          => $type === 'media_text',
+			'width'          => $type === 'media_text',
 		];
 	}
 	return [

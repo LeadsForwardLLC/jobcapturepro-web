@@ -57,13 +57,19 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 		$variant = 'home';
 	}
 	$demo_url = home_url( '/demo/' );
-	$photo    = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$default_photo = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
 	$is_home  = $variant === 'home';
+	$media    = jcp_media_props_from_block( $h );
+	if ( empty( $h['media_type'] ) ) {
+		$media['media_type'] = 'phone_mockup';
+	}
+	$photo = $media['media_url'] !== '' ? $media['media_url'] : $default_photo;
+	$show_visual = $variant !== 'centered';
 	?>
 	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?>">
 		<div class="jcp-container">
-			<div class="jcp-hero-grid">
-				<div class="jcp-hero-copy hero-copy">
+			<div class="jcp-hero-grid jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $media['media_position'] ) ); ?>" data-jcp-split-path="hero" data-jcp-media-position-path="hero.media_position">
+				<div class="jcp-hero-copy hero-copy jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">
 					<?php if ( $is_home ) : ?>
 						<h1 class="jcp-hero-title">
 							<span<?php jcp_niche_editable_attr( 'hero.h1_prefix' ); ?>><?php echo esc_html( (string) ( $h['h1_prefix'] ?? $h['h1'] ?? '' ) ); ?></span>
@@ -100,36 +106,62 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						<?php jcp_component_home_meta_stats( (array) $h['meta_stats'] ); ?>
 					<?php endif; ?>
 				</div>
-				<?php if ( $is_home ) : ?>
-					<?php jcp_component_hero_home_visual( $primary['url'] !== '' ? $primary['url'] : $demo_url ); ?>
-				<?php else : ?>
-				<div class="jcp-hero-visual hero-visual" aria-hidden="<?php echo $variant === 'centered' ? 'true' : 'false'; ?>">
-					<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>" tabindex="<?php echo $variant === 'centered' ? '-1' : '0'; ?>">
-						<div class="phone-frame hero-phone-frame">
-							<div class="phone-screen">
-								<div class="phone-content">
-									<div class="phone-header hero-phone-header">
-										<div class="phone-status-bar"><span>9:41</span></div>
-										<div class="hero-phone-live-row"><span class="hero-phone-live-badge"><?php esc_html_e( 'Live', 'jcp-core' ); ?></span></div>
-									</div>
-									<div class="phone-body hero-phone-body">
-										<div class="hero-phone-image-wrap">
-											<img src="<?php echo esc_url( $photo ); ?>" alt="" class="hero-phone-image" width="390" height="292" loading="eager" />
-										</div>
-										<div class="demo-preview-item hero-phone-card hero-phone-card-1">
-											<div class="demo-item-content">
-												<div class="demo-item-title"><?php esc_html_e( 'Job captured', 'jcp-core' ); ?></div>
-												<div class="demo-item-subtitle"><?php esc_html_e( 'Photos from the field', 'jcp-core' ); ?></div>
+				<?php if ( $show_visual ) : ?>
+				<div class="jcp-split-col jcp-split-col--media jcp-hero-visual-column" data-jcp-split-col="media" aria-hidden="false">
+					<?php
+					$hero_demo = $primary['url'] !== '' ? $primary['url'] : $demo_url;
+					jcp_media_render_slot(
+						[
+							'path'          => 'hero',
+							'media_type'    => $media['media_type'],
+							'media_url'     => $media['media_url'],
+							'media_alt'     => $media['media_alt'],
+							'default_image' => $default_photo,
+							'img_attrs'     => [
+								'class'   => 'jcp-hero-slot-image',
+								'width'   => '640',
+								'height'  => '480',
+								'loading' => 'eager',
+							],
+							'phone_render'  => function () use ( $is_home, $hero_demo, $photo ) {
+								if ( $is_home ) {
+									jcp_component_hero_home_visual( $hero_demo, $photo, true );
+									return;
+								}
+								?>
+								<div class="jcp-hero-visual hero-visual">
+									<a href="<?php echo esc_url( $hero_demo ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>">
+										<div class="phone-frame hero-phone-frame">
+											<div class="phone-screen">
+												<div class="phone-content">
+													<div class="phone-header hero-phone-header">
+														<div class="phone-status-bar"><span>9:41</span></div>
+														<div class="hero-phone-live-row"><span class="hero-phone-live-badge"><?php esc_html_e( 'Live', 'jcp-core' ); ?></span></div>
+													</div>
+													<div class="phone-body hero-phone-body">
+														<div class="hero-phone-image-wrap">
+															<img src="<?php echo esc_url( $photo ); ?>" alt="" class="hero-phone-image jcp-editable-media-image" width="390" height="292" loading="eager" data-jcp-media-url-path="hero.media_url" data-jcp-media-alt-path="hero.media_alt" />
+														</div>
+														<div class="demo-preview-item hero-phone-card hero-phone-card-1">
+															<div class="demo-item-content">
+																<div class="demo-item-title"><?php esc_html_e( 'Job captured', 'jcp-core' ); ?></div>
+																<div class="demo-item-subtitle"><?php esc_html_e( 'Photos from the field', 'jcp-core' ); ?></div>
+															</div>
+														</div>
+													</div>
+													<div class="phone-click-hint hero-phone-cta">
+														<span><?php esc_html_e( 'Try the demo', 'jcp-core' ); ?></span>
+													</div>
+												</div>
 											</div>
 										</div>
-									</div>
-									<div class="phone-click-hint hero-phone-cta">
-										<span><?php esc_html_e( 'Try the demo', 'jcp-core' ); ?></span>
-									</div>
+									</a>
 								</div>
-							</div>
-						</div>
-					</a>
+								<?php
+							},
+						]
+					);
+					?>
 				</div>
 				<?php endif; ?>
 			</div>
@@ -153,9 +185,10 @@ function jcp_niche_render_media_text( array $props, string $path = 'media_text' 
 
 	$position   = (string) ( $props['media_position'] ?? 'right' );
 	$position   = in_array( $position, [ 'left', 'right' ], true ) ? $position : 'right';
-	$media_type = (string) ( $props['media_type'] ?? 'image' ) === 'video' ? 'video' : 'image';
-	$media_url  = trim( (string) ( $props['media_url'] ?? '' ) );
-	$media_alt  = trim( (string) ( $props['media_alt'] ?? '' ) );
+	$media      = jcp_media_props_from_block( $props );
+	$media_type = $media['media_type'];
+	$media_url  = $media['media_url'];
+	$media_alt  = $media['media_alt'];
 	$default_image = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
 	$cta        = is_array( $props['cta'] ?? null ) ? $props['cta'] : [];
 	$cta_label  = trim( (string) ( $cta['label'] ?? '' ) );
@@ -163,8 +196,8 @@ function jcp_niche_render_media_text( array $props, string $path = 'media_text' 
 	?>
 	<section class="jcp-section rankings-section jcp-media-text jcp-media-text--media-<?php echo esc_attr( $position ); ?>">
 		<div class="jcp-container">
-			<div class="jcp-media-text-grid">
-				<div class="jcp-media-text-copy">
+			<div class="jcp-media-text-grid jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $position ) ); ?>" data-jcp-split-path="<?php echo esc_attr( $path ); ?>" data-jcp-media-position-path="<?php echo esc_attr( $path . '.media_position' ); ?>">
+				<div class="jcp-media-text-copy jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">
 					<?php if ( $headline !== '' ) : ?>
 						<h2<?php jcp_niche_editable_attr( $path . '.headline' ); ?>><?php jcp_niche_e( $headline ); ?></h2>
 					<?php endif; ?>
@@ -180,27 +213,24 @@ function jcp_niche_render_media_text( array $props, string $path = 'media_text' 
 						</div>
 					<?php endif; ?>
 				</div>
-				<div class="jcp-media-text-media">
-					<?php if ( $media_type === 'video' && $media_url !== '' ) : ?>
-						<div class="jcp-media-text-video-wrap">
-							<?php if ( preg_match( '/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $media_url, $yt ) ) : ?>
-								<iframe src="https://www.youtube.com/embed/<?php echo esc_attr( $yt[1] ); ?>" title="<?php esc_attr_e( 'Video', 'jcp-core' ); ?>" allowfullscreen loading="lazy"></iframe>
-							<?php elseif ( preg_match( '/vimeo\.com\/(\d+)/', $media_url, $vm ) ) : ?>
-								<iframe src="https://player.vimeo.com/video/<?php echo esc_attr( $vm[1] ); ?>" title="<?php esc_attr_e( 'Video', 'jcp-core' ); ?>" allowfullscreen loading="lazy"></iframe>
-							<?php else : ?>
-								<video class="jcp-media-text-video" src="<?php echo esc_url( $media_url ); ?>" controls playsinline preload="metadata"></video>
-							<?php endif; ?>
-						</div>
-					<?php else : ?>
-						<img
-							class="jcp-media-text-image"
-							src="<?php echo esc_url( $media_url !== '' ? $media_url : $default_image ); ?>"
-							alt="<?php echo esc_attr( $media_alt ); ?>"
-							width="640"
-							height="480"
-							loading="lazy"
-						/>
-					<?php endif; ?>
+				<div class="jcp-media-text-media jcp-split-col jcp-split-col--media" data-jcp-split-col="media">
+					<?php
+					jcp_media_render_slot(
+						[
+							'path'          => $path,
+							'media_type'    => $media_type,
+							'media_url'     => $media_url,
+							'media_alt'     => $media_alt,
+							'default_image' => $default_image,
+							'img_attrs'     => [
+								'class'   => 'jcp-media-text-image',
+								'width'   => '640',
+								'height'  => '480',
+								'loading' => 'lazy',
+							],
+						]
+					);
+					?>
 				</div>
 			</div>
 		</div>
@@ -838,11 +868,15 @@ function jcp_niche_render_demo_preview( array $props, string $niche_key = '', st
 	}
 	$primary = jcp_niche_resolve_cta( $props['cta_primary'] ?? [ 'label' => 'Launch Interactive Demo', 'url' => '/demo' ], $niche_key );
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'demo-preview';
+	$media = jcp_media_props_from_block( $props );
+	if ( empty( $props['media_type'] ) ) {
+		$media['media_type'] = 'phone_mockup';
+	}
 	?>
 	<div class="demo-preview-section jcp-block-demo-preview" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="demo-preview-card">
-			<div class="demo-preview-content">
-				<div class="demo-preview-text">
+			<div class="demo-preview-content jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $media['media_position'] ) ); ?>" data-jcp-split-path="<?php echo esc_attr( $path ); ?>" data-jcp-media-position-path="<?php echo esc_attr( $path . '.media_position' ); ?>">
+				<div class="demo-preview-text jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">
 					<?php if ( ! empty( $props['badge'] ) ) : ?>
 						<div class="demo-badge">
 							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -871,8 +905,24 @@ function jcp_niche_render_demo_preview( array $props, string $niche_key = '', st
 						<?php endif; ?>
 					</div>
 				</div>
-				<div class="demo-preview-visual">
-					<?php jcp_component_demo_app_phone( $primary['url'] ); ?>
+				<div class="demo-preview-visual jcp-split-col jcp-split-col--media" data-jcp-split-col="media">
+					<?php
+					jcp_media_render_slot(
+						[
+							'path'         => $path,
+							'media_type'   => $media['media_type'],
+							'media_url'    => $media['media_url'],
+							'media_alt'    => $media['media_alt'],
+							'phone_render' => function () use ( $primary ) {
+								jcp_component_demo_app_phone( $primary['url'] );
+							},
+							'img_attrs'    => [
+								'class'   => 'demo-preview-slot-image',
+								'loading' => 'lazy',
+							],
+						]
+					);
+					?>
 				</div>
 			</div>
 		</div>
@@ -1009,13 +1059,14 @@ function jcp_niche_render_conversion( array $props, string $niche_key = '' ): vo
 	$primary    = jcp_niche_resolve_cta( $props['cta_primary'] ?? [], $niche_key );
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'conversion';
 	$points     = (array) ( $props['points'] ?? [] );
-	$image_url  = (string) ( $props['image_url'] ?? '' );
-	$image_alt  = (string) ( $props['image_alt'] ?? '' );
+	$media      = jcp_media_props_from_block( $props );
+	$image_url  = $media['media_url'];
+	$image_alt  = $media['media_alt'];
 	?>
 	<section class="jcp-section rankings-section conversion-section jcp-block-conversion" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="jcp-container">
-			<div class="conversion-wrapper">
-				<div class="conversion-content">
+			<div class="conversion-wrapper jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $media['media_position'] ) ); ?>" data-jcp-split-path="conversion" data-jcp-media-position-path="conversion.media_position">
+				<div class="conversion-content jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">
 					<div class="rankings-header">
 						<h2<?php jcp_niche_editable_attr( 'conversion.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h2>
 						<?php if ( ! empty( $props['subheadline'] ) ) : ?>
@@ -1029,11 +1080,27 @@ function jcp_niche_render_conversion( array $props, string $niche_key = '' ): vo
 						</div>
 					<?php endif; ?>
 				</div>
-				<?php if ( $image_url !== '' ) : ?>
-					<div class="conversion-visual">
+				<div class="conversion-visual jcp-split-col jcp-split-col--media" data-jcp-split-col="media">
 						<div class="conversion-image-wrapper">
-							<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" class="conversion-image" width="800" height="600" loading="lazy" />
-							<?php if ( ! empty( $props['image_badge'] ) || ! empty( $props['stats'] ) ) : ?>
+							<?php
+							jcp_media_render_slot(
+								[
+									'path'          => 'conversion',
+									'media_type'    => $media['media_type'],
+									'media_url'     => $image_url,
+									'media_alt'     => $image_alt,
+									'url_path'      => 'conversion.image_url',
+									'alt_path'      => 'conversion.image_alt',
+									'img_attrs'     => [
+										'class'   => 'conversion-image',
+										'width'   => '800',
+										'height'  => '600',
+										'loading' => 'lazy',
+									],
+								]
+							);
+							?>
+							<?php if ( $media['media_type'] === 'image' && ( ! empty( $props['image_badge'] ) || ! empty( $props['stats'] ) ) ) : ?>
 								<div class="conversion-image-overlay">
 									<?php if ( ! empty( $props['image_badge'] ) ) : ?>
 										<div class="conversion-badge">
@@ -1059,7 +1126,6 @@ function jcp_niche_render_conversion( array $props, string $niche_key = '' ): vo
 							<?php endif; ?>
 						</div>
 					</div>
-				<?php endif; ?>
 			</div>
 		</div>
 	</section>

@@ -266,11 +266,13 @@ function jcp_block_registry_public( string $page_kind = '' ): array {
 function jcp_page_default_block_props( string $type ): array {
 	$defaults = [
 		'hero' => [
-			'h1'          => __( 'Page headline', 'jcp-core' ),
-			'subheadline' => '',
-			'cta_primary' => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
-			'cta_secondary' => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
-			'trust_line'  => '',
+			'h1'              => __( 'Page headline', 'jcp-core' ),
+			'subheadline'     => '',
+			'cta_primary'     => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
+			'cta_secondary'   => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
+			'trust_line'      => '',
+			'media_type'      => 'phone_mockup',
+			'media_position'  => 'right',
 		],
 		'media_text' => [
 			'headline'        => __( 'Section headline', 'jcp-core' ),
@@ -336,18 +338,24 @@ function jcp_page_default_block_props( string $type ): array {
 			'items'       => [],
 		],
 		'demo_preview' => [
-			'badge'       => __( 'Live Demo', 'jcp-core' ),
-			'headline'    => __( 'See it in action', 'jcp-core' ),
-			'body'        => '',
-			'cta_primary' => [ 'label' => __( 'Launch Interactive Demo', 'jcp-core' ), 'url' => '/demo' ],
+			'badge'           => __( 'Live Demo', 'jcp-core' ),
+			'headline'        => __( 'See it in action', 'jcp-core' ),
+			'body'            => '',
+			'cta_primary'     => [ 'label' => __( 'Launch Interactive Demo', 'jcp-core' ), 'url' => '/demo' ],
+			'media_type'      => 'phone_mockup',
+			'media_position'  => 'right',
 		],
 		'directory_preview' => [
 			'headline' => __( 'Section headline', 'jcp-core' ),
 			'cards'    => [],
 		],
 		'conversion' => [
-			'headline' => __( 'Section headline', 'jcp-core' ),
-			'points'   => [],
+			'headline'       => __( 'Section headline', 'jcp-core' ),
+			'points'         => [],
+			'media_type'     => 'image',
+			'media_position' => 'right',
+			'image_url'      => '',
+			'image_alt'      => '',
 		],
 	];
 	return $defaults[ $type ] ?? [];

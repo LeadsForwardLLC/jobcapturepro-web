@@ -239,6 +239,8 @@ function jcp_core_enqueue_page_block_editor( int $post_id ): void {
 	}
 
 	jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js' );
+	wp_enqueue_media();
+	jcp_core_enqueue_script( 'jcp-page-media-editor', 'js/pages/page-media-editor.js', [ 'jcp-niche-page-editor', 'media-models', 'media-views' ] );
 	$page_doc  = jcp_page_get_content( $post_id );
 	$page_kind = jcp_page_resolve_kind( $page_doc, $post_id );
 	wp_localize_script(
@@ -255,6 +257,10 @@ function jcp_core_enqueue_page_block_editor( int $post_id ): void {
 				'content'  => jcp_page_get_content_flat( $post_id ),
 				'registry' => jcp_block_registry_public( $page_kind ),
 				'pageKind' => $page_kind,
+			],
+			'strings'   => [
+				'mediaTitle'  => __( 'Choose or upload media', 'jcp-core' ),
+				'mediaButton' => __( 'Use this media', 'jcp-core' ),
 			],
 		]
 	);

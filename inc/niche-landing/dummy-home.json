@@ -79,6 +79,7 @@
         "body": "Turn every completed job into proof that wins the next one.",
         "badge": "For Contractors",
         "image_url": "https://jobcapturepro.com/wp-content/uploads/2025/11/crew-768x768.jpg",
+        "image_alt": "Construction crew working on a job site",
         "stat_number": "100%",
         "stat_label": "Automated",
         "faq_target": "faq-visibility-proof"
@@ -88,6 +89,7 @@
         "body": "Automate visibility without chasing photos or posts.",
         "badge": "For Owners",
         "image_url": "https://jobcapturepro.com/wp-content/uploads/2025/11/confident-foreman-768x768.jpg",
+        "image_alt": "Confident foreman on a construction site",
         "stat_number": "0",
         "stat_label": "Extra Work",
         "faq_target": "faq-integrations-locations"
@@ -97,6 +99,7 @@
         "body": "Capture once and move on — no extra admin work.",
         "badge": "For Crews",
         "image_url": "https://jobcapturepro.com/wp-content/uploads/2025/11/owner-crew-768x768.jpg",
+        "image_alt": "Business owner with field crew",
         "stat_number": "1",
         "stat_label": "Photo Needed",
         "faq_target": "faq-training-how"
@@ -181,7 +184,9 @@
     ],
     "cta_primary": { "label": "See how this works for your business", "url": "/demo" },
     "image_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop&q=80",
-    "image_alt": "Contractors at work",
+    "image_alt": "Contractors at work on a construction site",
+    "media_type": "image",
+    "media_position": "right",
     "image_badge": "Real Work",
     "stats": [
       { "value": "100%", "label": "Automated" },

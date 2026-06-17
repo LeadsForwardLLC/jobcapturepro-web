@@ -264,11 +264,36 @@
 
   const layoutOptionsFor = (type) => {
     const found = registry.find((b) => b.type === type);
-    return found?.layout_options || (type === 'hero'
-      ? { hero_variant: true }
-      : type === 'media_text'
-        ? { media_position: true, align: true, width: true }
-        : { align: true, width: true });
+    if (found?.layout_options) return found.layout_options;
+    if (type === 'hero') {
+      return { hero_variant: true, media_position: true };
+    }
+    if (type === 'media_text') {
+      return { media_position: true, align: true, width: true };
+    }
+    if (type === 'demo_preview' || type === 'conversion') {
+      return { media_position: true };
+    }
+    return { align: true, width: true };
+  };
+
+  const legacyKeyFor = (type) => {
+    const found = registry.find((b) => b.type === type);
+    return found?.legacy_key || type;
+  };
+
+  const applyMediaPositionToDom = () => {
+    document.querySelectorAll('[data-jcp-media-position-path]').forEach((grid) => {
+      const path = grid.dataset.jcpMediaPositionPath;
+      const pos = getPath(flatContent, path) === 'left' ? 'left' : 'right';
+      grid.classList.remove('jcp-split-layout--media-left', 'jcp-split-layout--media-right');
+      grid.classList.add(`jcp-split-layout--media-${pos}`);
+      const section = grid.closest('.jcp-media-text');
+      if (section) {
+        section.classList.remove('jcp-media-text--media-left', 'jcp-media-text--media-right');
+        section.classList.add(`jcp-media-text--media-${pos}`);
+      }
+    });
   };
 
   const applyLayoutToDom = () => {
@@ -305,7 +330,9 @@
     if (key === 'media_position') {
       block.props = block.props || {};
       block.props.media_position = value;
-      applyLayoutToDom();
+      const lk = legacyKeyFor(block.type);
+      if (lk) setPath(flatContent, `${lk}.media_position`, value);
+      applyMediaPositionToDom();
       renderBlockList();
       recordChange();
       return;
@@ -419,6 +446,7 @@
     flatContent = JSON.parse(JSON.stringify(snap.flatContent));
     applyFlatContentToDom();
     applyStructureToDom();
+    applyMediaPositionToDom();
     renderBlockList();
     suppressRecord = false;
     updateDirtyState();
@@ -763,11 +791,14 @@
     document.body.classList.add('jcp-inline-editing');
     toggleBtn.textContent = 'Editing — click text to change';
     toggleBtn.classList.add('is-active');
-    if (!dirty) statusEl.textContent = 'Click highlighted text or buttons to edit';
+    if (!dirty) statusEl.textContent = 'Click highlighted text, images, or ⇄ to swap columns';
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
       el.setAttribute('contenteditable', 'true');
       el.setAttribute('spellcheck', 'true');
     });
+    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
+      window.JCP_REFRESH_PAGE_MEDIA_UI();
+    }
   };
 
   const disableEditing = () => {
@@ -924,6 +955,21 @@
   });
   indexBlockSections();
   applyLayoutToDom();
+  applyMediaPositionToDom();
+
+  if (typeof window.JCP_INIT_PAGE_MEDIA_EDITOR === 'function') {
+    window.JCP_INIT_PAGE_MEDIA_EDITOR({
+      getPath,
+      setPath,
+      recordChange,
+      registry,
+      applyMediaPositionToDom,
+      editing: () => editing,
+      strings: cfg.strings || {},
+      get flatContent() { return flatContent; },
+      get pageDocument() { return pageDocument; },
+    });
+  }
 
   if (new URLSearchParams(window.location.search).get('jcp_edit') === '1') {
     enableEditing();
@@ -935,6 +981,10 @@
   load().finally(() => {
     loaded = true;
     indexBlockSections();
+    applyMediaPositionToDom();
+    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
+      window.JCP_REFRESH_PAGE_MEDIA_UI();
+    }
     if (structureOpen) renderBlockList();
   });
 })();

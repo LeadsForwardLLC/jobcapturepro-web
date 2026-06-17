@@ -61,11 +61,16 @@ function jcp_component_home_meta_stats( array $items, string $path = 'hero.meta_
  *
  * @param string $demo_url Demo link.
  */
-function jcp_component_hero_home_visual( string $demo_url = '' ): void {
-	$demo_url = $demo_url !== '' ? $demo_url : home_url( '/demo/' );
-	$photo    = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
-	?>
+function jcp_component_hero_home_visual( string $demo_url = '', string $photo_url = '', bool $wrap_visual = true ): void {
+	$demo_url  = $demo_url !== '' ? $demo_url : home_url( '/demo/' );
+	$photo     = $photo_url !== '' ? $photo_url : 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$photo_alt = '';
+	if ( $wrap_visual ) {
+		?>
 	<div class="jcp-hero-visual hero-visual">
+		<?php
+	}
+	?>
 		<div class="hero-visual-stack">
 			<div class="hero-visual-lines" aria-hidden="true">
 				<span class="hero-line hero-line-1"></span>
@@ -93,7 +98,16 @@ function jcp_component_hero_home_visual( string $demo_url = '' ): void {
 							</div>
 							<div class="phone-body hero-phone-body">
 								<div class="hero-phone-image-wrap">
-									<img src="<?php echo esc_url( $photo ); ?>" alt="<?php esc_attr_e( 'Job photo', 'jcp-core' ); ?>" class="hero-phone-image" width="390" height="292" fetchpriority="high" />
+									<img
+										src="<?php echo esc_url( $photo ); ?>"
+										alt="<?php echo esc_attr( $photo_alt ); ?>"
+										class="hero-phone-image jcp-editable-media-image"
+										width="390"
+										height="292"
+										fetchpriority="high"
+										data-jcp-media-url-path="hero.media_url"
+										data-jcp-media-alt-path="hero.media_alt"
+									/>
 								</div>
 								<div class="demo-preview-item hero-phone-card hero-phone-card-1">
 									<div class="demo-item-icon">
@@ -143,8 +157,12 @@ function jcp_component_hero_home_visual( string $demo_url = '' ): void {
 				</div>
 			</a>
 		</div>
-	</div>
 	<?php
+	if ( $wrap_visual ) {
+		?>
+	</div>
+		<?php
+	}
 }
 
 /**
@@ -280,6 +298,7 @@ function jcp_component_audience_guarantee_card( array $aud, int $index = 0 ): vo
 	$body       = (string) ( $aud['body'] ?? '' );
 	$badge      = (string) ( $aud['badge'] ?? '' );
 	$image_url  = (string) ( $aud['image_url'] ?? '' );
+	$image_alt  = (string) ( $aud['image_alt'] ?? '' );
 	$stat_num   = (string) ( $aud['stat_number'] ?? '' );
 	$stat_label = (string) ( $aud['stat_label'] ?? '' );
 	$faq_target = (string) ( $aud['faq_target'] ?? '' );
@@ -287,9 +306,19 @@ function jcp_component_audience_guarantee_card( array $aud, int $index = 0 ): vo
 	$href       = $faq_target !== '' ? '#' . ltrim( $faq_target, '#' ) : '#faq';
 	?>
 	<a href="<?php echo esc_url( $href ); ?>" class="guarantee-item"<?php echo $faq_target !== '' ? ' data-faq-target="' . esc_attr( $faq_target ) . '"' : ''; ?>>
-		<div class="guarantee-image-wrapper">
+		<div class="guarantee-image-wrapper jcp-editable-media-wrap">
 			<?php if ( $image_url !== '' ) : ?>
-				<div class="guarantee-image" style="background-image: url('<?php echo esc_url( $image_url ); ?>');"></div>
+				<img
+					src="<?php echo esc_url( $image_url ); ?>"
+					alt="<?php echo esc_attr( $image_alt ); ?>"
+					class="guarantee-image jcp-editable-media-image"
+					loading="lazy"
+					data-jcp-media-url-path="<?php echo esc_attr( $path . '.image_url' ); ?>"
+					data-jcp-media-alt-path="<?php echo esc_attr( $path . '.image_alt' ); ?>"
+					data-jcp-media-types="image"
+				/>
+			<?php else : ?>
+				<div class="guarantee-image guarantee-image--empty" data-jcp-media-url-path="<?php echo esc_attr( $path . '.image_url' ); ?>" data-jcp-media-alt-path="<?php echo esc_attr( $path . '.image_alt' ); ?>" data-jcp-media-types="image"></div>
 			<?php endif; ?>
 			<?php if ( $badge !== '' ) : ?>
 				<div class="guarantee-badge"<?php jcp_niche_editable_attr( $path . '.badge' ); ?>><?php echo esc_html( $badge ); ?></div>
