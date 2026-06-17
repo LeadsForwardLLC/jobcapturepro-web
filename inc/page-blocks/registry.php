@@ -266,15 +266,18 @@ function jcp_block_registry_public( string $page_kind = '' ): array {
 function jcp_page_default_block_props( string $type ): array {
 	$defaults = [
 		'hero' => [
-			'h1'              => __( 'Page headline', 'jcp-core' ),
-			'subheadline'     => '',
-			'cta_primary'     => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
-			'cta_secondary'   => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
-			'trust_line'      => '',
-			'media_type'      => 'phone_mockup',
-			'media_position'  => 'right',
-			'phone_image_url' => '',
-			'phone_image_alt' => '',
+			'h1'                  => __( 'Page headline', 'jcp-core' ),
+			'subheadline'         => '',
+			'cta_primary'         => [ 'label' => __( 'Start free trial', 'jcp-core' ), 'url' => '' ],
+			'cta_secondary'       => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
+			'trust_line'          => '',
+			'media_type'          => 'phone_mockup',
+			'media_position'      => 'right',
+			'media_url'           => '',
+			'media_alt'           => '',
+			'media_attachment_id' => 0,
+			'phone_image_url'     => '',
+			'phone_image_alt'     => '',
 		],
 		'media_text' => [
 			'headline'        => __( 'Section headline', 'jcp-core' ),
@@ -352,12 +355,14 @@ function jcp_page_default_block_props( string $type ): array {
 			'cards'    => [],
 		],
 		'conversion' => [
-			'headline'       => __( 'Section headline', 'jcp-core' ),
-			'points'         => [],
-			'media_type'     => 'image',
-			'media_position' => 'right',
-			'image_url'      => '',
-			'image_alt'      => '',
+			'headline'            => __( 'Section headline', 'jcp-core' ),
+			'points'              => [],
+			'media_type'          => 'image',
+			'media_position'      => 'right',
+			'image_url'           => '',
+			'image_alt'           => '',
+			'image_attachment_id' => 0,
+			'media_url'           => '',
 		],
 	];
 	return $defaults[ $type ] ?? [];

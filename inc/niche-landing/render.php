@@ -113,12 +113,14 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 					$hero_demo = $primary['url'] !== '' ? $primary['url'] : $demo_url;
 					jcp_media_render_slot(
 						[
-							'path'          => 'hero',
-							'media_type'    => $media['media_type'],
-							'media_url'     => $media['media_url'],
-							'media_alt'     => $media['media_alt'],
-							'default_image' => $default_photo,
-							'img_attrs'     => [
+							'path'               => 'hero',
+							'media_type'         => $media['media_type'],
+							'image_url'          => $media['image_url'],
+							'video_url'          => $media['video_url'],
+							'media_alt'          => $media['media_alt'],
+							'default_image'      => $default_photo,
+							'phone_mockup_style' => 'live_demo',
+							'img_attrs'          => [
 								'class'   => 'jcp-hero-slot-image',
 								'width'   => '640',
 								'height'  => '480',
@@ -220,7 +222,8 @@ function jcp_niche_render_media_text( array $props, string $path = 'media_text' 
 						[
 							'path'          => $path,
 							'media_type'    => $media_type,
-							'media_url'     => $media_url,
+							'image_url'     => $media['image_url'],
+							'video_url'     => $media['video_url'],
 							'media_alt'     => $media_alt,
 							'default_image' => $default_image,
 							'img_attrs'     => [
@@ -910,11 +913,13 @@ function jcp_niche_render_demo_preview( array $props, string $niche_key = '', st
 					<?php
 					jcp_media_render_slot(
 						[
-							'path'         => $path,
-							'media_type'   => $media['media_type'],
-							'media_url'    => $media['media_url'],
-							'media_alt'    => $media['media_alt'],
-							'phone_render' => function () use ( $primary ) {
+							'path'               => $path,
+							'media_type'         => $media['media_type'],
+							'image_url'          => $media['image_url'],
+							'video_url'          => $media['video_url'],
+							'media_alt'          => $media['media_alt'],
+							'phone_mockup_style' => 'app_shell',
+							'phone_render'       => function () use ( $primary ) {
 								jcp_component_demo_app_phone( $primary['url'] );
 							},
 							'img_attrs'    => [
@@ -1061,7 +1066,8 @@ function jcp_niche_render_conversion( array $props, string $niche_key = '' ): vo
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'conversion';
 	$points     = (array) ( $props['points'] ?? [] );
 	$media      = jcp_media_props_from_block( $props );
-	$image_url  = $media['media_url'];
+	$image_url  = $media['image_url'];
+	$video_url  = $media['video_url'];
 	$image_alt  = $media['media_alt'];
 	?>
 	<section class="jcp-section rankings-section conversion-section jcp-block-conversion" id="<?php echo esc_attr( $section_id ); ?>">
@@ -1088,7 +1094,8 @@ function jcp_niche_render_conversion( array $props, string $niche_key = '' ): vo
 								[
 									'path'          => 'conversion',
 									'media_type'    => $media['media_type'],
-									'media_url'     => $image_url,
+									'image_url'     => $image_url,
+									'video_url'     => $video_url,
 									'media_alt'     => $image_alt,
 									'url_path'      => 'conversion.image_url',
 									'alt_path'      => 'conversion.image_alt',
