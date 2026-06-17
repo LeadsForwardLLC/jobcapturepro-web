@@ -47,6 +47,7 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-components', 'css/components.css', [ 'jcp-core-buttons' ] );
         jcp_core_enqueue_style( 'jcp-core-utilities', 'css/utilities.css', [ 'jcp-core-components' ] );
         jcp_core_enqueue_style( 'jcp-core-sections', 'css/sections.css', [ 'jcp-core-components' ] );
+        jcp_core_enqueue_style( 'jcp-core-hero-live-demo', 'css/components/hero-live-demo.css', [ 'jcp-core-sections' ] );
         jcp_core_enqueue_style( 'jcp-core-home', 'css/pages/home.css', [ 'jcp-core-sections' ] );
         jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
         jcp_core_enqueue_style( 'jcp-core-pricing', 'css/pages/pricing.css', [ 'jcp-core-sections' ] );
@@ -64,6 +65,7 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-utilities', 'css/utilities.css', [ 'jcp-core-components' ] );
         // Shared section styles (FAQ, Final CTA, etc.) for all marketing pages
         jcp_core_enqueue_style( 'jcp-core-sections', 'css/sections.css', [ 'jcp-core-components' ] );
+        jcp_core_enqueue_style( 'jcp-core-hero-live-demo', 'css/components/hero-live-demo.css', [ 'jcp-core-sections' ] );
     } else {
         // Other pages: include layout so .jcp-container works (page.php, blog, single)
         jcp_core_enqueue_style( 'jcp-core-layout', 'css/layout.css', [ 'jcp-core-base' ] );
@@ -101,8 +103,7 @@ function jcp_core_enqueue_assets(): void {
     }
 
     if ( ! empty( $pages['is_niche_landing'] ) && empty( $pages['is_home'] ) ) {
-        jcp_core_enqueue_style( 'jcp-core-home', 'css/pages/home.css', [ 'jcp-core-sections' ] );
-        jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections', 'jcp-core-home' ] );
+        jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections', 'jcp-core-hero-live-demo' ] );
         if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
             jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
             jcp_core_enqueue_script( 'jcp-industries-archive', 'js/pages/industries-archive.js' );
