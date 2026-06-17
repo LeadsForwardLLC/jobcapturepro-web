@@ -10,7 +10,7 @@
 
   const PHONE_MOCKUP_LABELS = {
     live_demo: 'Live demo phone',
-    app_shell: 'App demo phone',
+    app_shell: 'App prototype (static)',
     default: 'Phone mockup',
   };
 

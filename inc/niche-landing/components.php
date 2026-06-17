@@ -172,7 +172,7 @@ function jcp_component_hero_home_visual( string $demo_url = '', string $photo_ur
 function jcp_component_demo_app_phone( string $demo_url = '' ): void {
 	$demo_url = $demo_url !== '' ? $demo_url : home_url( '/demo/' );
 	?>
-	<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup">
+	<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup demo-app-phone-mockup" aria-label="<?php esc_attr_e( 'Open the interactive prototype', 'jcp-core' ); ?>">
 		<div class="phone-frame">
 			<div class="phone-screen demo-phone-screen">
 				<div class="phone-content demo-phone-content">
