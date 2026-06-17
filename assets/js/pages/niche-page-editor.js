@@ -791,7 +791,7 @@
     document.body.classList.add('jcp-inline-editing');
     toggleBtn.textContent = 'Editing — click text to change';
     toggleBtn.classList.add('is-active');
-    if (!dirty) statusEl.textContent = 'Click highlighted text, images, or ⇄ to swap columns';
+    if (!dirty) statusEl.textContent = 'Click text or images to edit. Drag ⋮⋮ on a column to swap sides.';
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
       el.setAttribute('contenteditable', 'true');
       el.setAttribute('spellcheck', 'true');
@@ -958,7 +958,7 @@
   applyMediaPositionToDom();
 
   if (typeof window.JCP_INIT_PAGE_MEDIA_EDITOR === 'function') {
-    window.JCP_INIT_PAGE_MEDIA_EDITOR({
+    const editorApi = {
       getPath,
       setPath,
       recordChange,
@@ -968,7 +968,9 @@
       strings: cfg.strings || {},
       get flatContent() { return flatContent; },
       get pageDocument() { return pageDocument; },
-    });
+    };
+    window.__JCP_EDITOR_API__ = editorApi;
+    window.JCP_INIT_PAGE_MEDIA_EDITOR(editorApi);
   }
 
   if (new URLSearchParams(window.location.search).get('jcp_edit') === '1') {

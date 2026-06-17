@@ -1,5 +1,5 @@
 /**
- * Front-end media picker, per-instance alt text, type toggle, and column swap.
+ * Front-end media picker, per-instance alt text, type toggle, column drag-swap, and optional media links.
  */
 (() => {
   const MEDIA_TYPES = [
@@ -12,6 +12,7 @@
   let popover = null;
   let activeTarget = null;
   let mediaFrame = null;
+  let dragSourceCol = null;
 
   const legacyKey = (type) => {
     const found = api.registry.find((b) => b.type === type);
@@ -31,16 +32,34 @@
 
   const getMediaPaths = (el) => {
     const slot = el.closest('.jcp-media-slot');
+    const basePath = slot?.dataset.jcpMediaPath || '';
     const urlPath = el.dataset.jcpMediaUrlPath
       || slot?.dataset.jcpMediaUrlPath
-      || (slot?.dataset.jcpMediaPath ? `${slot.dataset.jcpMediaPath}.media_url` : null);
+      || (basePath ? `${basePath}.media_url` : null);
     const altPath = el.dataset.jcpMediaAltPath
       || slot?.dataset.jcpMediaAltPath
-      || (slot?.dataset.jcpMediaPath ? `${slot.dataset.jcpMediaPath}.media_alt` : null);
-    const typePath = slot?.dataset.jcpMediaPath
-      ? `${slot.dataset.jcpMediaPath}.media_type`
+      || (basePath ? `${basePath}.media_alt` : null);
+    const typePath = basePath
+      ? `${basePath}.media_type`
       : (el.dataset.jcpMediaUrlPath ? el.dataset.jcpMediaUrlPath.replace(/\.(media_url|image_url)$/, '.media_type') : null);
-    return { slot, urlPath, altPath, typePath, basePath: slot?.dataset.jcpMediaPath || '' };
+    const linkPath = basePath ? `${basePath}.media_link_url` : null;
+    return { slot, urlPath, altPath, typePath, linkPath, basePath };
+  };
+
+  const resolveMediaClickTarget = (el) => {
+    if (!el) return null;
+    if (el.matches('.jcp-editable-media-image')) return el;
+    if (el.matches('.jcp-media-slot')) {
+      return el.querySelector('.jcp-editable-media-image')
+        || el.querySelector('.jcp-media-variant:not([hidden])')
+        || el;
+    }
+    const img = el.querySelector?.('.jcp-editable-media-image');
+    if (img) return img;
+    if (el.matches('.guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media, .jcp-editable-media-wrap')) {
+      return el.querySelector('.jcp-editable-media-image, .jcp-media-slot') || el;
+    }
+    return el.closest('.jcp-editable-media-image, .jcp-media-slot') || null;
   };
 
   const allowedTypes = (el) => {
@@ -88,7 +107,8 @@
       }
     });
     if (urlPath && url) {
-      const slot = document.querySelector(`.jcp-media-slot[data-jcp-media-path="${urlPath.split('.').slice(0, -1).join('.')}"]`);
+      const base = urlPath.replace(/\.(media_url|image_url)$/, '');
+      const slot = document.querySelector(`.jcp-media-slot[data-jcp-media-path="${base}"]`);
       const videoWrap = slot?.querySelector('.jcp-media-variant--video');
       if (videoWrap) {
         const iframe = videoWrap.querySelector('iframe');
@@ -127,6 +147,10 @@
         <span>Video URL</span>
         <input type="url" id="jcpMediaVideoUrlInput" placeholder="YouTube, Vimeo, or MP4 URL">
       </label>
+      <label class="jcp-media-popover__field jcp-media-popover__field--link">
+        <span>Link URL <small>(optional)</small></span>
+        <input type="url" id="jcpMediaLinkInput" placeholder="Leave empty for no link">
+      </label>
       <div class="jcp-media-popover__actions">
         <button type="button" class="btn btn-secondary" id="jcpMediaReplaceBtn">Choose from library</button>
         <button type="button" class="btn btn-primary" id="jcpMediaApplyBtn">Apply</button>
@@ -141,7 +165,8 @@
 
     document.addEventListener('click', (e) => {
       if (!popover || popover.hidden) return;
-      if (popover.contains(e.target) || e.target.closest('.jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .jcp-editable-media-wrap')) return;
+      if (popover.contains(e.target)) return;
+      if (e.target.closest('.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .jcp-editable-media-wrap, .conversion-image-wrapper, .jcp-split-col--media')) return;
       closePopover();
     });
 
@@ -152,8 +177,9 @@
     const type = popover.querySelector('#jcpMediaTypeSelect').value;
     const videoField = popover.querySelector('.jcp-media-popover__field--video');
     const replaceBtn = popover.querySelector('#jcpMediaReplaceBtn');
-    videoField.hidden = type !== 'video';
-    if (type === 'video') videoField.removeAttribute('hidden');
+    const showVideo = type === 'video';
+    videoField.hidden = !showVideo;
+    if (showVideo) videoField.removeAttribute('hidden');
     else videoField.setAttribute('hidden', '');
     replaceBtn.hidden = type === 'phone_mockup';
     if (type === 'phone_mockup') replaceBtn.setAttribute('hidden', '');
@@ -162,31 +188,35 @@
 
   const openPopover = (el) => {
     if (!api?.editing()) return;
-    activeTarget = el;
-    const paths = getMediaPaths(el);
+    const target = resolveMediaClickTarget(el);
+    if (!target) return;
+    activeTarget = target;
+    const paths = getMediaPaths(target);
     if (!paths.urlPath && !paths.altPath) return;
 
     ensurePopover();
-    const types = allowedTypes(el);
+    const types = allowedTypes(target);
     const select = popover.querySelector('#jcpMediaTypeSelect');
     select.innerHTML = types.map((t) => `<option value="${t.value}">${t.label}</option>`).join('');
 
     const type = currentMediaType(paths);
-    if (types.some((t) => t.value === type)) select.value = type;
-    else select.value = types[0]?.value || 'image';
+    select.value = types.some((t) => t.value === type) ? type : (types[0]?.value || 'image');
 
-    const altVal = paths.altPath ? (api.getPath(api.flatContent, paths.altPath) || '') : '';
-    popover.querySelector('#jcpMediaAltInput').value = altVal;
+    popover.querySelector('#jcpMediaAltInput').value = paths.altPath ? (api.getPath(api.flatContent, paths.altPath) || '') : '';
+    popover.querySelector('#jcpMediaVideoUrlInput').value = paths.urlPath ? (api.getPath(api.flatContent, paths.urlPath) || '') : '';
+    popover.querySelector('#jcpMediaLinkInput').value = paths.linkPath ? (api.getPath(api.flatContent, paths.linkPath) || '') : '';
 
-    const urlVal = paths.urlPath ? (api.getPath(api.flatContent, paths.urlPath) || '') : '';
-    popover.querySelector('#jcpMediaVideoUrlInput').value = urlVal;
+    const linkField = popover.querySelector('.jcp-media-popover__field--link');
+    linkField.hidden = !paths.linkPath;
+    if (!paths.linkPath) linkField.setAttribute('hidden', '');
+    else linkField.removeAttribute('hidden');
 
     onTypeSelectChange();
 
-    const rect = el.getBoundingClientRect();
+    const rect = (target.getBoundingClientRect ? target : el).getBoundingClientRect();
     popover.hidden = false;
     popover.removeAttribute('hidden');
-    popover.style.top = `${Math.min(window.innerHeight - 280, rect.bottom + 8)}px`;
+    popover.style.top = `${Math.min(window.innerHeight - 320, rect.bottom + 8)}px`;
     popover.style.left = `${Math.max(8, Math.min(window.innerWidth - 340, rect.left))}px`;
   };
 
@@ -211,8 +241,9 @@
 
     if (paths.altPath) syncFlatProp(paths.altPath, alt);
     if (paths.typePath) syncFlatProp(paths.typePath, type);
+    if (paths.linkPath) syncFlatProp(paths.linkPath, popover.querySelector('#jcpMediaLinkInput').value.trim());
 
-  if (paths.urlPath && type === 'image' && url) {
+    if (paths.urlPath && type === 'image' && url) {
       syncFlatProp(paths.urlPath, url);
     }
 
@@ -275,80 +306,131 @@
     api.recordChange();
   };
 
-  const bindMediaTargets = () => {
-    document.querySelectorAll('.jcp-editable-media-image, .guarantee-image--empty, .jcp-media-slot').forEach((el) => {
-      if (el.dataset.jcpMediaBound) return;
-      el.dataset.jcpMediaBound = '1';
-      el.addEventListener('click', (e) => {
-        if (!api?.editing()) return;
-        e.preventDefault();
-        e.stopPropagation();
-        openPopover(el.classList.contains('jcp-media-slot') ? el.querySelector('.jcp-editable-media-image, .jcp-media-variant:not([hidden])') || el : el);
-      });
+  const finishColumnDrag = (grid, e) => {
+    if (!dragSourceCol) return;
+    const dropCol = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-jcp-split-col]');
+    if (dropCol && dropCol !== dragSourceCol && grid.contains(dropCol)) {
+      swapColumns(grid);
+    }
+    dragSourceCol = null;
+    grid.classList.remove('jcp-split-layout--dragging');
+    grid.querySelectorAll('.jcp-split-col--dragging, .jcp-split-col--drop-target').forEach((node) => {
+      node.classList.remove('jcp-split-col--dragging', 'jcp-split-col--drop-target');
     });
   };
 
   const bindColumnSwap = () => {
     document.querySelectorAll('[data-jcp-split-path]').forEach((grid) => {
-      if (grid.dataset.jcpSplitBound) return;
-      grid.dataset.jcpSplitBound = '1';
-
       grid.querySelectorAll('[data-jcp-split-col]').forEach((col) => {
-        if (col.querySelector('.jcp-col-swap-handle')) return;
-        const handle = document.createElement('button');
-        handle.type = 'button';
-        handle.className = 'jcp-col-swap-handle';
-        handle.title = 'Drag onto the other column to swap sides';
-        handle.setAttribute('aria-label', 'Swap columns');
-        handle.textContent = '⇄';
-        col.appendChild(handle);
+        if (col.querySelector('.jcp-col-drag-handle')) return;
 
-        handle.addEventListener('click', (e) => {
+        const handle = document.createElement('div');
+        handle.className = 'jcp-col-drag-handle';
+        handle.setAttribute('role', 'button');
+        handle.setAttribute('tabindex', '0');
+        handle.setAttribute('aria-label', 'Drag to swap columns');
+        handle.title = 'Drag to swap columns';
+        col.prepend(handle);
+
+        handle.addEventListener('pointerdown', (e) => {
+          if (!api?.editing()) return;
           e.preventDefault();
           e.stopPropagation();
-          if (!api?.editing()) return;
-          swapColumns(grid);
+          dragSourceCol = col;
+          handle.setPointerCapture(e.pointerId);
+          grid.classList.add('jcp-split-layout--dragging');
+          col.classList.add('jcp-split-col--dragging');
         });
 
-        col.addEventListener('dragover', (e) => {
-          if (!api?.editing()) return;
-          e.preventDefault();
-          col.classList.add('jcp-split-col--drop-target');
+        handle.addEventListener('pointermove', (e) => {
+          if (!dragSourceCol || dragSourceCol !== col) return;
+          grid.querySelectorAll('.jcp-split-col--drop-target').forEach((node) => {
+            node.classList.remove('jcp-split-col--drop-target');
+          });
+          const over = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-jcp-split-col]');
+          if (over && over !== dragSourceCol && grid.contains(over)) {
+            over.classList.add('jcp-split-col--drop-target');
+          }
         });
-        col.addEventListener('dragleave', () => col.classList.remove('jcp-split-col--drop-target'));
-        col.addEventListener('drop', (e) => {
+
+        handle.addEventListener('pointerup', (e) => {
+          if (dragSourceCol !== col) return;
+          finishColumnDrag(grid, e);
+          try { handle.releasePointerCapture(e.pointerId); } catch (_) { /* noop */ }
+        });
+
+        handle.addEventListener('pointercancel', (e) => {
+          if (dragSourceCol !== col) return;
+          finishColumnDrag(grid, e);
+        });
+
+        handle.addEventListener('keydown', (e) => {
           if (!api?.editing()) return;
-          e.preventDefault();
-          col.classList.remove('jcp-split-col--drop-target');
-          swapColumns(grid);
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            swapColumns(grid);
+          }
         });
       });
-
-      const mediaCol = grid.querySelector('[data-jcp-split-col="media"]');
-      if (mediaCol) {
-        mediaCol.setAttribute('draggable', 'true');
-        mediaCol.addEventListener('dragstart', (e) => {
-          if (!api?.editing()) {
-            e.preventDefault();
-            return;
-          }
-          e.dataTransfer.effectAllowed = 'move';
-          grid.classList.add('jcp-split-layout--dragging');
-        });
-        mediaCol.addEventListener('dragend', () => grid.classList.remove('jcp-split-layout--dragging'));
-      }
     });
   };
 
-  window.JCP_INIT_PAGE_MEDIA_EDITOR = (editorApi) => {
+  const markMediaHitAreas = () => {
+    document.querySelectorAll(
+      '.jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media .jcp-media-slot'
+    ).forEach((el) => {
+      el.classList.add('jcp-media-hit');
+    });
+    document.querySelectorAll('.guarantee-image-wrapper').forEach((el) => {
+      el.classList.add('jcp-media-hit');
+    });
+  };
+
+  const onDocumentClickCapture = (e) => {
+    if (!api?.editing()) return;
+    if (e.target.closest('.jcp-col-drag-handle, .jcp-media-popover, .jcp-niche-link-popover')) return;
+
+    const mediaHit = e.target.closest(
+      '.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .jcp-split-col--media'
+    );
+
+    if (mediaHit) {
+      e.preventDefault();
+      e.stopPropagation();
+      openPopover(mediaHit);
+      return;
+    }
+
+    const link = e.target.closest('a');
+    if (link && link.querySelector('.jcp-editable-media-image, .jcp-media-slot')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  let captureBound = false;
+  const bindCaptureListeners = () => {
+    if (captureBound) return;
+    captureBound = true;
+    document.addEventListener('click', onDocumentClickCapture, true);
+  };
+
+  const init = (editorApi) => {
     api = editorApi;
-    bindMediaTargets();
+    bindCaptureListeners();
+    markMediaHitAreas();
     bindColumnSwap();
   };
 
+  window.JCP_INIT_PAGE_MEDIA_EDITOR = init;
+
   window.JCP_REFRESH_PAGE_MEDIA_UI = () => {
-    bindMediaTargets();
+    markMediaHitAreas();
     bindColumnSwap();
     if (api?.applyMediaPositionToDom) api.applyMediaPositionToDom();
   };
+
+  if (window.__JCP_EDITOR_API__) {
+    init(window.__JCP_EDITOR_API__);
+  }
 })();

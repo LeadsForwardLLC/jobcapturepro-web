@@ -1077,38 +1077,62 @@ body.jcp-inline-editing .jcp-editable-media-wrap {
 
 body.jcp-inline-editing .jcp-editable-media-image:hover,
 body.jcp-inline-editing .jcp-media-slot:hover,
-body.jcp-inline-editing .guarantee-image--empty:hover {
+body.jcp-inline-editing .guarantee-image--empty:hover,
+body.jcp-inline-editing .jcp-media-hit:hover,
+body.jcp-inline-editing .conversion-image-wrapper:hover {
   outline: 2px dashed var(--jcp-color-primary, #e85d04);
   outline-offset: 3px;
 }
 
-.jcp-col-swap-handle {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 3;
-  width: 32px;
-  height: 32px;
+body.jcp-inline-editing .guarantee-item {
+  cursor: default;
+}
+
+body.jcp-inline-editing .guarantee-image-wrapper {
+  cursor: pointer;
+}
+
+.jcp-col-drag-handle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 28px;
+  min-height: 48px;
+  margin-bottom: var(--jcp-space-sm);
   border: 1px solid var(--jcp-color-border);
   border-radius: var(--jcp-radius-md);
   background: #fff;
-  color: var(--jcp-color-text-primary);
-  font-size: 16px;
+  color: var(--jcp-color-text-secondary);
+  font-size: 14px;
+  letter-spacing: -3px;
   line-height: 1;
   cursor: grab;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  user-select: none;
+  touch-action: none;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
-body.jcp-inline-editing .jcp-split-col:hover .jcp-col-swap-handle,
-.jcp-split-layout--dragging .jcp-col-swap-handle {
-  opacity: 1;
+.jcp-col-drag-handle::before {
+  content: '⋮⋮⋮';
 }
 
-.jcp-split-col--drop-target {
-  outline: 2px dashed var(--jcp-color-primary, #e85d04);
-  outline-offset: 4px;
+body.jcp-inline-editing .jcp-split-col .jcp-col-drag-handle {
+  display: inline-flex;
+}
+
+.jcp-col-drag-handle:active {
+  cursor: grabbing;
+}
+
+.jcp-split-col--dragging {
+  opacity: 0.72;
+}
+
+.jcp-split-layout--dragging .jcp-split-col--drop-target {
+  outline: 2px solid var(--jcp-color-primary, #e85d04);
+  outline-offset: 6px;
+  border-radius: var(--jcp-radius-md);
 }
 
 .jcp-media-popover {

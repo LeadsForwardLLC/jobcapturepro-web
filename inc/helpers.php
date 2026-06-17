@@ -238,9 +238,9 @@ function jcp_core_enqueue_page_block_editor( int $post_id ): void {
 		jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections' ] );
 	}
 
-	jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js' );
 	wp_enqueue_media();
-	jcp_core_enqueue_script( 'jcp-page-media-editor', 'js/pages/page-media-editor.js', [ 'jcp-niche-page-editor', 'media-models', 'media-views' ] );
+	jcp_core_enqueue_script( 'jcp-page-media-editor', 'js/pages/page-media-editor.js', [ 'media-models', 'media-views' ] );
+	jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js', [ 'jcp-page-media-editor' ] );
 	$page_doc  = jcp_page_get_content( $post_id );
 	$page_kind = jcp_page_resolve_kind( $page_doc, $post_id );
 	wp_localize_script(
