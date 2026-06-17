@@ -316,6 +316,19 @@ body.jcp-inline-editing [data-jcp-path] {
   outline-offset: 3px;
   border-radius: 4px;
   cursor: text;
+  position: relative;
+  z-index: 2;
+}
+
+body.jcp-inline-editing .timeline-step [data-jcp-path],
+body.jcp-inline-editing .ranking-factor-card [data-jcp-path],
+body.jcp-inline-editing .conversion-point [data-jcp-path] {
+  z-index: 3;
+}
+
+body.jcp-inline-editing .ranking-factor-card::before,
+body.jcp-inline-editing .timeline-step::after {
+  pointer-events: none;
 }
 
 body.jcp-inline-editing [data-jcp-href-path] {

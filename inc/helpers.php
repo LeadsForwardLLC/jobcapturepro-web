@@ -233,6 +233,10 @@ function jcp_core_enqueue_page_block_editor( int $post_id ): void {
 	}
 	$enqueued = true;
 
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+
 	$is_home = (int) get_option( 'page_on_front' ) === $post_id;
 	if ( $is_home || ! wp_style_is( 'jcp-core-niche-landing', 'enqueued' ) ) {
 		jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections' ] );

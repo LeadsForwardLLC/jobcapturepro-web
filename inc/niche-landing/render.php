@@ -375,13 +375,20 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 					if ( ! is_array( $step ) ) {
 						continue;
 					}
-					$num = $numeric_steps ? (string) ( $i + 1 ) : str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT );
+					$num   = $numeric_steps ? (string) ( $i + 1 ) : str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT );
+					$lines = (array) ( $step['lines'] ?? [] );
+					if ( empty( $lines ) ) {
+						$fallback = (string) ( $step['body'] ?? $step['description'] ?? '' );
+						if ( $fallback !== '' ) {
+							$lines = [ $fallback ];
+						}
+					}
 					?>
 					<div class="timeline-step">
 						<div class="step-number"><?php echo esc_html( $num ); ?></div>
 						<div class="step-content">
 							<h4 class="step-title"<?php jcp_niche_editable_attr( 'how_it_works.steps.' . $i . '.title' ); ?>><?php jcp_niche_e( (string) ( $step['title'] ?? '' ) ); ?></h4>
-							<?php foreach ( (array) ( $step['lines'] ?? [] ) as $li => $line ) : ?>
+							<?php foreach ( $lines as $li => $line ) : ?>
 								<p class="step-description"<?php jcp_niche_editable_attr( 'how_it_works.steps.' . $i . '.lines.' . $li ); ?>><?php jcp_niche_e( (string) $line ); ?></p>
 							<?php endforeach; ?>
 						</div>

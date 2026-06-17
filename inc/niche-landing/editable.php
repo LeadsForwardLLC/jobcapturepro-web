@@ -18,9 +18,7 @@ function jcp_niche_user_can_inline_edit(): bool {
  * @param string $path e.g. hero.h1.
  */
 function jcp_niche_editable_attr( string $path ): void {
-	if ( ! jcp_niche_user_can_inline_edit() ) {
-		return;
-	}
+	// Always emit paths so cached HTML still exposes edit targets when the toolbar loads.
 	echo ' data-jcp-path="' . esc_attr( $path ) . '"';
 }
 
@@ -30,9 +28,6 @@ function jcp_niche_editable_attr( string $path ): void {
  * @param string $base_path e.g. hero.cta_primary (maps to .label and .url).
  */
 function jcp_niche_editable_link_attr( string $base_path ): void {
-	if ( ! jcp_niche_user_can_inline_edit() ) {
-		return;
-	}
 	echo ' data-jcp-path="' . esc_attr( $base_path ) . '.label" data-jcp-href-path="' . esc_attr( $base_path ) . '.url"';
 }
 
@@ -43,9 +38,6 @@ function jcp_niche_editable_link_attr( string $base_path ): void {
  * @param string $url_path   URL path.
  */
 function jcp_niche_editable_link_paths( string $label_path, string $url_path ): void {
-	if ( ! jcp_niche_user_can_inline_edit() ) {
-		return;
-	}
 	echo ' data-jcp-path="' . esc_attr( $label_path ) . '" data-jcp-href-path="' . esc_attr( $url_path ) . '"';
 }
 

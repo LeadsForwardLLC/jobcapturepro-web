@@ -786,16 +786,25 @@
     });
   };
 
+  const bindEditableFields = () => {
+    document.querySelectorAll('[data-jcp-path]').forEach((el) => {
+      if (editing) {
+        el.setAttribute('contenteditable', 'true');
+        el.setAttribute('spellcheck', 'true');
+      } else {
+        el.removeAttribute('contenteditable');
+        el.removeAttribute('spellcheck');
+      }
+    });
+  };
+
   const enableEditing = () => {
     editing = true;
     document.body.classList.add('jcp-inline-editing');
     toggleBtn.textContent = 'Editing — click text to change';
     toggleBtn.classList.add('is-active');
     if (!dirty) statusEl.textContent = 'Click text or images to edit. Drag ⋮⋮ on a column to swap sides.';
-    document.querySelectorAll('[data-jcp-path]').forEach((el) => {
-      el.setAttribute('contenteditable', 'true');
-      el.setAttribute('spellcheck', 'true');
-    });
+    bindEditableFields();
     if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
       window.JCP_REFRESH_PAGE_MEDIA_UI();
     }
@@ -807,10 +816,11 @@
     toggleBtn.textContent = 'Click to edit page';
     toggleBtn.classList.remove('is-active');
     popover.hidden = true;
-    document.querySelectorAll('[data-jcp-path]').forEach((el) => {
-      el.removeAttribute('contenteditable');
-      el.removeAttribute('spellcheck');
-    });
+    bindEditableFields();
+  };
+
+  window.JCP_REFRESH_INLINE_EDITABLE = () => {
+    if (editing) bindEditableFields();
   };
 
   const confirmLeave = () => !dirty || window.confirm(UNSAVED_MSG);
@@ -986,6 +996,9 @@
     applyMediaPositionToDom();
     if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
       window.JCP_REFRESH_PAGE_MEDIA_UI();
+    }
+    if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
+      window.JCP_REFRESH_INLINE_EDITABLE();
     }
     if (structureOpen) renderBlockList();
   });
