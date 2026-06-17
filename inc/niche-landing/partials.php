@@ -2,6 +2,9 @@
 /**
  * Reusable markup partials for industry pages (matches homepage components).
  *
+ * Components are small building blocks (cards, meta strips, checklists).
+ * Full page sections are Blocks in inc/page-blocks/registry.php.
+ *
  * @package JCP_Core
  */
 

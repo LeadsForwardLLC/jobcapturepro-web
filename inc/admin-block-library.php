@@ -25,19 +25,39 @@ function jcp_block_library_admin_menu(): void {
 add_action( 'admin_menu', 'jcp_block_library_admin_menu', 11 );
 
 /**
+ * Preview URL for a block type (homepage anchors or UI library).
+ *
+ * @param string $type Block type key.
+ */
+function jcp_block_library_preview_url( string $type ): string {
+	$home    = home_url( '/' );
+	$anchors = [
+		'hero'              => '',
+		'how_it_works'      => 'how-it-works',
+		'demo_preview'      => 'demo-preview',
+		'proof_flow'        => 'real-job-proof',
+		'benefits'          => 'features',
+		'who_its_for'       => 'who-its-for',
+		'directory_preview' => 'directory-preview',
+		'conversion'        => 'conversion',
+		'faq'               => 'faq',
+		'final_cta'         => '',
+	];
+	if ( array_key_exists( $type, $anchors ) ) {
+		$anchor = $anchors[ $type ];
+		return $anchor !== '' ? $home . '#' . $anchor : $home;
+	}
+	return home_url( '/ui-library/' );
+}
+
+/**
  * UI library anchor hints for block previews (when available).
  *
  * @return array<string, string>
+ * @deprecated Use jcp_block_library_preview_url().
  */
 function jcp_block_library_preview_anchors(): array {
-	return [
-		'hero'          => '',
-		'how_it_works'  => 'how-it-works',
-		'check_ins'     => 'features',
-		'who_its_for'   => 'who-its-for',
-		'faq'           => '',
-		'final_cta'     => '',
-	];
+	return [];
 }
 
 /**
@@ -50,7 +70,6 @@ function jcp_block_library_render_page(): void {
 
 	$blocks     = jcp_block_registry();
 	$ui_library = home_url( '/ui-library/' );
-	$anchors    = jcp_block_library_preview_anchors();
 	$by_cat     = [];
 
 	foreach ( $blocks as $block ) {
@@ -67,7 +86,10 @@ function jcp_block_library_render_page(): void {
 	<div class="wrap jcp-block-library">
 		<h1><?php esc_html_e( 'JCP Block Library', 'jcp-core' ); ?></h1>
 		<p class="description">
-			<?php esc_html_e( 'All reusable page sections available for industry pages, marketing pages, and referral pages. Use document import or the front-end Page structure panel to add blocks to a page.', 'jcp-core' ); ?>
+			<?php esc_html_e( 'Blocks are full page sections (Hero, Proof flow, FAQ, etc.) you add, reorder, and edit on a page. Components are smaller building blocks inside them (demo phone mockup, directory card, factor card) — shared PHP partials, not separate blocks.', 'jcp-core' ); ?>
+		</p>
+		<p class="description">
+			<?php esc_html_e( 'Industry, marketing, referral, and homepage page types each show only the blocks allowed for that kind. No duplicate entries — one registry, one renderer per block.', 'jcp-core' ); ?>
 		</p>
 		<p>
 			<a href="<?php echo esc_url( $page_system_url ); ?>" class="button"><?php esc_html_e( 'Page System SOP', 'jcp-core' ); ?></a>
@@ -92,8 +114,8 @@ function jcp_block_library_render_page(): void {
 						$type    = (string) ( $block['type'] ?? '' );
 						$kinds   = $block['page_kinds'] ?? [];
 						$docs    = $block['doc_sections'] ?? [];
-						$anchor  = $anchors[ $type ] ?? '';
-						$preview = $anchor !== '' ? $ui_library . '#' . $anchor : $ui_library;
+						$preview = jcp_block_library_preview_url( $type );
+						$on_home = in_array( 'home', $kinds, true );
 						?>
 						<tr>
 							<td>
@@ -112,7 +134,7 @@ function jcp_block_library_render_page(): void {
 								?>
 							</td>
 							<td>
-								<a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'UI Library', 'jcp-core' ); ?></a>
+								<a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php echo $on_home ? esc_html__( 'Homepage', 'jcp-core' ) : esc_html__( 'UI Library', 'jcp-core' ); ?></a>
 							</td>
 						</tr>
 					<?php endforeach; ?>

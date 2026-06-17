@@ -127,7 +127,7 @@ function jcp_core_get_page_detection(): array {
             || is_singular( 'jcp_page' )
             || is_post_type_archive( 'jcp_niche_landing' )
             || ( is_singular( 'page' ) && function_exists( 'jcp_page_uses_block_template' ) && jcp_page_uses_block_template( (int) get_queried_object_id() ) )
-            || ( is_front_page() && function_exists( 'jcp_page_is_content_page' ) && jcp_page_is_content_page( (int) get_queried_object_id() ) ),
+            || ( is_front_page() && function_exists( 'jcp_page_is_content_page' ) && ( (int) get_option( 'page_on_front' ) ) > 0 && jcp_page_is_content_page( (int) get_option( 'page_on_front' ) ) ),
     ];
 }
 
@@ -199,4 +199,64 @@ function jcp_core_design_system_noindex(): void {
 }
 
 add_action( 'wp_head', 'jcp_core_design_system_noindex' );
+
+/**
+ * Post ID for the current block page editor context (0 if none).
+ */
+function jcp_core_get_page_editor_post_id(): int {
+	if ( ! is_user_logged_in() || ! function_exists( 'jcp_page_is_content_page' ) ) {
+		return 0;
+	}
+	$pid = is_singular() ? (int) get_queried_object_id() : 0;
+	if ( $pid > 0 && jcp_page_is_content_page( $pid ) ) {
+		return $pid;
+	}
+	$front_id = (int) get_option( 'page_on_front' );
+	if ( $front_id > 0 && is_front_page() && jcp_page_is_content_page( $front_id ) ) {
+		return $front_id;
+	}
+	return 0;
+}
+
+/**
+ * Enqueue front-end page block editor (toolbar, structure panel, inline edit).
+ *
+ * @param int $post_id Structured content post ID.
+ */
+function jcp_core_enqueue_page_block_editor( int $post_id ): void {
+	static $enqueued = false;
+	if ( $enqueued || $post_id <= 0 || ! function_exists( 'jcp_page_is_content_page' ) ) {
+		return;
+	}
+	if ( ! jcp_page_is_content_page( $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+	$enqueued = true;
+
+	$is_home = (int) get_option( 'page_on_front' ) === $post_id;
+	if ( $is_home || ! wp_style_is( 'jcp-core-niche-landing', 'enqueued' ) ) {
+		jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections' ] );
+	}
+
+	jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js' );
+	$page_doc  = jcp_page_get_content( $post_id );
+	$page_kind = jcp_page_resolve_kind( $page_doc, $post_id );
+	wp_localize_script(
+		'jcp-niche-page-editor',
+		'JCP_NICHE_EDITOR',
+		[
+			'postId'    => $post_id,
+			'restUrl'   => rest_url( 'jcp/v1/page/' . $post_id ),
+			'nonce'     => wp_create_nonce( 'wp_rest' ),
+			'adminUrl'  => get_edit_post_link( $post_id, 'raw' ),
+			'url'       => get_permalink( $post_id ),
+			'bootstrap' => [
+				'blocks'   => $page_doc,
+				'content'  => jcp_page_get_content_flat( $post_id ),
+				'registry' => jcp_block_registry_public( $page_kind ),
+				'pageKind' => $page_kind,
+			],
+		]
+	);
+}
 

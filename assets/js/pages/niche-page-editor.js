@@ -9,7 +9,7 @@
 
   const BLOCK_SELECTORS = {
     breadcrumb: '.jcp-niche-breadcrumb',
-    hero: '.jcp-niche-hero',
+    hero: '.jcp-niche-hero, .jcp-hero.jcp-hero-variant-home',
     what_it_is: '.jcp-niche-what',
     core_mechanic: '.jcp-niche-core-mechanic',
     how_it_works: '#how-it-works',
@@ -17,7 +17,7 @@
     problem: '.jcp-niche-problem',
     benefits: '.jcp-niche-benefits',
     differentiation: '.jcp-niche-diff',
-    who_its_for: '.jcp-niche-audiences',
+    who_its_for: '.jcp-niche-audiences, #who-its-for',
     faq: '#faq',
     final_cta: '.jcp-niche-final',
     cta_band: '.jcp-niche-cta-band',
@@ -25,12 +25,17 @@
     partners: '.jcp-niche-partners',
     share: '.jcp-niche-share',
     media_text: '.jcp-media-text',
+    proof_flow: '.jcp-block-proof-flow, #real-job-proof',
+    demo_preview: '.jcp-block-demo-preview, #demo-preview',
+    directory_preview: '.jcp-block-directory-preview, .directory-preview',
+    conversion: '.jcp-block-conversion, .conversion-section',
   };
 
   const HERO_VARIANTS = [
     { value: 'split', label: 'Split', hint: 'Copy + demo image' },
     { value: 'centered', label: 'Centered', hint: 'Headline & CTA focus' },
     { value: 'stacked', label: 'Stacked', hint: 'Copy above visual' },
+    { value: 'home', label: 'Homepage', hint: 'Rotating headline + live phone' },
   ];
 
   let flatContent = bootstrap.content && typeof bootstrap.content === 'object' ? bootstrap.content : {};
@@ -67,16 +72,15 @@
     commission: {},
     partners: {},
     share: {},
-    media_text: {
-      headline: 'Section headline',
-      subheadline: '',
-      body: 'Supporting copy for this section.',
-      media_type: 'image',
-      media_url: '',
-      media_alt: '',
-      media_position: 'right',
-      cta: { label: '', url: '' },
+    proof_flow: {},
+    demo_preview: {
+      badge: 'Live Demo',
+      headline: 'See it in action',
+      body: '',
+      cta_primary: { label: 'Launch Interactive Demo', url: '/demo' },
     },
+    directory_preview: { headline: 'Section headline', cards: [] },
+    conversion: { headline: 'Section headline', points: [] },
   };
 
   const getPath = (obj, path) => path.split('.').reduce((cur, key) => {
@@ -175,7 +179,7 @@
   const adminLink = bar.querySelector('.jcp-niche-edit-link');
   let activeLink = null;
 
-  const getMain = () => document.querySelector('main.jcp-niche, main[data-page-kind]');
+  const getMain = () => document.querySelector('main.jcp-home, main.jcp-niche, main[data-page-kind]');
 
   const blockLabel = (type) => {
     const found = registry.find((b) => b.type === type);
@@ -192,11 +196,14 @@
     'jcp-hero-variant-split',
     'jcp-hero-variant-centered',
     'jcp-hero-variant-stacked',
+    'jcp-hero-variant-home',
   ];
 
   const defaultLayout = (type) => {
     if (type === 'hero') {
-      return { hero_variant: PAGE_KIND === 'referral' ? 'centered' : 'split' };
+      if (PAGE_KIND === 'referral') return { hero_variant: 'centered' };
+      if (PAGE_KIND === 'home') return { hero_variant: 'home' };
+      return { hero_variant: 'split' };
     }
     const layout = { align: 'center', width: 'contained' };
     if (type === 'breadcrumb') layout.align = 'left';
@@ -206,7 +213,7 @@
   const resolveHeroVariant = (block) => {
     const layout = { ...defaultLayout('hero'), ...(block.layout || {}) };
     const variant = layout.hero_variant;
-    if (['split', 'centered', 'stacked'].includes(variant)) return variant;
+    if (['split', 'centered', 'stacked', 'home'].includes(variant)) return variant;
     if (block.layout?.hero_visual === false || block.props?.show_visual === false) return 'centered';
     return 'split';
   };

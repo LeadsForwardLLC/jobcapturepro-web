@@ -100,35 +100,17 @@ function jcp_core_enqueue_assets(): void {
         $render_deps[] = 'jcp-core-pricing';
     }
 
-    if ( ! empty( $pages['is_niche_landing'] ) ) {
+    if ( ! empty( $pages['is_niche_landing'] ) && empty( $pages['is_home'] ) ) {
         jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections' ] );
         if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
             jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
             jcp_core_enqueue_script( 'jcp-industries-archive', 'js/pages/industries-archive.js' );
         }
-        $pid = is_singular() ? get_queried_object_id() : 0;
-        if ( $pid > 0 && function_exists( 'jcp_page_is_content_page' ) && jcp_page_is_content_page( $pid ) && current_user_can( 'edit_post', $pid ) ) {
-            jcp_core_enqueue_script( 'jcp-niche-page-editor', 'js/pages/niche-page-editor.js' );
-            $page_doc  = jcp_page_get_content( $pid );
-            $page_kind = jcp_page_resolve_kind( $page_doc, $pid );
-            wp_localize_script(
-                'jcp-niche-page-editor',
-                'JCP_NICHE_EDITOR',
-                [
-                    'postId'   => $pid,
-                    'restUrl'  => rest_url( 'jcp/v1/page/' . $pid ),
-                    'nonce'    => wp_create_nonce( 'wp_rest' ),
-                    'adminUrl' => get_edit_post_link( $pid, 'raw' ),
-                    'url'      => get_permalink( $pid ),
-                    'bootstrap' => [
-                        'blocks'   => $page_doc,
-                        'content'  => jcp_page_get_content_flat( $pid ),
-                        'registry' => jcp_block_registry_public( $page_kind ),
-                        'pageKind' => $page_kind,
-                    ],
-                ]
-            );
-        }
+    }
+
+    $editor_post_id = jcp_core_get_page_editor_post_id();
+    if ( $editor_post_id > 0 ) {
+        jcp_core_enqueue_page_block_editor( $editor_post_id );
     }
 
     if ( $pages['is_early_access'] ) {

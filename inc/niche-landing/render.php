@@ -356,7 +356,7 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 			<?php endif; ?>
 			<?php
 			if ( ! empty( $h['demo_preview'] ) && is_array( $h['demo_preview'] ) ) {
-				jcp_niche_render_demo_preview( $h['demo_preview'], $niche_key );
+				jcp_niche_render_demo_preview( $h['demo_preview'], $niche_key, 'how_it_works.demo_preview' );
 			}
 			?>
 		</div>
@@ -830,15 +830,16 @@ function jcp_niche_render_final_cta( array $c, string $niche_key ): void {
  *
  * @param array<string, mixed> $props Block props.
  * @param string               $niche_key Page key.
+ * @param string               $path      JSON path prefix for inline editor.
  */
-function jcp_niche_render_demo_preview( array $props, string $niche_key = '' ): void {
+function jcp_niche_render_demo_preview( array $props, string $niche_key = '', string $path = 'demo_preview' ): void {
 	if ( empty( $props['headline'] ) ) {
 		return;
 	}
 	$primary = jcp_niche_resolve_cta( $props['cta_primary'] ?? [ 'label' => 'Launch Interactive Demo', 'url' => '/demo' ], $niche_key );
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'demo-preview';
 	?>
-	<div class="demo-preview-section" id="<?php echo esc_attr( $section_id ); ?>">
+	<div class="demo-preview-section jcp-block-demo-preview" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="demo-preview-card">
 			<div class="demo-preview-content">
 				<div class="demo-preview-text">
@@ -848,25 +849,25 @@ function jcp_niche_render_demo_preview( array $props, string $niche_key = '' ): 
 								<circle cx="12" cy="12" r="10"/>
 								<polygon points="10 8 16 12 10 16 10 8"/>
 							</svg>
-							<span<?php jcp_niche_editable_attr( 'demo_preview.badge' ); ?>><?php echo esc_html( (string) $props['badge'] ); ?></span>
+							<span<?php jcp_niche_editable_attr( $path . '.badge' ); ?>><?php echo esc_html( (string) $props['badge'] ); ?></span>
 						</div>
 					<?php endif; ?>
-					<h3 class="demo-preview-title"<?php jcp_niche_editable_attr( 'demo_preview.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h3>
+					<h3 class="demo-preview-title"<?php jcp_niche_editable_attr( $path . '.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h3>
 					<?php if ( ! empty( $props['body'] ) ) : ?>
-						<p class="demo-preview-description"<?php jcp_niche_editable_attr( 'demo_preview.body' ); ?>><?php echo esc_html( (string) $props['body'] ); ?></p>
+						<p class="demo-preview-description"<?php jcp_niche_editable_attr( $path . '.body' ); ?>><?php echo esc_html( (string) $props['body'] ); ?></p>
 					<?php endif; ?>
 					<?php if ( ! empty( $props['cue'] ) ) : ?>
-						<p class="demo-preview-cue"<?php jcp_niche_editable_attr( 'demo_preview.cue' ); ?>><?php echo esc_html( (string) $props['cue'] ); ?></p>
+						<p class="demo-preview-cue"<?php jcp_niche_editable_attr( $path . '.cue' ); ?>><?php echo esc_html( (string) $props['cue'] ); ?></p>
 					<?php endif; ?>
 					<div class="demo-cta-wrapper">
 						<?php if ( $primary['label'] !== '' ) : ?>
-							<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary demo-cta-primary"<?php jcp_niche_editable_link_attr( 'demo_preview.cta_primary' ); ?>>
+							<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary demo-cta-primary"<?php jcp_niche_editable_link_attr( $path . '.cta_primary' ); ?>>
 								<span><?php echo esc_html( $primary['label'] ); ?></span>
 								<?php jcp_component_chevron_svg( 20 ); ?>
 							</a>
 						<?php endif; ?>
 						<?php if ( ! empty( $props['cta_note'] ) ) : ?>
-							<p class="demo-cta-note"<?php jcp_niche_editable_attr( 'demo_preview.cta_note' ); ?>><?php echo esc_html( (string) $props['cta_note'] ); ?></p>
+							<p class="demo-cta-note"<?php jcp_niche_editable_attr( $path . '.cta_note' ); ?>><?php echo esc_html( (string) $props['cta_note'] ); ?></p>
 						<?php endif; ?>
 					</div>
 				</div>
@@ -891,7 +892,7 @@ function jcp_niche_render_proof_flow( array $props ): void {
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'real-job-proof';
 	$items      = (array) ( $props['items'] ?? [] );
 	?>
-	<section class="jcp-section rankings-section" id="<?php echo esc_attr( $section_id ); ?>">
+	<section class="jcp-section rankings-section jcp-block-proof-flow" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="jcp-container">
 			<div class="rankings-header">
 				<h2<?php jcp_niche_editable_attr( 'proof_flow.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h2>
@@ -961,7 +962,7 @@ function jcp_niche_render_directory_preview( array $props, string $niche_key = '
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'directory-preview';
 	$primary    = jcp_niche_resolve_cta( $props['cta_primary'] ?? [], $niche_key );
 	?>
-	<section class="jcp-section rankings-section directory-preview" id="<?php echo esc_attr( $section_id ); ?>">
+	<section class="jcp-section rankings-section directory-preview jcp-block-directory-preview" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="jcp-container">
 			<div class="rankings-header">
 				<h2<?php jcp_niche_editable_attr( 'directory_preview.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h2>
@@ -1011,7 +1012,7 @@ function jcp_niche_render_conversion( array $props, string $niche_key = '' ): vo
 	$image_url  = (string) ( $props['image_url'] ?? '' );
 	$image_alt  = (string) ( $props['image_alt'] ?? '' );
 	?>
-	<section class="jcp-section rankings-section conversion-section" id="<?php echo esc_attr( $section_id ); ?>">
+	<section class="jcp-section rankings-section conversion-section jcp-block-conversion" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="jcp-container">
 			<div class="conversion-wrapper">
 				<div class="conversion-content">

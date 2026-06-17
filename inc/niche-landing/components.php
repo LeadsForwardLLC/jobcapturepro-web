@@ -2,6 +2,10 @@
 /**
  * Global marketing components (homepage + block library).
  *
+ * Components = reusable markup atoms used inside Blocks (demo phone, directory card, etc.).
+ * Blocks = full page sections registered in inc/page-blocks/registry.php.
+ * UI Library (/ui-library/) = visual catalog of components; Block Library (WP Admin) = section catalog.
+ *
  * @package JCP_Core
  */
 

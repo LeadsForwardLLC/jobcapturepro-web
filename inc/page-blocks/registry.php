@@ -330,6 +330,25 @@ function jcp_page_default_block_props( string $type ): array {
 			'cta_primary' => [ 'label' => __( 'Get started', 'jcp-core' ), 'url' => '' ],
 			'band_key'    => 'cta_band_1',
 		],
+		'proof_flow' => [
+			'headline'    => __( 'Section headline', 'jcp-core' ),
+			'subheadline' => '',
+			'items'       => [],
+		],
+		'demo_preview' => [
+			'badge'       => __( 'Live Demo', 'jcp-core' ),
+			'headline'    => __( 'See it in action', 'jcp-core' ),
+			'body'        => '',
+			'cta_primary' => [ 'label' => __( 'Launch Interactive Demo', 'jcp-core' ), 'url' => '/demo' ],
+		],
+		'directory_preview' => [
+			'headline' => __( 'Section headline', 'jcp-core' ),
+			'cards'    => [],
+		],
+		'conversion' => [
+			'headline' => __( 'Section headline', 'jcp-core' ),
+			'points'   => [],
+		],
 	];
 	return $defaults[ $type ] ?? [];
 }
