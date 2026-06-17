@@ -984,6 +984,7 @@
       getPath,
       setPath,
       recordChange,
+      collectFromDom,
       registry,
       applyMediaPositionToDom,
       editing: () => editing,

@@ -48,7 +48,6 @@
   };
 
   let api = null;
-  const boundHandlers = [];
 
   const esc = (s) => String(s ?? '')
     .replace(/&/g, '&amp;')
@@ -145,48 +144,44 @@
       </details>`;
   };
 
+  const insertBeforeAddButton = (container, node) => {
+    const addBtn = container.querySelector(':scope > .jcp-collection-add');
+    if (addBtn) container.insertBefore(node, addBtn);
+    else container.appendChild(node);
+  };
+
   const cloneArrayItem = (container, basePath, index, data) => {
     const sample = container.querySelector('[data-jcp-array-item]');
     if (sample) {
       const clone = sample.cloneNode(true);
+      clone.querySelectorAll('.jcp-collection-remove').forEach((el) => el.remove());
+      clone.classList.remove('jcp-collection-item');
       clone.querySelectorAll('[data-jcp-path]').forEach((el) => { el.textContent = ''; });
-      container.appendChild(clone);
+      insertBeforeAddButton(container, clone);
       reindexContainer(container, basePath);
       applyDefaultsToItem(container, basePath, index, data);
       return clone;
     }
 
+    let html = '';
     if (basePath.endsWith('.points') || basePath.endsWith('.bullets')) {
-      const html = buildConversionPoint(basePath, index, String(data));
-      container.insertAdjacentHTML('beforeend', html);
-      return container.lastElementChild;
+      html = buildConversionPoint(basePath, index, String(data));
+    } else if (basePath.includes('team_already') || basePath.includes('turns_into')) {
+      html = buildChecklistItem(basePath, index, String(data));
+    } else if (basePath.endsWith('.job_types')) {
+      html = buildTagItem(basePath, index, String(data));
+    } else if (basePath === 'faq.items') {
+      html = buildFaqItem(index, data);
+    } else if (basePath === 'how_it_works.steps') {
+      html = buildTimelineStep(basePath, index, data);
+    } else if (basePath.endsWith('.items') || basePath.endsWith('.features') || basePath.endsWith('.pain_points') || basePath.endsWith('.audiences')) {
+      html = buildFactorCard(basePath, index, data);
     }
-    if (basePath.includes('team_already') || basePath.includes('turns_into')) {
-      const html = buildChecklistItem(basePath, index, String(data));
-      container.insertAdjacentHTML('beforeend', html);
-      return container.lastElementChild;
-    }
-    if (basePath.endsWith('.job_types')) {
-      const html = buildTagItem(basePath, index, String(data));
-      container.insertAdjacentHTML('beforeend', html);
-      return container.lastElementChild;
-    }
-    if (basePath === 'faq.items') {
-      const html = buildFaqItem(index, data);
-      container.insertAdjacentHTML('beforeend', html);
-      return container.lastElementChild;
-    }
-    if (basePath === 'how_it_works.steps') {
-      const html = buildTimelineStep(basePath, index, data);
-      container.insertAdjacentHTML('beforeend', html);
-      return container.lastElementChild;
-    }
-    if (basePath.endsWith('.items') || basePath.endsWith('.features') || basePath.endsWith('.pain_points') || basePath.endsWith('.audiences')) {
-      const html = buildFactorCard(basePath, index, data);
-      container.insertAdjacentHTML('beforeend', html);
-      return container.lastElementChild;
-    }
-    return null;
+    if (!html) return null;
+    const addBtn = container.querySelector(':scope > .jcp-collection-add');
+    if (addBtn) addBtn.insertAdjacentHTML('beforebegin', html);
+    else container.insertAdjacentHTML('beforeend', html);
+    return container.querySelector(`[data-jcp-array-item="${index}"]`);
   };
 
   const applyDefaultsToItem = (container, basePath, index, data) => {
@@ -212,6 +207,7 @@
   };
 
   const addArrayItem = (container, basePath) => {
+    if (!api || typeof api.collectFromDom !== 'function') return;
     api.collectFromDom();
     const arr = getArray(basePath);
     const factory = ARRAY_DEFAULTS[basePath] || (() => 'New item');
@@ -228,6 +224,7 @@
   };
 
   const removeArrayItem = (container, basePath, index) => {
+    if (!api || typeof api.collectFromDom !== 'function') return;
     api.collectFromDom();
     const arr = getArray(basePath);
     if (index < 0 || index >= arr.length) return;
@@ -267,6 +264,7 @@
 
   const removeOptional = (slot) => {
     const path = slot.dataset.jcpOptional;
+    if (!api || typeof api.collectFromDom !== 'function') return;
     api.collectFromDom();
     api.setPath(api.flatContent, path, { label: '', url: '' });
     slot.innerHTML = '';
@@ -278,16 +276,11 @@
 
   const ensureOptionalPlaceholder = (slot) => {
     if (!slot.classList.contains('is-empty')) return;
-    let ph = slot.querySelector('.jcp-optional-restore');
-    if (!ph) {
-      ph = document.createElement('button');
+    if (!slot.querySelector('.jcp-optional-restore')) {
+      const ph = document.createElement('button');
       ph.type = 'button';
       ph.className = 'jcp-optional-restore';
       ph.textContent = slot.dataset.jcpOptionalLabel || 'Add button';
-      ph.addEventListener('click', (e) => {
-        e.preventDefault();
-        restoreOptional(slot);
-      });
       slot.appendChild(ph);
     }
   };
@@ -300,14 +293,6 @@
     btn.setAttribute('aria-label', 'Remove item');
     btn.title = 'Remove';
     btn.textContent = '×';
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const container = item.closest('[data-jcp-array]');
-      if (!container) return;
-      const index = parseInt(item.dataset.jcpArrayItem, 10);
-      removeArrayItem(container, container.dataset.jcpArray, index);
-    });
     item.classList.add('jcp-collection-item');
     item.appendChild(btn);
   };
@@ -321,11 +306,6 @@
       btn.setAttribute('aria-label', 'Remove');
       btn.title = 'Remove';
       btn.textContent = '×';
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        removeOptional(slot);
-      });
       slot.classList.add('jcp-optional-slot');
       slot.appendChild(btn);
     }
@@ -349,10 +329,6 @@
         : container.classList.contains('ranking-factors-grid') ? '+ Add card'
           : '+ Add item';
     btn.textContent = label;
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      addArrayItem(container, container.dataset.jcpArray);
-    });
     container.appendChild(btn);
   };
 
@@ -361,8 +337,6 @@
     document.querySelectorAll('.jcp-collection-item, .jcp-optional-slot').forEach((el) => {
       el.classList.remove('jcp-collection-item', 'jcp-optional-slot', 'is-empty');
     });
-    boundHandlers.forEach(({ el, fn }) => el.removeEventListener('click', fn));
-    boundHandlers.length = 0;
   };
 
   const refreshCollections = () => {
@@ -381,6 +355,48 @@
     api = editorApi;
     window.JCP_REFRESH_COLLECTIONS = refreshCollections;
     window.JCP_TEARDOWN_COLLECTIONS = teardownCollections;
+
+    if (!document.body.dataset.jcpCollectionBound) {
+      document.body.dataset.jcpCollectionBound = '1';
+      document.addEventListener('click', (e) => {
+        if (!api || !api.editing()) return;
+
+        const addBtn = e.target.closest('.jcp-collection-add');
+        if (addBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const container = addBtn.closest('[data-jcp-array]');
+          if (container?.dataset.jcpArray) addArrayItem(container, container.dataset.jcpArray);
+          return;
+        }
+
+        const removeBtn = e.target.closest('.jcp-collection-remove');
+        if (removeBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (removeBtn.classList.contains('jcp-collection-remove--optional')) {
+            const slot = removeBtn.closest('[data-jcp-optional]');
+            if (slot) removeOptional(slot);
+            return;
+          }
+          const item = removeBtn.closest('[data-jcp-array-item]');
+          const container = item?.closest('[data-jcp-array]');
+          if (item && container?.dataset.jcpArray) {
+            const index = parseInt(item.dataset.jcpArrayItem, 10);
+            if (!Number.isNaN(index)) removeArrayItem(container, container.dataset.jcpArray, index);
+          }
+          return;
+        }
+
+        const restoreBtn = e.target.closest('.jcp-optional-restore');
+        if (restoreBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const slot = restoreBtn.closest('[data-jcp-optional]');
+          if (slot) restoreOptional(slot);
+        }
+      });
+    }
   };
 
   if (window.__JCP_EDITOR_API__) init(window.__JCP_EDITOR_API__);
