@@ -46,6 +46,7 @@ require_once get_template_directory() . '/inc/page-blocks/render.php';
 require_once get_template_directory() . '/inc/page-blocks/rest-content.php';
 require_once get_template_directory() . '/inc/page-blocks/cpt.php';
 require_once get_template_directory() . '/inc/niche-landing/seed.php';
+require_once get_template_directory() . '/inc/page-blocks/migrate-pages.php';
 if ( is_admin() ) {
 	require_once get_template_directory() . '/inc/niche-landing/admin.php';
 }

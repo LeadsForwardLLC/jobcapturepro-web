@@ -128,8 +128,8 @@ function jcp_niche_seed_referral_program(): int {
 	$existing = get_page_by_path( 'referral-program', OBJECT, 'page' );
 	if ( $existing instanceof WP_Post ) {
 		$id = (int) $existing->ID;
-		if ( get_page_template_slug( $id ) !== 'page-referral-program.php' ) {
-			update_post_meta( $id, '_wp_page_template', 'page-referral-program.php' );
+		if ( get_page_template_slug( $id ) !== 'page-jcp-blocks.php' && get_page_template_slug( $id ) !== 'page-referral-program.php' ) {
+			update_post_meta( $id, '_wp_page_template', 'page-jcp-blocks.php' );
 		}
 		if ( ! get_post_meta( $id, jcp_page_content_meta_key(), true ) && ! get_post_meta( $id, jcp_page_legacy_meta_key(), true ) ) {
 			jcp_niche_save_content( $id, jcp_niche_load_preset( 'referral-program' ) );
@@ -152,7 +152,7 @@ function jcp_niche_seed_referral_program(): int {
 		return 0;
 	}
 	$id = (int) $id;
-	update_post_meta( $id, '_wp_page_template', 'page-referral-program.php' );
+	update_post_meta( $id, '_wp_page_template', 'page-jcp-blocks.php' );
 	jcp_niche_save_content( $id, $preset );
 	return $id;
 }
