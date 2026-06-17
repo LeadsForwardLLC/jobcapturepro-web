@@ -101,7 +101,8 @@ function jcp_core_enqueue_assets(): void {
     }
 
     if ( ! empty( $pages['is_niche_landing'] ) && empty( $pages['is_home'] ) ) {
-        jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections' ] );
+        jcp_core_enqueue_style( 'jcp-core-home', 'css/pages/home.css', [ 'jcp-core-sections' ] );
+        jcp_core_enqueue_style( 'jcp-core-niche-landing', 'css/pages/niche-landing.css', [ 'jcp-core-sections', 'jcp-core-home' ] );
         if ( is_post_type_archive( 'jcp_niche_landing' ) ) {
             jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
             jcp_core_enqueue_script( 'jcp-industries-archive', 'js/pages/industries-archive.js' );

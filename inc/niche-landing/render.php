@@ -126,41 +126,8 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 								'height'  => '480',
 								'loading' => 'eager',
 							],
-							'phone_render'  => function () use ( $is_home, $hero_demo, $phone_image, $phone_alt ) {
-								if ( $is_home ) {
-									jcp_component_hero_home_visual( $hero_demo, $phone_image, $phone_alt, true );
-									return;
-								}
-								?>
-								<div class="jcp-hero-visual hero-visual">
-									<a href="<?php echo esc_url( $hero_demo ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>">
-										<div class="phone-frame hero-phone-frame">
-											<div class="phone-screen">
-												<div class="phone-content">
-													<div class="phone-header hero-phone-header">
-														<div class="phone-status-bar"><span>9:41</span></div>
-														<div class="hero-phone-live-row"><span class="hero-phone-live-badge"><?php esc_html_e( 'Live', 'jcp-core' ); ?></span></div>
-													</div>
-													<div class="phone-body hero-phone-body">
-														<div class="hero-phone-image-wrap">
-															<img src="<?php echo esc_url( $phone_image ); ?>" alt="<?php echo esc_attr( $phone_alt ); ?>" class="hero-phone-image jcp-editable-media-image" width="390" height="292" loading="eager" data-jcp-media-url-path="hero.phone_image_url" data-jcp-media-alt-path="hero.phone_image_alt" data-jcp-media-role="phone_screen" />
-														</div>
-														<div class="demo-preview-item hero-phone-card hero-phone-card-1">
-															<div class="demo-item-content">
-																<div class="demo-item-title"><?php esc_html_e( 'Job captured', 'jcp-core' ); ?></div>
-																<div class="demo-item-subtitle"><?php esc_html_e( 'Photos from the field', 'jcp-core' ); ?></div>
-															</div>
-														</div>
-													</div>
-													<div class="phone-click-hint hero-phone-cta">
-														<span><?php esc_html_e( 'Try the demo', 'jcp-core' ); ?></span>
-													</div>
-												</div>
-											</div>
-										</div>
-									</a>
-								</div>
-								<?php
+							'phone_render'  => function () use ( $hero_demo, $phone_image, $phone_alt ) {
+								jcp_component_hero_home_visual( $hero_demo, $phone_image, $phone_alt, true );
 							},
 						]
 					);

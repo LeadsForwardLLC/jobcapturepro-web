@@ -179,11 +179,13 @@
     gap: var(--jcp-space-3xl);
   }
 
-  .jcp-home .hero-visual-stack {
+  .jcp-home .hero-visual-stack ,
+  .jcp-niche .hero-visual-stack {
     min-height: 280px;
   }
 
-  .jcp-home .hero-phone-mockup {
+  .jcp-home .hero-phone-mockup ,
+  .jcp-niche .hero-phone-mockup {
     max-width: 280px;
     margin-left: auto;
     margin-right: auto;
@@ -209,15 +211,18 @@
     font-size: var(--jcp-font-size-lg) !important;
   }
 
-  .jcp-home .hero-copy {
+  .jcp-home .hero-copy ,
+  .jcp-niche .hero-copy {
     gap: var(--jcp-space-md);
   }
 
-  .jcp-home .hero-visual-stack {
+  .jcp-home .hero-visual-stack ,
+  .jcp-niche .hero-visual-stack {
     min-height: 240px;
   }
 
-  .jcp-home .hero-phone-mockup {
+  .jcp-home .hero-phone-mockup ,
+  .jcp-niche .hero-phone-mockup {
     max-width: 260px;
   }
 
@@ -245,11 +250,13 @@
     white-space: normal;
   }
 
-  .jcp-home .hero-visual-stack {
+  .jcp-home .hero-visual-stack ,
+  .jcp-niche .hero-visual-stack {
     min-height: 200px;
   }
 
-  .jcp-home .hero-phone-mockup {
+  .jcp-home .hero-phone-mockup ,
+  .jcp-niche .hero-phone-mockup {
     max-width: 240px;
   }
 
@@ -267,7 +274,8 @@
 
 /* Alias hero-copy and hero-visual to jcp-hero-* styles */
 /* Homepage HTML uses both class names */
-.jcp-home .hero-copy {
+.jcp-home .hero-copy ,
+.jcp-niche .hero-copy {
   position: relative;
   z-index: 1;
   display: flex;
@@ -275,7 +283,8 @@
   gap: var(--jcp-space-lg);
 }
 
-.jcp-home .hero-visual {
+.jcp-home .hero-visual ,
+.jcp-niche .hero-visual {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -284,7 +293,8 @@
 }
 
 /* Hero visual stack: animating lines behind phone */
-.jcp-home .hero-visual-stack {
+.jcp-home .hero-visual-stack ,
+.jcp-niche .hero-visual-stack {
   position: relative;
   display: flex;
   justify-content: center;
@@ -293,7 +303,8 @@
   min-height: 320px;
 }
 
-.jcp-home .hero-visual-lines {
+.jcp-home .hero-visual-lines ,
+.jcp-niche .hero-visual-lines {
   position: absolute;
   inset: -24px;
   z-index: 0;
@@ -301,14 +312,16 @@
   overflow: hidden;
 }
 
-.jcp-home .hero-line {
+.jcp-home .hero-line ,
+.jcp-niche .hero-line {
   position: absolute;
   background: linear-gradient(90deg, transparent, rgba(255, 80, 62, 0.12), transparent);
   height: 1px;
   border-radius: 2px;
 }
 
-.jcp-home .hero-line-1 {
+.jcp-home .hero-line-1 ,
+.jcp-niche .hero-line-1 {
   width: 120px;
   top: 18%;
   left: 15%;
@@ -316,7 +329,8 @@
   animation: heroLineMove 4s ease-in-out infinite;
 }
 
-.jcp-home .hero-line-2 {
+.jcp-home .hero-line-2 ,
+.jcp-niche .hero-line-2 {
   width: 80px;
   top: 35%;
   right: 12%;
@@ -324,7 +338,8 @@
   animation: heroLineMove 5s ease-in-out 0.5s infinite;
 }
 
-.jcp-home .hero-line-3 {
+.jcp-home .hero-line-3 ,
+.jcp-niche .hero-line-3 {
   width: 100px;
   bottom: 32%;
   left: 20%;
@@ -332,7 +347,8 @@
   animation: heroLineMove 4.5s ease-in-out 1s infinite;
 }
 
-.jcp-home .hero-line-4 {
+.jcp-home .hero-line-4 ,
+.jcp-niche .hero-line-4 {
   width: 60px;
   bottom: 18%;
   right: 18%;
@@ -340,7 +356,8 @@
   animation: heroLineMove 5.5s ease-in-out 0.3s infinite;
 }
 
-.jcp-home .hero-line-5 {
+.jcp-home .hero-line-5 ,
+.jcp-niche .hero-line-5 {
   width: 90px;
   top: 50%;
   left: 50%;
@@ -363,11 +380,16 @@
   }
 }
 
-.jcp-home .hero-line-1 { animation-name: heroLineMove1; }
-.jcp-home .hero-line-2 { animation-name: heroLineMove2; }
-.jcp-home .hero-line-3 { animation-name: heroLineMove3; }
-.jcp-home .hero-line-4 { animation-name: heroLineMove4; }
-.jcp-home .hero-line-5 { animation-name: heroLineMove5; }
+.jcp-home .hero-line-1 ,
+.jcp-niche .hero-line-1 {
+.jcp-home .hero-line-2 ,
+.jcp-niche .hero-line-2 {
+.jcp-home .hero-line-3 ,
+.jcp-niche .hero-line-3 {
+.jcp-home .hero-line-4 ,
+.jcp-niche .hero-line-4 {
+.jcp-home .hero-line-5 ,
+.jcp-niche .hero-line-5 {
 
 @keyframes heroLineMove1 {
   0%, 100% { opacity: 0.35; transform: rotate(-8deg) translateX(0) translateY(0); }
@@ -395,7 +417,8 @@
 }
 
 /* Right-side hero: phone (above lines) + animations + soft orange glow */
-.jcp-home .hero-phone-mockup {
+.jcp-home .hero-phone-mockup ,
+.jcp-niche .hero-phone-mockup {
   display: block;
   text-decoration: none;
   color: inherit;
@@ -409,7 +432,8 @@
   overflow: hidden;
 }
 /* Hero phone: soft orange "live" glow (unique to hero; See it in action stays plain) */
-.jcp-home .hero-phone-mockup .phone-screen {
+.jcp-home .hero-phone-mockup .phone-screen ,
+.jcp-niche .hero-phone-mockup .phone-screen {
   animation: heroPhonePulse 4s ease-in-out infinite;
   box-shadow: inset 0 0 0 1px rgba(255, 80, 62, 0.08);
 }
@@ -425,15 +449,18 @@
 }
 
 /* Hero phone: LIVE badge in header, just under status bar */
-.jcp-home .hero-phone-header {
+.jcp-home .hero-phone-header ,
+.jcp-niche .hero-phone-header {
   padding-bottom: 6px;
 }
-.jcp-home .hero-phone-live-row {
+.jcp-home .hero-phone-live-row ,
+.jcp-niche .hero-phone-live-row {
   display: flex;
   justify-content: flex-end;
   padding: 0 16px 4px;
 }
-.jcp-home .hero-phone-live-badge {
+.jcp-home .hero-phone-live-badge ,
+.jcp-niche .hero-phone-live-badge {
   font-size: 10px;
   font-weight: var(--jcp-font-weight-bold);
   letter-spacing: 0.06em;
@@ -447,7 +474,8 @@
   animation: heroPhoneCardReveal 0.45s ease-out 0.15s forwards;
 }
 
-.jcp-home .hero-phone-body {
+.jcp-home .hero-phone-body ,
+.jcp-niche .hero-phone-body {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -459,14 +487,16 @@
 }
 
 /* Hero phone: image same width and radius as cards, shorter height */
-.jcp-home .hero-phone-image-wrap {
+.jcp-home .hero-phone-image-wrap ,
+.jcp-niche .hero-phone-image-wrap {
   width: 100%;
   flex-shrink: 0;
   opacity: 0;
   transform: translateY(14px);
   animation: heroPhoneCardReveal 0.5s ease-out 0.2s forwards;
 }
-.jcp-home .hero-phone-image {
+.jcp-home .hero-phone-image ,
+.jcp-niche .hero-phone-image {
   width: 100%;
   display: block;
   border-radius: var(--jcp-radius-lg);
@@ -475,24 +505,29 @@
   max-height: 96px;
 }
 
-.jcp-home .hero-phone-card {
+.jcp-home .hero-phone-card ,
+.jcp-niche .hero-phone-card {
   width: 100%;
   opacity: 0;
   transform: translateY(14px);
   animation: heroPhoneCardReveal 0.5s ease-out forwards;
 }
-.jcp-home .hero-phone-card-1 {
+.jcp-home .hero-phone-card-1 ,
+.jcp-niche .hero-phone-card-1 {
   animation-delay: 0.35s;
 }
-.jcp-home .hero-phone-card-2 {
+.jcp-home .hero-phone-card-2 ,
+.jcp-niche .hero-phone-card-2 {
   animation-delay: 0.9s;
 }
-.jcp-home .hero-phone-card-3 {
+.jcp-home .hero-phone-card-3 ,
+.jcp-niche .hero-phone-card-3 {
   animation-delay: 1.45s;
 }
 
 /* CTA appears after cards; glow starts after CTA is in */
-.jcp-home .hero-phone-cta {
+.jcp-home .hero-phone-cta ,
+.jcp-niche .hero-phone-cta {
   left: 50%;
   right: auto;
   margin-left: 0;
