@@ -463,6 +463,40 @@ function jcp_niche_merge_parsed_content( array $parsed, array $existing = [] ): 
 }
 
 /**
+ * Whether an array is a sequential list (0..n-1 keys).
+ *
+ * @param array<mixed> $array Array.
+ */
+function jcp_is_sequential_array( array $array ): bool {
+	if ( [] === $array ) {
+		return true;
+	}
+	return array_keys( $array ) === range( 0, count( $array ) - 1 );
+}
+
+/**
+ * Deep-merge block props: replace list arrays entirely so deletions persist.
+ *
+ * @param array<string, mixed> $base    Existing props.
+ * @param array<string, mixed> $overlay Flat editor values.
+ * @return array<string, mixed>
+ */
+function jcp_page_merge_props_deep( array $base, array $overlay ): array {
+	foreach ( $overlay as $key => $value ) {
+		if ( is_array( $value ) && jcp_is_sequential_array( $value ) ) {
+			$base[ $key ] = $value;
+			continue;
+		}
+		if ( is_array( $value ) && isset( $base[ $key ] ) && is_array( $base[ $key ] ) && ! jcp_is_sequential_array( $value ) ) {
+			$base[ $key ] = jcp_page_merge_props_deep( $base[ $key ], $value );
+			continue;
+		}
+		$base[ $key ] = $value;
+	}
+	return $base;
+}
+
+/**
  * Merge flat legacy content (hero.h1 paths) into a blocks document before save.
  *
  * @param array<string, mixed> $doc  Blocks document.
@@ -485,7 +519,7 @@ function jcp_page_merge_flat_into_blocks( array $doc, array $flat ): array {
 		}
 		$key = $def['legacy_key'] ?? $type;
 		if ( $key && isset( $flat[ $key ] ) && is_array( $flat[ $key ] ) ) {
-			$doc['blocks'][ $i ]['props'] = array_replace_recursive(
+			$doc['blocks'][ $i ]['props'] = jcp_page_merge_props_deep(
 				$block['props'] ?? [],
 				$flat[ $key ]
 			);

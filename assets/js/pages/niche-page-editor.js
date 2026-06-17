@@ -785,6 +785,31 @@
     }
   };
 
+  const collectStringArraysFromDom = () => {
+    document.querySelectorAll('[data-jcp-array]').forEach((container) => {
+      const basePath = container.dataset.jcpArray;
+      if (!basePath) return;
+      const items = [...container.querySelectorAll(':scope > [data-jcp-array-item]')];
+      if (!items.length) {
+        setPath(flatContent, basePath, []);
+        return;
+      }
+      const firstPathEl = items[0].hasAttribute('data-jcp-path')
+        ? items[0]
+        : items[0].querySelector('[data-jcp-path]');
+      const samplePath = firstPathEl?.getAttribute('data-jcp-path') || '';
+      if (!samplePath.startsWith(`${basePath}.`)) return;
+      const suffix = samplePath.slice(basePath.length + 1);
+      if (!/^\d+$/.test(suffix)) return;
+
+      const arr = items.map((item) => {
+        const el = item.hasAttribute('data-jcp-path') ? item : item.querySelector('[data-jcp-path]');
+        return el ? (el.textContent || '').trim() : '';
+      });
+      setPath(flatContent, basePath, arr);
+    });
+  };
+
   const collectFromDom = () => {
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
       const path = el.getAttribute('data-jcp-path');
@@ -796,6 +821,7 @@
       if (!path) return;
       setPath(flatContent, path, el.getAttribute('href') || '');
     });
+    collectStringArraysFromDom();
   };
 
   const bindEditableFields = () => {
