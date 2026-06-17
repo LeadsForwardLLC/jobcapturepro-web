@@ -165,12 +165,22 @@ function jcp_niche_render_import_meta_box( WP_Post $post ): void {
 	(function () {
 		var btn = document.getElementById('jcp-niche-build-from-doc');
 		var ta = document.getElementById('jcp_niche_import_doc');
-		var jsonTa = document.getElementById('jcp_niche_content_json');
 		var status = document.getElementById('jcp-niche-import-status');
 		var fileInput = document.getElementById('jcp_niche_import_file');
-		if (!btn || !ta || !jsonTa) return;
+		if (!btn || !ta) return;
 
 		btn.addEventListener('click', function () {
+			var jsonTa = document.getElementById('jcp_niche_content_json');
+			if (!jsonTa) {
+				if (status) {
+					status.textContent = '<?php echo esc_js( __( 'Advanced JSON box not loaded yet — scroll down and try again.', 'jcp-core' ) ); ?>';
+				}
+				return;
+			}
+			if (typeof ajaxurl === 'undefined') {
+				if (status) status.textContent = '<?php echo esc_js( __( 'Admin scripts not loaded. Refresh the page and try again.', 'jcp-core' ) ); ?>';
+				return;
+			}
 			var body = new FormData();
 			body.append('action', 'jcp_niche_parse_document');
 			body.append('_wpnonce', '<?php echo esc_js( wp_create_nonce( 'jcp_niche_parse_document' ) ); ?>');
@@ -192,6 +202,7 @@ function jcp_niche_render_import_meta_box( WP_Post $post ): void {
 					jsonTa.value = data.data.content;
 					status.textContent = '<?php echo esc_js( __( 'JSON ready — click Update to save.', 'jcp-core' ) ); ?>';
 					jsonTa.focus();
+					jsonTa.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				})
 				.catch(function () {
 					btn.disabled = false;
