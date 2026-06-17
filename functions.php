@@ -40,6 +40,7 @@ require_once get_template_directory() . '/inc/niche-landing/schema.php';
 require_once get_template_directory() . '/inc/niche-landing/doc-parser.php';
 require_once get_template_directory() . '/inc/page-blocks/doc-parser.php';
 require_once get_template_directory() . '/inc/niche-landing/partials.php';
+require_once get_template_directory() . '/inc/niche-landing/components.php';
 require_once get_template_directory() . '/inc/niche-landing/editable.php';
 require_once get_template_directory() . '/inc/niche-landing/render.php';
 require_once get_template_directory() . '/inc/page-blocks/render.php';

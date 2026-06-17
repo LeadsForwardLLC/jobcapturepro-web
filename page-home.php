@@ -2,15 +2,19 @@
 /**
  * Template Name: Home
  *
- * Homepage template. Renders the homepage via JavaScript (data-jcp-page="home").
- * Assign this template to the static front page in Settings > Reading.
- * No hero block or WP title/content customization—app renders full page.
+ * Homepage — block-rendered from global JCP block library.
+ * Assign to the static front page in Settings → Reading.
  *
  * @package JCP_Core
  */
 
 get_header();
-?>
-<div id="jcp-app" data-jcp-page="home"></div>
-<?php
+
+if ( have_posts() ) {
+	while ( have_posts() ) {
+		the_post();
+		jcp_niche_render_page( (int) get_the_ID() );
+	}
+}
+
 get_footer();

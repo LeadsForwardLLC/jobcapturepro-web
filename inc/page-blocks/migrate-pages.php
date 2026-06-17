@@ -34,16 +34,60 @@ function jcp_page_migrate_referral_program_to_jcp_blocks(): int {
 }
 
 /**
+ * Migrate homepage (front page) to block storage.
+ *
+ * Only seeds when no block content exists — never overwrites admin edits.
+ *
+ * @return int Post ID or 0.
+ */
+function jcp_page_migrate_home_to_blocks(): int {
+	$front_id = (int) get_option( 'page_on_front' );
+	if ( $front_id <= 0 ) {
+		$pages = get_pages(
+			[
+				'meta_key'   => '_wp_page_template',
+				'meta_value' => 'page-home.php',
+				'number'     => 1,
+			]
+		);
+		$front_id = ! empty( $pages[0] ) ? (int) $pages[0]->ID : 0;
+	}
+	if ( $front_id <= 0 ) {
+		return 0;
+	}
+
+	if ( get_post_meta( $front_id, jcp_page_content_meta_key(), true ) ) {
+		return $front_id;
+	}
+
+	$preset = jcp_page_load_preset( 'home' );
+	if ( empty( $preset ) ) {
+		return 0;
+	}
+
+	$content = jcp_page_normalize_content( $preset, $front_id );
+	$content['page_kind'] = 'home';
+	jcp_page_save_content( $front_id, $content );
+	update_post_meta( $front_id, '_wp_page_template', 'page-home.php' );
+
+	return $front_id;
+}
+
+/**
  * Run page migrations once per environment after deploy.
  */
 function jcp_page_maybe_migrate_pages(): void {
-	if ( get_option( 'jcp_migrated_referral_jcp_blocks_v1' ) === '1' ) {
-		return;
+	if ( get_option( 'jcp_migrated_referral_jcp_blocks_v1' ) !== '1' ) {
+		$id = jcp_page_migrate_referral_program_to_jcp_blocks();
+		if ( $id > 0 ) {
+			update_option( 'jcp_migrated_referral_jcp_blocks_v1', '1' );
+		}
 	}
-
-	$id = jcp_page_migrate_referral_program_to_jcp_blocks();
-	if ( $id > 0 ) {
-		update_option( 'jcp_migrated_referral_jcp_blocks_v1', '1' );
+	if ( get_option( 'jcp_migrated_home_blocks_v1' ) !== '1' ) {
+		$id = jcp_page_migrate_home_to_blocks();
+		if ( $id > 0 ) {
+			update_option( 'jcp_migrated_home_blocks_v1', '1' );
+		}
 	}
 }
 add_action( 'init', 'jcp_page_maybe_migrate_pages', 25 );

@@ -69,6 +69,21 @@ function jcp_page_presets(): array {
 				'final_cta',
 			],
 		],
+		'home' => [
+			'label'       => __( 'Homepage', 'jcp-core' ),
+			'page_kind'   => 'home',
+			'block_types' => [
+				'hero',
+				'how_it_works',
+				'proof_flow',
+				'benefits',
+				'who_its_for',
+				'directory_preview',
+				'faq',
+				'conversion',
+				'final_cta',
+			],
+		],
 	];
 }
 

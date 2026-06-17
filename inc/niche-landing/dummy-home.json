@@ -1,0 +1,197 @@
+{
+  "page_type": "home",
+  "page_kind": "home",
+  "page_key": "home",
+  "page_label": "Home",
+  "hide_breadcrumb": true,
+  "hero": {
+    "h1_prefix": "Automatically turn every completed job into",
+    "rotating_words": ["visibility", "calls", "customers", "growth"],
+    "subheadline": "Your team already takes job photos. JobCapturePro automatically turns them into Google updates, website content, social media posts, and review requests so your work keeps marketing itself.",
+    "cta_primary": { "label": "View the live demo", "url": "/demo" },
+    "cta_secondary": { "label": "Learn how it works", "url": "#how-it-works" },
+    "cta_microcopy": "No signup. Takes under 5 mins.",
+    "meta_stats": [
+      { "icon": "camera", "label": "1 photo", "detail": "proof everywhere", "css_class": "meta-stat-photo" },
+      { "icon": "map", "label": "4 channels", "detail": "shared on website + social", "css_class": "meta-stat-channels" },
+      { "icon": "clock", "label": "0 busywork", "detail": "no extra work from you", "css_class": "meta-stat-busywork" }
+    ]
+  },
+  "how_it_works": {
+    "headline": "How JobCapturePro works",
+    "subheadline": "Every completed job becomes verified proof across every channel that matters. Here's the simple flow your crew already knows.",
+    "numeric_steps": true,
+    "cta_label": "See the demo version of this flow",
+    "cta_url": "#demo-preview",
+    "steps": [
+      { "title": "Capture", "lines": ["Crew snaps a photo or the job completes in your CRM."] },
+      { "title": "AI Check-In", "lines": ["JobCapturePro generates the full check-in automatically."] },
+      { "title": "Publish", "lines": ["Website, directory, GBP, and social update instantly."] },
+      { "title": "Review", "lines": ["Smart review requests go out at the right moment."] }
+    ],
+    "demo_preview": {
+      "badge": "Live Demo",
+      "headline": "See it in action",
+      "body": "Watch how JobCapturePro turns a single job photo into verified proof across Google Maps, your website, directory listings, and review requests — all automatically.",
+      "cue": "You will see how one job becomes Google updates, website proof, directory presence, and review requests.",
+      "cta_primary": { "label": "Launch Interactive Demo", "url": "/demo" },
+      "cta_note": "No signup required • Takes 2 minutes"
+    }
+  },
+  "proof_flow": {
+    "headline": "Real job proof, not marketing claims",
+    "subheadline": "See how a single completed job becomes public, verifiable proof across every channel that matters.",
+    "items": [
+      { "icon": "map-pin", "label": "Google Business Profile", "copy": "Published as a real job update on Google" },
+      { "icon": "earth", "label": "Website", "copy": "Automatically added as live job content" },
+      { "icon": "share-2", "label": "Social Media", "copy": "Shared as job proof on social channels" },
+      { "icon": "star", "label": "Reviews", "copy": "Auto review collection" }
+    ],
+    "callout_badge": "Verified Job Proof",
+    "callout_title": "All JobCapturePro customers are added to the verified directory",
+    "callout_text": "This isn't a demo or sample. Every listing represents a real business, real jobs, and real proof created by JobCapturePro.",
+    "link_label": "Learn more about the JobCapturePro directory",
+    "link_url": "#directory-preview"
+  },
+  "benefits": {
+    "headline": "Benefits that show up in the market",
+    "subheadline": "JobCapturePro creates proof customers can see, rankings that improve, and demand that compounds.",
+    "section_id": "features",
+    "variant": "cta_row",
+    "items": [
+      { "icon": "badge-check", "title": "Verified proof", "body": "Real check-ins replace claims with proof homeowners trust.", "stat_value": "Proof", "stat_label": "from real jobs" },
+      { "icon": "map-pin", "title": "Local visibility", "body": "Fresh job activity drives stronger map coverage and ranking.", "stat_value": "Map", "stat_label": "coverage grows" },
+      { "icon": "message-square", "title": "Consistent presence", "body": "Social and GBP stay active without manual posting.", "stat_value": "Always", "stat_label": "on brand" },
+      { "icon": "star", "title": "More reviews", "body": "Requests go out while the job is fresh and credible.", "stat_value": "Reviews", "stat_label": "on autopilot" },
+      { "icon": "building-2", "title": "Directory presence", "body": "Get listed across our verified contractor directory instantly.", "stat_value": "Directory", "stat_label": "auto-updated" },
+      { "icon": "phone", "title": "More calls", "body": "Visibility multiplies across search, maps, and directory channels.", "stat_value": "Calls", "stat_label": "keep coming" }
+    ],
+    "cta_primary": { "label": "See it in the demo", "url": "/demo" },
+    "cta_secondary": { "label": "View pricing", "url": "/pricing" }
+  },
+  "who_its_for": {
+    "headline": "Built for the way real contracting businesses actually work",
+    "subheadline": "Designed for real job sites, real crews, and businesses that want completed work to keep driving new demand.",
+    "variant": "guarantees",
+    "audiences": [
+      {
+        "title": "Contractors & Trades",
+        "body": "Turn every completed job into proof that wins the next one.",
+        "badge": "For Contractors",
+        "image_url": "https://jobcapturepro.com/wp-content/uploads/2025/11/crew-768x768.jpg",
+        "stat_number": "100%",
+        "stat_label": "Automated",
+        "faq_target": "faq-visibility-proof"
+      },
+      {
+        "title": "Owners & Office Teams",
+        "body": "Automate visibility without chasing photos or posts.",
+        "badge": "For Owners",
+        "image_url": "https://jobcapturepro.com/wp-content/uploads/2025/11/confident-foreman-768x768.jpg",
+        "stat_number": "0",
+        "stat_label": "Extra Work",
+        "faq_target": "faq-integrations-locations"
+      },
+      {
+        "title": "Field Crews",
+        "body": "Capture once and move on — no extra admin work.",
+        "badge": "For Crews",
+        "image_url": "https://jobcapturepro.com/wp-content/uploads/2025/11/owner-crew-768x768.jpg",
+        "stat_number": "1",
+        "stat_label": "Photo Needed",
+        "faq_target": "faq-training-how"
+      }
+    ]
+  },
+  "directory_preview": {
+    "headline": "Your work powers a public directory homeowners trust",
+    "subheadline": "As a JobCapturePro member, your business appears in a public directory powered by real activity, verified proof, and trust signals that influence homeowner decisions. Visibility and ranking grow naturally as you use the system.",
+    "cards": [
+      {
+        "name": "Summit Roofing",
+        "initials": "SR",
+        "badge": "Verified",
+        "badge_class": "verified",
+        "location": "Austin, TX",
+        "jobs": "82 jobs",
+        "activity": "Active recently",
+        "rating": "4.9 (120)",
+        "url": "/directory"
+      },
+      {
+        "name": "Your Business",
+        "initials": "YB",
+        "badge": "Verified",
+        "badge_class": "verified",
+        "location": "Your City, ST",
+        "jobs": "64 jobs",
+        "activity": "Active today",
+        "rating": "4.8 (98)",
+        "highlight": true,
+        "url": "/directory"
+      },
+      {
+        "name": "Heritage Fence Co.",
+        "initials": "HF",
+        "badge": "Listed",
+        "badge_class": "listed",
+        "location": "Houston, TX",
+        "jobs": "41 jobs",
+        "activity": "Active this week",
+        "rating": "4.7 (64)",
+        "url": "/directory"
+      }
+    ],
+    "outro": "Activity earns attention. Inactive listings fade.",
+    "cta_primary": { "label": "See how your listing looks in the demo", "url": "/demo" }
+  },
+  "faq": {
+    "headline": "FAQ",
+    "subheadline": "Clear answers for contractors evaluating the system.",
+    "items": [
+      { "id": "faq-setup", "q": "What does setup look like?", "a": "Most companies are live within a few days. We connect your website, set up your locations, and turn on the channels you want so job activity can start publishing immediately." },
+      { "id": "faq-connect", "q": "What do I need to connect?", "a": "JobCapturePro supports HouseCall Pro, CompanyCam, Workiz, and QuickBooks today. If you use a different system and it has an API, we can evaluate a custom integration for higher tier plans. You can also use the mobile app without any integrations." },
+      { "id": "faq-visibility-proof", "q": "Will this help with Google Maps visibility?", "a": "Yes. Consistent job activity supports stronger local relevance signals and helps keep your Google Business Profile fresh. Many contractors see improved visibility when posting becomes consistent and automatic." },
+      { "q": "Is this real activity or staged content?", "a": "It is real. Proof comes from your actual jobs and your actual photos. The system is designed to show authentic work activity, not generic marketing content." },
+      { "id": "faq-training-how", "q": "Do crews need to learn new tools?", "a": "No. Crews simply take a photo in the JobCapturePro app, or your jobs flow in automatically through integrations. There is no extra admin work and no new process to teach." },
+      {
+        "id": "faq-already-use-tools",
+        "q": "I already use CompanyCam or Housecall Pro. Do I need this?",
+        "a": [
+          "Yes — and that's exactly who JobCapturePro is built for.",
+          "Tools like CompanyCam and Housecall Pro are great at capturing job photos and managing operations. JobCapturePro sits on top of the tools you already use and turns that existing job activity into public, verified proof.",
+          "We automatically take real job photos, locations, and completion signals from your workflow and transform them into Google updates, website content, directory listings, and smart review requests — without changing how your crew works.",
+          "You don't replace your current tools. You make the work you're already doing start driving visibility, trust, and new jobs."
+        ]
+      },
+      { "q": "What exactly happens after we capture a job?", "a": "One photo or a completed job triggers an AI check in that becomes publishable proof. It can update your website, keep your Google Business Profile active, publish social content, and send a review request based on your settings." },
+      { "q": "Where does proof get published?", "a": "Your proof can appear on your website, your Google Business Profile, your social channels, inside your JobCapturePro public directory listing, and in review requests you send to customers." },
+      { "q": "How do reviews work?", "a": "You can request reviews right after jobs while the experience is fresh. Reviews can be triggered from the mobile app or automatically after job completion through CRM based automation. Follow ups can be enabled and stop once the customer clicks to leave a review." },
+      { "id": "faq-integrations-locations", "q": "Can we use JobCapturePro for multiple locations?", "a": "Yes. Each location can have its own Google Business Profile and connected social accounts, with organization level management for multi location teams." },
+      { "q": "What is the JobCapturePro public directory and why does it matter?", "a": "Every member gets a public directory listing that is powered by real job activity and proof. Homeowners can see who is active and credible, and companies that post consistently earn stronger placement and more trust over time." }
+    ]
+  },
+  "conversion": {
+    "headline": "This works when the work is real",
+    "subheadline": "JobCapturePro is built for contractors who already complete real jobs and move on to the next one. It turns finished work into quiet, ongoing visibility so the jobs you complete today continue to bring in calls later.",
+    "points": [
+      "You're already completing jobs on a regular basis",
+      "You want more calls without adding admin or marketing tasks",
+      "You want past work to keep generating future work"
+    ],
+    "cta_primary": { "label": "See how this works for your business", "url": "/demo" },
+    "image_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop&q=80",
+    "image_alt": "Contractors at work",
+    "image_badge": "Real Work",
+    "stats": [
+      { "value": "100%", "label": "Automated" },
+      { "value": "0", "label": "Extra Work" }
+    ]
+  },
+  "final_cta": {
+    "headline": "See how your jobs turn into real demand",
+    "subheadline": "Preview how JobCapturePro would publish your work across Google, your website, reviews, and the public directory.",
+    "cta_primary": { "label": "See your business in the live demo", "url": "/demo" },
+    "cta_note": "No signup required. Takes two minutes."
+  }
+}

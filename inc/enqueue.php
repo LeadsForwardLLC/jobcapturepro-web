@@ -74,17 +74,22 @@ function jcp_core_enqueue_assets(): void {
 
     // Page-specific assets
     if ( $pages['is_home'] ) {
-        // Homepage uses sections.css (already loaded for marketing pages) + page-specific overrides
         jcp_core_enqueue_style( 'jcp-core-home', 'css/pages/home.css', [ 'jcp-core-sections' ] );
-        jcp_core_enqueue_script( 'jcp-core-home', 'js/pages/home.js' );
-        $render_deps[] = 'jcp-core-home';
-        $home_ctas = [
-            'primary_text'   => 'View the live demo',
-            'primary_url'    => '/demo',
-            'secondary_text' => 'Learn how it works',
-            'secondary_url'  => '#how-it-works',
-        ];
-        wp_localize_script( 'jcp-core-home', 'JCP_HOME_HERO_CTAS', $home_ctas );
+        $front_id = (int) get_option( 'page_on_front' );
+        $uses_blocks = $front_id > 0 && get_post_meta( $front_id, jcp_page_content_meta_key(), true );
+        if ( $uses_blocks ) {
+            jcp_core_enqueue_script( 'jcp-core-home-interactions', 'js/pages/home-interactions.js' );
+        } else {
+            jcp_core_enqueue_script( 'jcp-core-home', 'js/pages/home.js' );
+            $render_deps[] = 'jcp-core-home';
+            $home_ctas = [
+                'primary_text'   => 'View the live demo',
+                'primary_url'    => '/demo',
+                'secondary_text' => 'Learn how it works',
+                'secondary_url'  => '#how-it-works',
+            ];
+            wp_localize_script( 'jcp-core-home', 'JCP_HOME_HERO_CTAS', $home_ctas );
+        }
     }
 
     if ( $pages['is_pricing'] ) {
@@ -168,8 +173,13 @@ function jcp_core_enqueue_assets(): void {
         jcp_core_enqueue_style( 'jcp-core-blog', 'css/pages/blog.css', [ 'jcp-core-sections' ] );
     }
 
-    // Load render dispatcher only on app pages (not blog, single, or generic pages)
-    $needs_render = $pages['is_home'] || $pages['is_pricing'] || $pages['is_early_access'] || $pages['is_contact']
+    // Load render dispatcher only on JS app-shell pages (not block-rendered homepage).
+    $home_uses_blocks = false;
+    if ( $pages['is_home'] ) {
+        $front_id = (int) get_option( 'page_on_front' );
+        $home_uses_blocks = $front_id > 0 && (bool) get_post_meta( $front_id, jcp_page_content_meta_key(), true );
+    }
+    $needs_render = ( $pages['is_home'] && ! $home_uses_blocks ) || $pages['is_pricing'] || $pages['is_early_access'] || $pages['is_contact']
         || $pages['is_prototype'] || $pages['is_demo'] || $pages['is_directory'] || $pages['is_company'] || $pages['is_estimate'];
     if ( $needs_render ) {
         jcp_core_enqueue_script( $render_handle, 'js/core/jcp-render.js', $render_deps );

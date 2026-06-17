@@ -44,7 +44,7 @@ function jcp_niche_render_breadcrumb( array $c ): void {
  */
 function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	$h = $c['hero'] ?? [];
-	if ( empty( $h['h1'] ) ) {
+	if ( empty( $h['h1'] ) && empty( $h['h1_prefix'] ) ) {
 		return;
 	}
 	$primary   = jcp_niche_resolve_cta( $h['cta_primary'] ?? [], $niche_key );
@@ -53,14 +53,30 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	if ( ! in_array( $variant, jcp_block_hero_variants(), true ) ) {
 		$variant = ! isset( $h['show_visual'] ) || ! empty( $h['show_visual'] ) ? 'split' : 'centered';
 	}
+	if ( ! empty( $h['rotating_words'] ) && is_array( $h['rotating_words'] ) ) {
+		$variant = 'home';
+	}
 	$demo_url = home_url( '/demo/' );
 	$photo    = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
+	$is_home  = $variant === 'home';
 	?>
 	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?>">
 		<div class="jcp-container">
 			<div class="jcp-hero-grid">
 				<div class="jcp-hero-copy hero-copy">
+					<?php if ( $is_home ) : ?>
+						<h1 class="jcp-hero-title">
+							<span<?php jcp_niche_editable_attr( 'hero.h1_prefix' ); ?>><?php echo esc_html( (string) ( $h['h1_prefix'] ?? $h['h1'] ?? '' ) ); ?></span>
+							<span class="jcp-hero-title-end">
+								<?php esc_html_e( 'more', 'jcp-core' ); ?>
+								<span class="jcp-hero-rotating-word" aria-live="polite" data-words="<?php echo esc_attr( wp_json_encode( array_values( (array) $h['rotating_words'] ) ) ); ?>">
+									<?php echo esc_html( (string) ( $h['rotating_words'][0] ?? 'visibility' ) ); ?>
+								</span>
+							</span>
+						</h1>
+					<?php else : ?>
 					<h1 class="jcp-hero-title"<?php jcp_niche_editable_attr( 'hero.h1' ); ?>><?php jcp_niche_e( (string) $h['h1'] ); ?></h1>
+					<?php endif; ?>
 					<?php if ( ! empty( $h['subheadline'] ) ) : ?>
 						<p class="jcp-hero-subtitle"<?php jcp_niche_editable_attr( 'hero.subheadline' ); ?>><?php jcp_niche_e( (string) $h['subheadline'] ); ?></p>
 					<?php endif; ?>
@@ -68,6 +84,9 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						<?php if ( $primary['label'] !== '' ) : ?>
 							<div class="jcp-hero-primary-cta">
 								<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'hero.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], str_contains( $primary['url'], 'firstpromoter.com' ) ? 'referral_hero' : 'niche_hero', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
+								<?php if ( ! empty( $h['cta_microcopy'] ) ) : ?>
+									<span class="jcp-hero-cta-microcopy"<?php jcp_niche_editable_attr( 'hero.cta_microcopy' ); ?>><?php jcp_niche_e( (string) $h['cta_microcopy'] ); ?></span>
+								<?php endif; ?>
 							</div>
 						<?php endif; ?>
 						<?php if ( $secondary['label'] !== '' ) : ?>
@@ -77,7 +96,13 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 					<?php if ( ! empty( $h['trust_line'] ) ) : ?>
 						<p class="jcp-niche-trust-line"<?php jcp_niche_editable_attr( 'hero.trust_line' ); ?>><?php jcp_niche_e( (string) $h['trust_line'] ); ?></p>
 					<?php endif; ?>
+					<?php if ( $is_home && ! empty( $h['meta_stats'] ) ) : ?>
+						<?php jcp_component_home_meta_stats( (array) $h['meta_stats'] ); ?>
+					<?php endif; ?>
 				</div>
+				<?php if ( $is_home ) : ?>
+					<?php jcp_component_hero_home_visual( $primary['url'] !== '' ? $primary['url'] : $demo_url ); ?>
+				<?php else : ?>
 				<div class="jcp-hero-visual hero-visual" aria-hidden="<?php echo $variant === 'centered' ? 'true' : 'false'; ?>">
 					<a href="<?php echo esc_url( $demo_url ); ?>" class="demo-phone-mockup hero-phone-mockup" aria-label="<?php esc_attr_e( 'Try the live demo', 'jcp-core' ); ?>" tabindex="<?php echo $variant === 'centered' ? '-1' : '0'; ?>">
 						<div class="phone-frame hero-phone-frame">
@@ -106,6 +131,7 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						</div>
 					</a>
 				</div>
+				<?php endif; ?>
 			</div>
 		</div>
 	</section>
@@ -289,8 +315,10 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 			$niche_key
 		)
 		: [ 'label' => '', 'url' => '' ];
+	$numeric_steps = ! empty( $h['numeric_steps'] );
+	$section_id    = ! empty( $h['section_id'] ) ? (string) $h['section_id'] : 'how-it-works';
 	?>
-	<section class="jcp-section rankings-section" id="how-it-works">
+	<section class="jcp-section rankings-section" id="<?php echo esc_attr( $section_id ); ?>">
 		<div class="jcp-container">
 			<div class="rankings-header">
 				<h2<?php jcp_niche_editable_attr( 'how_it_works.headline' ); ?>><?php jcp_niche_e( (string) $h['headline'] ); ?></h2>
@@ -305,7 +333,7 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 					if ( ! is_array( $step ) ) {
 						continue;
 					}
-					$num = str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT );
+					$num = $numeric_steps ? (string) ( $i + 1 ) : str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT );
 					?>
 					<div class="timeline-step">
 						<div class="step-number"><?php echo esc_html( $num ); ?></div>
@@ -326,6 +354,11 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 					</a>
 				</div>
 			<?php endif; ?>
+			<?php
+			if ( ! empty( $h['demo_preview'] ) && is_array( $h['demo_preview'] ) ) {
+				jcp_niche_render_demo_preview( $h['demo_preview'], $niche_key );
+			}
+			?>
 		</div>
 	</section>
 	<?php
@@ -440,24 +473,30 @@ function jcp_niche_render_benefits( array $c ): void {
 	if ( empty( $b['headline'] ) ) {
 		return;
 	}
+	$section_id = ! empty( $b['section_id'] ) ? (string) $b['section_id'] : '';
+	$variant      = (string) ( $b['variant'] ?? '' );
 	?>
-	<section class="jcp-section rankings-section jcp-niche-benefits">
+	<section class="jcp-section rankings-section jcp-niche-benefits<?php echo $section_id !== '' ? '' : ''; ?>"<?php echo $section_id !== '' ? ' id="' . esc_attr( $section_id ) . '"' : ''; ?>>
 		<div class="jcp-container">
 			<div class="rankings-header">
 				<h2<?php jcp_niche_editable_attr( 'benefits.headline' ); ?>><?php jcp_niche_e( (string) $b['headline'] ); ?></h2>
+				<?php if ( ! empty( $b['subheadline'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'benefits.subheadline' ); ?>><?php jcp_niche_e( (string) $b['subheadline'] ); ?></p>
+				<?php endif; ?>
 			</div>
 			<div class="ranking-factors-grid">
 				<?php
-				$benefit_icons = [ 'map-pin', 'badge-check', 'star', 'share-2', 'trending-up', 'phone' ];
+				$benefit_icons = [ 'badge-check', 'map-pin', 'message-square', 'star', 'building-2', 'phone' ];
 				foreach ( (array) ( $b['items'] ?? [] ) as $bi => $item ) :
 					if ( ! is_array( $item ) ) {
 						continue;
 					}
+					$icon = ! empty( $item['icon'] ) ? (string) $item['icon'] : ( $benefit_icons[ $bi ] ?? 'badge-check' );
 					jcp_niche_factor_card(
 						(string) ( $item['title'] ?? '' ),
-						$benefit_icons[ $bi ] ?? 'badge-check',
-						'',
-						'',
+						$icon,
+						(string) ( $item['stat_value'] ?? '' ),
+						(string) ( $item['stat_label'] ?? '' ),
 						function () use ( $item ) {
 							echo '<p>' . esc_html( (string) ( $item['body'] ?? '' ) ) . '</p>';
 						}
@@ -469,7 +508,22 @@ function jcp_niche_render_benefits( array $c ): void {
 			if ( ! empty( $b['closing'] ) ) {
 				jcp_niche_render_section_closing( (string) $b['closing'], 'benefits.closing' );
 			}
-			?>
+			if ( $variant === 'cta_row' && ( ! empty( $b['cta_primary'] ) || ! empty( $b['cta_secondary'] ) ) ) :
+				$primary   = jcp_niche_resolve_cta( $b['cta_primary'] ?? [], '' );
+				$secondary = jcp_niche_resolve_cta( $b['cta_secondary'] ?? [], '' );
+				?>
+				<div class="benefits-cta-row">
+					<?php if ( $primary['label'] !== '' ) : ?>
+						<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary"<?php jcp_niche_editable_link_attr( 'benefits.cta_primary' ); ?>><?php echo esc_html( $primary['label'] ); ?></a>
+					<?php endif; ?>
+					<?php if ( $secondary['label'] !== '' ) : ?>
+						<a href="<?php echo esc_url( $secondary['url'] ); ?>" class="benefits-cta-link"<?php jcp_niche_editable_link_attr( 'benefits.cta_secondary' ); ?>>
+							<?php echo esc_html( $secondary['label'] ); ?>
+							<?php jcp_component_chevron_svg(); ?>
+						</a>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 	</section>
 	<?php
@@ -641,12 +695,28 @@ function jcp_niche_render_who_its_for( array $c ): void {
 	if ( empty( $w['headline'] ) ) {
 		return;
 	}
+	$variant = (string) ( $w['variant'] ?? '' );
 	?>
 	<section class="jcp-section rankings-section jcp-niche-audiences" id="who-its-for">
 		<div class="jcp-container">
 			<div class="rankings-header">
 				<h2<?php jcp_niche_editable_attr( 'who_its_for.headline' ); ?>><?php jcp_niche_e( (string) $w['headline'] ); ?></h2>
+				<?php if ( ! empty( $w['subheadline'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'who_its_for.subheadline' ); ?>><?php jcp_niche_e( (string) $w['subheadline'] ); ?></p>
+				<?php endif; ?>
 			</div>
+			<?php if ( $variant === 'guarantees' ) : ?>
+				<div class="guarantees-grid">
+					<?php foreach ( (array) ( $w['audiences'] ?? [] ) as $ai => $aud ) : ?>
+						<?php
+						if ( ! is_array( $aud ) ) {
+							continue;
+						}
+						jcp_component_audience_guarantee_card( $aud, (int) $ai );
+						?>
+					<?php endforeach; ?>
+				</div>
+			<?php else : ?>
 			<div class="ranking-factors-grid jcp-niche-split-grid">
 				<?php
 				$aud_icons = [ 'briefcase', 'hard-hat', 'trending-up' ];
@@ -666,6 +736,7 @@ function jcp_niche_render_who_its_for( array $c ): void {
 				endforeach;
 				?>
 			</div>
+			<?php endif; ?>
 		</div>
 	</section>
 	<?php
@@ -685,13 +756,34 @@ function jcp_niche_render_faq( array $c ): void {
 		<div class="jcp-container">
 			<div class="rankings-header">
 				<h2<?php jcp_niche_editable_attr( 'faq.headline' ); ?>><?php jcp_niche_e( (string) $f['headline'] ); ?></h2>
+				<?php if ( ! empty( $f['subheadline'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'faq.subheadline' ); ?>><?php jcp_niche_e( (string) $f['subheadline'] ); ?></p>
+				<?php endif; ?>
 			</div>
 			<div class="faq-grid">
 				<?php foreach ( $items as $i => $item ) : ?>
-					<?php if ( ! is_array( $item ) ) { continue; } ?>
-					<details class="faq-item" id="faq-<?php echo esc_attr( (string) $i ); ?>">
+					<?php
+					if ( ! is_array( $item ) ) {
+						continue;
+					}
+					$faq_id = ! empty( $item['id'] ) ? (string) $item['id'] : 'faq-' . $i;
+					?>
+					<details class="faq-item" id="<?php echo esc_attr( $faq_id ); ?>">
 						<summary<?php jcp_niche_editable_attr( 'faq.items.' . $i . '.q' ); ?>><?php jcp_niche_e( (string) ( $item['q'] ?? '' ) ); ?></summary>
-						<p<?php jcp_niche_editable_attr( 'faq.items.' . $i . '.a' ); ?>><?php jcp_niche_e( (string) ( $item['a'] ?? '' ) ); ?></p>
+						<?php
+						$answer = $item['a'] ?? '';
+						$paras  = is_array( $answer ) ? $answer : preg_split( "/\n\s*\n/", (string) $answer );
+						foreach ( (array) $paras as $pi => $para ) {
+							$para = trim( (string) $para );
+							if ( $para === '' ) {
+								continue;
+							}
+							$apath = is_array( $answer ) ? 'faq.items.' . $i . '.a.' . $pi : ( $pi === 0 ? 'faq.items.' . $i . '.a' : 'faq.items.' . $i . '.a.' . $pi );
+							echo '<p';
+							jcp_niche_editable_attr( $apath );
+							echo '>' . esc_html( $para ) . '</p>';
+						}
+						?>
 					</details>
 				<?php endforeach; ?>
 			</div>
@@ -727,6 +819,246 @@ function jcp_niche_render_final_cta( array $c, string $niche_key ): void {
 					<a class="btn btn-primary rankings-cta-btn" href="<?php echo esc_url( $url ); ?>"<?php jcp_niche_editable_link_attr( 'final_cta.cta_primary' ); jcp_niche_cta_tracking_attr( $url, str_contains( $url, 'firstpromoter.com' ) ? 'referral_footer' : 'niche_footer', $btn ); ?>><?php echo esc_html( $btn ); ?></a>
 					<p class="cta-note"<?php jcp_niche_editable_attr( 'final_cta.cta_note' ); ?>><?php echo esc_html( $note ); ?></p>
 				</div>
+			</div>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * Live demo preview block (split copy + demo phone).
+ *
+ * @param array<string, mixed> $props Block props.
+ * @param string               $niche_key Page key.
+ */
+function jcp_niche_render_demo_preview( array $props, string $niche_key = '' ): void {
+	if ( empty( $props['headline'] ) ) {
+		return;
+	}
+	$primary = jcp_niche_resolve_cta( $props['cta_primary'] ?? [ 'label' => 'Launch Interactive Demo', 'url' => '/demo' ], $niche_key );
+	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'demo-preview';
+	?>
+	<div class="demo-preview-section" id="<?php echo esc_attr( $section_id ); ?>">
+		<div class="demo-preview-card">
+			<div class="demo-preview-content">
+				<div class="demo-preview-text">
+					<?php if ( ! empty( $props['badge'] ) ) : ?>
+						<div class="demo-badge">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+								<circle cx="12" cy="12" r="10"/>
+								<polygon points="10 8 16 12 10 16 10 8"/>
+							</svg>
+							<span<?php jcp_niche_editable_attr( 'demo_preview.badge' ); ?>><?php echo esc_html( (string) $props['badge'] ); ?></span>
+						</div>
+					<?php endif; ?>
+					<h3 class="demo-preview-title"<?php jcp_niche_editable_attr( 'demo_preview.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h3>
+					<?php if ( ! empty( $props['body'] ) ) : ?>
+						<p class="demo-preview-description"<?php jcp_niche_editable_attr( 'demo_preview.body' ); ?>><?php echo esc_html( (string) $props['body'] ); ?></p>
+					<?php endif; ?>
+					<?php if ( ! empty( $props['cue'] ) ) : ?>
+						<p class="demo-preview-cue"<?php jcp_niche_editable_attr( 'demo_preview.cue' ); ?>><?php echo esc_html( (string) $props['cue'] ); ?></p>
+					<?php endif; ?>
+					<div class="demo-cta-wrapper">
+						<?php if ( $primary['label'] !== '' ) : ?>
+							<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary demo-cta-primary"<?php jcp_niche_editable_link_attr( 'demo_preview.cta_primary' ); ?>>
+								<span><?php echo esc_html( $primary['label'] ); ?></span>
+								<?php jcp_component_chevron_svg( 20 ); ?>
+							</a>
+						<?php endif; ?>
+						<?php if ( ! empty( $props['cta_note'] ) ) : ?>
+							<p class="demo-cta-note"<?php jcp_niche_editable_attr( 'demo_preview.cta_note' ); ?>><?php echo esc_html( (string) $props['cta_note'] ); ?></p>
+						<?php endif; ?>
+					</div>
+				</div>
+				<div class="demo-preview-visual">
+					<?php jcp_component_demo_app_phone( $primary['url'] ); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Proof flow block — channels fed by one job.
+ *
+ * @param array<string, mixed> $props Block props.
+ */
+function jcp_niche_render_proof_flow( array $props ): void {
+	if ( empty( $props['headline'] ) ) {
+		return;
+	}
+	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'real-job-proof';
+	$items      = (array) ( $props['items'] ?? [] );
+	?>
+	<section class="jcp-section rankings-section" id="<?php echo esc_attr( $section_id ); ?>">
+		<div class="jcp-container">
+			<div class="rankings-header">
+				<h2<?php jcp_niche_editable_attr( 'proof_flow.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h2>
+				<?php if ( ! empty( $props['subheadline'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'proof_flow.subheadline' ); ?>><?php echo esc_html( (string) $props['subheadline'] ); ?></p>
+				<?php endif; ?>
+			</div>
+			<div class="proof-flow">
+				<div class="proof-flow-lines" aria-hidden="true"></div>
+				<?php foreach ( $items as $i => $item ) : ?>
+					<?php
+					if ( ! is_array( $item ) ) {
+						continue;
+					}
+					$icon = ! empty( $item['icon'] ) ? (string) $item['icon'] : 'map-pin';
+					?>
+					<div class="proof-flow-item">
+						<div class="factor-icon-wrapper">
+							<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="factor-icon" alt="" width="32" height="32" />
+						</div>
+						<div class="proof-flow-content">
+							<h4 class="proof-flow-label"<?php jcp_niche_editable_attr( 'proof_flow.items.' . $i . '.label' ); ?>><?php echo esc_html( (string) ( $item['label'] ?? '' ) ); ?></h4>
+							<p class="proof-flow-copy"<?php jcp_niche_editable_attr( 'proof_flow.items.' . $i . '.copy' ); ?>><?php echo esc_html( (string) ( $item['copy'] ?? '' ) ); ?></p>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+			<?php if ( ! empty( $props['callout_title'] ) ) : ?>
+				<div class="real-job-proof-callout">
+					<?php if ( ! empty( $props['callout_badge'] ) ) : ?>
+						<div class="real-job-proof-callout-badge demo-badge">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+								<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+							</svg>
+							<span<?php jcp_niche_editable_attr( 'proof_flow.callout_badge' ); ?>><?php echo esc_html( (string) $props['callout_badge'] ); ?></span>
+						</div>
+					<?php endif; ?>
+					<h3 class="real-job-proof-callout-title"<?php jcp_niche_editable_attr( 'proof_flow.callout_title' ); ?>><?php echo esc_html( (string) $props['callout_title'] ); ?></h3>
+					<?php if ( ! empty( $props['callout_text'] ) ) : ?>
+						<p class="real-job-proof-callout-text"<?php jcp_niche_editable_attr( 'proof_flow.callout_text' ); ?>><?php echo esc_html( (string) $props['callout_text'] ); ?></p>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+			<?php if ( ! empty( $props['link_label'] ) && ! empty( $props['link_url'] ) ) : ?>
+				<div class="timeline-cta" style="margin-top: var(--jcp-space-3xl);">
+					<a href="<?php echo esc_url( (string) $props['link_url'] ); ?>" class="timeline-cta-link"<?php jcp_niche_editable_link_paths( 'proof_flow.link_label', 'proof_flow.link_url' ); ?>>
+						<?php echo esc_html( (string) $props['link_label'] ); ?>
+						<?php jcp_component_chevron_svg(); ?>
+					</a>
+				</div>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * Directory preview block.
+ *
+ * @param array<string, mixed> $props Block props.
+ * @param string               $niche_key Page key.
+ */
+function jcp_niche_render_directory_preview( array $props, string $niche_key = '' ): void {
+	if ( empty( $props['headline'] ) ) {
+		return;
+	}
+	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'directory-preview';
+	$primary    = jcp_niche_resolve_cta( $props['cta_primary'] ?? [], $niche_key );
+	?>
+	<section class="jcp-section rankings-section directory-preview" id="<?php echo esc_attr( $section_id ); ?>">
+		<div class="jcp-container">
+			<div class="rankings-header">
+				<h2<?php jcp_niche_editable_attr( 'directory_preview.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h2>
+				<?php if ( ! empty( $props['subheadline'] ) ) : ?>
+					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'directory_preview.subheadline' ); ?>><?php echo esc_html( (string) $props['subheadline'] ); ?></p>
+				<?php endif; ?>
+			</div>
+			<div class="directory-grid preview-grid">
+				<?php foreach ( (array) ( $props['cards'] ?? [] ) as $ci => $card ) : ?>
+					<?php
+					if ( ! is_array( $card ) ) {
+						continue;
+					}
+					jcp_component_directory_preview_card( $card, (int) $ci );
+					?>
+				<?php endforeach; ?>
+			</div>
+			<?php if ( ! empty( $props['outro'] ) ) : ?>
+				<p class="directory-preview-outro"<?php jcp_niche_editable_attr( 'directory_preview.outro' ); ?>><?php echo esc_html( (string) $props['outro'] ); ?></p>
+			<?php endif; ?>
+			<?php if ( $primary['label'] !== '' ) : ?>
+				<div class="directory-preview-cta">
+					<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary directory-demo-cta"<?php jcp_niche_editable_link_attr( 'directory_preview.cta_primary' ); ?>>
+						<span><?php echo esc_html( $primary['label'] ); ?></span>
+						<?php jcp_component_chevron_svg( 20 ); ?>
+					</a>
+				</div>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php
+}
+
+/**
+ * Conversion section (checklist + image).
+ *
+ * @param array<string, mixed> $props Block props.
+ * @param string               $niche_key Page key.
+ */
+function jcp_niche_render_conversion( array $props, string $niche_key = '' ): void {
+	if ( empty( $props['headline'] ) ) {
+		return;
+	}
+	$primary    = jcp_niche_resolve_cta( $props['cta_primary'] ?? [], $niche_key );
+	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'conversion';
+	$points     = (array) ( $props['points'] ?? [] );
+	$image_url  = (string) ( $props['image_url'] ?? '' );
+	$image_alt  = (string) ( $props['image_alt'] ?? '' );
+	?>
+	<section class="jcp-section rankings-section conversion-section" id="<?php echo esc_attr( $section_id ); ?>">
+		<div class="jcp-container">
+			<div class="conversion-wrapper">
+				<div class="conversion-content">
+					<div class="rankings-header">
+						<h2<?php jcp_niche_editable_attr( 'conversion.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h2>
+						<?php if ( ! empty( $props['subheadline'] ) ) : ?>
+							<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'conversion.subheadline' ); ?>><?php echo esc_html( (string) $props['subheadline'] ); ?></p>
+						<?php endif; ?>
+					</div>
+					<?php jcp_niche_render_conversion_points( $points ); ?>
+					<?php if ( $primary['label'] !== '' ) : ?>
+						<div class="conversion-cta">
+							<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary conversion-cta-btn"<?php jcp_niche_editable_link_attr( 'conversion.cta_primary' ); ?>><?php echo esc_html( $primary['label'] ); ?></a>
+						</div>
+					<?php endif; ?>
+				</div>
+				<?php if ( $image_url !== '' ) : ?>
+					<div class="conversion-visual">
+						<div class="conversion-image-wrapper">
+							<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" class="conversion-image" width="800" height="600" loading="lazy" />
+							<?php if ( ! empty( $props['image_badge'] ) || ! empty( $props['stats'] ) ) : ?>
+								<div class="conversion-image-overlay">
+									<?php if ( ! empty( $props['image_badge'] ) ) : ?>
+										<div class="conversion-badge">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+												<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+												<polyline points="22 4 12 14.01 9 11.01"/>
+											</svg>
+											<span<?php jcp_niche_editable_attr( 'conversion.image_badge' ); ?>><?php echo esc_html( (string) $props['image_badge'] ); ?></span>
+										</div>
+									<?php endif; ?>
+									<?php if ( ! empty( $props['stats'] ) && is_array( $props['stats'] ) ) : ?>
+										<div class="conversion-stats">
+											<?php foreach ( $props['stats'] as $si => $stat ) : ?>
+												<?php if ( ! is_array( $stat ) ) { continue; } ?>
+												<div class="conversion-stat-item">
+													<div class="conversion-stat-number"<?php jcp_niche_editable_attr( 'conversion.stats.' . $si . '.value' ); ?>><?php echo esc_html( (string) ( $stat['value'] ?? '' ) ); ?></div>
+													<div class="conversion-stat-label"<?php jcp_niche_editable_attr( 'conversion.stats.' . $si . '.label' ); ?>><?php echo esc_html( (string) ( $stat['label'] ?? '' ) ); ?></div>
+												</div>
+											<?php endforeach; ?>
+										</div>
+									<?php endif; ?>
+								</div>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endif; ?>
 			</div>
 		</div>
 	</section>

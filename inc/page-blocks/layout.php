@@ -11,7 +11,7 @@
  * @return array<int, string>
  */
 function jcp_block_hero_variants(): array {
-	return [ 'split', 'centered', 'stacked' ];
+	return [ 'split', 'centered', 'stacked', 'home' ];
 }
 
 /**
@@ -24,7 +24,7 @@ function jcp_block_hero_variants(): array {
 function jcp_block_default_layout( string $type, string $page_kind = 'industry' ): array {
 	if ( $type === 'hero' ) {
 		return [
-			'hero_variant' => $page_kind === 'referral' ? 'centered' : 'split',
+			'hero_variant' => $page_kind === 'referral' ? 'centered' : ( $page_kind === 'home' ? 'home' : 'split' ),
 		];
 	}
 
@@ -140,5 +140,6 @@ function jcp_block_hero_variant_labels(): array {
 		'split'    => __( 'Split — copy + demo image', 'jcp-core' ),
 		'centered' => __( 'Centered — headline & CTA focus', 'jcp-core' ),
 		'stacked'  => __( 'Stacked — copy above visual', 'jcp-core' ),
+		'home'     => __( 'Homepage — rotating headline + live phone', 'jcp-core' ),
 	];
 }

@@ -9,7 +9,7 @@
  * Admin notice when a WP page needs a block template assigned.
  */
 function jcp_niche_block_template_admin_hint(): string {
-	return __( 'Assign the “JCP Block Page” template (or “Referral Program” for referral landers) to use structured block content, document import, and the live page editor.', 'jcp-core' );
+	return __( 'Assign the “JCP Block Page”, “Home”, or “Referral Program” template to use structured block content, document import, and the live page editor.', 'jcp-core' );
 }
 
 /**
@@ -240,6 +240,8 @@ function jcp_niche_ajax_parse_document(): void {
 			$page_kind = 'industry';
 		} elseif ( get_page_template_slug( $post ) === 'page-referral-program.php' || $post->post_name === 'referral-program' ) {
 			$page_kind = 'referral';
+		} elseif ( get_page_template_slug( $post ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === (int) $post->ID ) {
+			$page_kind = 'home';
 		} elseif ( $post->post_type === 'jcp_page' || jcp_page_uses_block_template( (int) $post->ID ) ) {
 			$page_kind = 'marketing';
 		}
@@ -272,6 +274,9 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 	}
 	if ( $display === '' && $post->post_name === 'hvac' ) {
 		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'hvac' ), 0 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+	}
+	if ( $display === '' && ( get_page_template_slug( $post->ID ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === (int) $post->ID ) ) {
+		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'home' ), (int) $post->ID ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
 	if ( $display === '' && ( $post->post_name === 'referral-program' || get_page_template_slug( $post->ID ) === 'page-referral-program.php' ) ) {
 		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'referral-program' ), 0 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
@@ -392,7 +397,7 @@ function jcp_niche_ajax_preset_json( string $preset ): void {
 	$legacy = jcp_page_load_preset( $preset );
 	if ( empty( $legacy ) ) {
 		$legacy = [
-			'page_kind' => $preset === 'referral-program' ? 'referral' : ( in_array( $preset, [ 'plumbing', 'hvac' ], true ) ? 'industry' : 'marketing' ),
+			'page_kind' => $preset === 'referral-program' ? 'referral' : ( $preset === 'home' ? 'home' : ( in_array( $preset, [ 'plumbing', 'hvac' ], true ) ? 'industry' : 'marketing' ) ),
 			'preset'    => $preset,
 		];
 		$data = array_merge( jcp_page_legacy_to_blocks( $legacy, 0 ), [ 'blocks' => jcp_page_blocks_from_preset( $preset ) ] );
@@ -496,6 +501,12 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 		}
 		if ( empty( $decoded['page_kind'] ) && get_page_template_slug( $post_id ) === 'page-referral-program.php' ) {
 			$decoded['page_kind'] = 'referral';
+		}
+		if ( empty( $decoded['page_kind'] ) && get_page_template_slug( $post_id ) === 'page-home.php' ) {
+			$decoded['page_kind'] = 'home';
+		}
+		if ( empty( $decoded['page_kind'] ) && (int) get_option( 'page_on_front' ) === $post_id ) {
+			$decoded['page_kind'] = 'home';
 		}
 		if ( empty( $decoded['page_kind'] ) && get_page_template_slug( $post_id ) === 'page-jcp-blocks.php' ) {
 			$decoded['page_kind'] = 'marketing';

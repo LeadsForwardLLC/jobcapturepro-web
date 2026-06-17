@@ -16,9 +16,12 @@ function jcp_page_render( int $post_id ): void {
 	$page_key  = ! empty( $legacy['niche_key'] ) ? sanitize_title( (string) $legacy['niche_key'] ) : sanitize_title( get_post_field( 'post_name', $post_id ) );
 	$page_kind = (string) ( $content['page_kind'] ?? 'marketing' );
 	$is_ref    = $page_kind === 'referral' || ( ( $legacy['page_type'] ?? '' ) === 'referral' );
+	$is_home   = $page_kind === 'home' || ( ( $legacy['page_type'] ?? '' ) === 'home' );
 
-	$main_class = 'jcp-marketing jcp-home jcp-niche';
-	if ( $is_ref ) {
+	$main_class = 'jcp-marketing jcp-niche';
+	if ( $is_home ) {
+		$main_class = 'jcp-marketing jcp-home';
+	} elseif ( $is_ref ) {
 		$main_class .= ' jcp-niche-referral';
 	}
 	if ( $page_kind === 'marketing' ) {
@@ -143,6 +146,18 @@ function jcp_page_render_block( array $block, array $legacy, array $ctx ): void 
 			break;
 		case 'share':
 			jcp_niche_render_share( $c, $page_key );
+			break;
+		case 'proof_flow':
+			jcp_niche_render_proof_flow( $props );
+			break;
+		case 'demo_preview':
+			jcp_niche_render_demo_preview( $props, $page_key );
+			break;
+		case 'directory_preview':
+			jcp_niche_render_directory_preview( $props, $page_key );
+			break;
+		case 'conversion':
+			jcp_niche_render_conversion( $props, $page_key );
 			break;
 	}
 

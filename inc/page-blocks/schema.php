@@ -35,6 +35,7 @@ function jcp_page_block_page_templates(): array {
 	return [
 		'page-jcp-blocks.php',
 		'page-referral-program.php',
+		'page-home.php',
 	];
 }
 
@@ -71,6 +72,14 @@ function jcp_page_is_content_page( ?int $post_id = null ): bool {
 	if ( in_array( $post->post_type, [ 'jcp_niche_landing', 'jcp_page' ], true ) ) {
 		return true;
 	}
+	if ( $post->post_type === 'page' ) {
+		if ( jcp_page_uses_block_template( $id ) ) {
+			return true;
+		}
+		if ( get_page_template_slug( $id ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === $id ) {
+			return (bool) get_post_meta( $id, jcp_page_content_meta_key(), true );
+		}
+	}
 	return jcp_page_uses_block_template( $id );
 }
 
@@ -93,6 +102,9 @@ function jcp_page_resolve_kind( array $content, int $post_id ): string {
 	if ( ! empty( $content['page_kind'] ) ) {
 		return (string) $content['page_kind'];
 	}
+	if ( ( $content['page_type'] ?? '' ) === 'home' || ( $content['page_type'] ?? '' ) === 'homepage' ) {
+		return 'home';
+	}
 	if ( ( $content['page_type'] ?? '' ) === 'referral' ) {
 		return 'referral';
 	}
@@ -106,6 +118,9 @@ function jcp_page_resolve_kind( array $content, int $post_id ): string {
 		}
 		if ( get_page_template_slug( $post_id ) === 'page-referral-program.php' || $post->post_name === 'referral-program' ) {
 			return 'referral';
+		}
+		if ( get_page_template_slug( $post_id ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === $post_id ) {
+			return 'home';
 		}
 		if ( jcp_page_uses_block_template( $post_id ) ) {
 			return 'marketing';
@@ -159,6 +174,9 @@ function jcp_page_default_content( int $post_id ): array {
 	}
 	if ( $slug === 'referral-program' || get_page_template_slug( $post_id ) === 'page-referral-program.php' ) {
 		return jcp_page_load_preset( 'referral-program' );
+	}
+	if ( get_page_template_slug( $post_id ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === $post_id ) {
+		return jcp_page_load_preset( 'home' );
 	}
 	return [];
 }
@@ -282,7 +300,12 @@ function jcp_niche_save_content( int $post_id, array $content ): void {
  */
 function jcp_page_legacy_to_blocks( array $legacy, int $post_id ): array {
 	$page_kind = jcp_page_resolve_kind( $legacy, $post_id );
-	$preset    = ( $page_kind === 'referral' ) ? 'referral' : ( ( $page_kind === 'industry' ) ? 'industry' : 'marketing' );
+	$preset    = match ( $page_kind ) {
+		'referral' => 'referral',
+		'industry' => 'industry',
+		'home'     => 'home',
+		default    => 'marketing',
+	};
 	$preset_def = jcp_page_get_preset( $preset );
 	$order     = $preset_def['block_types'] ?? [];
 
@@ -312,9 +335,16 @@ function jcp_page_legacy_to_blocks( array $legacy, int $post_id ): array {
 		if ( $props === null || $props === [] || $props === '' ) {
 			continue;
 		}
-		$block_layout = jcp_block_default_layout( (string) $type, $page_kind );
-		if ( $type === 'hero' && is_array( $props ) && isset( $props['show_visual'] ) ) {
-			$block_layout['hero_variant'] = ! empty( $props['show_visual'] ) ? 'split' : 'centered';
+		if ( $type === 'hero' && is_array( $props ) ) {
+			$block_layout = jcp_block_default_layout( (string) $type, $page_kind );
+			if ( isset( $props['show_visual'] ) ) {
+				$block_layout['hero_variant'] = ! empty( $props['show_visual'] ) ? 'split' : 'centered';
+			}
+			if ( ! empty( $props['rotating_words'] ) ) {
+				$block_layout['hero_variant'] = 'home';
+			}
+		} else {
+			$block_layout = jcp_block_default_layout( (string) $type, $page_kind );
 		}
 		$blocks[] = [
 			'id'     => 'b-' . sanitize_title( (string) $type ),

@@ -126,7 +126,8 @@ function jcp_core_get_page_detection(): array {
         'is_niche_landing' => is_singular( 'jcp_niche_landing' )
             || is_singular( 'jcp_page' )
             || is_post_type_archive( 'jcp_niche_landing' )
-            || ( is_singular( 'page' ) && function_exists( 'jcp_page_uses_block_template' ) && jcp_page_uses_block_template( (int) get_queried_object_id() ) ),
+            || ( is_singular( 'page' ) && function_exists( 'jcp_page_uses_block_template' ) && jcp_page_uses_block_template( (int) get_queried_object_id() ) )
+            || ( is_front_page() && function_exists( 'jcp_page_is_content_page' ) && jcp_page_is_content_page( (int) get_queried_object_id() ) ),
     ];
 }
 
