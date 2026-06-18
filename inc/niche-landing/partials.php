@@ -147,11 +147,11 @@ function jcp_niche_render_step_lines( array $lines, string $path_prefix ): void 
 			}
 			$path = $path_prefix !== '' ? $path_prefix . '.' . $li : '';
 			?>
-			<li<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $li ); } ?><?php if ( $path !== '' ) { jcp_niche_editable_attr( $path ); } ?>>
+			<li<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $li ); } ?>>
 				<span class="jcp-step-checklist__icon" aria-hidden="true">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
 				</span>
-				<span class="jcp-step-checklist__text"><?php echo esc_html( $text ); ?></span>
+				<span class="jcp-step-checklist__text"<?php if ( $path !== '' ) { jcp_niche_editable_attr( $path ); } ?>><?php echo esc_html( jcp_niche_clean_step_line( $text ) ); ?></span>
 			</li>
 		<?php endforeach; ?>
 	</ul>
@@ -165,41 +165,39 @@ function jcp_niche_render_step_lines( array $lines, string $path_prefix ): void 
  * @param string                            $path_prefix JSON path prefix.
  */
 function jcp_niche_render_core_mechanic_strip( array $items, string $path_prefix = 'core_mechanic' ): void {
-	if ( empty( $items ) ) {
+	$normalized = jcp_niche_normalize_core_mechanic_items( $items );
+	if ( empty( $normalized ) ) {
 		return;
 	}
-	$stat_classes = [ 'meta-stat-photo', 'meta-stat-channels', 'meta-stat-busywork' ];
-	$icons        = [ 'camera', 'map', 'clock' ];
 	?>
 	<div class="directory-meta jcp-core-mechanic-meta">
-		<?php foreach ( $items as $i => $item ) : ?>
+		<?php foreach ( $normalized as $i => $item ) : ?>
 			<?php
-			if ( ! is_array( $item ) ) {
+			$raw = $items[ $i ] ?? [];
+			if ( ! is_array( $raw ) ) {
 				continue;
 			}
-			$icon   = ! empty( $item['icon'] ) ? (string) $item['icon'] : ( $icons[ $i ] ?? 'check' );
-			$value  = (string) ( $item['value'] ?? '' );
-			$label  = (string) ( $item['label'] ?? '' );
+			$icon   = (string) ( $item['icon'] ?? 'check' );
+			$value  = trim( (string) ( $raw['value'] ?? '' ) );
+			$word   = trim( (string) ( $raw['label'] ?? '' ) );
 			$detail = (string) ( $item['detail'] ?? '' );
 			$base   = $path_prefix !== '' ? $path_prefix . '.' . $i : '';
-			$class  = (string) ( $item['css_class'] ?? ( $stat_classes[ $i ] ?? '' ) );
+			$class  = (string) ( $item['css_class'] ?? '' );
+			$combined = (string) ( $item['label'] ?? '' );
 			?>
 			<div class="meta-item<?php echo $class !== '' ? ' ' . esc_attr( $class ) : ''; ?>">
 				<div class="meta-label">
 					<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="meta-icon" alt="" width="20" height="20" />
 					<strong>
-						<?php if ( $base !== '' ) : ?>
-							<span<?php jcp_niche_editable_attr( $base . '.value' ); ?>><?php echo esc_html( $value ); ?></span>
-							<?php if ( $label !== '' ) : ?>
-								<span<?php jcp_niche_editable_attr( $base . '.label' ); ?>><?php echo esc_html( ' ' . $label ); ?></span>
-							<?php endif; ?>
+						<?php if ( $base !== '' && ( $value !== '' || $word !== '' ) ) : ?>
+							<span<?php jcp_niche_editable_attr( $base . '.value' ); ?>><?php echo esc_html( $value ); ?></span><?php if ( $word !== '' ) : ?><span<?php jcp_niche_editable_attr( $base . '.label' ); ?>><?php echo esc_html( ' ' . $word ); ?></span><?php endif; ?>
 						<?php else : ?>
-							<?php echo esc_html( trim( $value . ' ' . $label ) ); ?>
+							<?php echo esc_html( $combined ); ?>
 						<?php endif; ?>
 					</strong>
 				</div>
 				<?php if ( $detail !== '' ) : ?>
-					<span<?php if ( $base !== '' ) { jcp_niche_editable_attr( $base . '.detail' ); } ?>><?php echo esc_html( $detail ); ?></span>
+					<span class="meta-detail"<?php if ( $base !== '' ) { jcp_niche_editable_attr( $base . '.detail' ); } ?>><?php echo esc_html( $detail ); ?></span>
 				<?php endif; ?>
 			</div>
 		<?php endforeach; ?>

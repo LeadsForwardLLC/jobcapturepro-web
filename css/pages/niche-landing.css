@@ -186,18 +186,32 @@
 }
 
 /* Core mechanic strip — match homepage stat row on industry pages */
-.jcp-core-mechanic-strip {
+.jcp-core-mechanic-strip,
+.jcp-core-mechanic-embed {
   padding-top: var(--jcp-space-xl);
   padding-bottom: var(--jcp-space-xl);
+  margin-top: var(--jcp-space-xl);
 }
 
+.jcp-core-mechanic-embed {
+  border-top: 1px solid var(--jcp-color-border, #e5e7eb);
+  padding-top: var(--jcp-space-2xl);
+}
+
+.jcp-core-mechanic-strip .directory-meta,
+.jcp-core-mechanic-embed .directory-meta,
 .jcp-niche .jcp-core-mechanic-meta {
+  display: flex;
+  gap: var(--jcp-space-3xl);
   align-items: flex-start;
   justify-content: center;
   margin: 0 auto;
   max-width: 56rem;
+  flex-wrap: nowrap;
 }
 
+.jcp-core-mechanic-strip .meta-item,
+.jcp-core-mechanic-embed .meta-item,
 .jcp-niche .jcp-core-mechanic-meta .meta-item {
   flex: 1;
   min-width: 0;
@@ -205,21 +219,57 @@
   text-align: left;
 }
 
+.jcp-core-mechanic-strip .meta-label,
+.jcp-core-mechanic-embed .meta-label,
+.jcp-niche .jcp-core-mechanic-meta .meta-label {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.jcp-core-mechanic-strip .meta-label strong,
+.jcp-core-mechanic-embed .meta-label strong,
 .jcp-niche .jcp-core-mechanic-meta .meta-label strong {
   font-size: clamp(16px, 1.8vw, 22px);
   line-height: 1.25;
+  display: inline-block;
+  font-weight: var(--jcp-font-weight-extrabold);
+  letter-spacing: -0.02em;
 }
 
+.jcp-core-mechanic-strip .meta-stat-photo .meta-label strong,
+.jcp-core-mechanic-embed .meta-stat-photo .meta-label strong,
 .jcp-niche .meta-stat-photo .meta-label strong {
-  color: var(--jcp-color-primary);
+  color: var(--jcp-color-primary) !important;
 }
 
+.jcp-core-mechanic-strip .meta-stat-channels .meta-label strong,
+.jcp-core-mechanic-embed .meta-stat-channels .meta-label strong,
 .jcp-niche .meta-stat-channels .meta-label strong {
-  color: var(--jcp-color-info);
+  color: var(--jcp-color-info) !important;
 }
 
+.jcp-core-mechanic-strip .meta-stat-busywork .meta-label strong,
+.jcp-core-mechanic-embed .meta-stat-busywork .meta-label strong,
 .jcp-niche .meta-stat-busywork .meta-label strong {
-  color: var(--jcp-color-success);
+  color: var(--jcp-color-success) !important;
+}
+
+.jcp-core-mechanic-strip .meta-label strong span,
+.jcp-core-mechanic-embed .meta-label strong span,
+.jcp-niche .jcp-core-mechanic-meta .meta-label strong span {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+@media (max-width: 640px) {
+  .jcp-core-mechanic-strip .directory-meta,
+  .jcp-core-mechanic-embed .directory-meta,
+  .jcp-niche .jcp-core-mechanic-meta {
+    flex-direction: column;
+    gap: var(--jcp-space-lg);
+  }
 }
 
 /* Condensed internal hero */
@@ -272,38 +322,58 @@
 
 /* Column count overrides (set in page structure sidebar) */
 .jcp-block-root.jcp-block-cols-1 .timeline-steps,
+[data-jcp-block-id].jcp-block-cols-1 .timeline-steps,
 .jcp-block-root.jcp-block-cols-1 .ranking-factors-grid,
+[data-jcp-block-id].jcp-block-cols-1 .ranking-factors-grid,
 .jcp-block-root.jcp-block-cols-1 .guarantees-grid,
-.jcp-block-root.jcp-block-cols-1 .proof-flow {
+[data-jcp-block-id].jcp-block-cols-1 .guarantees-grid,
+.jcp-block-root.jcp-block-cols-1 .proof-flow,
+[data-jcp-block-id].jcp-block-cols-1 .proof-flow {
   grid-template-columns: 1fr !important;
 }
 
 .jcp-block-root.jcp-block-cols-2 .timeline-steps,
+[data-jcp-block-id].jcp-block-cols-2 .timeline-steps,
 .jcp-block-root.jcp-block-cols-2 .ranking-factors-grid,
+[data-jcp-block-id].jcp-block-cols-2 .ranking-factors-grid,
 .jcp-block-root.jcp-block-cols-2 .guarantees-grid,
-.jcp-block-root.jcp-block-cols-2 .proof-flow {
+[data-jcp-block-id].jcp-block-cols-2 .guarantees-grid,
+.jcp-block-root.jcp-block-cols-2 .proof-flow,
+[data-jcp-block-id].jcp-block-cols-2 .proof-flow {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
 .jcp-block-root.jcp-block-cols-3 .timeline-steps,
+[data-jcp-block-id].jcp-block-cols-3 .timeline-steps,
 .jcp-block-root.jcp-block-cols-3 .ranking-factors-grid,
+[data-jcp-block-id].jcp-block-cols-3 .ranking-factors-grid,
 .jcp-block-root.jcp-block-cols-3 .guarantees-grid,
-.jcp-block-root.jcp-block-cols-3 .proof-flow {
+[data-jcp-block-id].jcp-block-cols-3 .guarantees-grid,
+.jcp-block-root.jcp-block-cols-3 .proof-flow,
+[data-jcp-block-id].jcp-block-cols-3 .proof-flow {
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
 }
 
 .jcp-block-root.jcp-block-cols-4 .timeline-steps,
+[data-jcp-block-id].jcp-block-cols-4 .timeline-steps,
 .jcp-block-root.jcp-block-cols-4 .ranking-factors-grid,
+[data-jcp-block-id].jcp-block-cols-4 .ranking-factors-grid,
 .jcp-block-root.jcp-block-cols-4 .guarantees-grid,
-.jcp-block-root.jcp-block-cols-4 .proof-flow {
+[data-jcp-block-id].jcp-block-cols-4 .guarantees-grid,
+.jcp-block-root.jcp-block-cols-4 .proof-flow,
+[data-jcp-block-id].jcp-block-cols-4 .proof-flow {
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 }
 
 @media (max-width: 768px) {
   .jcp-block-root[class*="jcp-block-cols-"] .timeline-steps,
+  [data-jcp-block-id][class*="jcp-block-cols-"] .timeline-steps,
   .jcp-block-root[class*="jcp-block-cols-"] .ranking-factors-grid,
+  [data-jcp-block-id][class*="jcp-block-cols-"] .ranking-factors-grid,
   .jcp-block-root[class*="jcp-block-cols-"] .guarantees-grid,
-  .jcp-block-root[class*="jcp-block-cols-"] .proof-flow {
+  [data-jcp-block-id][class*="jcp-block-cols-"] .guarantees-grid,
+  .jcp-block-root[class*="jcp-block-cols-"] .proof-flow,
+  [data-jcp-block-id][class*="jcp-block-cols-"] .proof-flow {
     grid-template-columns: 1fr !important;
   }
 }

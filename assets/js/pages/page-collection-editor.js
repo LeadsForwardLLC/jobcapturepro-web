@@ -1,6 +1,14 @@
 (() => {
   const CHECK_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
 
+  const cleanStepLineText = (text) => {
+    let value = (text || '').trim();
+    value = value.replace(/(?:nttt)+x*\s*$/i, '');
+    value = value.replace(/\s*×\s*$/u, '');
+    value = value.replace(/x\s*$/iu, '');
+    return value.trim();
+  };
+
   const ARRAY_DEFAULTS = {
     'conversion.points': () => 'New point',
     'differentiation.bullets': () => 'New point',
@@ -90,9 +98,9 @@
   const buildTimelineStep = (basePath, index, data) => {
     const lines = Array.isArray(data.lines) ? data.lines : [data.body || data.description || 'Step description'];
     const linesHtml = lines.map((line, li) =>
-      `<li data-jcp-array-item="${li}" data-jcp-path="${basePath}.${index}.lines.${li}">
+      `<li data-jcp-array-item="${li}">
         <span class="jcp-step-checklist__icon" aria-hidden="true">${CHECK_SVG}</span>
-        <span class="jcp-step-checklist__text">${esc(line)}</span>
+        <span class="jcp-step-checklist__text" data-jcp-path="${basePath}.${index}.lines.${li}">${esc(cleanStepLineText(line))}</span>
       </li>`
     ).join('');
     return `
@@ -113,9 +121,11 @@
       </div>
     </div>`;
 
-  const buildChecklistItem = (basePath, index, text) => `<li data-jcp-array-item="${index}" data-jcp-path="${basePath}.${index}"><span class="jcp-step-checklist__icon" aria-hidden="true">${CHECK_SVG}</span><span class="jcp-step-checklist__text">${esc(text)}</span></li>`;
+  const buildChecklistItem = (basePath, index, text) => `<li data-jcp-array-item="${index}"><span class="jcp-step-checklist__icon" aria-hidden="true">${CHECK_SVG}</span><span class="jcp-step-checklist__text" data-jcp-path="${basePath}.${index}">${esc(cleanStepLineText(text))}</span></li>`;
 
-  const buildTagItem = (basePath, index, text) => `<li data-jcp-array-item="${index}" data-jcp-path="${basePath}.${index}">${esc(text)}</li>`;
+  const buildListItem = (basePath, index, text) => `<li data-jcp-array-item="${index}"><span class="jcp-checklist-item__text" data-jcp-path="${basePath}.${index}">${esc(cleanStepLineText(text))}</span></li>`;
+
+  const buildTagItem = (basePath, index, text) => `<li data-jcp-array-item="${index}"><span class="jcp-checklist-item__text" data-jcp-path="${basePath}.${index}">${esc(cleanStepLineText(text))}</span></li>`;
 
   const buildFaqItem = (index, item) => {
     const qPath = `faq.items.${index}.q`;
@@ -160,7 +170,7 @@
     if (typeof data === 'string') {
       if (basePath.endsWith('.lines')) return buildChecklistItem(basePath, index, data);
       if (basePath.endsWith('.points') || basePath.endsWith('.bullets')) return buildConversionPoint(basePath, index, data);
-      if (basePath.includes('team_already') || basePath.includes('turns_into')) return buildChecklistItem(basePath, index, data);
+      if (basePath.includes('team_already') || basePath.includes('turns_into')) return buildListItem(basePath, index, data);
       if (basePath.endsWith('.job_types')) return buildTagItem(basePath, index, data);
       return '';
     }

@@ -291,8 +291,9 @@ function jcp_niche_render_what_it_is( array $c ): void {
 						foreach ( (array) ( $w['team_already'] ?? [] ) as $ti => $line ) {
 							echo '<li';
 							jcp_niche_array_item_attr( (int) $ti );
+							echo '><span class="jcp-checklist-item__text"';
 							jcp_niche_editable_attr( 'what_it_is.team_already.' . $ti );
-							echo '>' . esc_html( (string) $line ) . '</li>';
+							echo '>' . esc_html( jcp_niche_clean_step_line( (string) $line ) ) . '</span></li>';
 						}
 						echo '</ul>';
 					},
@@ -313,8 +314,9 @@ function jcp_niche_render_what_it_is( array $c ): void {
 						foreach ( (array) ( $w['turns_into'] ?? [] ) as $ti => $line ) {
 							echo '<li';
 							jcp_niche_array_item_attr( (int) $ti );
+							echo '><span class="jcp-checklist-item__text"';
 							jcp_niche_editable_attr( 'what_it_is.turns_into.' . $ti );
-							echo '>' . esc_html( (string) $line ) . '</li>';
+							echo '>' . esc_html( jcp_niche_clean_step_line( (string) $line ) ) . '</span></li>';
 						}
 						echo '</ul>';
 					},
@@ -328,7 +330,9 @@ function jcp_niche_render_what_it_is( array $c ): void {
 			}
 			$mechanic = $c['core_mechanic'] ?? [];
 			if ( ! empty( $mechanic ) && is_array( $mechanic ) ) {
-				jcp_niche_render_meta_strip( $mechanic, 'core_mechanic' );
+				echo '<div class="jcp-core-mechanic-embed">';
+				jcp_niche_render_core_mechanic_strip( $mechanic, 'core_mechanic' );
+				echo '</div>';
 			}
 			?>
 		</div>
@@ -430,7 +434,7 @@ function jcp_niche_render_check_ins( array $c ): void {
 				<div class="jcp-niche-tags-wrap">
 					<ul class="jcp-niche-tags"<?php jcp_niche_array_attr( 'check_ins.job_types' ); ?>>
 						<?php foreach ( (array) $ch['job_types'] as $ti => $tag ) : ?>
-							<li<?php jcp_niche_array_item_attr( (int) $ti ); jcp_niche_editable_attr( 'check_ins.job_types.' . $ti ); ?>><?php jcp_niche_e( (string) $tag ); ?></li>
+							<li<?php jcp_niche_array_item_attr( (int) $ti ); ?>><span class="jcp-checklist-item__text"<?php jcp_niche_editable_attr( 'check_ins.job_types.' . $ti ); ?>><?php echo esc_html( jcp_niche_clean_step_line( (string) $tag ) ); ?></span></li>
 						<?php endforeach; ?>
 					</ul>
 				</div>

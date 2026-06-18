@@ -60,6 +60,20 @@ function jcp_niche_array_item_attr( int $index ): void {
 }
 
 /**
+ * Strip editor artifact suffixes from how-it-works checklist lines.
+ *
+ * @param string $text Raw line text from JSON.
+ */
+function jcp_niche_clean_step_line( string $text ): string {
+	$text = trim( $text );
+	$text = preg_replace( '/(?:nttt)+x*\s*$/i', '', $text );
+	$text = preg_replace( '/\s*×\s*$/u', '', $text );
+	$text = preg_replace( '/x\s*$/iu', '', $text );
+
+	return trim( $text );
+}
+
+/**
  * Marks an optional slot (button, card row) that can be removed and restored.
  *
  * @param string $path  JSON path (e.g. conversion.cta_primary).

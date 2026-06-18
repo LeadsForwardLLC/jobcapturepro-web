@@ -233,6 +233,49 @@
     'jcp-block-cols-4',
   ];
 
+  const COLUMN_GRID_SELECTORS = '.timeline-steps, .ranking-factors-grid, .guarantees-grid, .proof-flow';
+
+  const columnGridTemplate = (cols) => {
+    const count = parseInt(cols, 10);
+    if (count >= 1 && count <= 4) return `repeat(${count}, minmax(0, 1fr))`;
+    return '';
+  };
+
+  const findBlockRootEl = (block) => {
+    const main = getMain();
+    if (!main || !block?.id) return null;
+
+    const byId = main.querySelector(`[data-jcp-block-id="${block.id}"]`);
+    if (byId) return getBlockRoot(byId);
+
+    const sel = BLOCK_SELECTORS[block.type];
+    if (!sel) return null;
+
+    const match = [...main.querySelectorAll(sel)].find((node) => {
+      const root = getBlockRoot(node);
+      return root && root.dataset.jcpBlockId === block.id;
+    });
+    return match ? getBlockRoot(match) : null;
+  };
+
+  const applyColumnGrids = (root, cols) => {
+    if (!root) return;
+    const template = columnGridTemplate(cols);
+    root.querySelectorAll(COLUMN_GRID_SELECTORS).forEach((grid) => {
+      if (template) {
+        grid.style.setProperty('grid-template-columns', template, 'important');
+      } else {
+        grid.style.removeProperty('grid-template-columns');
+      }
+    });
+  };
+
+  const ensureBlockRoot = (root) => {
+    if (!root) return null;
+    root.classList.add('jcp-block-root');
+    return root;
+  };
+
   const defaultLayout = (type) => {
     if (type === 'hero') {
       if (PAGE_KIND === 'referral') return { hero_variant: 'centered' };
@@ -266,7 +309,15 @@
       return `jcp-hero-variant-${resolveHeroVariant(block)}`;
     }
     const layout = resolveLayout(block);
-    return `jcp-layout-align-${layout.align} jcp-layout-width-${layout.width}`;
+    const classes = [
+      `jcp-layout-align-${layout.align}`,
+      `jcp-layout-width-${layout.width}`,
+    ];
+    const cols = Number(layout.columns || 0);
+    if (cols >= 1 && cols <= 4) {
+      classes.push(`jcp-block-cols-${cols}`);
+    }
+    return classes.join(' ');
   };
 
   const layoutOptionsFor = (type) => {
@@ -305,7 +356,7 @@
 
   const applyLayoutToDom = () => {
     (pageDocument.blocks || []).forEach((block) => {
-      const root = document.querySelector(`[data-jcp-block-id="${block.id}"]`);
+      const root = ensureBlockRoot(findBlockRootEl(block));
       if (!root) return;
 
       if (block.type === 'hero') {
@@ -323,6 +374,7 @@
 
       LAYOUT_CLASS_NAMES.filter((cls) => cls.startsWith('jcp-layout-') || cls.startsWith('jcp-block-cols-')).forEach((cls) => root.classList.remove(cls));
       layoutClassNames(block).split(' ').filter(Boolean).forEach((cls) => root.classList.add(cls));
+      applyColumnGrids(root, resolveLayout(block).columns);
 
       if (block.type === 'media_text') {
         const section = root.querySelector('.jcp-media-text') || root;
@@ -334,23 +386,24 @@
   };
 
   const setBlockLayout = (block, key, value) => {
+    const liveBlock = (pageDocument.blocks || []).find((entry) => entry.id === block.id) || block;
     if (key === 'media_position') {
-      block.props = block.props || {};
-      block.props.media_position = value;
-      const lk = legacyKeyFor(block.type);
+      liveBlock.props = liveBlock.props || {};
+      liveBlock.props.media_position = value;
+      const lk = legacyKeyFor(liveBlock.type);
       if (lk) setPath(flatContent, `${lk}.media_position`, value);
       applyMediaPositionToDom();
       renderBlockList();
       recordChange();
       return;
     }
-    block.layout = { ...resolveLayout(block), [key]: value };
+    liveBlock.layout = { ...resolveLayout(liveBlock), [key]: value };
     if (key === 'columns') {
-      block.layout.columns = parseInt(value, 10) || 0;
+      liveBlock.layout.columns = parseInt(value, 10) || 0;
     }
-    if (block.type === 'hero' && key === 'hero_variant') {
-      block.props = block.props || {};
-      block.props.show_visual = value !== 'centered';
+    if (liveBlock.type === 'hero' && key === 'hero_variant') {
+      liveBlock.props = liveBlock.props || {};
+      liveBlock.props.show_visual = value !== 'centered';
     }
     applyLayoutToDom();
     renderBlockList();
@@ -556,7 +609,7 @@
         return root && !root.dataset.jcpBlockId;
       });
       if (!match) return;
-      const root = getBlockRoot(match);
+      const root = ensureBlockRoot(getBlockRoot(match));
       root.dataset.jcpBlockId = block.id;
       root.dataset.jcpBlockType = block.type;
       assigned.add(block.id);
@@ -841,6 +894,7 @@
         return;
       }
       indexBlockSections();
+      applyLayoutToDom();
       if (structureOpen) renderBlockList();
     } catch (err) {
       if (!registry.length) statusEl.textContent = 'Editor data unavailable — try refreshing';
@@ -849,7 +903,32 @@
     }
   };
 
+  const cleanStepLineText = (text) => {
+    let value = (text || '').trim();
+    value = value.replace(/(?:nttt)+x*\s*$/i, '');
+    value = value.replace(/\s*×\s*$/u, '');
+    value = value.replace(/x\s*$/iu, '');
+    return value.trim();
+  };
+
+  const isStringArrayItemPath = (el) => {
+    const item = el.closest('[data-jcp-array-item]');
+    const container = item?.parentElement;
+    if (!item || !container?.matches('[data-jcp-array]')) return false;
+    const basePath = container.dataset.jcpArray;
+    const path = el.getAttribute('data-jcp-path');
+    if (!basePath || !path?.startsWith(`${basePath}.`)) return false;
+    return /^\d+$/.test(path.slice(basePath.length + 1));
+  };
+
   const collectStringArraysFromDom = () => {
+    const readArrayItemText = (item) => {
+      const textEl = item.querySelector('.jcp-step-checklist__text, .jcp-checklist-item__text');
+      const el = textEl || (item.hasAttribute('data-jcp-path') ? item : item.querySelector('[data-jcp-path]'));
+      if (!el) return '';
+      return cleanStepLineText((el.textContent || '').trim());
+    };
+
     document.querySelectorAll('[data-jcp-array]').forEach((container) => {
       const basePath = container.dataset.jcpArray;
       if (!basePath) return;
@@ -866,19 +945,19 @@
       const suffix = samplePath.slice(basePath.length + 1);
       if (!/^\d+$/.test(suffix)) return;
 
-      const arr = items.map((item) => {
-        const el = item.hasAttribute('data-jcp-path') ? item : item.querySelector('[data-jcp-path]');
-        return el ? (el.textContent || '').trim() : '';
-      });
+      const arr = items.map((item) => readArrayItemText(item));
       setPath(flatContent, basePath, arr);
     });
   };
 
   const collectFromDom = () => {
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
+      if (isStringArrayItemPath(el)) return;
       const path = el.getAttribute('data-jcp-path');
       if (!path) return;
-      setPath(flatContent, path, (el.textContent || '').trim());
+      const raw = (el.textContent || '').trim();
+      const value = /\.lines\.\d+$/.test(path) ? cleanStepLineText(raw) : raw;
+      setPath(flatContent, path, value);
     });
     document.querySelectorAll('[data-jcp-href-path]').forEach((el) => {
       const path = el.getAttribute('data-jcp-href-path');

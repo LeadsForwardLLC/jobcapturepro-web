@@ -182,11 +182,20 @@
   margin-bottom: 2px;
 }
 
-.meta-item span {
+.meta-item span,
+.meta-item .meta-detail {
   font-size: var(--jcp-font-size-sm);
   color: var(--jcp-color-text-secondary);
   line-height: var(--jcp-line-height-normal);
   font-weight: var(--jcp-font-weight-medium);
+}
+
+/* Inline editor splits stat labels into spans inside strong — keep hero stat styling */
+.meta-label strong span {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }
 
 
