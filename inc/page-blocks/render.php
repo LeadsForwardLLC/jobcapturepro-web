@@ -174,9 +174,9 @@ function jcp_page_render_core_mechanic_block( array $items ): void {
 		return;
 	}
 	?>
-	<section class="jcp-section jcp-niche-core-mechanic">
+	<section class="jcp-section jcp-niche-core-mechanic jcp-core-mechanic-strip">
 		<div class="jcp-container">
-			<?php jcp_niche_render_meta_strip( $items, 'core_mechanic' ); ?>
+			<?php jcp_niche_render_core_mechanic_strip( $items, 'core_mechanic' ); ?>
 		</div>
 	</section>
 	<?php

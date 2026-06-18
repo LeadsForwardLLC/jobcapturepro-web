@@ -20,6 +20,7 @@ function jcp_page_presets(): array {
 				'hero',
 				'what_it_is',
 				'core_mechanic',
+				'media_text',
 				'how_it_works',
 				'check_ins',
 				'problem',

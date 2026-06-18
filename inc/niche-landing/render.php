@@ -81,9 +81,13 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 	$phone_image = jcp_media_resolve_phone_image( $h );
 	$phone_alt   = trim( (string) ( $h['phone_image_alt'] ?? $h['media_alt'] ?? '' ) );
 	$show_visual = $variant !== 'centered';
-	$is_internal = $variant !== 'home';
+	$is_condensed = $variant === 'condensed';
+	$is_internal  = $variant !== 'home';
+	$show_primary = ! array_key_exists( 'show_cta_primary', $h ) || ! empty( $h['show_cta_primary'] );
+	$show_secondary = ! array_key_exists( 'show_cta_secondary', $h ) || ! empty( $h['show_cta_secondary'] );
+	$show_trust   = ! array_key_exists( 'show_trust_line', $h ) || ! empty( $h['show_trust_line'] );
 	?>
-	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?><?php echo $is_internal ? ' jcp-niche-hero--internal' : ''; ?>">
+	<section class="jcp-section jcp-hero jcp-niche-hero jcp-hero-variant-<?php echo esc_attr( $variant ); ?><?php echo $is_internal ? ' jcp-niche-hero--internal' : ''; ?><?php echo $is_condensed ? ' jcp-niche-hero--condensed' : ''; ?>">
 		<?php if ( $is_internal && jcp_niche_should_show_breadcrumb( $c ) ) : ?>
 			<?php jcp_niche_render_breadcrumb( $c, true ); ?>
 		<?php endif; ?>
@@ -107,7 +111,7 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 						<p class="jcp-hero-subtitle"<?php jcp_niche_editable_attr( 'hero.subheadline' ); ?>><?php jcp_niche_e( (string) $h['subheadline'] ); ?></p>
 					<?php endif; ?>
 					<div class="jcp-actions directory-cta-row">
-						<?php if ( $primary['label'] !== '' ) : ?>
+						<?php if ( $show_primary && $primary['label'] !== '' ) : ?>
 							<div class="jcp-hero-primary-cta">
 								<a class="btn btn-primary" href="<?php echo esc_url( $primary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'hero.cta_primary' ); jcp_niche_cta_tracking_attr( $primary['url'], str_contains( $primary['url'], 'firstpromoter.com' ) ? 'referral_hero' : 'niche_hero', $primary['label'] ); ?>><?php jcp_niche_e( $primary['label'] ); ?></a>
 								<?php if ( ! empty( $h['cta_microcopy'] ) ) : ?>
@@ -115,11 +119,11 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>
-						<?php if ( $secondary['label'] !== '' ) : ?>
+						<?php if ( $show_secondary && $secondary['label'] !== '' ) : ?>
 							<a class="btn btn-secondary" href="<?php echo esc_url( $secondary['url'] ); ?>"<?php jcp_niche_editable_link_attr( 'hero.cta_secondary' ); ?>><?php jcp_niche_e( $secondary['label'] ); ?></a>
 						<?php endif; ?>
 					</div>
-					<?php if ( ! empty( $h['trust_line'] ) ) : ?>
+					<?php if ( $show_trust && ! empty( $h['trust_line'] ) ) : ?>
 						<p class="jcp-niche-trust-line"<?php jcp_niche_editable_attr( 'hero.trust_line' ); ?>><?php jcp_niche_e( (string) $h['trust_line'] ); ?></p>
 					<?php endif; ?>
 					<?php if ( $is_home && ! empty( $h['meta_stats'] ) ) : ?>
@@ -133,11 +137,13 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
 					jcp_media_render_slot(
 						[
 							'path'               => 'hero',
+							'url_path'           => 'hero.image_url',
+							'alt_path'           => 'hero.media_alt',
 							'media_type'         => $media['media_type'],
 							'image_url'          => $media['image_url'],
 							'video_url'          => $media['video_url'],
 							'media_alt'          => $media['media_alt'],
-							'default_image'      => $default_photo,
+							'default_image'      => $is_condensed ? '' : $default_photo,
 							'phone_mockup_style' => 'live_demo',
 							'img_attrs'          => [
 								'class'   => 'jcp-hero-slot-image',
@@ -380,9 +386,7 @@ function jcp_niche_render_how_it_works( array $c, string $niche_key ): void {
 						<div class="step-number"><?php echo esc_html( $num ); ?></div>
 						<div class="step-content">
 							<h4 class="step-title"<?php jcp_niche_editable_attr( 'how_it_works.steps.' . $i . '.title' ); ?>><?php jcp_niche_e( (string) ( $step['title'] ?? '' ) ); ?></h4>
-							<?php foreach ( $lines as $li => $line ) : ?>
-								<p class="step-description"<?php jcp_niche_editable_attr( 'how_it_works.steps.' . $i . '.lines.' . $li ); ?>><?php jcp_niche_e( (string) $line ); ?></p>
-							<?php endforeach; ?>
+							<?php jcp_niche_render_step_lines( $lines, 'how_it_works.steps.' . $i . '.lines' ); ?>
 						</div>
 					</div>
 				<?php endforeach; ?>

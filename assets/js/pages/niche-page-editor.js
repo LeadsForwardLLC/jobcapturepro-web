@@ -32,6 +32,7 @@
   };
 
   const HERO_VARIANTS = [
+    { value: 'condensed', label: 'Condensed', hint: 'Internal page hero (recommended)' },
     { value: 'split', label: 'Split', hint: 'Copy + demo image' },
     { value: 'centered', label: 'Centered', hint: 'Headline & CTA focus' },
     { value: 'stacked', label: 'Stacked', hint: 'Copy above visual' },
@@ -224,14 +225,19 @@
     'jcp-hero-variant-split',
     'jcp-hero-variant-centered',
     'jcp-hero-variant-stacked',
+    'jcp-hero-variant-condensed',
     'jcp-hero-variant-home',
+    'jcp-block-cols-1',
+    'jcp-block-cols-2',
+    'jcp-block-cols-3',
+    'jcp-block-cols-4',
   ];
 
   const defaultLayout = (type) => {
     if (type === 'hero') {
       if (PAGE_KIND === 'referral') return { hero_variant: 'centered' };
       if (PAGE_KIND === 'home') return { hero_variant: 'home' };
-      return { hero_variant: 'split' };
+      return { hero_variant: 'condensed' };
     }
     const layout = { align: 'center', width: 'contained' };
     if (type === 'breadcrumb') layout.align = 'left';
@@ -241,7 +247,7 @@
   const resolveHeroVariant = (block) => {
     const layout = { ...defaultLayout('hero'), ...(block.layout || {}) };
     const variant = layout.hero_variant;
-    if (['split', 'centered', 'stacked', 'home'].includes(variant)) return variant;
+    if (['split', 'centered', 'stacked', 'condensed', 'home'].includes(variant)) return variant;
     if (block.layout?.hero_visual === false || block.props?.show_visual === false) return 'centered';
     return 'split';
   };
@@ -251,6 +257,7 @@
       return { hero_variant: resolveHeroVariant(block) };
     }
     const layout = { ...defaultLayout(block.type), ...(block.layout || {}) };
+    if (block.type !== 'hero' && layout.columns === undefined) layout.columns = 0;
     return layout;
   };
 
@@ -303,7 +310,7 @@
 
       if (block.type === 'hero') {
         const variant = resolveHeroVariant(block);
-        ['split', 'centered', 'stacked'].forEach((v) => {
+        ['split', 'centered', 'stacked', 'condensed', 'home'].forEach((v) => {
           root.classList.remove(`jcp-hero-variant-${v}`);
           root.querySelector('.jcp-niche-hero')?.classList.remove(`jcp-hero-variant-${v}`);
         });
@@ -314,7 +321,7 @@
         return;
       }
 
-      LAYOUT_CLASS_NAMES.filter((cls) => cls.startsWith('jcp-layout-')).forEach((cls) => root.classList.remove(cls));
+      LAYOUT_CLASS_NAMES.filter((cls) => cls.startsWith('jcp-layout-') || cls.startsWith('jcp-block-cols-')).forEach((cls) => root.classList.remove(cls));
       layoutClassNames(block).split(' ').filter(Boolean).forEach((cls) => root.classList.add(cls));
 
       if (block.type === 'media_text') {
@@ -338,6 +345,9 @@
       return;
     }
     block.layout = { ...resolveLayout(block), [key]: value };
+    if (key === 'columns') {
+      block.layout.columns = parseInt(value, 10) || 0;
+    }
     if (block.type === 'hero' && key === 'hero_variant') {
       block.props = block.props || {};
       block.props.show_visual = value !== 'centered';
@@ -354,8 +364,9 @@
 
     if (options.hero_variant) {
       const variant = resolveHeroVariant(block);
+      const variants = PAGE_KIND === 'home' ? HERO_VARIANTS : HERO_VARIANTS.filter((v) => v.value !== 'home');
       html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Hero style</span><div class="jcp-layout-btns jcp-layout-btns--stacked" data-setting="hero_variant">';
-      HERO_VARIANTS.forEach((item) => {
+      variants.forEach((item) => {
         const active = variant === item.value ? ' is-active' : '';
         html += `<button type="button" class="jcp-layout-btn jcp-layout-btn--variant${active}" data-value="${item.value}" title="${item.hint}">${item.label}</button>`;
       });
@@ -390,8 +401,55 @@
       html += '</div></div>';
     }
 
+    if (options.columns) {
+      const cols = Number(layout.columns || 0);
+      html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Columns</span><div class="jcp-layout-btns" data-setting="columns">';
+      html += ['0', '1', '2', '3', '4'].map((value) => {
+        const label = value === '0' ? 'Auto' : value;
+        const active = String(cols) === value ? ' is-active' : '';
+        return `<button type="button" class="jcp-layout-btn${active}" data-value="${value}">${label}</button>`;
+      }).join('');
+      html += '</div></div>';
+    }
+
+    if (block.type === 'hero') {
+      block.props = block.props || {};
+      const toggles = [
+        { key: 'show_cta_primary', label: 'Primary button' },
+        { key: 'show_cta_secondary', label: 'Secondary button' },
+        { key: 'show_trust_line', label: 'Trust line' },
+      ];
+      html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Show</span><div class="jcp-layout-toggles">';
+      toggles.forEach(({ key, label }) => {
+        const checked = block.props[key] !== false ? ' checked' : '';
+        html += `<label class="jcp-layout-toggle"><input type="checkbox" data-hero-toggle="${key}"${checked}> ${label}</label>`;
+      });
+      html += '</div></div>';
+    }
+
     html += '</div>';
     return html;
+  };
+
+  const setBlockHeroToggle = (block, key, enabled) => {
+    block.props = block.props || {};
+    block.props[key] = enabled;
+    const lk = legacyKeyFor(block.type);
+    if (lk) setPath(flatContent, `${lk}.${key}`, enabled);
+
+    const root = document.querySelector(`[data-jcp-block-id="${block.id}"]`);
+    if (root) {
+      if (key === 'show_cta_primary') {
+        root.querySelector('.jcp-hero-primary-cta')?.style.setProperty('display', enabled ? '' : 'none');
+      }
+      if (key === 'show_cta_secondary') {
+        root.querySelector('.jcp-actions .btn-secondary')?.style.setProperty('display', enabled ? '' : 'none');
+      }
+      if (key === 'show_trust_line') {
+        root.querySelector('.jcp-niche-trust-line')?.style.setProperty('display', enabled ? '' : 'none');
+      }
+    }
+    recordChange();
   };
 
   const updateDirtyState = () => {
@@ -689,6 +747,12 @@
             return;
           }
           setBlockLayout(block, setting, value);
+        });
+      });
+      li.querySelectorAll('[data-hero-toggle]').forEach((input) => {
+        input.addEventListener('change', (e) => {
+          e.stopPropagation();
+          setBlockHeroToggle(block, input.dataset.heroToggle, input.checked);
         });
       });
       blockListEl.appendChild(li);

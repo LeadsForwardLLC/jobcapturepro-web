@@ -11,7 +11,23 @@
  * @return array<int, string>
  */
 function jcp_block_hero_variants(): array {
-	return [ 'split', 'centered', 'stacked', 'home' ];
+	return [ 'split', 'centered', 'stacked', 'condensed', 'home' ];
+}
+
+/**
+ * Block types that support a column-count layout control.
+ *
+ * @return array<int, string>
+ */
+function jcp_block_column_types(): array {
+	return [
+		'how_it_works',
+		'check_ins',
+		'problem',
+		'benefits',
+		'who_its_for',
+		'proof_flow',
+	];
 }
 
 /**
@@ -24,13 +40,14 @@ function jcp_block_hero_variants(): array {
 function jcp_block_default_layout( string $type, string $page_kind = 'industry' ): array {
 	if ( $type === 'hero' ) {
 		return [
-			'hero_variant' => $page_kind === 'referral' ? 'centered' : ( $page_kind === 'home' ? 'home' : 'split' ),
+			'hero_variant' => $page_kind === 'referral' ? 'centered' : ( $page_kind === 'home' ? 'home' : 'condensed' ),
 		];
 	}
 
 	$layout = [
-		'align' => 'center',
-		'width' => 'contained',
+		'align'   => 'center',
+		'width'   => 'contained',
+		'columns' => 0,
 	];
 
 	if ( $type === 'breadcrumb' ) {
@@ -81,6 +98,9 @@ function jcp_block_resolve_layout( array $block, string $page_kind = 'industry' 
 	$layout['align'] = in_array( $align, [ 'left', 'center', 'right' ], true ) ? $align : 'center';
 	$layout['width'] = in_array( $width, [ 'contained', 'wide', 'full' ], true ) ? $width : 'contained';
 
+	$columns = (int) ( $layout['columns'] ?? 0 );
+	$layout['columns'] = ( $columns >= 1 && $columns <= 4 ) ? $columns : 0;
+
 	return $layout;
 }
 
@@ -101,6 +121,11 @@ function jcp_block_layout_classes( array $layout, string $type ): string {
 		'jcp-layout-align-' . (string) ( $layout['align'] ?? 'center' ),
 		'jcp-layout-width-' . (string) ( $layout['width'] ?? 'contained' ),
 	];
+
+	$columns = (int) ( $layout['columns'] ?? 0 );
+	if ( $columns >= 1 && $columns <= 4 ) {
+		$classes[] = 'jcp-block-cols-' . $columns;
+	}
 
 	return implode( ' ', $classes );
 }
@@ -125,10 +150,14 @@ function jcp_block_layout_options( string $type ): array {
 			'width'          => $type === 'media_text',
 		];
 	}
-	return [
+	$options = [
 		'align' => true,
 		'width' => true,
 	];
+	if ( in_array( $type, jcp_block_column_types(), true ) ) {
+		$options['columns'] = true;
+	}
+	return $options;
 }
 
 /**
@@ -138,9 +167,10 @@ function jcp_block_layout_options( string $type ): array {
  */
 function jcp_block_hero_variant_labels(): array {
 	return [
-		'split'    => __( 'Split — copy + demo image', 'jcp-core' ),
-		'centered' => __( 'Centered — headline & CTA focus', 'jcp-core' ),
-		'stacked'  => __( 'Stacked — copy above visual', 'jcp-core' ),
-		'home'     => __( 'Homepage — rotating headline + live phone', 'jcp-core' ),
+		'split'     => __( 'Split — copy + demo image', 'jcp-core' ),
+		'centered'  => __( 'Centered — headline & CTA focus', 'jcp-core' ),
+		'stacked'   => __( 'Stacked — copy above visual', 'jcp-core' ),
+		'condensed' => __( 'Condensed — internal page hero', 'jcp-core' ),
+		'home'      => __( 'Homepage — rotating headline + live phone', 'jcp-core' ),
 	];
 }

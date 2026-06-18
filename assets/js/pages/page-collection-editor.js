@@ -90,14 +90,17 @@
   const buildTimelineStep = (basePath, index, data) => {
     const lines = Array.isArray(data.lines) ? data.lines : [data.body || data.description || 'Step description'];
     const linesHtml = lines.map((line, li) =>
-      `<p class="step-description" data-jcp-path="${basePath}.${index}.lines.${li}">${esc(line)}</p>`
+      `<li data-jcp-array-item="${li}" data-jcp-path="${basePath}.${index}.lines.${li}">
+        <span class="jcp-step-checklist__icon" aria-hidden="true">${CHECK_SVG}</span>
+        <span class="jcp-step-checklist__text">${esc(line)}</span>
+      </li>`
     ).join('');
     return `
       <div class="timeline-step" data-jcp-array-item="${index}">
         <div class="step-number">${index + 1}</div>
         <div class="step-content">
           <h4 class="step-title" data-jcp-path="${basePath}.${index}.title">${esc(data.title || '')}</h4>
-          ${linesHtml}
+          <ul class="jcp-step-checklist jcp-niche-checklist" data-jcp-array="${basePath}.${index}.lines">${linesHtml}</ul>
         </div>
       </div>`;
   };
@@ -110,7 +113,7 @@
       </div>
     </div>`;
 
-  const buildChecklistItem = (basePath, index, text) => `<li data-jcp-array-item="${index}" data-jcp-path="${basePath}.${index}">${esc(text)}</li>`;
+  const buildChecklistItem = (basePath, index, text) => `<li data-jcp-array-item="${index}" data-jcp-path="${basePath}.${index}"><span class="jcp-step-checklist__icon" aria-hidden="true">${CHECK_SVG}</span><span class="jcp-step-checklist__text">${esc(text)}</span></li>`;
 
   const buildTagItem = (basePath, index, text) => `<li data-jcp-array-item="${index}" data-jcp-path="${basePath}.${index}">${esc(text)}</li>`;
 
@@ -147,8 +150,15 @@
       </a>`;
   };
 
+  const arrayDefaultFactory = (basePath) => {
+    if (ARRAY_DEFAULTS[basePath]) return ARRAY_DEFAULTS[basePath];
+    if (/\.lines$/.test(basePath)) return () => 'New point';
+    return () => 'New item';
+  };
+
   const buildItemHtml = (basePath, index, data, container) => {
     if (typeof data === 'string') {
+      if (basePath.endsWith('.lines')) return buildChecklistItem(basePath, index, data);
       if (basePath.endsWith('.points') || basePath.endsWith('.bullets')) return buildConversionPoint(basePath, index, data);
       if (basePath.includes('team_already') || basePath.includes('turns_into')) return buildChecklistItem(basePath, index, data);
       if (basePath.endsWith('.job_types')) return buildTagItem(basePath, index, data);
@@ -238,7 +248,7 @@
     if (!api || typeof api.collectFromDom !== 'function') return;
     api.collectFromDom();
     const arr = getArray(basePath);
-    const factory = ARRAY_DEFAULTS[basePath] || (() => 'New item');
+    const factory = arrayDefaultFactory(basePath);
     const data = factory(arr.length);
     arr.push(data);
     setArray(basePath, arr);
@@ -357,8 +367,9 @@
     btn.className = 'jcp-collection-add';
     const label = container.classList.contains('faq-grid') ? '+ Add question'
       : container.classList.contains('timeline-steps') ? '+ Add step'
-        : container.classList.contains('ranking-factors-grid') ? '+ Add card'
-          : '+ Add item';
+        : container.classList.contains('jcp-step-checklist') ? '+ Add point'
+          : container.classList.contains('ranking-factors-grid') ? '+ Add card'
+            : '+ Add item';
     btn.textContent = label;
     container.appendChild(btn);
   };

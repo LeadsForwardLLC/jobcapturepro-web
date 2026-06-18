@@ -227,6 +227,13 @@
       };
     }
 
+    if (base === 'hero') {
+      return {
+        imageUrlPath: 'hero.image_url',
+        videoUrlPath: 'hero.media_url',
+      };
+    }
+
     const shared = paths.urlPath || (base ? `${base}.media_url` : null);
     return { imageUrlPath: shared, videoUrlPath: shared };
   };
@@ -557,6 +564,14 @@
       if (resolvedUrl && writePaths.urlPath) {
         writeMediaUrl(writePaths.urlPath, resolvedUrl);
         if (attachmentId) syncMediaAttachmentId(writePaths.urlPath, attachmentId);
+        if (ctx.basePath === 'hero' && mediaType === 'image') {
+          writeMediaUrl('hero.image_url', resolvedUrl);
+          writeMediaUrl('hero.media_url', resolvedUrl);
+          if (attachmentId) {
+            syncMediaAttachmentId('hero.image_url', attachmentId);
+            syncMediaAttachmentId('hero.media_url', attachmentId);
+          }
+        }
       }
     }
 

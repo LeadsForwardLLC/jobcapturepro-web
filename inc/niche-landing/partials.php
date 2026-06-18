@@ -91,6 +91,123 @@ function jcp_niche_render_meta_strip( array $items, string $path_prefix = '' ): 
 }
 
 /**
+ * Normalize core mechanic items for the homepage-style stat row.
+ *
+ * @param array<int, array<string, string>> $items Raw items.
+ * @return array<int, array<string, string>>
+ */
+function jcp_niche_normalize_core_mechanic_items( array $items ): array {
+	$stat_classes = [ 'meta-stat-photo', 'meta-stat-channels', 'meta-stat-busywork' ];
+	$icons        = [ 'camera', 'map', 'clock' ];
+	$out          = [];
+
+	foreach ( $items as $i => $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$value  = trim( (string) ( $item['value'] ?? '' ) );
+		$label  = trim( (string) ( $item['label'] ?? '' ) );
+		$detail = trim( (string) ( $item['detail'] ?? '' ) );
+		$combined = trim( $value . ' ' . $label );
+		if ( $combined === '' && ! empty( $item['label'] ) ) {
+			$combined = $label;
+		}
+		$out[] = [
+			'icon'      => ! empty( $item['icon'] ) ? (string) $item['icon'] : ( $icons[ $i ] ?? 'check' ),
+			'label'     => $combined,
+			'detail'    => $detail,
+			'css_class' => (string) ( $item['css_class'] ?? ( $stat_classes[ $i ] ?? '' ) ),
+		];
+	}
+
+	return $out;
+}
+
+/**
+ * Checklist lines inside a how-it-works step card.
+ *
+ * @param array<int, string> $lines       Lines.
+ * @param string             $path_prefix JSON path prefix.
+ */
+function jcp_niche_render_step_lines( array $lines, string $path_prefix ): void {
+	if ( empty( $lines ) ) {
+		return;
+	}
+	?>
+	<ul class="jcp-step-checklist jcp-niche-checklist"<?php
+	if ( $path_prefix !== '' ) {
+		jcp_niche_array_attr( $path_prefix );
+	}
+	?>>
+		<?php foreach ( $lines as $li => $line ) : ?>
+			<?php
+			$text = is_array( $line ) ? (string) ( $line['text'] ?? '' ) : (string) $line;
+			if ( $text === '' ) {
+				continue;
+			}
+			$path = $path_prefix !== '' ? $path_prefix . '.' . $li : '';
+			?>
+			<li<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $li ); } ?><?php if ( $path !== '' ) { jcp_niche_editable_attr( $path ); } ?>>
+				<span class="jcp-step-checklist__icon" aria-hidden="true">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+				</span>
+				<span class="jcp-step-checklist__text"><?php echo esc_html( $text ); ?></span>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+	<?php
+}
+
+/**
+ * Homepage-style core mechanic row (1 photo / 4 channels / 0 busywork).
+ *
+ * @param array<int, array<string, string>> $items       Items.
+ * @param string                            $path_prefix JSON path prefix.
+ */
+function jcp_niche_render_core_mechanic_strip( array $items, string $path_prefix = 'core_mechanic' ): void {
+	if ( empty( $items ) ) {
+		return;
+	}
+	$stat_classes = [ 'meta-stat-photo', 'meta-stat-channels', 'meta-stat-busywork' ];
+	$icons        = [ 'camera', 'map', 'clock' ];
+	?>
+	<div class="directory-meta jcp-core-mechanic-meta">
+		<?php foreach ( $items as $i => $item ) : ?>
+			<?php
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$icon   = ! empty( $item['icon'] ) ? (string) $item['icon'] : ( $icons[ $i ] ?? 'check' );
+			$value  = (string) ( $item['value'] ?? '' );
+			$label  = (string) ( $item['label'] ?? '' );
+			$detail = (string) ( $item['detail'] ?? '' );
+			$base   = $path_prefix !== '' ? $path_prefix . '.' . $i : '';
+			$class  = (string) ( $item['css_class'] ?? ( $stat_classes[ $i ] ?? '' ) );
+			?>
+			<div class="meta-item<?php echo $class !== '' ? ' ' . esc_attr( $class ) : ''; ?>">
+				<div class="meta-label">
+					<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="meta-icon" alt="" width="20" height="20" />
+					<strong>
+						<?php if ( $base !== '' ) : ?>
+							<span<?php jcp_niche_editable_attr( $base . '.value' ); ?>><?php echo esc_html( $value ); ?></span>
+							<?php if ( $label !== '' ) : ?>
+								<span<?php jcp_niche_editable_attr( $base . '.label' ); ?>><?php echo esc_html( ' ' . $label ); ?></span>
+							<?php endif; ?>
+						<?php else : ?>
+							<?php echo esc_html( trim( $value . ' ' . $label ) ); ?>
+						<?php endif; ?>
+					</strong>
+				</div>
+				<?php if ( $detail !== '' ) : ?>
+					<span<?php if ( $base !== '' ) { jcp_niche_editable_attr( $base . '.detail' ); } ?>><?php echo esc_html( $detail ); ?></span>
+				<?php endif; ?>
+			</div>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
+/**
  * Checkmark list for differentiation bullets.
  *
  * @param array<int, string|array<string, string>> $lines        Lines.
