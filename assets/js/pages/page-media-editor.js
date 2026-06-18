@@ -27,15 +27,25 @@
     return found?.legacy_key || type;
   };
 
+  const blockLegacyKey = (block) => {
+    if (!block) return '';
+    if (block.legacy_key) return block.legacy_key;
+    return legacyKey(block.type);
+  };
+
   const syncFlatProp = (path, value) => {
     if (!path) return;
     api.setPath(api.flatContent, path, value);
     (api.pageDocument.blocks || []).forEach((block) => {
-      const key = legacyKey(block.type);
+      const key = blockLegacyKey(block);
       if (!key || (path !== key && !path.startsWith(`${key}.`))) return;
       const rel = path.slice(key.length + 1);
       block.props = block.props || {};
-      if (rel) api.setPath(block.props, rel, value);
+      if (rel) {
+        api.setPath(block.props, rel, value);
+      } else {
+        Object.assign(block.props, value);
+      }
     });
   };
 
@@ -692,7 +702,7 @@
     syncFlatProp(path, next);
     grid.classList.remove('jcp-split-layout--media-left', 'jcp-split-layout--media-right');
     grid.classList.add(`jcp-split-layout--media-${next}`);
-    const section = grid.closest('.jcp-media-text');
+    const section = grid.closest('.jcp-media-text, .demo-preview-section, .jcp-split-media-block');
     if (section) {
       section.classList.remove('jcp-media-text--media-left', 'jcp-media-text--media-right');
       section.classList.add(`jcp-media-text--media-${next}`);

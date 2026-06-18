@@ -51,7 +51,11 @@
     "media_url": "",
     "media_alt": "Plumber capturing job photos on site",
     "media_position": "right",
-    "cta": { "label": "See how it works", "url": "#how-it-works" }
+    "cta_primary": { "label": "See how it works", "url": "#how-it-works" },
+    "show_cta": true,
+    "show_subheadline": true,
+    "show_body": true,
+    "show_divider": false
   },
   "how_it_works": {
     "headline": "How plumbers use JobCapturePro in the field",
@@ -118,7 +122,9 @@
     "media_url": "",
     "media_alt": "Plumbing check-in with before and after photos",
     "media_position": "left",
-    "cta": { "label": "", "url": "" }
+    "cta_primary": { "label": "", "url": "" },
+    "show_cta": false,
+    "show_divider": false
   },
   "problem": {
     "headline": "Your plumbers are doing the work. Homeowners just are not seeing it.",
@@ -139,7 +145,9 @@
     "media_url": "",
     "media_alt": "Plumbing company missing online visibility",
     "media_position": "right",
-    "cta": { "label": "", "url": "" }
+    "cta_primary": { "label": "", "url": "" },
+    "show_cta": false,
+    "show_divider": false
   },
   "benefits": {
     "headline": "What happens when your plumbing jobs keep working after the job is done",

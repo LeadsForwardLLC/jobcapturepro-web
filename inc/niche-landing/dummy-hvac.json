@@ -54,7 +54,11 @@
     "media_url": "",
     "media_alt": "HVAC technician capturing job photos on site",
     "media_position": "right",
-    "cta": { "label": "See how it works", "url": "#how-it-works" }
+    "cta_primary": { "label": "See how it works", "url": "#how-it-works" },
+    "show_cta": true,
+    "show_subheadline": true,
+    "show_body": true,
+    "show_divider": false
   },
   "how_it_works": {
     "headline": "How it works for your HVAC business",
@@ -115,7 +119,9 @@
     "media_url": "",
     "media_alt": "HVAC check-in with before and after photos",
     "media_position": "left",
-    "cta": { "label": "", "url": "" }
+    "cta_primary": { "label": "", "url": "" },
+    "show_cta": false,
+    "show_divider": false
   },
   "problem": {
     "headline": "You are already doing the work. It just is not showing up",
@@ -136,7 +142,9 @@
     "media_url": "",
     "media_alt": "Busy HVAC company losing online visibility",
     "media_position": "right",
-    "cta": { "label": "", "url": "" }
+    "cta_primary": { "label": "", "url": "" },
+    "show_cta": false,
+    "show_divider": false
   },
   "benefits": {
     "headline": "What happens when your HVAC work stays visible after the job is done",

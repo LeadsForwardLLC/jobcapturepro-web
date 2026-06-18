@@ -49,7 +49,9 @@ function jcp_page_industry_media_props_for( string $page_key, string $legacy_key
 				'media_url'      => '',
 				'media_alt'      => __( 'HVAC technician capturing job photos on site', 'jcp-core' ),
 				'media_position' => 'right',
-				'cta'            => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
+				'cta_primary'    => [ 'label' => __( 'See how it works', 'jcp-core' ), 'url' => '#how-it-works' ],
+				'show_cta'       => true,
+				'show_divider'   => false,
 			],
 			'media_text_check_ins' => [
 				'headline'       => __( 'Every service call becomes a check-in customers can find', 'jcp-core' ),

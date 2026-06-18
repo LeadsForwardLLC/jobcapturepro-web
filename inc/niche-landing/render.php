@@ -172,66 +172,16 @@ function jcp_niche_render_hero( array $c, string $niche_key ): void {
  * @param string               $path  JSON path prefix.
  */
 function jcp_niche_render_media_text( array $props, string $path = 'media_text' ): void {
-	$headline = trim( (string) ( $props['headline'] ?? '' ) );
-	$body     = trim( (string) ( $props['body'] ?? '' ) );
-	if ( $headline === '' && $body === '' ) {
-		return;
-	}
-
-	$position   = (string) ( $props['media_position'] ?? 'right' );
-	$position   = in_array( $position, [ 'left', 'right' ], true ) ? $position : 'right';
-	$media      = jcp_media_props_from_block( $props );
-	$media_type = $media['media_type'];
-	$media_url  = $media['media_url'];
-	$media_alt  = $media['media_alt'];
-	$default_image = 'https://jobcapturepro.com/wp-content/uploads/2025/12/jcp-user-photo.jpg';
-	$cta        = is_array( $props['cta'] ?? null ) ? $props['cta'] : [];
-	$cta_label  = trim( (string) ( $cta['label'] ?? '' ) );
-	$cta_url    = trim( (string) ( $cta['url'] ?? '' ) );
-	?>
-	<section class="jcp-section rankings-section jcp-media-text jcp-media-text--media-<?php echo esc_attr( $position ); ?>">
-		<div class="jcp-container">
-			<div class="jcp-media-text-grid jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $position ) ); ?>" data-jcp-split-path="<?php echo esc_attr( $path ); ?>" data-jcp-media-position-path="<?php echo esc_attr( $path . '.media_position' ); ?>">
-				<div class="jcp-media-text-copy jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">
-					<?php if ( $headline !== '' ) : ?>
-						<h2<?php jcp_niche_editable_attr( $path . '.headline' ); ?>><?php jcp_niche_e( $headline ); ?></h2>
-					<?php endif; ?>
-					<?php if ( ! empty( $props['subheadline'] ) ) : ?>
-						<p class="rankings-subtitle"<?php jcp_niche_editable_attr( $path . '.subheadline' ); ?>><?php jcp_niche_e( (string) $props['subheadline'] ); ?></p>
-					<?php endif; ?>
-					<?php if ( $body !== '' ) : ?>
-						<p class="jcp-media-text-body"<?php jcp_niche_editable_attr( $path . '.body' ); ?>><?php jcp_niche_e( $body ); ?></p>
-					<?php endif; ?>
-					<?php if ( $cta_label !== '' ) : ?>
-						<div class="jcp-actions directory-cta-row jcp-media-text-cta">
-							<a class="btn btn-primary" href="<?php echo esc_url( $cta_url !== '' ? $cta_url : '#' ); ?>"<?php jcp_niche_editable_link_attr( $path . '.cta' ); ?>><?php jcp_niche_e( $cta_label ); ?></a>
-						</div>
-					<?php endif; ?>
-				</div>
-				<div class="jcp-media-text-media jcp-split-col jcp-split-col--media" data-jcp-split-col="media">
-					<?php
-					jcp_media_render_slot(
-						[
-							'path'          => $path,
-							'media_type'    => $media_type,
-							'image_url'     => $media['image_url'],
-							'video_url'     => $media['video_url'],
-							'media_alt'     => $media_alt,
-							'default_image' => $default_image,
-							'img_attrs'     => [
-								'class'   => 'jcp-media-text-image',
-								'width'   => '640',
-								'height'  => '480',
-								'loading' => 'lazy',
-							],
-						]
-					);
-					?>
-				</div>
-			</div>
-		</div>
-	</section>
-	<?php
+	jcp_niche_render_split_media_block(
+		$props,
+		$path,
+		'',
+		[
+			'variant'        => 'card',
+			'wrap_container' => true,
+			'root_class'     => 'jcp-block-media-text',
+		]
+	);
 }
 
 /**
@@ -913,70 +863,17 @@ function jcp_niche_render_demo_preview( array $props, string $niche_key = '', st
 	if ( empty( $props['headline'] ) ) {
 		return;
 	}
-	$primary = jcp_niche_resolve_cta( $props['cta_primary'] ?? [ 'label' => 'Launch Interactive Demo', 'url' => '/demo' ], $niche_key );
 	$section_id = ! empty( $props['section_id'] ) ? (string) $props['section_id'] : 'demo-preview';
-	$media = jcp_media_props_from_block( $props );
-	if ( empty( $props['media_type'] ) ) {
-		$media['media_type'] = 'phone_mockup';
-	}
-	?>
-	<div class="demo-preview-section jcp-block-demo-preview" id="<?php echo esc_attr( $section_id ); ?>">
-		<div class="demo-preview-card">
-			<div class="demo-preview-content jcp-split-layout <?php echo esc_attr( jcp_media_position_class( $media['media_position'] ) ); ?>" data-jcp-split-path="<?php echo esc_attr( $path ); ?>" data-jcp-media-position-path="<?php echo esc_attr( $path . '.media_position' ); ?>">
-				<div class="demo-preview-text jcp-split-col jcp-split-col--copy" data-jcp-split-col="copy">
-					<?php if ( ! empty( $props['badge'] ) ) : ?>
-						<div class="demo-badge">
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-								<circle cx="12" cy="12" r="10"/>
-								<polygon points="10 8 16 12 10 16 10 8"/>
-							</svg>
-							<span<?php jcp_niche_editable_attr( $path . '.badge' ); ?>><?php echo esc_html( (string) $props['badge'] ); ?></span>
-						</div>
-					<?php endif; ?>
-					<h3 class="demo-preview-title"<?php jcp_niche_editable_attr( $path . '.headline' ); ?>><?php echo esc_html( (string) $props['headline'] ); ?></h3>
-					<?php if ( ! empty( $props['body'] ) ) : ?>
-						<p class="demo-preview-description"<?php jcp_niche_editable_attr( $path . '.body' ); ?>><?php echo esc_html( (string) $props['body'] ); ?></p>
-					<?php endif; ?>
-					<?php if ( ! empty( $props['cue'] ) ) : ?>
-						<p class="demo-preview-cue"<?php jcp_niche_editable_attr( $path . '.cue' ); ?>><?php echo esc_html( (string) $props['cue'] ); ?></p>
-					<?php endif; ?>
-					<div class="demo-cta-wrapper">
-						<?php if ( $primary['label'] !== '' ) : ?>
-							<a href="<?php echo esc_url( $primary['url'] ); ?>" class="btn btn-primary demo-cta-primary"<?php jcp_niche_editable_link_attr( $path . '.cta_primary' ); ?>>
-								<span><?php echo esc_html( $primary['label'] ); ?></span>
-								<?php jcp_component_chevron_svg( 20 ); ?>
-							</a>
-						<?php endif; ?>
-						<?php if ( ! empty( $props['cta_note'] ) ) : ?>
-							<p class="demo-cta-note"<?php jcp_niche_editable_attr( $path . '.cta_note' ); ?>><?php echo esc_html( (string) $props['cta_note'] ); ?></p>
-						<?php endif; ?>
-					</div>
-				</div>
-				<div class="demo-preview-visual jcp-split-col jcp-split-col--media" data-jcp-split-col="media">
-					<?php
-					jcp_media_render_slot(
-						[
-							'path'               => $path,
-							'media_type'         => $media['media_type'],
-							'image_url'          => $media['image_url'],
-							'video_url'          => $media['video_url'],
-							'media_alt'          => $media['media_alt'],
-							'phone_mockup_style' => 'app_shell',
-							'phone_render'       => function () use ( $primary ) {
-								jcp_component_demo_app_phone( $primary['url'] );
-							},
-							'img_attrs'    => [
-								'class'   => 'demo-preview-slot-image',
-								'loading' => 'lazy',
-							],
-						]
-					);
-					?>
-				</div>
-			</div>
-		</div>
-	</div>
-	<?php
+	jcp_niche_render_split_media_block(
+		$props,
+		$path,
+		$niche_key,
+		[
+			'variant'    => 'card',
+			'section_id' => $section_id,
+			'root_class' => 'jcp-block-demo-preview',
+		]
+	);
 }
 
 /**

@@ -82,6 +82,9 @@ function jcp_niche_parse_document( string $text, string $niche_key = '', string 
 		'FAQ',
 		'CONVERSION',
 		'FINAL CTA',
+		'MEDIA CORE',
+		'MEDIA CHECK-INS',
+		'MEDIA PROBLEM',
 	];
 
 	for ( $i = $start; $i < count( $lines ); $i++ ) {
@@ -91,6 +94,8 @@ function jcp_niche_parse_document( string $text, string $niche_key = '', string 
 			continue;
 		}
 		$upper = strtoupper( str_replace( '’', "'", $trim ) );
+		$upper = preg_replace( '/[\s\-—–]+/u', ' ', $upper ) ?? $upper;
+		$upper = preg_replace( '/\s+/', ' ', trim( $upper ) );
 		if ( in_array( $upper, $section_names, true ) ) {
 			$current = $upper === 'WHO ITS FOR' ? "WHO IT'S FOR" : $upper;
 			if ( ! isset( $sections[ $current ] ) ) {
@@ -146,8 +151,17 @@ function jcp_niche_parse_document( string $text, string $niche_key = '', string 
 	if ( ! empty( $sections['FINAL CTA'] ) ) {
 		$content['final_cta'] = jcp_niche_doc_parse_final_cta( $sections['FINAL CTA'] );
 	}
+	if ( ! empty( $sections['MEDIA CORE'] ) ) {
+		$content['media_text'] = jcp_niche_doc_parse_media_text( $sections['MEDIA CORE'] );
+	}
+	if ( ! empty( $sections['MEDIA CHECK-INS'] ) ) {
+		$content['media_text_check_ins'] = jcp_niche_doc_parse_media_text( $sections['MEDIA CHECK-INS'] );
+	}
+	if ( ! empty( $sections['MEDIA PROBLEM'] ) ) {
+		$content['media_text_problem'] = jcp_niche_doc_parse_media_text( $sections['MEDIA PROBLEM'] );
+	}
 
-	return $content;
+	return jcp_niche_doc_derive_media_text_blocks( $content );
 }
 
 /**
@@ -910,4 +924,125 @@ function jcp_niche_doc_parse_final_cta( array $lines ): array {
 		],
 		'cta_note' => 'No credit card required. Setup in under 10 minutes.',
 	];
+}
+
+/**
+ * Parse a MEDIA + text section from a writer document.
+ *
+ * @param string[] $lines Section lines.
+ * @return array<string, mixed>
+ */
+function jcp_niche_doc_parse_media_text( array $lines ): array {
+	$labels = [ 'badge', 'headline', 'subheadline', 'cue', 'body', 'cta', 'cta note', 'media position' ];
+	$out    = [];
+	$count  = count( $lines );
+
+	for ( $i = 0; $i < $count; $i++ ) {
+		$low = strtolower( trim( $lines[ $i ] ) );
+		if ( ! in_array( $low, $labels, true ) ) {
+			continue;
+		}
+		for ( $j = $i + 1; $j < $count; $j++ ) {
+			$next = trim( $lines[ $j ] );
+			if ( $next === '' ) {
+				continue;
+			}
+			$next_low = strtolower( $next );
+			if ( in_array( $next_low, $labels, true ) ) {
+				break;
+			}
+			$out[ $low ] = $next;
+			break;
+		}
+	}
+
+	$cta_label = trim( (string) ( $out['cta'] ?? '' ) );
+	$position  = strtolower( trim( (string) ( $out['media position'] ?? 'right' ) ) );
+	$position  = $position === 'left' ? 'left' : 'right';
+
+	return [
+		'badge'              => trim( (string) ( $out['badge'] ?? '' ) ),
+		'headline'           => trim( (string) ( $out['headline'] ?? '' ) ),
+		'subheadline'        => trim( (string) ( $out['subheadline'] ?? '' ) ),
+		'cue'                => trim( (string) ( $out['cue'] ?? '' ) ),
+		'body'               => trim( (string) ( $out['body'] ?? '' ) ),
+		'cta_primary'        => [
+			'label' => $cta_label,
+			'url'   => $cta_label !== '' ? '#how-it-works' : '',
+		],
+		'cta_note'           => trim( (string) ( $out['cta note'] ?? '' ) ),
+		'media_type'         => 'image',
+		'media_position'     => $position,
+		'phone_mockup_style' => 'app_shell',
+		'show_badge'         => trim( (string) ( $out['badge'] ?? '' ) ) !== '',
+		'show_subheadline'   => trim( (string) ( $out['subheadline'] ?? '' ) ) !== '',
+		'show_cue'           => trim( (string) ( $out['cue'] ?? '' ) ) !== '',
+		'show_body'          => trim( (string) ( $out['body'] ?? '' ) ) !== '',
+		'show_cta'           => $cta_label !== '',
+		'show_cta_note'      => trim( (string) ( $out['cta note'] ?? '' ) ) !== '',
+		'show_divider'       => false,
+	];
+}
+
+/**
+ * Auto-fill media + text blocks from parsed sections when not written explicitly.
+ *
+ * @param array<string, mixed> $content Parsed document content.
+ * @return array<string, mixed>
+ */
+function jcp_niche_doc_derive_media_text_blocks( array $content ): array {
+	if ( empty( $content['media_text']['headline'] ) ) {
+		$what = $content['what_it_is'] ?? [];
+		$lead = trim( (string) ( $what['lead'] ?? '' ) );
+		$content['media_text'] = [
+			'headline'           => trim( (string) ( $what['team_already_title'] ?? 'Your crew already takes the photos — now they work for you' ) ),
+			'subheadline'        => trim( (string) ( $what['subheadline'] ?? '' ) ),
+			'body'               => $lead !== '' ? $lead : trim( (string) ( $what['closing'] ?? '' ) ),
+			'cta_primary'        => [
+				'label' => 'See how it works',
+				'url'   => '#how-it-works',
+			],
+			'media_type'         => 'image',
+			'media_position'     => 'right',
+			'phone_mockup_style' => 'app_shell',
+			'show_subheadline'   => trim( (string) ( $what['subheadline'] ?? '' ) ) !== '',
+			'show_body'          => true,
+			'show_cta'           => true,
+			'show_divider'       => false,
+		];
+	}
+
+	if ( empty( $content['media_text_check_ins']['headline'] ) ) {
+		$check = $content['check_ins'] ?? [];
+		$content['media_text_check_ins'] = [
+			'headline'           => trim( (string) ( $check['headline'] ?? '' ) ),
+			'subheadline'        => '',
+			'body'               => trim( (string) ( $check['subheadline'] ?? '' ) ) . ( ! empty( $check['closing'] ) ? ' ' . trim( (string) $check['closing'] ) : '' ),
+			'media_type'         => 'image',
+			'media_position'     => 'left',
+			'phone_mockup_style' => 'app_shell',
+			'show_subheadline'   => false,
+			'show_body'          => true,
+			'show_cta'           => false,
+			'show_divider'       => false,
+		];
+	}
+
+	if ( empty( $content['media_text_problem']['headline'] ) ) {
+		$problem = $content['problem'] ?? [];
+		$content['media_text_problem'] = [
+			'headline'           => trim( (string) ( $problem['headline'] ?? '' ) ),
+			'subheadline'        => trim( (string) ( $problem['subheadline'] ?? '' ) ),
+			'body'               => trim( (string) ( $problem['closing'] ?? '' ) ),
+			'media_type'         => 'image',
+			'media_position'     => 'right',
+			'phone_mockup_style' => 'app_shell',
+			'show_subheadline'   => trim( (string) ( $problem['subheadline'] ?? '' ) ) !== '',
+			'show_body'          => trim( (string) ( $problem['closing'] ?? '' ) ) !== '',
+			'show_cta'           => false,
+			'show_divider'       => false,
+		];
+	}
+
+	return $content;
 }

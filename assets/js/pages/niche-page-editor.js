@@ -24,7 +24,7 @@
     commission: '.jcp-niche-commission',
     partners: '.jcp-niche-partners',
     share: '.jcp-niche-share',
-    media_text: '.jcp-media-text',
+    media_text: '.jcp-block-media-text, .jcp-media-text, .demo-preview-section',
     proof_flow: '.jcp-block-proof-flow, #real-job-proof',
     demo_preview: '.jcp-block-demo-preview, #demo-preview',
     directory_preview: '.jcp-block-directory-preview, .directory-preview',
@@ -81,6 +81,19 @@
       cta_primary: { label: 'Launch Interactive Demo', url: '/demo' },
     },
     directory_preview: { headline: 'Section headline', cards: [] },
+    media_text: {
+      headline: 'Section headline',
+      subheadline: '',
+      body: 'Supporting copy for this section.',
+      cta_primary: { label: '', url: '' },
+      media_type: 'image',
+      media_position: 'right',
+      phone_mockup_style: 'app_shell',
+      show_subheadline: true,
+      show_body: true,
+      show_cta: false,
+      show_divider: false,
+    },
     conversion: { headline: 'Section headline', points: [] },
   };
 
@@ -340,13 +353,19 @@
     return found?.legacy_key || type;
   };
 
+  const blockLegacyKey = (block) => {
+    if (!block) return '';
+    if (block.legacy_key) return block.legacy_key;
+    return legacyKeyFor(block.type);
+  };
+
   const applyMediaPositionToDom = () => {
     document.querySelectorAll('[data-jcp-media-position-path]').forEach((grid) => {
       const path = grid.dataset.jcpMediaPositionPath;
       const pos = getPath(flatContent, path) === 'left' ? 'left' : 'right';
       grid.classList.remove('jcp-split-layout--media-left', 'jcp-split-layout--media-right');
       grid.classList.add(`jcp-split-layout--media-${pos}`);
-      const section = grid.closest('.jcp-media-text');
+      const section = grid.closest('.jcp-media-text, .demo-preview-section, .jcp-split-media-block');
       if (section) {
         section.classList.remove('jcp-media-text--media-left', 'jcp-media-text--media-right');
         section.classList.add(`jcp-media-text--media-${pos}`);
@@ -390,7 +409,7 @@
     if (key === 'media_position') {
       liveBlock.props = liveBlock.props || {};
       liveBlock.props.media_position = value;
-      const lk = legacyKeyFor(liveBlock.type);
+      const lk = blockLegacyKey(liveBlock);
       if (lk) setPath(flatContent, `${lk}.media_position`, value);
       applyMediaPositionToDom();
       renderBlockList();
@@ -480,14 +499,76 @@
       html += '</div></div>';
     }
 
+    if (block.type === 'media_text' || block.type === 'demo_preview') {
+      block.props = block.props || {};
+      const toggles = [
+        { key: 'show_badge', label: 'Badge' },
+        { key: 'show_subheadline', label: 'Subheadline' },
+        { key: 'show_cue', label: 'Lead line' },
+        { key: 'show_body', label: 'Body' },
+        { key: 'show_cta', label: 'Button' },
+        { key: 'show_cta_note', label: 'Button note' },
+        { key: 'show_divider', label: 'Bottom line' },
+      ];
+      html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Show</span><div class="jcp-layout-toggles">';
+      toggles.forEach(({ key, label }) => {
+        const checked = isSplitToggleOn(block, key) ? ' checked' : '';
+        html += `<label class="jcp-layout-toggle"><input type="checkbox" data-split-toggle="${key}"${checked}> ${label}</label>`;
+      });
+      html += '</div></div>';
+    }
+
     html += '</div>';
     return html;
+  };
+
+  const SPLIT_TOGGLE_DEFAULTS = {
+    show_badge: false,
+    show_subheadline: true,
+    show_cue: false,
+    show_body: true,
+    show_cta: false,
+    show_cta_note: false,
+    show_divider: false,
+  };
+
+  const isSplitToggleOn = (block, key) => {
+    const val = block.props?.[key];
+    if (val === true) return true;
+    if (val === false) return false;
+    return SPLIT_TOGGLE_DEFAULTS[key] ?? false;
+  };
+
+  const SPLIT_TOGGLE_SELECTORS = {
+    show_badge: '.demo-badge',
+    show_subheadline: '.jcp-split-subheadline',
+    show_cue: '.demo-preview-cue',
+    show_body: '.demo-preview-description',
+    show_cta: '.demo-cta-primary',
+    show_cta_note: '.demo-cta-note',
+    show_divider: '.jcp-split-media-block__rule',
+  };
+
+  const setBlockSplitToggle = (block, key, enabled) => {
+    block.props = block.props || {};
+    block.props[key] = enabled;
+    const lk = blockLegacyKey(block);
+    if (lk) setPath(flatContent, `${lk}.${key}`, enabled);
+
+    const root = document.querySelector(`[data-jcp-block-id="${block.id}"]`);
+    const selector = SPLIT_TOGGLE_SELECTORS[key];
+    if (root && selector) {
+      root.querySelectorAll(selector).forEach((el) => {
+        el.style.display = enabled ? '' : 'none';
+      });
+    }
+    recordChange();
   };
 
   const setBlockHeroToggle = (block, key, enabled) => {
     block.props = block.props || {};
     block.props[key] = enabled;
-    const lk = legacyKeyFor(block.type);
+    const lk = blockLegacyKey(block);
     if (lk) setPath(flatContent, `${lk}.${key}`, enabled);
 
     const root = document.querySelector(`[data-jcp-block-id="${block.id}"]`);
@@ -807,6 +888,12 @@
         input.addEventListener('change', (e) => {
           e.stopPropagation();
           setBlockHeroToggle(block, input.dataset.heroToggle, input.checked);
+        });
+      });
+      li.querySelectorAll('[data-split-toggle]').forEach((input) => {
+        input.addEventListener('change', (e) => {
+          e.stopPropagation();
+          setBlockSplitToggle(block, input.dataset.splitToggle, input.checked);
         });
       });
       blockListEl.appendChild(li);
