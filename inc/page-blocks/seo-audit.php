@@ -215,7 +215,7 @@ function jcp_seo_audit_run( int $post_id ): array {
  */
 function jcp_seo_audit_register_meta_box(): void {
 	global $post;
-	$types = [ 'jcp_niche_landing', 'jcp_page' ];
+	$types = [ 'jcp_niche_landing' ];
 	foreach ( $types as $post_type ) {
 		add_meta_box(
 			'jcp_seo_health',
@@ -326,7 +326,7 @@ function jcp_seo_audit_posts_column_content( string $column, int $post_id ): voi
 	echo '<span class="jcp-seo-col jcp-seo-col--' . esc_attr( $worst ) . '">' . esc_html( $labels[ $worst ] ?? $worst ) . '</span>';
 }
 
-foreach ( [ 'jcp_niche_landing', 'jcp_page', 'page' ] as $jcp_seo_post_type ) {
+foreach ( [ 'jcp_niche_landing', 'page' ] as $jcp_seo_post_type ) {
 	add_filter( "manage_{$jcp_seo_post_type}_posts_columns", 'jcp_seo_audit_posts_columns' );
 	add_action( "manage_{$jcp_seo_post_type}_posts_custom_column", 'jcp_seo_audit_posts_column_content', 10, 2 );
 }

@@ -105,7 +105,7 @@ function jcp_page_block_structure_admin_assets( string $hook ): void {
 		return;
 	}
 	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-	if ( ! $screen || ! in_array( $screen->post_type, [ 'jcp_niche_landing', 'jcp_page', 'page' ], true ) ) {
+	if ( ! $screen || ! in_array( $screen->post_type, [ 'jcp_niche_landing', 'page' ], true ) ) {
 		return;
 	}
 	// Script is enqueued from meta box render when the box is shown.

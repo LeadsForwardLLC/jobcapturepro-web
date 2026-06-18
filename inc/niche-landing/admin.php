@@ -18,7 +18,7 @@ function jcp_niche_block_template_admin_hint(): string {
  * @param WP_Post $post Post.
  */
 function jcp_admin_page_uses_editor( WP_Post $post ): bool {
-	if ( in_array( $post->post_type, [ 'jcp_niche_landing', 'jcp_page' ], true ) ) {
+	if ( $post->post_type === 'jcp_niche_landing' ) {
 		return true;
 	}
 	return $post->post_type === 'page' && jcp_page_uses_block_template( (int) $post->ID );
@@ -28,7 +28,7 @@ function jcp_admin_page_uses_editor( WP_Post $post ): bool {
  * Register meta box.
  */
 function jcp_niche_register_meta_box(): void {
-	$types = [ 'jcp_niche_landing', 'jcp_page', 'page' ];
+	$types = [ 'jcp_niche_landing', 'page' ];
 	foreach ( $types as $post_type ) {
 		add_meta_box(
 			'jcp_page_editor',
@@ -95,7 +95,7 @@ function jcp_niche_render_standard_page_setup_meta_box( WP_Post $post ): void {
 		</ol>
 
 		<p class="description">
-			<?php esc_html_e( 'Use Pages (not JCP → Legacy (/pages/)). Home and Referral Program templates are only for those specific pages — everything else uses JCP Block Page.', 'jcp-core' ); ?>
+			<?php esc_html_e( 'Home and Referral Program templates are only for those specific pages — everything else marketing uses JCP Block Page.', 'jcp-core' ); ?>
 		</p>
 
 		<p class="description">
@@ -136,7 +136,7 @@ function jcp_admin_page_editor_styles( string $hook ): void {
 		return;
 	}
 	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-	if ( ! $screen || ! in_array( $screen->post_type, [ 'jcp_niche_landing', 'jcp_page', 'page' ], true ) ) {
+	if ( ! $screen || ! in_array( $screen->post_type, [ 'jcp_niche_landing', 'page' ], true ) ) {
 		return;
 	}
 	wp_enqueue_style(
@@ -166,8 +166,7 @@ function jcp_niche_render_quick_meta_box_content( WP_Post $post ): void {
 	$hero  = $c['hero'] ?? [];
 	$final = $c['final_cta'] ?? [];
 	$is_industry  = $post->post_type === 'jcp_niche_landing';
-	$is_marketing = $post->post_type === 'jcp_page'
-		|| ( $post->post_type === 'page' && get_page_template_slug( $post->ID ) === 'page-jcp-blocks.php' );
+	$is_marketing = $post->post_type === 'page' && get_page_template_slug( $post->ID ) === 'page-jcp-blocks.php';
 	?>
 	<?php if ( $is_industry || $is_marketing ) : ?>
 		<div class="notice notice-info inline" style="margin: 0 0 1em; padding: 0.75em 1em;">
@@ -356,7 +355,7 @@ function jcp_niche_ajax_parse_document(): void {
 			$page_kind = 'referral';
 		} elseif ( get_page_template_slug( $post ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === (int) $post->ID ) {
 			$page_kind = 'home';
-		} elseif ( $post->post_type === 'jcp_page' || jcp_page_uses_block_template( (int) $post->ID ) ) {
+		} elseif ( jcp_page_uses_block_template( (int) $post->ID ) ) {
 			$page_kind = 'marketing';
 		}
 	}
@@ -391,19 +390,6 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 	if ( $display === '' && ( $post->post_name === 'referral-program' || get_page_template_slug( $post->ID ) === 'page-referral-program.php' ) ) {
 		$display = wp_json_encode( jcp_page_legacy_to_blocks( jcp_page_load_preset( 'referral-program' ), 0 ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
-	if ( $display === '' && $post->post_type === 'jcp_page' ) {
-		$empty = jcp_page_legacy_to_blocks(
-			[
-				'page_kind'  => 'marketing',
-				'page_key'   => $post->post_name,
-				'page_label' => get_the_title( $post ),
-				'preset'     => 'marketing',
-			],
-			(int) $post->ID
-		);
-		$empty['blocks'] = jcp_page_blocks_from_preset( 'marketing' );
-		$display         = wp_json_encode( $empty, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-	}
 	if ( $display === '' && $post->post_type === 'page' && get_page_template_slug( $post->ID ) === 'page-jcp-blocks.php' ) {
 		$empty = jcp_page_legacy_to_blocks(
 			[
@@ -426,7 +412,7 @@ function jcp_niche_render_meta_box( WP_Post $post ): void {
 		<button type="button" class="button" id="jcp-niche-load-plumbing-demo"><?php esc_html_e( 'Use plumbing as template', 'jcp-core' ); ?></button>
 		<button type="button" class="button" id="jcp-niche-load-hvac-demo"><?php esc_html_e( 'Use HVAC as template', 'jcp-core' ); ?></button>
 	</p>
-	<?php elseif ( $post->post_type === 'jcp_page' || get_page_template_slug( $post->ID ) === 'page-jcp-blocks.php' ) : ?>
+	<?php elseif ( get_page_template_slug( $post->ID ) === 'page-jcp-blocks.php' ) : ?>
 	<p>
 		<button type="button" class="button" id="jcp-niche-load-marketing-demo"><?php esc_html_e( 'Use marketing preset', 'jcp-core' ); ?></button>
 		<button type="button" class="button" id="jcp-niche-load-minimal-demo"><?php esc_html_e( 'Use minimal preset', 'jcp-core' ); ?></button>
@@ -534,7 +520,7 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 	if ( ! $post instanceof WP_Post ) {
 		return;
 	}
-	$is_structured = in_array( $post->post_type, [ 'jcp_niche_landing', 'jcp_page' ], true )
+	$is_structured = $post->post_type === 'jcp_niche_landing'
 		|| jcp_page_uses_block_template( $post_id );
 	if ( ! $is_structured ) {
 		return;
@@ -618,7 +604,7 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 		if ( empty( $decoded['page_kind'] ) && $post->post_type === 'jcp_niche_landing' ) {
 			$decoded['page_kind'] = 'industry';
 		}
-		if ( empty( $decoded['page_kind'] ) && $post->post_type === 'jcp_page' ) {
+		if ( empty( $decoded['page_kind'] ) && get_page_template_slug( $post_id ) === 'page-jcp-blocks.php' ) {
 			$decoded['page_kind'] = 'marketing';
 		}
 		if ( empty( $decoded['page_kind'] ) && get_page_template_slug( $post_id ) === 'page-referral-program.php' ) {
@@ -630,12 +616,8 @@ function jcp_niche_save_meta_box( int $post_id ): void {
 		if ( empty( $decoded['page_kind'] ) && (int) get_option( 'page_on_front' ) === $post_id ) {
 			$decoded['page_kind'] = 'home';
 		}
-		if ( empty( $decoded['page_kind'] ) && get_page_template_slug( $post_id ) === 'page-jcp-blocks.php' ) {
-			$decoded['page_kind'] = 'marketing';
-		}
 	}
 	jcp_page_save_content( $post_id, $decoded );
 }
 add_action( 'save_post_jcp_niche_landing', 'jcp_niche_save_meta_box' );
-add_action( 'save_post_jcp_page', 'jcp_niche_save_meta_box' );
 add_action( 'save_post_page', 'jcp_niche_save_meta_box' );

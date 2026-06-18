@@ -42,7 +42,7 @@
 
 The theme is **mid-migration** from legacy niche landing to a unified block page system. **Both** `inc/page-blocks/` and `inc/niche-landing/` are required at runtime:
 
-- **`inc/page-blocks/`** — Block registry, content schema, `jcp_page_render()`, REST API, `jcp_page` CPT, migrations.
+- **`inc/page-blocks/`** — Block registry, content schema, `jcp_page_render()`, REST API, migrations.
 - **`inc/niche-landing/`** — Section PHP renderers (~1,280 lines), doc import parser, `jcp_niche_landing` CPT, admin meta boxes, editable attributes, shared partials.
 
 Do **not** delete `inc/niche-landing/` until section renderers are fully moved into page-blocks.
@@ -54,7 +54,6 @@ Do **not** delete `inc/niche-landing/` until section renderers are fully moved i
 | `jcp_niche_landing` | `/industries/{slug}/` | **Industry/trade pages** at scale (programmatic SEO hub) |
 | WP `page` + **JCP Block Page** template | Existing page slug | **Default for new marketing pages** (About, Features, etc.) — preserves URL + Rank Math |
 | WP `page` + Home / Referral templates | As configured | Homepage, referral program |
-| `jcp_page` CPT | `/pages/{slug}/` | Optional legacy path; prefer WP Pages for new marketing content |
 
 Content is stored in post meta `_jcp_page_content` (canonical). Legacy `_jcp_niche_content` is adapted via `jcp_page_legacy_to_blocks()`.
 
@@ -151,7 +150,7 @@ Helpers live in `inc/page-blocks/schema.php` (`jcp_page_get_content`, `jcp_page_
 ### Render pipeline
 
 ```
-Template (page-home.php, single-jcp_page.php, …)
+Template (page-home.php, page-jcp-blocks.php, …)
   → jcp_niche_render_page() or jcp_page_render()
     → inc/page-blocks/render.php (orchestration, block loop)
       → inc/niche-landing/render.php (section HTML: hero, benefits, FAQ, …)
@@ -398,7 +397,7 @@ Root (WordPress REQUIRES these in root):
 ├── page-ui-library.php          # UI component library (PHP-rendered)
 ├── archive-jcp_niche_landing.php # /industries/ archive
 ├── single-jcp_niche_landing.php  # Industry landing pages
-├── single-jcp_page.php          # Generic block pages
+├── page-jcp-blocks.php          # Generic block pages (WP Pages)
 └── single-jcp_company.php       # Company profile (loads HTML template)
 
 templates/
@@ -649,7 +648,7 @@ Located in `inc/template-routes.php`:
 - Unified block registry, schema, and REST API (`inc/page-blocks/`)
 - Live front-end editor with undo/redo, media slots, collection add/remove
 - Homepage migrated to PHP block render; `home.js` kept as legacy fallback
-- Industry pages (`jcp_niche_landing`) and generic block pages (`jcp_page`)
+- Industry pages (`jcp_niche_landing`) and WP Pages with JCP Block Page template
 
 #### ✅ Template Cleanup
 - Deleted `front-page.php` (duplicate)
@@ -789,7 +788,6 @@ Located in `inc/template-routes.php`:
 | `/contact` | `page-contact.php` | PHP + `contact.js` |
 | `/industries/` | `archive-jcp_niche_landing.php` | PHP archive |
 | `/industries/[slug]` | `single-jcp_niche_landing.php` | PHP block render |
-| `/pages/[slug]` | `single-jcp_page.php` | PHP block render |
 | `/ui-library` | `page-ui-library.php` | PHP template |
 | Generic page | `page.php` | PHP template |
 | Blog archive | `home.php` | PHP template |

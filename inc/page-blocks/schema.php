@@ -69,7 +69,7 @@ function jcp_page_is_content_page( ?int $post_id = null ): bool {
 	if ( ! $post instanceof WP_Post ) {
 		return false;
 	}
-	if ( in_array( $post->post_type, [ 'jcp_niche_landing', 'jcp_page' ], true ) ) {
+	if ( in_array( $post->post_type, [ 'jcp_niche_landing' ], true ) ) {
 		return true;
 	}
 	if ( $post->post_type === 'page' ) {

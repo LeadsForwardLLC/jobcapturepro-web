@@ -5,7 +5,7 @@
 
 ## Decisions
 
-1. **New marketing pages:** WP Pages + `page-jcp-blocks.php` template (not `jcp_page` CPT).
+1. **New marketing pages:** WP Pages + `page-jcp-blocks.php` template.
 2. **Industry pages:** `jcp_niche_landing` CPT at `/industries/{slug}/`.
 3. **Component model:** Block registry + shared PHP/CSS renderers; JSON = content props only.
 4. **SEO:** Rank Math for meta; theme `seo-audit.php` for cross-checks and list-column status.
@@ -13,7 +13,7 @@
 ## Phase 1 — Shipped
 
 - SEO Health meta box on block page edit screens (`inc/page-blocks/seo-audit.php`)
-- SEO column on Industries / Pages / Marketing Pages list tables
+- SEO column on Industries / Pages list tables
 - Updated SOP: `inc/admin-theme-docs.php`, `DOCUMENTATION.md`
 
 ## Phase 2 — Backend block canvas (planned)

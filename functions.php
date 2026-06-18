@@ -49,7 +49,6 @@ require_once get_template_directory() . '/inc/niche-landing/editable.php';
 require_once get_template_directory() . '/inc/niche-landing/render.php';
 require_once get_template_directory() . '/inc/page-blocks/render.php';
 require_once get_template_directory() . '/inc/page-blocks/rest-content.php';
-require_once get_template_directory() . '/inc/page-blocks/cpt.php';
 require_once get_template_directory() . '/inc/niche-landing/seed.php';
 require_once get_template_directory() . '/inc/page-blocks/migrate-pages.php';
 if ( is_admin() ) {
@@ -90,6 +89,18 @@ function jcp_core_theme_setup(): void {
 	add_theme_support( 'post-thumbnails' );
 }
 add_action( 'after_setup_theme', 'jcp_core_theme_setup' );
+
+/**
+ * Flush permalinks once after removing the legacy jcp_page CPT.
+ */
+function jcp_core_flush_after_jcp_page_cpt_removed(): void {
+	if ( get_option( 'jcp_page_cpt_removed_flush' ) === '1' ) {
+		return;
+	}
+	flush_rewrite_rules( false );
+	update_option( 'jcp_page_cpt_removed_flush', '1' );
+}
+add_action( 'init', 'jcp_core_flush_after_jcp_page_cpt_removed', 99 );
 
 /**
  * Remove tailwind.min.css if it's being enqueued (prevents 404 errors)

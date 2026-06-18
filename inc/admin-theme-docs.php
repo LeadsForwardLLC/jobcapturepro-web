@@ -37,7 +37,6 @@ function jcp_theme_docs_render_page(): void {
 	$hub_url        = home_url( '/industries/' );
 	$pages_new_url  = admin_url( 'post-new.php?post_type=page' );
 	$pages_url      = admin_url( 'edit.php?post_type=page' );
-	$marketing_url  = admin_url( 'edit.php?post_type=jcp_page' );
 	$block_lib_url  = admin_url( 'admin.php?page=jcp-block-library' );
 	$docs_url       = admin_url( 'admin.php?page=jcp-theme-settings' );
 	?>
@@ -82,10 +81,6 @@ function jcp_theme_docs_render_page(): void {
 					</tr>
 				</tbody>
 			</table>
-			<p style="margin: 12px 0 0;">
-				<strong><?php esc_html_e( 'Not this:', 'jcp-core' ); ?></strong>
-				<?php esc_html_e( 'JCP → Legacy (/pages/) is an old system. Do not create new marketing pages there — use Pages + JCP Block Page instead.', 'jcp-core' ); ?>
-			</p>
 		</div>
 
 		<p class="description">
@@ -98,7 +93,6 @@ function jcp_theme_docs_render_page(): void {
 			<a href="<?php echo esc_url( $pages_url ); ?>" class="button"><?php esc_html_e( 'All Pages', 'jcp-core' ); ?></a>
 			<a href="<?php echo esc_url( $industries_url ); ?>" class="button"><?php esc_html_e( 'All Industries', 'jcp-core' ); ?></a>
 			<a href="<?php echo esc_url( $hub_url ); ?>" class="button" target="_blank" rel="noopener"><?php esc_html_e( 'View /industries/ hub', 'jcp-core' ); ?></a>
-			<a href="<?php echo esc_url( $marketing_url ); ?>" class="button" style="margin-left: 8px;"><?php esc_html_e( 'Legacy /pages/ only', 'jcp-core' ); ?></a>
 		</div>
 
 		<nav class="jcp-theme-docs__toc" aria-label="<?php esc_attr_e( 'On this page', 'jcp-core' ); ?>">
@@ -151,10 +145,6 @@ function jcp_theme_docs_render_page(): void {
 						<td><?php esc_html_e( 'WP Admin → Pages → assign “JCP Block Page” template — keeps your existing URL and Rank Math SEO', 'jcp-core' ); ?></td>
 					</tr>
 					<tr>
-						<td><?php esc_html_e( 'Marketing CPT (legacy / optional)', 'jcp-core' ); ?></td>
-						<td><?php esc_html_e( 'JCP → Marketing Pages — URLs live at /pages/{slug}/. Use WP Pages instead for new content unless you need that URL pattern.', 'jcp-core' ); ?></td>
-					</tr>
-					<tr>
 						<td><?php esc_html_e( 'Referral program', 'jcp-core' ); ?></td>
 						<td><?php esc_html_e( 'Pages → “Referral Program” template (same block system)', 'jcp-core' ); ?></td>
 					</tr>
@@ -201,9 +191,8 @@ function jcp_theme_docs_render_page(): void {
 			</table>
 			<p class="description" style="margin-top:12px;">
 				<strong><?php esc_html_e( 'Templates explained:', 'jcp-core' ); ?></strong>
-				<?php esc_html_e( 'Most marketing pages use only “JCP Block Page”. “Home” and “Referral Program” are reserved for those specific URLs. Demo, Pricing, Directory, and other special templates are assigned automatically when you edit those pages — you will not see all 16 templates in the dropdown anymore.', 'jcp-core' ); ?>
+				<?php esc_html_e( 'Most marketing pages use only “JCP Block Page”. “Home” and “Referral Program” are reserved for those specific URLs. Demo, Pricing, Directory, and other special templates appear only when you edit those pages.', 'jcp-core' ); ?>
 			</p>
-			<p><?php esc_html_e( 'The old “Marketing Pages” admin menu (now JCP → Legacy (/pages/)) is not used for new work.', 'jcp-core' ); ?></p>
 		</section>
 
 		<section id="component-model" class="jcp-theme-docs__section">
