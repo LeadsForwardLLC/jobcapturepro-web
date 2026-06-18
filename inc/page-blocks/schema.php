@@ -239,7 +239,12 @@ function jcp_page_get_content( int $post_id ): array {
 			'blocks'     => [],
 		];
 	}
-	return jcp_page_normalize_content( $raw, $post_id );
+	$content = jcp_page_normalize_content( $raw, $post_id );
+	$cleaned = jcp_page_sanitize_content_document( $content );
+	if ( wp_json_encode( $cleaned ) !== wp_json_encode( $content ) ) {
+		jcp_page_save_content( $post_id, $cleaned );
+	}
+	return $cleaned;
 }
 
 /**
@@ -272,6 +277,7 @@ function jcp_page_save_content( int $post_id, array $content ): void {
 	if ( empty( $content['blocks'] ) ) {
 		$content = jcp_page_normalize_content( $content, $post_id );
 	}
+	$content = jcp_page_sanitize_content_document( $content );
 	update_post_meta(
 		$post_id,
 		jcp_page_content_meta_key(),

@@ -689,7 +689,8 @@
       const path = el.getAttribute('data-jcp-path');
       if (!path) return;
       const val = getPath(flatContent, path);
-      if (val !== undefined && val !== null) el.textContent = String(val);
+      if (val === undefined || val === null) return;
+      el.textContent = isListLinePath(path) ? cleanStepLineText(String(val)) : String(val);
     });
     document.querySelectorAll('[data-jcp-href-path]').forEach((el) => {
       const path = el.getAttribute('data-jcp-href-path');
@@ -879,6 +880,8 @@
     if (Array.isArray(data.registry) && data.registry.length) {
       registry = data.registry;
     }
+    sanitizeFlatContentInPlace();
+    applyCleanLinesToDom();
     return true;
   };
 
@@ -905,10 +908,40 @@
 
   const cleanStepLineText = (text) => {
     let value = (text || '').trim();
-    value = value.replace(/(?:nttt)+x*\s*$/i, '');
-    value = value.replace(/\s*×\s*$/u, '');
-    value = value.replace(/x\s*$/iu, '');
-    return value.trim();
+    for (let i = 0; i < 3; i += 1) {
+      value = value.replace(/(?:nttt)+x*\s*$/giu, '');
+      value = value.replace(/[\s\u00D7]+$/gu, '');
+      value = value.replace(/x\s*$/giu, '');
+      value = value.trim();
+    }
+    return value;
+  };
+
+  const isListLinePath = (path) => /\.(?:lines\.\d+|team_already\.\d+|turns_into\.\d+|job_types\.\d+|bullets\.\d+|points\.\d+)$/.test(path || '');
+
+  const sanitizeFlatContentInPlace = () => {
+    const cleanList = (path) => {
+      const arr = getPath(flatContent, path);
+      if (!Array.isArray(arr)) return;
+      setPath(flatContent, path, arr.map((line) => cleanStepLineText(String(line ?? ''))));
+    };
+    const steps = getPath(flatContent, 'how_it_works.steps');
+    if (Array.isArray(steps)) {
+      steps.forEach((step, index) => {
+        if (!step || !Array.isArray(step.lines)) return;
+        setPath(flatContent, `how_it_works.steps.${index}.lines`, step.lines.map((line) => cleanStepLineText(String(line ?? ''))));
+      });
+    }
+    ['what_it_is.team_already', 'what_it_is.turns_into', 'check_ins.job_types', 'differentiation.bullets', 'conversion.points'].forEach(cleanList);
+  };
+
+  const applyCleanLinesToDom = () => {
+    document.querySelectorAll('.jcp-step-checklist__text[data-jcp-path], .jcp-checklist-item__text[data-jcp-path]').forEach((el) => {
+      const path = el.getAttribute('data-jcp-path');
+      const stored = path ? getPath(flatContent, path) : undefined;
+      const value = stored !== undefined && stored !== null ? String(stored) : (el.textContent || '');
+      el.textContent = cleanStepLineText(value);
+    });
   };
 
   const isStringArrayItemPath = (el) => {
@@ -956,7 +989,7 @@
       const path = el.getAttribute('data-jcp-path');
       if (!path) return;
       const raw = (el.textContent || '').trim();
-      const value = /\.lines\.\d+$/.test(path) ? cleanStepLineText(raw) : raw;
+      const value = isListLinePath(path) ? cleanStepLineText(raw) : raw;
       setPath(flatContent, path, value);
     });
     document.querySelectorAll('[data-jcp-href-path]').forEach((el) => {
@@ -986,6 +1019,7 @@
     toggleBtn.classList.add('is-active');
     if (!dirty) statusEl.textContent = 'Click text or images to edit. Drag ⋮⋮ on a column to swap sides.';
     bindEditableFields();
+    applyCleanLinesToDom();
     if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
       window.JCP_REFRESH_PAGE_MEDIA_UI();
     }
@@ -1137,6 +1171,7 @@
   });
 
   initHistory();
+  sanitizeFlatContentInPlace();
   (pageDocument.blocks || []).forEach((block) => {
     if (!block.layout) block.layout = defaultLayout(block.type);
     if (block.type === 'hero') {
@@ -1151,6 +1186,7 @@
     }
   });
   indexBlockSections();
+  applyCleanLinesToDom();
   applyLayoutToDom();
   applyMediaPositionToDom();
 
@@ -1183,7 +1219,9 @@
 
   load().finally(() => {
     loaded = true;
+    sanitizeFlatContentInPlace();
     indexBlockSections();
+    applyCleanLinesToDom();
     applyMediaPositionToDom();
     if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
       window.JCP_REFRESH_PAGE_MEDIA_UI();

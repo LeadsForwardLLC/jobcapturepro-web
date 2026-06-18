@@ -3,10 +3,13 @@
 
   const cleanStepLineText = (text) => {
     let value = (text || '').trim();
-    value = value.replace(/(?:nttt)+x*\s*$/i, '');
-    value = value.replace(/\s*×\s*$/u, '');
-    value = value.replace(/x\s*$/iu, '');
-    return value.trim();
+    for (let i = 0; i < 3; i += 1) {
+      value = value.replace(/(?:nttt)+x*\s*$/giu, '');
+      value = value.replace(/[\s\u00D7]+$/gu, '');
+      value = value.replace(/x\s*$/giu, '');
+      value = value.trim();
+    }
+    return value;
   };
 
   const ARRAY_DEFAULTS = {

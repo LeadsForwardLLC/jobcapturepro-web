@@ -66,11 +66,98 @@ function jcp_niche_array_item_attr( int $index ): void {
  */
 function jcp_niche_clean_step_line( string $text ): string {
 	$text = trim( $text );
-	$text = preg_replace( '/(?:nttt)+x*\s*$/i', '', $text );
-	$text = preg_replace( '/\s*×\s*$/u', '', $text );
-	$text = preg_replace( '/x\s*$/iu', '', $text );
+	for ( $i = 0; $i < 3; $i++ ) {
+		$text = preg_replace( '/(?:nttt)+x*\s*$/iu', '', $text );
+		$text = preg_replace( '/[\s\x{00D7}]+$/u', '', $text );
+		$text = preg_replace( '/x\s*$/iu', '', $text );
+		$text = trim( $text );
+	}
 
-	return trim( $text );
+	return $text;
+}
+
+/**
+ * Clean a list of string lines (checklists, step bullets, tags).
+ *
+ * @param array<int, mixed> $items Raw items.
+ * @return array<int, string>
+ */
+function jcp_niche_clean_string_list( array $items ): array {
+	$out = [];
+	foreach ( $items as $item ) {
+		$out[] = jcp_niche_clean_step_line( is_string( $item ) ? $item : (string) $item );
+	}
+	return $out;
+}
+
+/**
+ * Remove editor garbage from block props before render/save.
+ *
+ * @param array<string, mixed> $block Block document entry.
+ * @return array<string, mixed>
+ */
+function jcp_page_sanitize_block_props( array $block ): array {
+	$type  = (string) ( $block['type'] ?? '' );
+	$props = $block['props'] ?? [];
+	if ( ! is_array( $props ) ) {
+		return $block;
+	}
+
+	switch ( $type ) {
+		case 'how_it_works':
+			if ( ! empty( $props['steps'] ) && is_array( $props['steps'] ) ) {
+				foreach ( $props['steps'] as $i => $step ) {
+					if ( ! is_array( $step ) || empty( $step['lines'] ) || ! is_array( $step['lines'] ) ) {
+						continue;
+					}
+					$props['steps'][ $i ]['lines'] = jcp_niche_clean_string_list( $step['lines'] );
+				}
+			}
+			break;
+		case 'what_it_is':
+			foreach ( [ 'team_already', 'turns_into' ] as $key ) {
+				if ( ! empty( $props[ $key ] ) && is_array( $props[ $key ] ) ) {
+					$props[ $key ] = jcp_niche_clean_string_list( $props[ $key ] );
+				}
+			}
+			break;
+		case 'check_ins':
+			if ( ! empty( $props['job_types'] ) && is_array( $props['job_types'] ) ) {
+				$props['job_types'] = jcp_niche_clean_string_list( $props['job_types'] );
+			}
+			break;
+		case 'differentiation':
+			if ( ! empty( $props['bullets'] ) && is_array( $props['bullets'] ) ) {
+				$props['bullets'] = jcp_niche_clean_string_list( $props['bullets'] );
+			}
+			break;
+		case 'conversion':
+			if ( ! empty( $props['points'] ) && is_array( $props['points'] ) ) {
+				$props['points'] = jcp_niche_clean_string_list( $props['points'] );
+			}
+			break;
+	}
+
+	$block['props'] = $props;
+	return $block;
+}
+
+/**
+ * Sanitize all checklist/step strings in a block document.
+ *
+ * @param array<string, mixed> $content Block document.
+ * @return array<string, mixed>
+ */
+function jcp_page_sanitize_content_document( array $content ): array {
+	if ( empty( $content['blocks'] ) || ! is_array( $content['blocks'] ) ) {
+		return $content;
+	}
+	foreach ( $content['blocks'] as $i => $block ) {
+		if ( is_array( $block ) ) {
+			$content['blocks'][ $i ] = jcp_page_sanitize_block_props( $block );
+		}
+	}
+	return $content;
 }
 
 /**
