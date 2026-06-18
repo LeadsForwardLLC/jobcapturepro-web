@@ -26,6 +26,7 @@ $body_classes = 'jcp-global-nav-active' . ( $show_top_banner ? ' has-top-banner'
   <?php wp_head(); ?>
 </head>
 <body <?php body_class( $body_classes ); ?>>
+  <div class="jcp-header-stack" id="jcpHeaderStack">
   <?php if ( $show_top_banner ) : ?>
     <?php
     $banner      = function_exists( 'jcp_global_settings' ) ? ( jcp_global_settings()['banner'] ?? [] ) : [];
@@ -61,4 +62,5 @@ $body_classes = 'jcp-global-nav-active' . ( $show_top_banner ? ' has-top-banner'
     </div>
   <?php endif; ?>
   <?php get_template_part( 'templates/partials/nav' ); ?>
+  </div>
   <div class="jcp-shell">

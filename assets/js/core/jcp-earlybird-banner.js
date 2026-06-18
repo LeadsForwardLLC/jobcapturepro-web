@@ -1,23 +1,35 @@
 (() => {
   const KEY = 'jcp_site_banner_dismissed';
+  const stack = document.getElementById('jcpHeaderStack');
   const banner = document.getElementById('jcpSiteBanner') || document.getElementById('jcpEarlybirdBanner');
+
+  const syncStackHeight = () => {
+    if (!stack) return;
+    const height = Math.ceil(stack.getBoundingClientRect().height);
+    if (height > 0) {
+      document.documentElement.style.setProperty('--jcp-header-stack-height', `${height}px`);
+    }
+  };
+
+  if (stack) {
+    syncStackHeight();
+    window.addEventListener('resize', syncStackHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const stackObserver = new ResizeObserver(syncStackHeight);
+      stackObserver.observe(stack);
+    }
+  }
+
   if (!banner) return;
 
   const close = document.getElementById('jcpSiteBannerClose') || document.getElementById('jcpEarlybirdBannerClose');
 
-  const syncBannerOffset = () => {
-    const height = Math.ceil(banner.getBoundingClientRect().height);
-    if (height > 0) {
-      document.documentElement.style.setProperty('--jcp-banner-offset', `${height}px`);
-    }
-  };
-
   const hide = () => {
     banner.remove();
-    document.documentElement.style.setProperty('--jcp-banner-offset', '0px');
     try {
       document.body.classList.remove('has-top-banner');
     } catch (e) {}
+    syncStackHeight();
   };
 
   const dismissed = (() => {
@@ -31,13 +43,6 @@
   if (dismissed) {
     hide();
     return;
-  }
-
-  syncBannerOffset();
-  window.addEventListener('resize', syncBannerOffset);
-  if (typeof ResizeObserver !== 'undefined') {
-    const ro = new ResizeObserver(syncBannerOffset);
-    ro.observe(banner);
   }
 
   if (!close) return;

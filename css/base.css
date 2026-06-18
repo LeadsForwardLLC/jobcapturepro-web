@@ -179,7 +179,7 @@ html {
   color-scheme: light;
   overflow-x: hidden;
   scroll-behavior: smooth;
-  scroll-padding-top: var(--jcp-header-height);
+  scroll-padding-top: var(--jcp-header-stack-height, var(--jcp-header-height));
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -197,14 +197,18 @@ body {
   min-height: 100vh;
   min-height: 100dvh; /* iOS Safari: use dynamic viewport so content fills visible area on load */
   min-width: 0;
-  padding-top: calc(var(--jcp-header-height) + var(--jcp-banner-offset, 0px) + env(safe-area-inset-top, 0px));
+  padding-top: var(--jcp-header-stack-height, var(--jcp-header-height));
   word-wrap: break-word;
   overflow-wrap: break-word;
   -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
 }
 
+body.admin-bar .jcp-header-stack {
+  top: var(--jcp-adminbar-offset, 0px);
+}
+
 body.has-top-banner {
-  --jcp-banner-offset: 44px;
+  --jcp-header-stack-height: calc(var(--jcp-header-height) + 40px);
 }
 
 body.admin-bar {
@@ -214,12 +218,6 @@ body.admin-bar {
 @media (max-width: 782px) {
   body.admin-bar {
     --jcp-adminbar-offset: 46px;
-  }
-}
-
-@media (max-width: 640px) {
-  body.has-top-banner {
-    --jcp-banner-offset: 48px;
   }
 }
 
