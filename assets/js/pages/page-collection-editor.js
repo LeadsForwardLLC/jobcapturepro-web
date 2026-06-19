@@ -38,6 +38,29 @@
     }),
   };
 
+  const isStringArrayPath = (basePath) => {
+    if (ARRAY_DEFAULTS[basePath] && typeof ARRAY_DEFAULTS[basePath]() === 'string') return true;
+    return /\.(?:lines|team_already|turns_into|job_types|bullets|points)$/.test(basePath);
+  };
+
+  const arrayDefaultFactory = (basePath) => {
+    if (ARRAY_DEFAULTS[basePath]) return ARRAY_DEFAULTS[basePath];
+    if (/\.lines$/.test(basePath)) return () => 'New point';
+    if (isStringArrayPath(basePath)) return () => 'New item';
+    return () => 'New item';
+  };
+
+  const addButtonLabel = (container) => {
+    if (container.classList.contains('faq-grid')) return '+ Add question';
+    if (container.classList.contains('timeline-steps')) return '+ Add step';
+    if (container.classList.contains('jcp-step-checklist')) return '+ Add point';
+    if (container.classList.contains('jcp-niche-checklist')) return '+ Add item';
+    if (container.classList.contains('jcp-niche-tags')) return '+ Add tag';
+    if (container.classList.contains('conversion-points')) return '+ Add point';
+    if (container.classList.contains('ranking-factors-grid') || container.classList.contains('guarantees-grid')) return '+ Add card';
+    return '+ Add item';
+  };
+
   const OPTIONAL_DEFAULTS = {
     'conversion.cta_primary': () => ({ label: 'Button label', url: '/demo' }),
     'benefits.cta_primary': () => ({ label: 'See it in the demo', url: '/demo' }),
@@ -100,10 +123,11 @@
 
   const buildTimelineStep = (basePath, index, data) => {
     const lines = Array.isArray(data.lines) ? data.lines : [data.body || data.description || 'Step description'];
+    const linesPath = `${basePath}.${index}.lines`;
     const linesHtml = lines.map((line, li) =>
       `<li data-jcp-array-item="${li}">
         <span class="jcp-step-checklist__icon" aria-hidden="true">${CHECK_SVG}</span>
-        <span class="jcp-step-checklist__text" data-jcp-path="${basePath}.${index}.lines.${li}">${esc(cleanStepLineText(line))}</span>
+        <span class="jcp-step-checklist__text" data-jcp-path="${linesPath}.${li}">${esc(cleanStepLineText(line))}</span>
       </li>`
     ).join('');
     return `
@@ -111,7 +135,7 @@
         <div class="step-number">${index + 1}</div>
         <div class="step-content">
           <h4 class="step-title" data-jcp-path="${basePath}.${index}.title">${esc(data.title || '')}</h4>
-          <ul class="jcp-step-checklist jcp-niche-checklist" data-jcp-array="${basePath}.${index}.lines">${linesHtml}</ul>
+          <ul class="jcp-step-checklist jcp-niche-checklist" data-jcp-array="${linesPath}">${linesHtml}</ul>
         </div>
       </div>`;
   };
@@ -161,12 +185,6 @@
           ${stat}
         </div>
       </a>`;
-  };
-
-  const arrayDefaultFactory = (basePath) => {
-    if (ARRAY_DEFAULTS[basePath]) return ARRAY_DEFAULTS[basePath];
-    if (/\.lines$/.test(basePath)) return () => 'New point';
-    return () => 'New item';
   };
 
   const buildItemHtml = (basePath, index, data, container) => {
@@ -252,7 +270,7 @@
 
   const syncCollectionsFromContent = () => {
     if (!api) return;
-    document.querySelectorAll('[data-jcp-array]').forEach(rebuildArrayContainer);
+    arrayContainers().forEach(rebuildArrayContainer);
     syncOptionalSlotsFromContent();
     updateTimelineStepNumbers();
   };
@@ -344,9 +362,11 @@
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'jcp-collection-remove';
+    if (item.tagName === 'LI') btn.classList.add('jcp-collection-remove--list-item');
     btn.setAttribute('aria-label', 'Remove item');
     btn.title = 'Remove';
     btn.textContent = '×';
+    btn.setAttribute('contenteditable', 'false');
     item.classList.add('jcp-collection-item');
     item.appendChild(btn);
   };
@@ -378,14 +398,15 @@
     btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'jcp-collection-add';
-    const label = container.classList.contains('faq-grid') ? '+ Add question'
-      : container.classList.contains('timeline-steps') ? '+ Add step'
-        : container.classList.contains('jcp-step-checklist') ? '+ Add point'
-          : container.classList.contains('ranking-factors-grid') ? '+ Add card'
-            : '+ Add item';
-    btn.textContent = label;
+    btn.textContent = addButtonLabel(container);
+    btn.setAttribute('contenteditable', 'false');
     container.appendChild(btn);
   };
+
+  const arrayContainers = () => [...document.querySelectorAll('[data-jcp-array]')].sort((a, b) => {
+    const depth = (path) => (path ? path.split('.').length : 0);
+    return depth(a.dataset.jcpArray) - depth(b.dataset.jcpArray);
+  });
 
   const teardownCollections = () => {
     document.querySelectorAll('.jcp-collection-remove, .jcp-collection-add, .jcp-optional-restore').forEach((el) => el.remove());
@@ -398,7 +419,7 @@
     if (!api || !api.editing()) return;
     teardownCollections();
 
-    document.querySelectorAll('[data-jcp-array]').forEach((container) => {
+    arrayContainers().forEach((container) => {
       container.querySelectorAll(':scope > [data-jcp-array-item]').forEach(injectRemoveButton);
       injectAddButton(container);
     });
@@ -422,6 +443,7 @@
         if (addBtn) {
           e.preventDefault();
           e.stopPropagation();
+          if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
           const container = addBtn.closest('[data-jcp-array]');
           if (container?.dataset.jcpArray) addArrayItem(container, container.dataset.jcpArray);
           return;
@@ -431,6 +453,7 @@
         if (removeBtn) {
           e.preventDefault();
           e.stopPropagation();
+          if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
           if (removeBtn.classList.contains('jcp-collection-remove--optional')) {
             const slot = removeBtn.closest('[data-jcp-optional]');
             if (slot) removeOptional(slot);
@@ -452,8 +475,10 @@
           const slot = restoreBtn.closest('[data-jcp-optional]');
           if (slot) restoreOptional(slot);
         }
-      });
+      }, true);
     }
+
+    if (api.editing?.()) refreshCollections();
   };
 
   if (window.__JCP_EDITOR_API__) init(window.__JCP_EDITOR_API__);

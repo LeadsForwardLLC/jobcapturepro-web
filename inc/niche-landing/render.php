@@ -380,15 +380,13 @@ function jcp_niche_render_check_ins( array $c ): void {
 					<p class="rankings-subtitle"<?php jcp_niche_editable_attr( 'check_ins.subheadline' ); ?>><?php jcp_niche_e( (string) $ch['subheadline'] ); ?></p>
 				<?php endif; ?>
 			</div>
-			<?php if ( ! empty( $ch['job_types'] ) ) : ?>
-				<div class="jcp-niche-tags-wrap">
-					<ul class="jcp-niche-tags"<?php jcp_niche_array_attr( 'check_ins.job_types' ); ?>>
-						<?php foreach ( (array) $ch['job_types'] as $ti => $tag ) : ?>
-							<li<?php jcp_niche_array_item_attr( (int) $ti ); ?>><span class="jcp-checklist-item__text"<?php jcp_niche_editable_attr( 'check_ins.job_types.' . $ti ); ?>><?php echo esc_html( jcp_niche_clean_step_line( (string) $tag ) ); ?></span></li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
-			<?php endif; ?>
+			<div class="jcp-niche-tags-wrap">
+				<ul class="jcp-niche-tags"<?php jcp_niche_array_attr( 'check_ins.job_types' ); ?>>
+					<?php foreach ( (array) ( $ch['job_types'] ?? [] ) as $ti => $tag ) : ?>
+						<li<?php jcp_niche_array_item_attr( (int) $ti ); ?>><span class="jcp-checklist-item__text"<?php jcp_niche_editable_attr( 'check_ins.job_types.' . $ti ); ?>><?php echo esc_html( jcp_niche_clean_step_line( (string) $tag ) ); ?></span></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
 			<div class="ranking-factors-grid"<?php jcp_niche_array_attr( 'check_ins.features' ); ?>>
 				<?php
 				$feat_icons = [ 'map-pin', 'camera', 'sparkles', 'star' ];

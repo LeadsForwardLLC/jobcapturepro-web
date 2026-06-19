@@ -291,6 +291,22 @@
   align-items: center;
 }
 
+.jcp-niche-tags-wrap:not(:has(.jcp-niche-tags li)) {
+  display: none;
+}
+
+body.jcp-inline-editing .jcp-niche-tags-wrap:not(:has(.jcp-niche-tags li)) {
+  display: block;
+}
+
+.jcp-step-checklist:not(:has(li)) {
+  display: none;
+}
+
+body.jcp-inline-editing .jcp-step-checklist:not(:has(li)) {
+  display: flex;
+}
+
 /* How-it-works step checklist */
 .jcp-step-checklist {
   list-style: none;
@@ -661,6 +677,28 @@ body.jcp-inline-editing .jcp-collection-remove:hover {
   background: #fef2f2;
 }
 
+body.jcp-inline-editing .jcp-collection-remove--list-item {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+}
+
+body.jcp-inline-editing .jcp-step-checklist > li.jcp-collection-item,
+body.jcp-inline-editing .jcp-niche-checklist > li.jcp-collection-item,
+body.jcp-inline-editing .jcp-niche-tags > li.jcp-collection-item {
+  padding-right: 2rem;
+}
+
+body.jcp-inline-editing .timeline-step.jcp-collection-item,
+body.jcp-inline-editing .ranking-factor-card.jcp-collection-item,
+body.jcp-inline-editing .conversion-point.jcp-collection-item,
+body.jcp-inline-editing .faq-item.jcp-collection-item {
+  overflow: visible;
+}
+
 body.jcp-inline-editing .jcp-collection-remove--optional {
   top: -10px;
   right: -6px;
@@ -688,7 +726,9 @@ body.jcp-inline-editing .jcp-optional-restore {
 body.jcp-inline-editing .ranking-factors-grid > .jcp-collection-add,
 body.jcp-inline-editing .faq-grid > .jcp-collection-add,
 body.jcp-inline-editing .timeline-steps > .jcp-collection-add,
-body.jcp-inline-editing .jcp-step-checklist > .jcp-collection-add {
+body.jcp-inline-editing .jcp-step-checklist > .jcp-collection-add,
+body.jcp-inline-editing .jcp-niche-checklist > .jcp-collection-add,
+body.jcp-inline-editing .jcp-niche-tags > .jcp-collection-add {
   grid-column: 1 / -1;
 }
 
@@ -1500,17 +1540,38 @@ body.jcp-has-unsaved .jcp-niche-edit-status {
 }
 
 body.jcp-inline-editing .jcp-editable-media-image,
+body.jcp-inline-editing .jcp-hero-slot-image,
+body.jcp-inline-editing .jcp-media-text-image,
+body.jcp-inline-editing .demo-preview-slot-image,
 body.jcp-inline-editing .jcp-media-slot,
+body.jcp-inline-editing .jcp-media-text-media,
+body.jcp-inline-editing .demo-preview-visual,
 body.jcp-inline-editing .guarantee-image--empty,
-body.jcp-inline-editing .jcp-editable-media-wrap {
+body.jcp-inline-editing .jcp-editable-media-wrap,
+body.jcp-inline-editing .demo-phone-mockup.jcp-media-hit,
+body.jcp-inline-editing .demo-app-phone-mockup.jcp-media-hit {
   cursor: pointer;
 }
 
+/* Linked phone mockups must not navigate while inline editing */
+body.jcp-inline-editing .jcp-media-slot .demo-phone-mockup,
+body.jcp-inline-editing .jcp-media-slot .demo-app-phone-mockup,
+body.jcp-inline-editing .jcp-hero-visual-column .demo-phone-mockup {
+  pointer-events: none;
+}
+
 body.jcp-inline-editing .jcp-editable-media-image:hover,
+body.jcp-inline-editing .jcp-hero-slot-image:hover,
+body.jcp-inline-editing .jcp-media-text-image:hover,
+body.jcp-inline-editing .demo-preview-slot-image:hover,
 body.jcp-inline-editing .jcp-media-slot:hover,
+body.jcp-inline-editing .jcp-media-text-media:hover,
+body.jcp-inline-editing .demo-preview-visual:hover,
 body.jcp-inline-editing .guarantee-image--empty:hover,
 body.jcp-inline-editing .jcp-media-hit:hover,
-body.jcp-inline-editing .conversion-image-wrapper:hover {
+body.jcp-inline-editing .conversion-image-wrapper:hover,
+body.jcp-inline-editing .demo-phone-mockup.jcp-media-hit:hover,
+body.jcp-inline-editing .demo-app-phone-mockup.jcp-media-hit:hover {
   outline: 2px dashed var(--jcp-color-primary, #e85d04);
   outline-offset: 3px;
 }

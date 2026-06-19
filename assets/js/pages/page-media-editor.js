@@ -84,20 +84,69 @@
     return { urlPath: paths.urlPath, altPath: paths.altPath };
   };
 
+  const PHONE_MOCKUP_LINK_SELECTOR = '.demo-phone-mockup, .demo-app-phone-mockup, .hero-phone-mockup';
+
+  const MEDIA_HIT_SELECTOR = [
+    '.jcp-media-hit',
+    '.jcp-editable-media-image',
+    '.jcp-hero-slot-image',
+    '.jcp-media-text-image',
+    '.demo-preview-slot-image',
+    '.jcp-media-slot',
+    '.jcp-media-text-media',
+    '.demo-preview-visual',
+    '.jcp-media-video-wrap',
+    '.guarantee-image--empty',
+    '.conversion-image-wrapper',
+    '.guarantee-image-wrapper',
+    '.hero-phone-image-wrap',
+    '.jcp-split-col--media',
+    PHONE_MOCKUP_LINK_SELECTOR,
+  ].join(', ');
+
+  const isEditableMediaNavigationLink = (anchor) => {
+    if (!anchor || anchor.tagName !== 'A') return false;
+    if (anchor.hasAttribute('data-jcp-href-path')) return false;
+    if (anchor.matches(PHONE_MOCKUP_LINK_SELECTOR)) return true;
+    if (anchor.closest('.jcp-media-slot, .jcp-hero-visual-column, .jcp-media-text-media, .demo-preview-visual, .jcp-editable-media-wrap')) {
+      return true;
+    }
+    return !!anchor.querySelector('.jcp-editable-media-image, .jcp-hero-slot-image, .hero-phone-image, .jcp-media-text-image');
+  };
+
   const resolveMediaClickTarget = (el) => {
     if (!el) return null;
-    if (el.matches('.jcp-editable-media-image')) return el;
-    if (el.matches('.jcp-media-slot')) {
-      return el.querySelector('.jcp-editable-media-image')
-        || el.querySelector('.jcp-media-variant:not([hidden])')
+    if (el.matches('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .hero-phone-image')) {
+      return el;
+    }
+    if (el.matches(PHONE_MOCKUP_LINK_SELECTOR)) {
+      return el.querySelector('.hero-phone-image, .jcp-editable-media-image, .jcp-hero-slot-image')
+        || el.closest('.jcp-media-slot')
         || el;
     }
-    const img = el.querySelector?.('.jcp-editable-media-image');
+    if (el.matches('.jcp-media-slot')) {
+      const visibleVariant = el.querySelector('.jcp-media-variant:not([hidden])');
+      if (visibleVariant?.classList.contains('jcp-media-variant--phone_mockup')) {
+        return visibleVariant.querySelector('.hero-phone-image, .jcp-editable-media-image')
+          || visibleVariant
+          || el;
+      }
+      const img = visibleVariant?.querySelector('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image');
+      if (img) return img;
+      return visibleVariant || el.querySelector('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image') || el;
+    }
+    if (el.matches('.jcp-media-text-media, .demo-preview-visual, .jcp-media-video-wrap')) {
+      const slot = el.closest('.jcp-media-slot') || el.querySelector('.jcp-media-slot');
+      if (slot) return resolveMediaClickTarget(slot);
+    }
+    const img = el.querySelector?.('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .hero-phone-image');
     if (img) return img;
     if (el.matches('.guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media, .jcp-editable-media-wrap, .guarantee-image-wrapper')) {
-      return el.querySelector('.jcp-editable-media-image, .jcp-media-slot') || el;
+      const slot = el.querySelector('.jcp-media-slot');
+      if (slot) return resolveMediaClickTarget(slot);
+      return el.querySelector('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image') || el;
     }
-    return el.closest('.jcp-editable-media-image, .jcp-media-slot') || null;
+    return el.closest('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .jcp-media-slot, .demo-phone-mockup, .demo-app-phone-mockup') || null;
   };
 
   const allowedTypes = (ctx) => {
@@ -781,10 +830,19 @@
 
   const markMediaHitAreas = () => {
     document.querySelectorAll(
-      '.jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .hero-phone-image-wrap'
+      '.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .jcp-media-slot, .jcp-media-text-media, .demo-preview-visual, .demo-phone-mockup, .demo-app-phone-mockup, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .hero-phone-image-wrap'
     ).forEach((el) => {
       el.classList.add('jcp-media-hit');
     });
+  };
+
+  const blockEditableMediaNavigation = (e, target) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') {
+      e.stopImmediatePropagation();
+    }
+    openPopover(target);
   };
 
   const onDocumentClickCapture = (e) => {
@@ -792,21 +850,32 @@
     if (e.target.closest('.jcp-col-drag-handle, .jcp-media-popover, .jcp-niche-link-popover')) return;
     if (isWpMediaClick(e.target)) return;
 
-    const mediaHit = e.target.closest(
-      '.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .hero-phone-image-wrap, .jcp-split-col--media'
-    );
-
-    if (mediaHit) {
-      e.preventDefault();
-      e.stopPropagation();
-      openPopover(mediaHit);
+    const mockupLink = e.target.closest(PHONE_MOCKUP_LINK_SELECTOR);
+    if (mockupLink && isEditableMediaNavigationLink(mockupLink)) {
+      blockEditableMediaNavigation(e, mockupLink);
       return;
     }
 
+    const wrappedMediaLink = e.target.closest('a');
+    if (wrappedMediaLink && isEditableMediaNavigationLink(wrappedMediaLink)) {
+      blockEditableMediaNavigation(e, wrappedMediaLink);
+      return;
+    }
+
+    const mediaHit = e.target.closest(MEDIA_HIT_SELECTOR);
+    if (mediaHit) {
+      blockEditableMediaNavigation(e, mediaHit);
+    }
+  };
+
+  const onDocumentMouseDownCapture = (e) => {
+    if (!api?.editing()) return;
+    if (e.button !== 0) return;
+    if (e.target.closest('.jcp-col-drag-handle, .jcp-media-popover, .jcp-niche-link-popover')) return;
+    if (isWpMediaClick(e.target)) return;
     const link = e.target.closest('a');
-    if (link && link.querySelector('.jcp-editable-media-image, .jcp-media-slot, .hero-phone-image')) {
+    if (link && isEditableMediaNavigationLink(link)) {
       e.preventDefault();
-      e.stopPropagation();
     }
   };
 
@@ -815,6 +884,7 @@
     if (captureBound) return;
     captureBound = true;
     document.addEventListener('click', onDocumentClickCapture, true);
+    document.addEventListener('mousedown', onDocumentMouseDownCapture, true);
   };
 
   const init = (editorApi) => {

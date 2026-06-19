@@ -508,7 +508,6 @@
         { key: 'show_body', label: 'Body' },
         { key: 'show_cta', label: 'Button' },
         { key: 'show_cta_note', label: 'Button note' },
-        { key: 'show_divider', label: 'Bottom line' },
       ];
       html += '<div class="jcp-layout-group"><span class="jcp-layout-group__label">Show</span><div class="jcp-layout-toggles">';
       toggles.forEach(({ key, label }) => {
@@ -529,7 +528,6 @@
     show_body: true,
     show_cta: false,
     show_cta_note: false,
-    show_divider: false,
   };
 
   const isSplitToggleOn = (block, key) => {
@@ -546,7 +544,6 @@
     show_body: '.demo-preview-description',
     show_cta: '.demo-cta-primary',
     show_cta_note: '.demo-cta-note',
-    show_divider: '.jcp-split-media-block__rule',
   };
 
   const setBlockSplitToggle = (block, key, enabled) => {
@@ -561,6 +558,17 @@
       root.querySelectorAll(selector).forEach((el) => {
         el.style.display = enabled ? '' : 'none';
       });
+      if (key === 'show_cta' || key === 'show_cta_note') {
+        const wrapper = root.querySelector('.demo-cta-wrapper');
+        if (wrapper) {
+          const showCta = isSplitToggleOn(block, 'show_cta');
+          const showNote = isSplitToggleOn(block, 'show_cta_note');
+          wrapper.style.display = (showCta || showNote) ? '' : 'none';
+        }
+      }
+    }
+    if (enabled && typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
+      window.JCP_REFRESH_INLINE_EDITABLE();
     }
     recordChange();
   };
@@ -1112,6 +1120,14 @@
     }
     if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
       window.JCP_REFRESH_COLLECTIONS();
+      requestAnimationFrame(() => {
+        if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
+          window.JCP_REFRESH_COLLECTIONS();
+        }
+      });
+    }
+    if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
+      window.JCP_REFRESH_INLINE_EDITABLE();
     }
   };
 

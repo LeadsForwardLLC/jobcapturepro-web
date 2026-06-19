@@ -130,7 +130,7 @@ function jcp_niche_normalize_core_mechanic_items( array $items ): array {
  * @param string             $path_prefix JSON path prefix.
  */
 function jcp_niche_render_step_lines( array $lines, string $path_prefix ): void {
-	if ( empty( $lines ) ) {
+	if ( empty( $lines ) && $path_prefix === '' ) {
 		return;
 	}
 	?>
@@ -212,6 +212,9 @@ function jcp_niche_render_core_mechanic_strip( array $items, string $path_prefix
  * @param string                                   $path_prefix JSON path prefix (e.g. conversion.points).
  */
 function jcp_niche_render_conversion_points( array $lines, string $path_prefix = '' ): void {
+	if ( empty( $lines ) && $path_prefix === '' ) {
+		return;
+	}
 	?>
 	<div class="conversion-points jcp-niche-conversion-points"<?php
 	if ( $path_prefix !== '' ) {
