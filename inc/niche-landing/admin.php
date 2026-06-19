@@ -247,40 +247,120 @@ function jcp_niche_render_import_meta_box( WP_Post $post ): void {
  */
 function jcp_niche_render_import_meta_box_content( WP_Post $post ): void {
 	wp_nonce_field( 'jcp_niche_import_doc', 'jcp_niche_import_nonce' );
+	$page_kind   = jcp_page_resolve_admin_page_kind( $post );
+	$kind_label  = jcp_page_kind_label( $page_kind );
+	$sections    = jcp_page_doc_sections_for_kind( $page_kind );
+	$template    = function_exists( 'jcp_theme_docs_get_writer_template' ) ? jcp_theme_docs_get_writer_template() : '';
+	$sop_url     = admin_url( 'admin.php?page=jcp-theme-settings#document-import' );
 	?>
-	<p class="description">
-		<?php esc_html_e( 'Paste plain text using the writer template (JCP → Page System → copy template), or upload a .docx / .txt export from Google Docs or Word. Random Word formatting is stripped — section headers must be ALL CAPS (HERO, WHAT IT IS, etc.). Images are added on the live page after publish.', 'jcp-core' ); ?>
-	</p>
-	<p>
-		<label for="jcp_niche_import_doc"><strong><?php esc_html_e( 'Paste document text', 'jcp-core' ); ?></strong></label>
-		<textarea name="jcp_niche_import_doc" id="jcp_niche_import_doc" rows="14" class="large-text code" style="width:100%;font-family:monospace;" placeholder="<?php esc_attr_e( 'Paste content starting at HERO…', 'jcp-core' ); ?>"></textarea>
-	</p>
-	<p>
-		<label for="jcp_niche_import_file"><strong><?php esc_html_e( 'Or upload .docx / .txt', 'jcp-core' ); ?></strong></label><br />
-		<input type="file" name="jcp_niche_import_file" id="jcp_niche_import_file" accept=".docx,.txt,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-	</p>
-	<p>
-		<button type="button" class="button button-primary" id="jcp-niche-build-from-doc"><?php esc_html_e( 'Build page from document', 'jcp-core' ); ?></button>
-		<span class="description" id="jcp-niche-import-status" style="margin-left:8px;"></span>
-	</p>
+	<div class="jcp-doc-import">
+		<p class="description">
+			<?php
+			printf(
+				/* translators: 1: page type label, 2: SOP link */
+				esc_html__( 'Paste or upload a writer document for this %1$s. Section headers must be ALL CAPS (HERO, WHAT IT IS, …). Synonyms like STAT ROW also work for the stat row section. %2$s', 'jcp-core' ),
+				'<strong>' . esc_html( $kind_label ) . '</strong>',
+				'<a href="' . esc_url( $sop_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Full writer guide →', 'jcp-core' ) . '</a>'
+			);
+			?>
+		</p>
+
+		<details class="jcp-doc-import__guide" open>
+			<summary><?php esc_html_e( 'Section headers for this page type', 'jcp-core' ); ?></summary>
+			<p class="description"><?php esc_html_e( 'Use these ALL CAPS lines in your doc. Sections marked “optional on this page” are parsed but only appear on industry/trade pages.', 'jcp-core' ); ?></p>
+			<ul class="jcp-doc-import__sections">
+				<?php foreach ( $sections as $row ) : ?>
+					<li class="<?php echo ! empty( $row['on_page'] ) ? 'is-on-page' : 'is-extra'; ?>">
+						<code><?php echo esc_html( $row['header'] ); ?></code>
+						<span><?php echo esc_html( $row['label'] ); ?></span>
+						<?php if ( empty( $row['on_page'] ) ) : ?>
+							<em><?php esc_html_e( 'optional on this page', 'jcp-core' ); ?></em>
+						<?php endif; ?>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+			<?php if ( $template !== '' ) : ?>
+				<p>
+					<button type="button" class="button" id="jcp-copy-writer-template-inline"><?php esc_html_e( 'Copy writer template', 'jcp-core' ); ?></button>
+					<span class="description" id="jcp-copy-template-inline-status" style="margin-left:8px;"></span>
+				</p>
+			<?php endif; ?>
+		</details>
+
+		<p>
+			<label for="jcp_niche_import_doc"><strong><?php esc_html_e( 'Paste document text', 'jcp-core' ); ?></strong></label>
+			<textarea name="jcp_niche_import_doc" id="jcp_niche_import_doc" rows="14" class="large-text code" style="width:100%;font-family:monospace;" placeholder="<?php esc_attr_e( 'Paste content starting at HERO…', 'jcp-core' ); ?>"></textarea>
+		</p>
+		<p>
+			<label for="jcp_niche_import_file"><strong><?php esc_html_e( 'Or upload .docx / .txt', 'jcp-core' ); ?></strong></label><br />
+			<input type="file" name="jcp_niche_import_file" id="jcp_niche_import_file" accept=".docx,.txt,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+		</p>
+		<p>
+			<button type="button" class="button button-primary" id="jcp-niche-build-from-doc"><?php esc_html_e( 'Build page from document', 'jcp-core' ); ?></button>
+		</p>
+		<div id="jcp-niche-import-status" class="jcp-doc-import__status" aria-live="polite"></div>
+	</div>
+	<?php if ( $template !== '' ) : ?>
+	<script type="application/json" id="jcp-writer-template-json"><?php echo wp_json_encode( $template ); ?></script>
+	<?php endif; ?>
 	<script>
 	(function () {
 		var btn = document.getElementById('jcp-niche-build-from-doc');
 		var ta = document.getElementById('jcp_niche_import_doc');
 		var status = document.getElementById('jcp-niche-import-status');
 		var fileInput = document.getElementById('jcp_niche_import_file');
+		var copyBtn = document.getElementById('jcp-copy-writer-template-inline');
+		var copyStatus = document.getElementById('jcp-copy-template-inline-status');
+		var templateEl = document.getElementById('jcp-writer-template-json');
+
+		if (copyBtn && templateEl) {
+			copyBtn.addEventListener('click', function () {
+				var text = '';
+				try { text = JSON.parse(templateEl.textContent || '""'); } catch (e) { return; }
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(text).then(function () {
+						if (copyStatus) copyStatus.textContent = '<?php echo esc_js( __( 'Copied!', 'jcp-core' ) ); ?>';
+					});
+					return;
+				}
+				var scratch = document.createElement('textarea');
+				scratch.value = text;
+				document.body.appendChild(scratch);
+				scratch.select();
+				document.execCommand('copy');
+				document.body.removeChild(scratch);
+				if (copyStatus) copyStatus.textContent = '<?php echo esc_js( __( 'Copied!', 'jcp-core' ) ); ?>';
+			});
+		}
+
+		function renderReport(report) {
+			if (!status || !report) return;
+			var html = '<p class="jcp-doc-import__summary"><strong>' + (report.message || '') + '</strong></p>';
+			if (report.imported && report.imported.length) {
+				html += '<p><strong><?php echo esc_js( __( 'Imported:', 'jcp-core' ) ); ?></strong> ';
+				html += report.imported.map(function (row) { return row.label; }).join(', ');
+				html += '</p>';
+			}
+			if (report.skipped && report.skipped.length) {
+				html += '<p class="jcp-doc-import__skipped"><strong><?php echo esc_js( __( 'Not on this page type:', 'jcp-core' ) ); ?></strong> ';
+				html += report.skipped.map(function (row) { return row.header + ' (' + row.label + ')'; }).join(', ');
+				html += '</p>';
+			}
+			status.innerHTML = html;
+		}
+
 		if (!btn || !ta) return;
 
 		btn.addEventListener('click', function () {
 			var jsonTa = document.getElementById('jcp_niche_content_json');
 			if (!jsonTa) {
 				if (status) {
-					status.textContent = '<?php echo esc_js( __( 'Advanced JSON box not loaded yet — scroll down and try again.', 'jcp-core' ) ); ?>';
+					status.innerHTML = '<p class="jcp-doc-import__error"><?php echo esc_js( __( 'Advanced JSON box not loaded yet — scroll down and try again.', 'jcp-core' ) ); ?></p>';
 				}
 				return;
 			}
 			if (typeof ajaxurl === 'undefined') {
-				if (status) status.textContent = '<?php echo esc_js( __( 'Admin scripts not loaded. Refresh the page and try again.', 'jcp-core' ) ); ?>';
+				if (status) status.innerHTML = '<p class="jcp-doc-import__error"><?php echo esc_js( __( 'Admin scripts not loaded. Refresh the page and try again.', 'jcp-core' ) ); ?></p>';
 				return;
 			}
 			var body = new FormData();
@@ -291,24 +371,24 @@ function jcp_niche_render_import_meta_box_content( WP_Post $post ): void {
 			if (fileInput && fileInput.files && fileInput.files[0]) {
 				body.append('doc_file', fileInput.files[0]);
 			}
-			status.textContent = '<?php echo esc_js( __( 'Building…', 'jcp-core' ) ); ?>';
+			status.innerHTML = '<p><?php echo esc_js( __( 'Building…', 'jcp-core' ) ); ?></p>';
 			btn.disabled = true;
 			fetch(ajaxurl, { method: 'POST', body: body, credentials: 'same-origin' })
 				.then(function (r) { return r.json(); })
 				.then(function (data) {
 					btn.disabled = false;
 					if (!data || !data.success) {
-						status.textContent = (data && data.data && data.data.message) ? data.data.message : '<?php echo esc_js( __( 'Import failed.', 'jcp-core' ) ); ?>';
+						status.innerHTML = '<p class="jcp-doc-import__error">' + ((data && data.data && data.data.message) ? data.data.message : '<?php echo esc_js( __( 'Import failed.', 'jcp-core' ) ); ?>') + '</p>';
 						return;
 					}
 					jsonTa.value = data.data.content;
-					status.textContent = '<?php echo esc_js( __( 'JSON ready — click Update to save.', 'jcp-core' ) ); ?>';
+					renderReport(data.data.report);
 					jsonTa.focus();
 					jsonTa.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				})
 				.catch(function () {
 					btn.disabled = false;
-					status.textContent = '<?php echo esc_js( __( 'Import failed.', 'jcp-core' ) ); ?>';
+					status.innerHTML = '<p class="jcp-doc-import__error"><?php echo esc_js( __( 'Import failed.', 'jcp-core' ) ); ?></p>';
 				});
 		});
 	})();
@@ -347,24 +427,19 @@ function jcp_niche_ajax_parse_document(): void {
 
 	$niche_key   = $post instanceof WP_Post ? $post->post_name : '';
 	$niche_label = $post instanceof WP_Post ? get_the_title( $post ) : '';
-	$page_kind   = 'marketing';
-	if ( $post instanceof WP_Post ) {
-		if ( $post->post_type === 'jcp_niche_landing' ) {
-			$page_kind = 'industry';
-		} elseif ( get_page_template_slug( $post ) === 'page-referral-program.php' || $post->post_name === 'referral-program' ) {
-			$page_kind = 'referral';
-		} elseif ( get_page_template_slug( $post ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === (int) $post->ID ) {
-			$page_kind = 'home';
-		} elseif ( jcp_page_uses_block_template( (int) $post->ID ) ) {
-			$page_kind = 'marketing';
-		}
-	}
-	$parsed = jcp_page_parse_document( $text, $niche_key, $niche_label, $page_kind );
-	$parsed = jcp_page_merge_parsed_content( $parsed, $post_id > 0 ? jcp_page_get_content( $post_id ) : [] );
+	$page_kind   = jcp_page_resolve_admin_page_kind( $post );
+	$parsed      = jcp_page_parse_document_with_report( $text, $niche_key, $niche_label, $page_kind );
+	$content     = jcp_page_merge_parsed_content( $parsed['content'], $post_id > 0 ? jcp_page_get_content( $post_id ) : [] );
+	$report      = jcp_page_doc_build_import_report(
+		jcp_page_blocks_to_legacy( $parsed['content'] ),
+		$content,
+		$page_kind
+	);
 
 	wp_send_json_success(
 		[
-			'content' => wp_json_encode( $parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
+			'content' => wp_json_encode( $content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
+			'report'  => $report,
 		]
 	);
 }

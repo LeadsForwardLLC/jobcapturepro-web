@@ -68,24 +68,7 @@ function jcp_niche_parse_document( string $text, string $niche_key = '', string 
 	$current  = '_meta';
 	$sections[ $current ] = $meta_lines;
 
-	$section_names = [
-		'HERO',
-		'WHAT IT IS',
-		'CORE MECHANIC',
-		'HOW IT WORKS',
-		'CHECK-INS',
-		'PROBLEM',
-		'BENEFITS',
-		'DIFFERENTIATION',
-		"WHO IT'S FOR",
-		'WHO ITS FOR',
-		'FAQ',
-		'CONVERSION',
-		'FINAL CTA',
-		'MEDIA CORE',
-		'MEDIA CHECK-INS',
-		'MEDIA PROBLEM',
-	];
+	$section_names = jcp_page_doc_recognized_section_headers();
 
 	for ( $i = $start; $i < count( $lines ); $i++ ) {
 		$raw  = $lines[ $i ];
@@ -93,11 +76,9 @@ function jcp_niche_parse_document( string $text, string $niche_key = '', string 
 		if ( $trim === '' ) {
 			continue;
 		}
-		$upper = strtoupper( str_replace( '’', "'", $trim ) );
-		$upper = preg_replace( '/[\s\-—–]+/u', ' ', $upper ) ?? $upper;
-		$upper = preg_replace( '/\s+/', ' ', trim( $upper ) );
-		if ( in_array( $upper, $section_names, true ) ) {
-			$current = $upper === 'WHO ITS FOR' ? "WHO IT'S FOR" : $upper;
+		$canonical = jcp_page_doc_normalize_section_header( $trim );
+		if ( $canonical !== null ) {
+			$current = $canonical;
 			if ( ! isset( $sections[ $current ] ) ) {
 				$sections[ $current ] = [];
 			}

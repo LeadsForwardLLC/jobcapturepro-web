@@ -32,3 +32,68 @@
   max-height: 280px;
   overflow: auto;
 }
+
+.jcp-doc-import__guide {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+}
+
+.jcp-doc-import__guide summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.jcp-doc-import__sections {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px 16px;
+}
+
+.jcp-doc-import__sections li {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.jcp-doc-import__sections code {
+  display: inline-block;
+  min-width: 9em;
+  margin-right: 6px;
+}
+
+.jcp-doc-import__sections li.is-extra em {
+  display: block;
+  color: #646970;
+  font-style: normal;
+  font-size: 11px;
+}
+
+.jcp-doc-import__status {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #f0f6fc;
+  border: 1px solid #c3d9ed;
+  border-radius: 4px;
+}
+
+.jcp-doc-import__status p {
+  margin: 0 0 8px;
+}
+
+.jcp-doc-import__status p:last-child {
+  margin-bottom: 0;
+}
+
+.jcp-doc-import__skipped {
+  color: #9a6700;
+}
+
+.jcp-doc-import__error {
+  color: #b32d2e;
+}

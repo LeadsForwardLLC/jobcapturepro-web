@@ -329,6 +329,7 @@ function jcp_theme_docs_render_page(): void {
 			</div>
 
 			<h3><?php esc_html_e( 'Section headers the parser recognizes', 'jcp-core' ); ?></h3>
+			<p class="description"><?php esc_html_e( 'Writers can also use STAT ROW as an alias for CORE MECHANIC. Headers are defined in the block registry — this list updates automatically.', 'jcp-core' ); ?></p>
 			<table class="widefat striped jcp-theme-docs__table">
 				<thead>
 					<tr>
@@ -337,21 +338,12 @@ function jcp_theme_docs_render_page(): void {
 					</tr>
 				</thead>
 				<tbody>
-					<tr><td><code>HERO</code></td><td><?php esc_html_e( 'Hero banner (H1, subheadline, CTAs, trust line)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>WHAT IT IS</code></td><td><?php esc_html_e( 'Intro section with bullet lists', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>CORE MECHANIC</code></td><td><?php esc_html_e( 'Three stat blocks (e.g. 1 photo / 4 channels / 0 busywork)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>MEDIA CORE</code></td><td><?php esc_html_e( 'Optional media + text row after core mechanic (overrides auto-generated copy)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>HOW IT WORKS</code></td><td><?php esc_html_e( 'Numbered steps 01–04 + CTA', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>CHECK-INS</code></td><td><?php esc_html_e( 'Feature cards', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>MEDIA CHECK-INS</code></td><td><?php esc_html_e( 'Optional media + text row after check-ins (overrides auto-generated copy)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>PROBLEM</code></td><td><?php esc_html_e( 'Pain point cards + closing line', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>MEDIA PROBLEM</code></td><td><?php esc_html_e( 'Optional media + text row after problem (overrides auto-generated copy)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>BENEFITS</code></td><td><?php esc_html_e( 'Benefit cards + closing paragraph', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>DIFFERENTIATION</code></td><td><?php esc_html_e( 'Body copy + short bullets', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>WHO IT'S FOR</code></td><td><?php esc_html_e( 'Audience cards (Owners, Technicians, etc.)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>FAQ</code></td><td><?php esc_html_e( 'Question / answer pairs', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>CONVERSION</code></td><td><?php esc_html_e( 'Checklist + image band (headline, bullets, CTA — add photo on live page)', 'jcp-core' ); ?></td></tr>
-					<tr><td><code>FINAL CTA</code></td><td><?php esc_html_e( 'Bottom conversion band', 'jcp-core' ); ?></td></tr>
+					<?php foreach ( jcp_page_doc_section_catalog() as $row ) : ?>
+						<tr>
+							<td><code><?php echo esc_html( $row['header'] ); ?></code></td>
+							<td><?php echo esc_html( $row['label'] ); ?></td>
+						</tr>
+					<?php endforeach; ?>
 				</tbody>
 			</table>
 
