@@ -201,6 +201,23 @@ function jcp_page_get_content_raw( int $post_id ): array {
 }
 
 /**
+ * Drop null or invalid entries from a blocks list (editor crashes on null blocks).
+ *
+ * @param array<int, mixed> $blocks Raw blocks.
+ * @return array<int, array<string, mixed>>
+ */
+function jcp_page_sanitize_blocks_list( array $blocks ): array {
+	return array_values(
+		array_filter(
+			$blocks,
+			static function ( $block ): bool {
+				return is_array( $block ) && ! empty( $block['type'] );
+			}
+		)
+	);
+}
+
+/**
  * Normalize content to blocks format (in memory).
  *
  * @param array<string, mixed> $content Raw content.
@@ -209,6 +226,7 @@ function jcp_page_get_content_raw( int $post_id ): array {
  */
 function jcp_page_normalize_content( array $content, int $post_id ): array {
 	if ( ! empty( $content['blocks'] ) && is_array( $content['blocks'] ) ) {
+		$content['blocks']    = jcp_page_sanitize_blocks_list( $content['blocks'] );
 		$content['version']   = $content['version'] ?? 1;
 		$content['page_kind'] = jcp_page_resolve_kind( $content, $post_id );
 		if ( empty( $content['page_key'] ) ) {

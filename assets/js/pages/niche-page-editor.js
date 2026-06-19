@@ -300,6 +300,33 @@
     return layout;
   };
 
+  const normalizePageDocumentBlocks = () => {
+    if (!pageDocument || typeof pageDocument !== 'object') {
+      pageDocument = { version: 1, blocks: [] };
+      return;
+    }
+    if (!Array.isArray(pageDocument.blocks)) {
+      pageDocument.blocks = [];
+      return;
+    }
+    pageDocument.blocks = pageDocument.blocks.filter(
+      (block) => block && typeof block === 'object' && block.type
+    );
+    pageDocument.blocks.forEach((block) => {
+      if (!block.layout) block.layout = defaultLayout(block.type);
+      if (block.type === 'hero') {
+        if (!block.layout.hero_variant) {
+          block.layout.hero_variant = resolveHeroVariant(block);
+        }
+        block.props = block.props || {};
+        block.props.show_visual = block.layout.hero_variant !== 'centered';
+      }
+      if (block.type === 'media_text' && !block.props?.media_position) {
+        block.props = { ...defaultProps.media_text, ...(block.props || {}) };
+      }
+    });
+  };
+
   const resolveHeroVariant = (block) => {
     const layout = { ...defaultLayout('hero'), ...(block.layout || {}) };
     const variant = layout.hero_variant;
@@ -375,6 +402,7 @@
 
   const applyLayoutToDom = () => {
     (pageDocument.blocks || []).forEach((block) => {
+      if (!block || typeof block !== 'object') return;
       const root = ensureBlockRoot(findBlockRootEl(block));
       if (!root) return;
 
@@ -682,6 +710,7 @@
       [...main.querySelectorAll('[data-jcp-block-id]')].map((el) => el.dataset.jcpBlockId)
     );
     (pageDocument.blocks || []).forEach((block) => {
+      if (!block || typeof block !== 'object') return;
       if (assigned.has(block.id)) return;
       const sel = BLOCK_SELECTORS[block.type];
       if (!sel) return;
@@ -794,6 +823,7 @@
       return;
     }
     (pageDocument.blocks || []).forEach((block, index) => {
+      if (!block || typeof block !== 'object') return;
       const li = document.createElement('li');
       li.className = 'jcp-block-structure__item';
       li.dataset.index = String(index);
@@ -980,6 +1010,7 @@
     if (Array.isArray(data.registry) && data.registry.length) {
       registry = data.registry;
     }
+    normalizePageDocumentBlocks();
     sanitizeFlatContentInPlace();
     applyCleanLinesToDom();
     return true;
@@ -1268,20 +1299,8 @@
   });
 
   initHistory();
+  normalizePageDocumentBlocks();
   sanitizeFlatContentInPlace();
-  (pageDocument.blocks || []).forEach((block) => {
-    if (!block.layout) block.layout = defaultLayout(block.type);
-    if (block.type === 'hero') {
-      if (!block.layout.hero_variant) {
-        block.layout.hero_variant = resolveHeroVariant(block);
-      }
-      block.props = block.props || {};
-      block.props.show_visual = block.layout.hero_variant !== 'centered';
-    }
-    if (block.type === 'media_text' && !block.props?.media_position) {
-      block.props = { ...defaultProps.media_text, ...(block.props || {}) };
-    }
-  });
   indexBlockSections();
   applyCleanLinesToDom();
   applyLayoutToDom();

@@ -530,7 +530,7 @@
   };
 
   const openPopover = (el) => {
-    if (!isEditingActive()) return;
+    if (!api || !isEditingActive()) return;
     const target = resolveMediaClickTarget(el);
     if (!target) return;
     const paths = getMediaPaths(target);

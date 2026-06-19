@@ -183,7 +183,6 @@ function jcp_page_upgrade_industry_media_blocks( array $content, int $post_id ):
 			continue;
 		}
 
-		$blocks[] = null;
 		$new_block = [
 			'id'         => (string) $slot['id'],
 			'type'       => 'media_text',
@@ -197,6 +196,10 @@ function jcp_page_upgrade_industry_media_blocks( array $content, int $post_id ):
 
 	if ( $changed ) {
 		$content['blocks'] = $blocks;
+	}
+
+	if ( ! empty( $content['blocks'] ) && is_array( $content['blocks'] ) ) {
+		$content['blocks'] = jcp_page_sanitize_blocks_list( $content['blocks'] );
 	}
 
 	return $content;
