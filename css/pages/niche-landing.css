@@ -655,20 +655,23 @@ body.jcp-inline-editing .jcp-collection-remove {
   position: absolute;
   top: 8px;
   right: 8px;
-  z-index: 5;
+  z-index: 100010;
   width: 28px;
   height: 28px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #fecaca;
   border-radius: 999px;
   background: #fff;
-  color: #64748b;
+  color: #ef4444;
   font-size: 18px;
+  font-weight: 700;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  pointer-events: auto;
+  user-select: none;
 }
 
 body.jcp-inline-editing .jcp-collection-remove:hover {
@@ -696,6 +699,14 @@ body.jcp-inline-editing .timeline-step.jcp-collection-item,
 body.jcp-inline-editing .ranking-factor-card.jcp-collection-item,
 body.jcp-inline-editing .conversion-point.jcp-collection-item,
 body.jcp-inline-editing .faq-item.jcp-collection-item {
+  overflow: visible !important;
+}
+
+body.jcp-inline-editing .ranking-factor-card {
+  overflow: visible !important;
+}
+
+body.jcp-inline-editing .factor-description {
   overflow: visible;
 }
 
@@ -713,13 +724,17 @@ body.jcp-inline-editing .jcp-optional-restore {
   min-height: 52px;
   margin-top: var(--jcp-space-md, 1rem);
   padding: 0.75rem 1rem;
-  border: 2px dashed rgba(255, 80, 62, 0.35);
+  border: 2px dashed rgba(255, 80, 62, 0.55);
   border-radius: var(--jcp-radius-lg, 12px);
-  background: rgba(255, 80, 62, 0.04);
+  background: rgba(255, 80, 62, 0.08);
   color: var(--jcp-color-primary, #ff503e);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  position: relative;
+  z-index: 100010;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 

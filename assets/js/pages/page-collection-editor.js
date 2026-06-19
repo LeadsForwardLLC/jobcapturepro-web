@@ -415,8 +415,14 @@
     });
   };
 
+  const isEditingActive = () => {
+    if (!api) return false;
+    if (typeof api.editing === 'function' && api.editing()) return true;
+    return document.body.classList.contains('jcp-inline-editing');
+  };
+
   const refreshCollections = () => {
-    if (!api || !api.editing()) return;
+    if (!isEditingActive()) return;
     teardownCollections();
 
     arrayContainers().forEach((container) => {
@@ -436,8 +442,8 @@
 
     if (!document.body.dataset.jcpCollectionBound) {
       document.body.dataset.jcpCollectionBound = '1';
-      document.addEventListener('click', (e) => {
-        if (!api || !api.editing()) return;
+      const handleCollectionClick = (e) => {
+        if (!isEditingActive()) return;
 
         const addBtn = e.target.closest('.jcp-collection-add');
         if (addBtn) {
@@ -445,7 +451,8 @@
           e.stopPropagation();
           if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
           const container = addBtn.closest('[data-jcp-array]');
-          if (container?.dataset.jcpArray) addArrayItem(container, container.dataset.jcpArray);
+          const basePath = container?.getAttribute('data-jcp-array') || container?.dataset?.jcpArray;
+          if (container && basePath) addArrayItem(container, basePath);
           return;
         }
 
@@ -461,9 +468,10 @@
           }
           const item = removeBtn.closest('[data-jcp-array-item]');
           const container = item?.closest('[data-jcp-array]');
-          if (item && container?.dataset.jcpArray) {
-            const index = parseInt(item.dataset.jcpArrayItem, 10);
-            if (!Number.isNaN(index)) removeArrayItem(container, container.dataset.jcpArray, index);
+          const basePath = container?.getAttribute('data-jcp-array') || container?.dataset?.jcpArray;
+          if (item && container && basePath) {
+            const index = parseInt(item.getAttribute('data-jcp-array-item') || item.dataset.jcpArrayItem, 10);
+            if (!Number.isNaN(index)) removeArrayItem(container, basePath, index);
           }
           return;
         }
@@ -475,10 +483,18 @@
           const slot = restoreBtn.closest('[data-jcp-optional]');
           if (slot) restoreOptional(slot);
         }
+      };
+
+      document.addEventListener('click', handleCollectionClick, true);
+      document.addEventListener('mousedown', (e) => {
+        if (!isEditingActive()) return;
+        if (e.target.closest('.jcp-collection-add, .jcp-collection-remove, .jcp-optional-restore')) {
+          e.preventDefault();
+        }
       }, true);
     }
 
-    if (api.editing?.()) refreshCollections();
+    if (isEditingActive()) refreshCollections();
   };
 
   if (window.__JCP_EDITOR_API__) init(window.__JCP_EDITOR_API__);

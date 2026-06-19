@@ -466,7 +466,7 @@
       if (!popover || popover.hidden || mediaFrameOpen || libraryPicking) return;
       if (isWpMediaClick(e.target)) return;
       if (popover.contains(e.target)) return;
-      if (e.target.closest('.jcp-media-hit, .jcp-editable-media-image, .jcp-media-slot, .guarantee-image--empty, .jcp-editable-media-wrap, .conversion-image-wrapper, .jcp-split-col--media')) return;
+      if (e.target.closest('.jcp-media-hit, .jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .jcp-media-slot, .guarantee-image--empty, .jcp-editable-media-wrap, .conversion-image-wrapper, .jcp-split-col--media, .jcp-media-text-media, .demo-preview-visual')) return;
       closePopover();
     });
 
@@ -836,42 +836,56 @@
     });
   };
 
-  const blockEditableMediaNavigation = (e, target) => {
+  const EDITOR_CHROME_SELECTOR = [
+    '.jcp-collection-add',
+    '.jcp-collection-remove',
+    '.jcp-optional-restore',
+    '.jcp-niche-edit-bar',
+    '.jcp-block-structure',
+    '.jcp-block-add-modal',
+    '.jcp-media-popover',
+    '.jcp-niche-link-popover',
+    '.jcp-col-drag-handle',
+  ].join(', ');
+
+  const blockLinkNavigation = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (typeof e.stopImmediatePropagation === 'function') {
       e.stopImmediatePropagation();
     }
-    openPopover(target);
   };
 
   const onDocumentClickCapture = (e) => {
     if (!api?.editing()) return;
-    if (e.target.closest('.jcp-col-drag-handle, .jcp-media-popover, .jcp-niche-link-popover')) return;
+    if (e.target.closest(EDITOR_CHROME_SELECTOR)) return;
     if (isWpMediaClick(e.target)) return;
 
     const mockupLink = e.target.closest(PHONE_MOCKUP_LINK_SELECTOR);
     if (mockupLink && isEditableMediaNavigationLink(mockupLink)) {
-      blockEditableMediaNavigation(e, mockupLink);
+      blockLinkNavigation(e);
+      openPopover(mockupLink);
       return;
     }
 
     const wrappedMediaLink = e.target.closest('a');
     if (wrappedMediaLink && isEditableMediaNavigationLink(wrappedMediaLink)) {
-      blockEditableMediaNavigation(e, wrappedMediaLink);
+      blockLinkNavigation(e);
+      openPopover(wrappedMediaLink);
       return;
     }
 
     const mediaHit = e.target.closest(MEDIA_HIT_SELECTOR);
     if (mediaHit) {
-      blockEditableMediaNavigation(e, mediaHit);
+      e.preventDefault();
+      openPopover(mediaHit);
     }
   };
 
   const onDocumentMouseDownCapture = (e) => {
     if (!api?.editing()) return;
     if (e.button !== 0) return;
-    if (e.target.closest('.jcp-col-drag-handle, .jcp-media-popover, .jcp-niche-link-popover')) return;
+    if (e.target.closest(EDITOR_CHROME_SELECTOR)) return;
     if (isWpMediaClick(e.target)) return;
     const link = e.target.closest('a');
     if (link && isEditableMediaNavigationLink(link)) {

@@ -651,15 +651,7 @@
     applyFlatContentToDom();
     applyMediaPositionToDom();
     renderBlockList();
-    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
-      window.JCP_REFRESH_PAGE_MEDIA_UI();
-    }
-    if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
-      window.JCP_REFRESH_COLLECTIONS();
-    }
-    if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
-      window.JCP_REFRESH_INLINE_EDITABLE();
-    }
+    refreshEditorChrome();
     suppressRecord = false;
     updateDirtyState();
     updateUndoRedoButtons();
@@ -950,12 +942,25 @@
     addModal.removeAttribute('hidden');
   };
 
+  const refreshEditorChrome = () => {
+    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
+      window.JCP_REFRESH_PAGE_MEDIA_UI();
+    }
+    if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
+      window.JCP_REFRESH_COLLECTIONS();
+    }
+    if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
+      window.JCP_REFRESH_INLINE_EDITABLE();
+    }
+  };
+
   const openStructure = () => {
     structureOpen = true;
     structurePanel.hidden = false;
     structurePanel.removeAttribute('hidden');
     document.body.classList.add('jcp-structure-open');
     renderBlockList();
+    if (editing) refreshEditorChrome();
   };
 
   const closeStructure = () => {
@@ -1115,20 +1120,8 @@
     if (!dirty) statusEl.textContent = 'Click text or images to edit. Drag ⋮⋮ on a column to swap sides.';
     bindEditableFields();
     applyCleanLinesToDom();
-    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
-      window.JCP_REFRESH_PAGE_MEDIA_UI();
-    }
-    if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
-      window.JCP_REFRESH_COLLECTIONS();
-      requestAnimationFrame(() => {
-        if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
-          window.JCP_REFRESH_COLLECTIONS();
-        }
-      });
-    }
-    if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
-      window.JCP_REFRESH_INLINE_EDITABLE();
-    }
+    refreshEditorChrome();
+    requestAnimationFrame(refreshEditorChrome);
   };
 
   const disableEditing = () => {
@@ -1307,9 +1300,11 @@
       get pageDocument() { return pageDocument; },
     };
     window.__JCP_EDITOR_API__ = editorApi;
-    window.JCP_INIT_PAGE_MEDIA_EDITOR(editorApi);
     if (typeof window.JCP_INIT_COLLECTION_EDITOR === 'function') {
       window.JCP_INIT_COLLECTION_EDITOR(editorApi);
+    }
+    if (typeof window.JCP_INIT_PAGE_MEDIA_EDITOR === 'function') {
+      window.JCP_INIT_PAGE_MEDIA_EDITOR(editorApi);
     }
   }
 
@@ -1326,15 +1321,7 @@
     indexBlockSections();
     applyCleanLinesToDom();
     applyMediaPositionToDom();
-    if (typeof window.JCP_REFRESH_PAGE_MEDIA_UI === 'function') {
-      window.JCP_REFRESH_PAGE_MEDIA_UI();
-    }
-    if (typeof window.JCP_REFRESH_INLINE_EDITABLE === 'function') {
-      window.JCP_REFRESH_INLINE_EDITABLE();
-    }
-    if (typeof window.JCP_REFRESH_COLLECTIONS === 'function') {
-      window.JCP_REFRESH_COLLECTIONS();
-    }
+    if (editing) refreshEditorChrome();
     if (structureOpen) renderBlockList();
   });
 })();
