@@ -348,6 +348,7 @@
     api.recordChange();
   };
 
+
   const ensureOptionalPlaceholder = (slot) => {
     if (!slot.classList.contains('is-empty')) return;
     if (!slot.querySelector('.jcp-optional-restore')) {
@@ -357,37 +358,105 @@
       ph.textContent = slot.dataset.jcpOptionalLabel || 'Add button';
       slot.appendChild(ph);
     }
+    slot.querySelectorAll('.jcp-optional-restore').forEach(bindOptionalRestore);
+  };
+
+  const bindRemoveButton = (btn, container) => {
+    if (!btn || btn.dataset.jcpActionBound === '1') return;
+    btn.dataset.jcpActionBound = '1';
+    btn.type = 'button';
+    btn.setAttribute('contenteditable', 'false');
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isEditingActive()) return;
+      if (btn.classList.contains('jcp-collection-remove--optional')) {
+        const slot = btn.closest('[data-jcp-optional]');
+        if (slot) removeOptional(slot);
+        return;
+      }
+      const item = btn.closest('[data-jcp-array-item]');
+      const itemContainer = item?.closest('[data-jcp-array]') || container;
+      const basePath = itemContainer ? arrayPathFrom(itemContainer) : '';
+      if (!item || !itemContainer || !basePath) return;
+      const index = parseInt(item.getAttribute('data-jcp-array-item') || item.dataset.jcpArrayItem, 10);
+      if (!Number.isNaN(index)) removeArrayItem(itemContainer, basePath, index);
+    });
+  };
+
+  const bindAddButton = (btn, container) => {
+    if (!btn || btn.dataset.jcpActionBound === '1') return;
+    const basePath = arrayPathFrom(container);
+    if (!basePath) return;
+    btn.dataset.jcpActionBound = '1';
+    btn.type = 'button';
+    btn.setAttribute('contenteditable', 'false');
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isEditingActive()) return;
+      addArrayItem(container, basePath);
+    });
+  };
+
+  const bindOptionalRestore = (btn) => {
+    if (!btn || btn.dataset.jcpActionBound === '1') return;
+    btn.dataset.jcpActionBound = '1';
+    btn.type = 'button';
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isEditingActive()) return;
+      const slot = btn.closest('[data-jcp-optional]');
+      if (slot) restoreOptional(slot);
+    });
+  };
+
+  const bindCollectionControls = (container) => {
+    if (!container) return;
+    container.querySelectorAll(':scope > .jcp-collection-add').forEach((btn) => bindAddButton(btn, container));
+    container.querySelectorAll(':scope > [data-jcp-array-item]').forEach((item) => {
+      item.classList.add('jcp-collection-item');
+      const removeBtn = item.querySelector(':scope > .jcp-collection-remove')
+        || item.querySelector('.jcp-collection-remove');
+      if (removeBtn) bindRemoveButton(removeBtn, container);
+    });
   };
 
   const injectRemoveButton = (item) => {
     item.classList.add('jcp-collection-item');
-    if (item.querySelector('.jcp-collection-remove')) return;
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'jcp-collection-remove';
-    if (item.tagName === 'LI') btn.classList.add('jcp-collection-remove--list-item');
-    btn.setAttribute('aria-label', 'Remove item');
-    btn.title = 'Remove';
-    btn.textContent = '×';
-    btn.setAttribute('contenteditable', 'false');
-    item.appendChild(btn);
+    let btn = item.querySelector(':scope > .jcp-collection-remove')
+      || item.querySelector('.jcp-collection-remove');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.className = 'jcp-collection-remove';
+      if (item.tagName === 'LI') btn.classList.add('jcp-collection-remove--list-item');
+      btn.setAttribute('aria-label', 'Remove item');
+      btn.title = 'Remove';
+      btn.textContent = '×';
+      item.appendChild(btn);
+    }
+    const container = item.closest('[data-jcp-array]');
+    bindRemoveButton(btn, container);
   };
 
   const injectOptionalControls = (slot) => {
     const content = slot.querySelector('a, .btn');
-    if (content && !slot.querySelector('.jcp-collection-remove')) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'jcp-collection-remove jcp-collection-remove--optional';
-      btn.setAttribute('aria-label', 'Remove');
-      btn.title = 'Remove';
-      btn.textContent = '×';
+    let removeBtn = slot.querySelector('.jcp-collection-remove');
+    if (content && !removeBtn) {
+      removeBtn = document.createElement('button');
+      removeBtn.className = 'jcp-collection-remove jcp-collection-remove--optional';
+      removeBtn.setAttribute('aria-label', 'Remove');
+      removeBtn.title = 'Remove';
+      removeBtn.textContent = '×';
       slot.classList.add('jcp-optional-slot');
-      slot.appendChild(btn);
+      slot.appendChild(removeBtn);
     }
+    if (removeBtn) bindRemoveButton(removeBtn, null);
     if (isOptionalEmpty(slot.dataset.jcpOptional)) {
       slot.classList.add('is-empty');
       ensureOptionalPlaceholder(slot);
+      slot.querySelectorAll('.jcp-optional-restore').forEach(bindOptionalRestore);
     } else {
       slot.classList.remove('is-empty');
       slot.querySelector('.jcp-optional-restore')?.remove();
@@ -395,13 +464,14 @@
   };
 
   const injectAddButton = (container) => {
-    if (container.querySelector(':scope > .jcp-collection-add')) return;
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'jcp-collection-add';
-    btn.textContent = addButtonLabel(container);
-    btn.setAttribute('contenteditable', 'false');
-    container.appendChild(btn);
+    let btn = container.querySelector(':scope > .jcp-collection-add');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.className = 'jcp-collection-add';
+      btn.textContent = addButtonLabel(container);
+      container.appendChild(btn);
+    }
+    bindAddButton(btn, container);
   };
 
   const arrayContainers = () => [...document.querySelectorAll('[data-jcp-array]')].sort((a, b) => {
@@ -428,6 +498,7 @@
     arrayContainers().forEach((container) => {
       container.querySelectorAll(':scope > [data-jcp-array-item]').forEach(injectRemoveButton);
       injectAddButton(container);
+      bindCollectionControls(container);
     });
 
     document.querySelectorAll('[data-jcp-optional]').forEach(injectOptionalControls);
@@ -439,55 +510,6 @@
     window.JCP_REFRESH_COLLECTIONS = refreshCollections;
     window.JCP_TEARDOWN_COLLECTIONS = teardownCollections;
     window.JCP_SYNC_COLLECTIONS_FROM_CONTENT = syncCollectionsFromContent;
-
-    if (!document.body.dataset.jcpCollectionBound) {
-      document.body.dataset.jcpCollectionBound = '1';
-      const handleCollectionAction = (e) => {
-        if (!isEditingActive()) return;
-        if (e.button !== undefined && e.button !== 0) return;
-
-        const addBtn = e.target.closest('.jcp-collection-add');
-        if (addBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-          const container = addBtn.closest('[data-jcp-array]');
-          const basePath = container ? arrayPathFrom(container) : '';
-          if (container && basePath) addArrayItem(container, basePath);
-          return;
-        }
-
-        const removeBtn = e.target.closest('.jcp-collection-remove');
-        if (removeBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-          if (removeBtn.classList.contains('jcp-collection-remove--optional')) {
-            const slot = removeBtn.closest('[data-jcp-optional]');
-            if (slot) removeOptional(slot);
-            return;
-          }
-          const item = removeBtn.closest('[data-jcp-array-item]');
-          const container = item?.closest('[data-jcp-array]');
-          const basePath = container ? arrayPathFrom(container) : '';
-          if (item && container && basePath) {
-            const index = parseInt(item.getAttribute('data-jcp-array-item') || item.dataset.jcpArrayItem, 10);
-            if (!Number.isNaN(index)) removeArrayItem(container, basePath, index);
-          }
-          return;
-        }
-
-        const restoreBtn = e.target.closest('.jcp-optional-restore');
-        if (restoreBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          const slot = restoreBtn.closest('[data-jcp-optional]');
-          if (slot) restoreOptional(slot);
-        }
-      };
-
-      document.addEventListener('click', handleCollectionAction, true);
-    }
 
     if (isEditingActive()) refreshCollections();
   };

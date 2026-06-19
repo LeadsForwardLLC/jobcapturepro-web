@@ -1102,6 +1102,7 @@
 
   const bindEditableFields = () => {
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
+      if (el.closest('.jcp-collection-add, .jcp-collection-remove, .jcp-optional-restore')) return;
       if (editing) {
         el.setAttribute('contenteditable', 'true');
         el.setAttribute('spellcheck', 'true');
