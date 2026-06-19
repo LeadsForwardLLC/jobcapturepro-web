@@ -9,7 +9,7 @@
  * Admin notice when a WP page needs a block template assigned.
  */
 function jcp_niche_block_template_admin_hint(): string {
-	return __( 'Choose the “JCP Block Page” template in Page Attributes (right sidebar), then click Update.', 'jcp-core' );
+	return __( 'Block editor: Settings → Template → JCP Block Page. Classic editor: Page Attributes → JCP Block Page. Then click Update.', 'jcp-core' );
 }
 
 /**
@@ -89,13 +89,13 @@ function jcp_niche_render_standard_page_setup_meta_box( WP_Post $post ): void {
 
 		<p><strong><?php esc_html_e( 'Want the block builder instead?', 'jcp-core' ); ?></strong></p>
 		<ol class="jcp-admin-page-setup__steps">
-			<li><?php esc_html_e( 'Right sidebar → Page Attributes → Template', 'jcp-core' ); ?></li>
+			<li><?php esc_html_e( 'Block editor: Settings (gear, top-right) → Template. Classic editor: right sidebar → Page Attributes → Template.', 'jcp-core' ); ?></li>
 			<li><?php esc_html_e( 'Choose JCP Block Page', 'jcp-core' ); ?></li>
-			<li><?php esc_html_e( 'Click Update — one “JCP Page Editor” panel replaces this guide', 'jcp-core' ); ?></li>
+			<li><?php esc_html_e( 'Click Update — the full JCP Page Editor panel replaces this guide', 'jcp-core' ); ?></li>
 		</ol>
 
 		<p class="description">
-			<?php esc_html_e( 'Home and Referral Program templates are only for those specific pages. For everything else you build from blocks, use JCP Block Page.', 'jcp-core' ); ?>
+			<?php esc_html_e( 'Home and Referral Program templates are only for those specific pages. For everything else you build from blocks, use JCP Block Page. New pages usually only show Default + JCP Block Page in the template list.', 'jcp-core' ); ?>
 		</p>
 
 		<p class="description">
@@ -174,7 +174,7 @@ function jcp_niche_render_quick_meta_box_content( WP_Post $post ): void {
 				<strong><?php echo $is_industry ? esc_html__( 'Add a new trade page', 'jcp-core' ) : esc_html__( 'Build a block page', 'jcp-core' ); ?></strong><br />
 				<?php
 				printf(
-					esc_html__( '1. Set the URL slug. 2. Paste the writer template (see JCP → Page System) or upload .docx/.txt, then click Build page. 3. Publish — add photos on the live page editor. SEO is in Rank Math. %s', 'jcp-core' ),
+					esc_html__( '1. Set the URL slug. 2. Expand “Import from writer document”, paste or upload .docx/.txt, click Build page, then click Update/Publish. 3. Add photos on the live page editor. SEO is in Rank Math. %s', 'jcp-core' ),
 					'<a href="' . esc_url( admin_url( 'admin.php?page=jcp-theme-settings' ) ) . '">' . esc_html__( 'Full SOP →', 'jcp-core' ) . '</a>'
 				);
 				?>
@@ -258,7 +258,7 @@ function jcp_niche_render_import_meta_box_content( WP_Post $post ): void {
 			<?php
 			printf(
 				/* translators: 1: page type label, 2: SOP link */
-				esc_html__( 'Paste or upload a writer document for this %1$s. Section headers must be ALL CAPS (HERO, WHAT IT IS, …). Synonyms like STAT ROW also work for the stat row section. %2$s', 'jcp-core' ),
+				esc_html__( 'Paste or upload a writer document for this %1$s. Section headers must be ALL CAPS (HERO, WHAT IT IS, …). Use CORE MECHANIC or STAT ROW for the stat row section. %2$s', 'jcp-core' ),
 				'<strong>' . esc_html( $kind_label ) . '</strong>',
 				'<a href="' . esc_url( $sop_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Full writer guide →', 'jcp-core' ) . '</a>'
 			);
@@ -336,6 +336,7 @@ function jcp_niche_render_import_meta_box_content( WP_Post $post ): void {
 		function renderReport(report) {
 			if (!status || !report) return;
 			var html = '<p class="jcp-doc-import__summary"><strong>' + (report.message || '') + '</strong></p>';
+			html += '<p class="description"><strong><?php echo esc_js( __( 'Next step:', 'jcp-core' ) ); ?></strong> <?php echo esc_js( __( 'Click Update or Publish at the top of this screen to save.', 'jcp-core' ) ); ?></p>';
 			if (report.imported && report.imported.length) {
 				html += '<p><strong><?php echo esc_js( __( 'Imported:', 'jcp-core' ) ); ?></strong> ';
 				html += report.imported.map(function (row) { return row.label; }).join(', ');
@@ -383,8 +384,9 @@ function jcp_niche_render_import_meta_box_content( WP_Post $post ): void {
 					}
 					jsonTa.value = data.data.content;
 					renderReport(data.data.report);
-					jsonTa.focus();
-					jsonTa.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					if (status) {
+						status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+					}
 				})
 				.catch(function () {
 					btn.disabled = false;

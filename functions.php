@@ -64,10 +64,7 @@ if ( is_admin() ) {
 // Canonical form field names (REST params + GHL keys); Demo Survey = source of truth
 require_once get_template_directory() . '/inc/form-fields.php';
 
-// REST: Early Access form → GHL webhook
-require_once get_template_directory() . '/inc/rest-early-access.php';
-
-// REST: Demo Survey form → GHL webhook (separate from Early Access)
+// REST: Demo Survey form → GHL webhook
 require_once get_template_directory() . '/inc/rest-demo-survey.php';
 
 // REST: Contact form → GHL webhook
@@ -76,12 +73,14 @@ require_once get_template_directory() . '/inc/rest-contact.php';
 // Demo analytics: DB table + REST endpoint
 require_once get_template_directory() . '/inc/demo-analytics.php';
 
+// Page template dropdown filter (must load on REST too — block editor template list).
+require_once get_template_directory() . '/inc/admin-page-templates.php';
+
 if ( is_admin() ) {
     require_once get_template_directory() . '/inc/admin-theme-docs.php';
     require_once get_template_directory() . '/inc/admin-block-library.php';
     require_once get_template_directory() . '/inc/admin-demo-analytics.php';
     require_once get_template_directory() . '/inc/admin-global-settings.php';
-    require_once get_template_directory() . '/inc/admin-page-templates.php';
 }
 
 /**

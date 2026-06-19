@@ -223,7 +223,7 @@ function jcp_niche_cta_tracking_attr( string $url, string $location, string $cta
 	$path = is_string( $path ) ? rtrim( $path, '/' ) : '';
 
 	$is_referral_outbound = $host !== '' && str_contains( $host, 'firstpromoter.com' );
-	$is_key_conversion    = in_array( $path, [ '/demo', '/early-access', '/referral-program' ], true );
+	$is_key_conversion    = in_array( $path, [ '/demo', '/referral-program' ], true );
 
 	if ( ! $is_referral_outbound && ! $is_key_conversion ) {
 		return;

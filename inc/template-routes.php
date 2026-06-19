@@ -182,6 +182,33 @@ function jcp_core_flush_rewrite_rules_on_switch(): void {
 add_action( 'after_switch_theme', 'jcp_core_flush_rewrite_rules_on_switch' );
 
 /**
+ * Redirect retired marketing routes.
+ *
+ * @return void
+ */
+function jcp_core_redirect_retired_routes(): void {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$path    = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+	$segment = strpos( $path, '/' ) !== false ? strtok( $path, '/' ) : $path;
+
+	$redirects = [
+		'early-access'         => home_url( '/demo/' ),
+		'early-access-success' => home_url( '/demo/' ),
+	];
+
+	if ( ! isset( $redirects[ $segment ] ) ) {
+		return;
+	}
+
+	wp_safe_redirect( $redirects[ $segment ], 301 );
+	exit;
+}
+add_action( 'template_redirect', 'jcp_core_redirect_retired_routes', 1 );
+
+/**
  * Fallback template routing for non-WordPress pages
  * Allows /demo, /pricing, etc. to render even if pages don't exist in WordPress.
  * Directory and company are handled by rewrite + template_include above (not 404).
@@ -197,14 +224,12 @@ function jcp_core_fallback_template_routes(): void {
     $path_segment = strpos( $path, '/' ) !== false ? strtok( $path, '/' ) : $path;
 
     $template_map = [
-        'demo'                 => 'page-demo.php',
-        'pricing'              => 'page-pricing.php',
-        'early-access'         => 'page-early-access.php',
-        'early-access-success' => 'page-early-access-success.php',
-        'contact'              => 'page-contact.php',
-        'contact-success'     => 'page-contact-success.php',
-        'estimate'             => 'page-estimate.php',
-        'ui-library'           => 'page-ui-library.php',
+        'demo'              => 'page-demo.php',
+        'pricing'           => 'page-pricing.php',
+        'contact'           => 'page-contact.php',
+        'contact-success'   => 'page-contact-success.php',
+        'estimate'          => 'page-estimate.php',
+        'ui-library'        => 'page-ui-library.php',
     ];
     if ( $path_segment === 'directory' || $path_segment === 'company' ) {
         return;
@@ -224,14 +249,12 @@ function jcp_core_fallback_template_routes(): void {
     status_header( 200 );
 
     $route_titles = [
-        'demo'                 => __( 'Demo', 'jcp-core' ),
-        'pricing'              => __( 'Pricing', 'jcp-core' ),
-        'early-access'         => __( 'Early Access', 'jcp-core' ),
-        'early-access-success' => __( 'You\'re on the list', 'jcp-core' ),
-        'contact'              => __( 'Contact', 'jcp-core' ),
-        'contact-success'      => __( 'Message sent', 'jcp-core' ),
-        'estimate'             => __( 'Estimate', 'jcp-core' ),
-        'ui-library'           => __( 'UI Library', 'jcp-core' ),
+        'demo'            => __( 'Demo', 'jcp-core' ),
+        'pricing'         => __( 'Pricing', 'jcp-core' ),
+        'contact'         => __( 'Contact', 'jcp-core' ),
+        'contact-success' => __( 'Message sent', 'jcp-core' ),
+        'estimate'        => __( 'Estimate', 'jcp-core' ),
+        'ui-library'      => __( 'UI Library', 'jcp-core' ),
     ];
     if ( isset( $route_titles[ $path_segment ] ) ) {
         add_filter(

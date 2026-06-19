@@ -266,7 +266,7 @@
       if (href.charAt(0) !== '/') {
         try { host = new URL(href, window.location.href).hostname.toLowerCase(); } catch (err) {}
       }
-      isTargetHref = path === '/demo' || path === '/early-access' || path === '/referral-program' || path === '/industries' || path.indexOf('/industries/') === 0;
+      isTargetHref = path === '/demo' || path === '/referral-program' || path === '/industries' || path.indexOf('/industries/') === 0;
       isReferralOutbound = host.indexOf('firstpromoter.com') !== -1;
     }
     if (!ctaName && !isTargetHref && !isReferralOutbound) return;

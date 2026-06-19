@@ -225,7 +225,7 @@ function jcp_theme_docs_render_page(): void {
 			</table>
 			<p class="description" style="margin-top:12px;">
 				<strong><?php esc_html_e( 'Templates explained:', 'jcp-core' ); ?></strong>
-				<?php esc_html_e( 'Most new pages you create use “JCP Block Page”. Home and Referral Program are reserved URLs with extra block types. Pricing, demo, directory, contact, and help already exist — edit them in place; their templates only appear when you open those pages.', 'jcp-core' ); ?>
+				<?php esc_html_e( 'For new pages, the template dropdown only shows Default template and JCP Block Page — that is normal. Home, Referral Program, and fixed routes (Pricing, Demo, etc.) appear only when you edit a page whose URL slug already matches that route. Do not create a second Pricing or Demo page.', 'jcp-core' ); ?>
 			</p>
 		</section>
 
@@ -254,18 +254,25 @@ function jcp_theme_docs_render_page(): void {
 			<h2><?php esc_html_e( 'Quick start — new block-built page (About, Features, etc.)', 'jcp-core' ); ?></h2>
 			<ol class="jcp-theme-docs__steps">
 				<li>
-					<strong><?php esc_html_e( 'Use an existing page or create one', 'jcp-core' ); ?></strong><br />
-					<?php esc_html_e( 'WP Admin → Pages. Keep the same slug if converting an existing page — URL and SEO stay intact.', 'jcp-core' ); ?>
+					<strong><?php esc_html_e( 'Create or open the page', 'jcp-core' ); ?></strong><br />
+					<?php esc_html_e( 'WP Admin → Pages → Add New (or open an existing page). Set the URL slug you want — changing slug later changes the live URL.', 'jcp-core' ); ?>
 				</li>
 				<li>
-					<strong><?php esc_html_e( 'Assign template', 'jcp-core' ); ?></strong><br />
-					<?php esc_html_e( 'In Page attributes, choose “JCP Block Page”. Update the page.', 'jcp-core' ); ?>
+					<strong><?php esc_html_e( 'Choose the JCP Block Page template', 'jcp-core' ); ?></strong><br />
+					<?php esc_html_e( 'Block editor: Settings panel (gear icon, top-right) → Template → JCP Block Page. Classic editor: right sidebar → Page Attributes → Template → JCP Block Page. Then click Update or Publish.', 'jcp-core' ); ?>
 				</li>
 				<li>
-					<strong><?php esc_html_e( 'Build content', 'jcp-core' ); ?></strong><br />
-					<?php esc_html_e( 'Import a document, load the block page preset, or use “Edit on live page”. Rank Math SEO is unchanged.', 'jcp-core' ); ?>
+					<strong><?php esc_html_e( 'Add content', 'jcp-core' ); ?></strong><br />
+					<?php esc_html_e( 'Easiest path: JCP Page Editor → expand “Import from writer document”, paste or upload the writer file, click Build page from document, then click Update / Publish again. Or click “Edit on live page” to type copy directly on the published page.', 'jcp-core' ); ?>
+				</li>
+				<li>
+					<strong><?php esc_html_e( 'SEO in Rank Math', 'jcp-core' ); ?></strong><br />
+					<?php esc_html_e( 'Set focus keyword, SEO title, and meta description in the Rank Math panel on the same screen.', 'jcp-core' ); ?>
 				</li>
 			</ol>
+			<p class="description">
+				<?php esc_html_e( 'Starter presets (“Use block page preset”) live in the Developer: page JSON box at the bottom — for developers only. Normal workflow is document import or the live page editor.', 'jcp-core' ); ?>
+			</p>
 		</section>
 
 		<section id="quick-start-industry" class="jcp-theme-docs__section">
@@ -283,11 +290,11 @@ function jcp_theme_docs_render_page(): void {
 				</li>
 				<li>
 					<strong><?php esc_html_e( 'Import your document', 'jcp-core' ); ?></strong><br />
-					<?php esc_html_e( 'In the “Import from Document” box, paste your Google Doc / Word export (or upload .docx / .txt). Click “Build page from document”. JSON fills in below.', 'jcp-core' ); ?>
+					<?php esc_html_e( 'In the JCP Page Editor box, expand “Import from writer document”. Paste your Google Doc / Word export (or upload .docx / .txt). Click “Build page from document”. Read the import summary — green “Imported” lines succeeded; “Not on this page type” means that section was skipped for this kind of page.', 'jcp-core' ); ?>
 				</li>
 				<li>
 					<strong><?php esc_html_e( 'Publish', 'jcp-core' ); ?></strong><br />
-					<?php esc_html_e( 'Click Update / Publish. The page is live at /industries/{slug}/ and listed on the hub.', 'jcp-core' ); ?>
+					<?php esc_html_e( 'Click Update / Publish at the top of the screen (required — import does not save by itself). The page is live at /industries/{slug}/ and listed on the hub.', 'jcp-core' ); ?>
 				</li>
 				<li>
 					<strong><?php esc_html_e( 'SEO in Rank Math', 'jcp-core' ); ?></strong><br />
@@ -313,23 +320,24 @@ function jcp_theme_docs_render_page(): void {
 
 			<h3><?php esc_html_e( 'Import workflow', 'jcp-core' ); ?></h3>
 			<ol>
-				<li><?php esc_html_e( 'Open the page in WP Admin (Industries or Pages with JCP Block Page template).', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Open the page in WP Admin (Industries, or Pages with JCP Block Page / Home / Referral Program template).', 'jcp-core' ); ?></li>
 				<li><?php esc_html_e( 'In the “JCP Page Editor” box, expand “Import from writer document”.', 'jcp-core' ); ?></li>
 				<li><?php esc_html_e( 'Paste or upload the writer file.', 'jcp-core' ); ?></li>
 				<li><?php esc_html_e( 'Click “Build page from document”.', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'Review “Developer: page JSON” at the bottom of the screen (optional).', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'Click Update / Publish to save.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Check the import summary under the button (which sections imported vs skipped).', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click Update / Publish at the top of the screen to save.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Optional: reload the admin page if “Page sections” does not reflect the import yet.', 'jcp-core' ); ?></li>
 			</ol>
 
 			<div class="notice notice-warning inline jcp-theme-docs__notice">
 				<p>
 					<strong><?php esc_html_e( 'Important:', 'jcp-core' ); ?></strong>
-					<?php esc_html_e( '“Build page from document” fills the JSON editor but does not save until you click Update / Publish. Re-building overwrites the JSON textarea — save manual JSON edits first if you changed them by hand.', 'jcp-core' ); ?>
+					<?php esc_html_e( '“Build page from document” prepares content but does not save until you click Update / Publish. Re-building overwrites what you imported — save first if you already published.', 'jcp-core' ); ?>
 				</p>
 			</div>
 
 			<h3><?php esc_html_e( 'Section headers the parser recognizes', 'jcp-core' ); ?></h3>
-			<p class="description"><?php esc_html_e( 'Writers can also use STAT ROW as an alias for CORE MECHANIC. Headers are defined in the block registry — this list updates automatically.', 'jcp-core' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Writers can use CORE MECHANIC or STAT ROW (same section — shown on the site as “Stat row”). Headers below are defined in the block registry and update automatically.', 'jcp-core' ); ?></p>
 			<table class="widefat striped jcp-theme-docs__table">
 				<thead>
 					<tr>
@@ -366,24 +374,24 @@ function jcp_theme_docs_render_page(): void {
 
 		<section id="backend-editor" class="jcp-theme-docs__section">
 			<h2><?php esc_html_e( 'Backend editor (WP Admin)', 'jcp-core' ); ?></h2>
-			<p><?php esc_html_e( 'On Industries posts and Pages with the JCP Block Page template, you get one main panel — JCP Page Editor — plus optional developer tools.', 'jcp-core' ); ?></p>
+			<p><?php esc_html_e( 'On Industries posts and block-built Pages (JCP Block Page, Home, Referral Program), you get one main panel — JCP Page Editor — plus optional developer tools.', 'jcp-core' ); ?></p>
 
 			<h3><?php esc_html_e( 'JCP Page Editor (main panel)', 'jcp-core' ); ?></h3>
 			<ul>
-				<li><strong><?php esc_html_e( 'Edit on live page', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'opens click-to-edit on the published URL', 'jcp-core' ); ?></li>
-				<li><strong><?php esc_html_e( 'Key fields', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'hero headline, final CTA, optional nav button overrides', 'jcp-core' ); ?></li>
-				<li><strong><?php esc_html_e( 'Page sections', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'drag to reorder, add, or remove blocks', 'jcp-core' ); ?></li>
-				<li><strong><?php esc_html_e( 'Import from writer document', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'collapsed section for .docx / paste import', 'jcp-core' ); ?></li>
+				<li><strong><?php esc_html_e( 'Edit on live page', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'opens the published URL in a new tab with the editing toolbar (same as adding ?jcp_edit=1 to the URL while logged in)', 'jcp-core' ); ?></li>
+				<li><strong><?php esc_html_e( 'Key fields', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'quick edits for hero H1, final CTA, optional nav button overrides — saves when you Update the post', 'jcp-core' ); ?></li>
+				<li><strong><?php esc_html_e( 'Page sections', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'drag to reorder, add, or remove blocks — saves when you Update the post', 'jcp-core' ); ?></li>
+				<li><strong><?php esc_html_e( 'Import from writer document', 'jcp-core' ); ?></strong> — <?php esc_html_e( 'collapsed section for .docx / paste import (see Document import above)', 'jcp-core' ); ?></li>
 			</ul>
 
 			<h3><?php esc_html_e( 'SEO Health (block pages only)', 'jcp-core' ); ?></h3>
-			<p><?php esc_html_e( 'Checks Rank Math focus keyword, title, meta description, and hero copy. Only appears after you assign a block template.', 'jcp-core' ); ?></p>
+			<p><?php esc_html_e( 'The “SEO Health (JCP + Rank Math)” box checks focus keyword, title, meta description, and hero copy. It appears on Industries posts and Pages using JCP Block Page, Home, or Referral Program templates.', 'jcp-core' ); ?></p>
 
 			<h3><?php esc_html_e( 'Developer: page JSON', 'jcp-core' ); ?></h3>
-			<p><?php esc_html_e( 'Raw JSON at the bottom of the screen. Ignore unless you are a developer — the Page Editor panel is the normal workflow.', 'jcp-core' ); ?></p>
+			<p><?php esc_html_e( 'Raw data at the bottom of the screen, including optional starter presets. Ignore unless you are a developer — use JCP Page Editor or the live page editor instead.', 'jcp-core' ); ?></p>
 
 			<h3><?php esc_html_e( 'Standard Pages (default template)', 'jcp-core' ); ?></h3>
-			<p><?php esc_html_e( 'If you have not chosen JCP Block Page, you only see a short setup guide in the JCP panel. Use the WordPress title/content editor above. Optional “Bottom CTA” adds a signup strip at the end.', 'jcp-core' ); ?></p>
+			<p><?php esc_html_e( 'If you have not chosen JCP Block Page, the JCP panel shows a short setup guide only. Use the WordPress title/content editor above. Optional “Bottom CTA” adds a signup strip at the end.', 'jcp-core' ); ?></p>
 		</section>
 
 		<section id="frontend-editor" class="jcp-theme-docs__section">
@@ -392,17 +400,18 @@ function jcp_theme_docs_render_page(): void {
 
 			<h3><?php esc_html_e( 'How to open', 'jcp-core' ); ?></h3>
 			<ul>
-				<li><?php esc_html_e( 'From WP Admin: JCP Page Editor → “Edit on live page”', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'Or visit the live URL while logged in and click “Click to edit page” on the toolbar', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'From WP Admin: JCP Page Editor → “Edit on live page (click text & buttons)”', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Or visit the live URL while logged in — a toolbar appears at the bottom of the page', 'jcp-core' ); ?></li>
 			</ul>
 
 			<h3><?php esc_html_e( 'Editing', 'jcp-core' ); ?></h3>
 			<ol>
 				<li><?php esc_html_e( 'Click “Click to edit page” on the bottom toolbar.', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'Click any highlighted text to edit it inline.', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'Click a button/CTA to change its URL in the popover.', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'Click “Save changes” (or press Cmd/Ctrl + S).', 'jcp-core' ); ?></li>
-				<li><?php esc_html_e( 'The page reloads with saved content.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click highlighted text to edit it inline.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click a button or CTA to change its label or URL in the popover.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click an image or video area to swap media (upload, library, or YouTube/Vimeo URL).', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Use + / × on stat rows, FAQ items, and similar lists to add or remove entries.', 'jcp-core' ); ?></li>
+				<li><?php esc_html_e( 'Click “Save changes” (or press Cmd/Ctrl + S). The page reloads with saved content.', 'jcp-core' ); ?></li>
 			</ol>
 
 			<h3><?php esc_html_e( 'Toolbar reference', 'jcp-core' ); ?></h3>
@@ -548,6 +557,18 @@ function jcp_theme_docs_render_page(): void {
 					<tr>
 						<td><?php esc_html_e( 'Save changes button stays disabled', 'jcp-core' ); ?></td>
 						<td><?php esc_html_e( 'Click “Click to edit page” first, then make an edit. The button enables when there are unsaved changes.', 'jcp-core' ); ?></td>
+					</tr>
+					<tr>
+						<td><?php esc_html_e( 'Imported content not on the live site', 'jcp-core' ); ?></td>
+						<td><?php esc_html_e( 'After “Build page from document”, you must click Update / Publish in WP Admin. Import alone does not publish.', 'jcp-core' ); ?></td>
+					</tr>
+					<tr>
+						<td><?php esc_html_e( 'Too many templates in the dropdown', 'jcp-core' ); ?></td>
+						<td><?php esc_html_e( 'New pages should only show Default + JCP Block Page. If you see many templates, refresh the page. Fixed-route templates (Pricing, Demo, etc.) only appear when editing that specific page slug.', 'jcp-core' ); ?></td>
+					</tr>
+					<tr>
+						<td><?php esc_html_e( 'JCP Page Editor panel is missing', 'jcp-core' ); ?></td>
+						<td><?php esc_html_e( 'Assign the JCP Block Page template (Settings → Template), click Update, then reload the edit screen.', 'jcp-core' ); ?></td>
 					</tr>
 					<tr>
 						<td><?php esc_html_e( '404 on /industries/new-slug/', 'jcp-core' ); ?></td>

@@ -37,13 +37,6 @@
       }
       console.warn('JCP render: renderPricing is not available');
       return;
-    case 'early-access':
-      if (typeof window.renderEarlyAccess === 'function') {
-        window.renderEarlyAccess();
-        return;
-      }
-      console.warn('JCP render: renderEarlyAccess is not available');
-      return;
     case 'contact':
       if (typeof window.renderContact === 'function') {
         window.renderContact();
