@@ -239,12 +239,15 @@ function jcp_niche_render_what_it_is( array $c ): void {
 						jcp_niche_array_attr( 'what_it_is.team_already' );
 						echo '>';
 						foreach ( (array) ( $w['team_already'] ?? [] ) as $ti => $line ) {
-							echo '<li';
+							echo '<li class="jcp-collection-item"';
 							jcp_niche_array_item_attr( (int) $ti );
 							echo '><span class="jcp-checklist-item__text"';
 							jcp_niche_editable_attr( 'what_it_is.team_already.' . $ti );
-							echo '>' . esc_html( jcp_niche_clean_step_line( (string) $line ) ) . '</span></li>';
+							echo '>' . esc_html( jcp_niche_clean_step_line( (string) $line ) ) . '</span>';
+							jcp_niche_collection_remove_btn( true );
+							echo '</li>';
 						}
+						jcp_niche_collection_add_btn( __( '+ Add item', 'jcp-core' ) );
 						echo '</ul>';
 					},
 					'what_it_is.team_already_title'
@@ -262,12 +265,15 @@ function jcp_niche_render_what_it_is( array $c ): void {
 						jcp_niche_array_attr( 'what_it_is.turns_into' );
 						echo '>';
 						foreach ( (array) ( $w['turns_into'] ?? [] ) as $ti => $line ) {
-							echo '<li';
+							echo '<li class="jcp-collection-item"';
 							jcp_niche_array_item_attr( (int) $ti );
 							echo '><span class="jcp-checklist-item__text"';
 							jcp_niche_editable_attr( 'what_it_is.turns_into.' . $ti );
-							echo '>' . esc_html( jcp_niche_clean_step_line( (string) $line ) ) . '</span></li>';
+							echo '>' . esc_html( jcp_niche_clean_step_line( (string) $line ) ) . '</span>';
+							jcp_niche_collection_remove_btn( true );
+							echo '</li>';
 						}
+						jcp_niche_collection_add_btn( __( '+ Add item', 'jcp-core' ) );
 						echo '</ul>';
 					},
 					'what_it_is.turns_into_title'

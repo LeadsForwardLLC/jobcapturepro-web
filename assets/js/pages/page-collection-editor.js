@@ -234,8 +234,10 @@
     });
   };
 
+  const arrayPathFrom = (el) => el.getAttribute('data-jcp-array') || el.dataset.jcpArray || '';
+
   const rebuildArrayContainer = (container) => {
-    const basePath = container.dataset.jcpArray;
+    const basePath = arrayPathFrom(container);
     if (!basePath || !api) return;
     const arr = getArray(basePath);
     container.querySelectorAll(':scope > [data-jcp-array-item], :scope > .jcp-collection-add').forEach((el) => el.remove());
@@ -358,6 +360,7 @@
   };
 
   const injectRemoveButton = (item) => {
+    item.classList.add('jcp-collection-item');
     if (item.querySelector('.jcp-collection-remove')) return;
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -367,7 +370,6 @@
     btn.title = 'Remove';
     btn.textContent = '×';
     btn.setAttribute('contenteditable', 'false');
-    item.classList.add('jcp-collection-item');
     item.appendChild(btn);
   };
 
@@ -393,9 +395,8 @@
   };
 
   const injectAddButton = (container) => {
-    let btn = container.querySelector(':scope > .jcp-collection-add');
-    if (btn) btn.remove();
-    btn = document.createElement('button');
+    if (container.querySelector(':scope > .jcp-collection-add')) return;
+    const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'jcp-collection-add';
     btn.textContent = addButtonLabel(container);
@@ -405,7 +406,7 @@
 
   const arrayContainers = () => [...document.querySelectorAll('[data-jcp-array]')].sort((a, b) => {
     const depth = (path) => (path ? path.split('.').length : 0);
-    return depth(a.dataset.jcpArray) - depth(b.dataset.jcpArray);
+    return depth(arrayPathFrom(a)) - depth(arrayPathFrom(b));
   });
 
   const teardownCollections = () => {
@@ -423,7 +424,6 @@
 
   const refreshCollections = () => {
     if (!isEditingActive()) return;
-    teardownCollections();
 
     arrayContainers().forEach((container) => {
       container.querySelectorAll(':scope > [data-jcp-array-item]').forEach(injectRemoveButton);
@@ -442,8 +442,9 @@
 
     if (!document.body.dataset.jcpCollectionBound) {
       document.body.dataset.jcpCollectionBound = '1';
-      const handleCollectionClick = (e) => {
+      const handleCollectionAction = (e) => {
         if (!isEditingActive()) return;
+        if (e.button !== undefined && e.button !== 0) return;
 
         const addBtn = e.target.closest('.jcp-collection-add');
         if (addBtn) {
@@ -451,7 +452,7 @@
           e.stopPropagation();
           if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
           const container = addBtn.closest('[data-jcp-array]');
-          const basePath = container?.getAttribute('data-jcp-array') || container?.dataset?.jcpArray;
+          const basePath = container ? arrayPathFrom(container) : '';
           if (container && basePath) addArrayItem(container, basePath);
           return;
         }
@@ -468,7 +469,7 @@
           }
           const item = removeBtn.closest('[data-jcp-array-item]');
           const container = item?.closest('[data-jcp-array]');
-          const basePath = container?.getAttribute('data-jcp-array') || container?.dataset?.jcpArray;
+          const basePath = container ? arrayPathFrom(container) : '';
           if (item && container && basePath) {
             const index = parseInt(item.getAttribute('data-jcp-array-item') || item.dataset.jcpArrayItem, 10);
             if (!Number.isNaN(index)) removeArrayItem(container, basePath, index);
@@ -485,13 +486,7 @@
         }
       };
 
-      document.addEventListener('click', handleCollectionClick, true);
-      document.addEventListener('mousedown', (e) => {
-        if (!isEditingActive()) return;
-        if (e.target.closest('.jcp-collection-add, .jcp-collection-remove, .jcp-optional-restore')) {
-          e.preventDefault();
-        }
-      }, true);
+      document.addEventListener('click', handleCollectionAction, true);
     }
 
     if (isEditingActive()) refreshCollections();

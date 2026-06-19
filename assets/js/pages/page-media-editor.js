@@ -53,6 +53,12 @@
     '.media-modal, .media-frame, .uploader-window, #wp-media-grid, .attachments-browser'
   );
 
+  const isEditingActive = () => {
+    if (!api) return false;
+    if (typeof api.editing === 'function' && api.editing()) return true;
+    return document.body.classList.contains('jcp-inline-editing');
+  };
+
   const getMediaPaths = (el) => {
     const slot = el.closest('.jcp-media-slot');
     const basePath = slot?.dataset.jcpMediaPath || '';
@@ -98,6 +104,7 @@
     '.jcp-media-video-wrap',
     '.guarantee-image--empty',
     '.conversion-image-wrapper',
+    '.conversion-image',
     '.guarantee-image-wrapper',
     '.hero-phone-image-wrap',
     '.jcp-split-col--media',
@@ -141,7 +148,7 @@
     }
     const img = el.querySelector?.('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .hero-phone-image');
     if (img) return img;
-    if (el.matches('.guarantee-image--empty, .conversion-image-wrapper, .jcp-split-col--media, .jcp-editable-media-wrap, .guarantee-image-wrapper')) {
+    if (el.matches('.guarantee-image--empty, .conversion-image-wrapper, .conversion-image, .jcp-split-col--media, .jcp-editable-media-wrap, .guarantee-image-wrapper')) {
       const slot = el.querySelector('.jcp-media-slot');
       if (slot) return resolveMediaClickTarget(slot);
       return el.querySelector('.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image') || el;
@@ -523,11 +530,11 @@
   };
 
   const openPopover = (el) => {
-    if (!api?.editing()) return;
+    if (!isEditingActive()) return;
     const target = resolveMediaClickTarget(el);
     if (!target) return;
     const paths = getMediaPaths(target);
-    if (!paths.urlPath && !paths.altPath && !paths.isPhoneScreen) return;
+    if (!paths.urlPath && !paths.altPath && !paths.isPhoneScreen && !paths.basePath) return;
 
     activeMediaContext = { ...paths, el: target };
 
@@ -786,7 +793,7 @@
         col.prepend(handle);
 
         handle.addEventListener('pointerdown', (e) => {
-          if (!api?.editing()) return;
+          if (!isEditingActive()) return;
           e.preventDefault();
           e.stopPropagation();
           dragSourceCol = col;
@@ -818,7 +825,7 @@
         });
 
         handle.addEventListener('keydown', (e) => {
-          if (!api?.editing()) return;
+          if (!isEditingActive()) return;
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             swapColumns(grid);
@@ -830,7 +837,7 @@
 
   const markMediaHitAreas = () => {
     document.querySelectorAll(
-      '.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .jcp-media-slot, .jcp-media-text-media, .demo-preview-visual, .demo-phone-mockup, .demo-app-phone-mockup, .guarantee-image--empty, .conversion-image-wrapper, .guarantee-image-wrapper, .hero-phone-image-wrap'
+      '.jcp-editable-media-image, .jcp-hero-slot-image, .jcp-media-text-image, .demo-preview-slot-image, .jcp-media-slot, .jcp-media-text-media, .demo-preview-visual, .demo-phone-mockup, .demo-app-phone-mockup, .guarantee-image--empty, .conversion-image-wrapper, .conversion-image, .guarantee-image-wrapper, .hero-phone-image-wrap'
     ).forEach((el) => {
       el.classList.add('jcp-media-hit');
     });
@@ -857,7 +864,7 @@
   };
 
   const onDocumentClickCapture = (e) => {
-    if (!api?.editing()) return;
+    if (!isEditingActive()) return;
     if (e.target.closest(EDITOR_CHROME_SELECTOR)) return;
     if (isWpMediaClick(e.target)) return;
 
@@ -878,12 +885,13 @@
     const mediaHit = e.target.closest(MEDIA_HIT_SELECTOR);
     if (mediaHit) {
       e.preventDefault();
+      e.stopPropagation();
       openPopover(mediaHit);
     }
   };
 
   const onDocumentMouseDownCapture = (e) => {
-    if (!api?.editing()) return;
+    if (!isEditingActive()) return;
     if (e.button !== 0) return;
     if (e.target.closest(EDITOR_CHROME_SELECTOR)) return;
     if (isWpMediaClick(e.target)) return;

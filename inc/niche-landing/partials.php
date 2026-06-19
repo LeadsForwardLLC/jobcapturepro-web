@@ -147,13 +147,15 @@ function jcp_niche_render_step_lines( array $lines, string $path_prefix ): void 
 			}
 			$path = $path_prefix !== '' ? $path_prefix . '.' . $li : '';
 			?>
-			<li<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $li ); } ?>>
+			<li<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $li ); echo ' class="jcp-collection-item"'; } ?>>
 				<span class="jcp-step-checklist__icon" aria-hidden="true">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
 				</span>
 				<span class="jcp-step-checklist__text"<?php if ( $path !== '' ) { jcp_niche_editable_attr( $path ); } ?>><?php echo esc_html( jcp_niche_clean_step_line( $text ) ); ?></span>
+				<?php if ( $path_prefix !== '' ) { jcp_niche_collection_remove_btn( true ); } ?>
 			</li>
 		<?php endforeach; ?>
+		<?php if ( $path_prefix !== '' ) { jcp_niche_collection_add_btn( __( '+ Add point', 'jcp-core' ) ); } ?>
 	</ul>
 	<?php
 }
@@ -229,7 +231,7 @@ function jcp_niche_render_conversion_points( array $lines, string $path_prefix =
 			}
 			$path = $path_prefix !== '' ? $path_prefix . '.' . $i : '';
 			?>
-			<div class="conversion-point"<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $i ); } ?>>
+			<div class="conversion-point jcp-collection-item"<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $i ); } ?>>
 				<div class="conversion-point-icon">
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -239,8 +241,10 @@ function jcp_niche_render_conversion_points( array $lines, string $path_prefix =
 				<div class="conversion-point-text">
 					<strong<?php if ( $path !== '' ) { jcp_niche_editable_attr( $path ); } ?>><?php echo esc_html( $text ); ?></strong>
 				</div>
+				<?php if ( $path_prefix !== '' ) { jcp_niche_collection_remove_btn(); } ?>
 			</div>
 		<?php endforeach; ?>
+		<?php if ( $path_prefix !== '' ) { jcp_niche_collection_add_btn( __( '+ Add point', 'jcp-core' ) ); } ?>
 	</div>
 	<?php
 }

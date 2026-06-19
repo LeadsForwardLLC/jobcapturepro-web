@@ -646,6 +646,12 @@ body.jcp-inline-editing .timeline-step::after {
 }
 
 /* Collection add/remove controls (lists, FAQ, cards, optional buttons) */
+.jcp-collection-add,
+.jcp-collection-remove,
+.jcp-optional-restore {
+  display: none;
+}
+
 body.jcp-inline-editing .jcp-collection-item,
 body.jcp-inline-editing .jcp-optional-slot {
   position: relative;
@@ -1554,6 +1560,8 @@ body.jcp-has-unsaved .jcp-niche-edit-status {
   position: relative;
 }
 
+body.jcp-inline-editing .conversion-image-wrapper,
+body.jcp-inline-editing .conversion-image,
 body.jcp-inline-editing .jcp-editable-media-image,
 body.jcp-inline-editing .jcp-hero-slot-image,
 body.jcp-inline-editing .jcp-media-text-image,
@@ -1585,6 +1593,7 @@ body.jcp-inline-editing .demo-preview-visual:hover,
 body.jcp-inline-editing .guarantee-image--empty:hover,
 body.jcp-inline-editing .jcp-media-hit:hover,
 body.jcp-inline-editing .conversion-image-wrapper:hover,
+body.jcp-inline-editing .conversion-image:hover,
 body.jcp-inline-editing .demo-phone-mockup.jcp-media-hit:hover,
 body.jcp-inline-editing .demo-app-phone-mockup.jcp-media-hit:hover {
   outline: 2px dashed var(--jcp-color-primary, #e85d04);

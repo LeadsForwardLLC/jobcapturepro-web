@@ -60,6 +60,36 @@ function jcp_niche_array_item_attr( int $index ): void {
 }
 
 /**
+ * Remove control for a repeatable list/card item (shown in inline edit mode via CSS).
+ *
+ * @param bool $list_item Use compact positioning for checklist rows.
+ */
+function jcp_niche_collection_remove_btn( bool $list_item = false ): void {
+	$class = 'jcp-collection-remove' . ( $list_item ? ' jcp-collection-remove--list-item' : '' );
+	printf(
+		'<button type="button" class="%1$s" aria-label="%2$s" title="%3$s" tabindex="-1">×</button>',
+		esc_attr( $class ),
+		esc_attr__( 'Remove item', 'jcp-core' ),
+		esc_attr__( 'Remove', 'jcp-core' )
+	);
+}
+
+/**
+ * Add control at the bottom of a repeatable list container.
+ *
+ * @param string $label Button label.
+ */
+function jcp_niche_collection_add_btn( string $label = '' ): void {
+	if ( $label === '' ) {
+		$label = __( '+ Add item', 'jcp-core' );
+	}
+	printf(
+		'<button type="button" class="jcp-collection-add" tabindex="-1">%s</button>',
+		esc_html( $label )
+	);
+}
+
+/**
  * Strip editor artifact suffixes from how-it-works checklist lines.
  *
  * @param string $text Raw line text from JSON.
