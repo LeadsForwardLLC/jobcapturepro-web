@@ -54,6 +54,10 @@ function jcp_block_default_layout( string $type, string $page_kind = 'industry' 
 		$layout['align'] = 'left';
 	}
 
+	if ( $type === 'conversion' ) {
+		$layout['align'] = 'left';
+	}
+
 	return $layout;
 }
 

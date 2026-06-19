@@ -318,6 +318,9 @@
     );
     pageDocument.blocks.forEach((block) => {
       if (!block.layout) block.layout = defaultLayout(block.type);
+      if (block.type === 'conversion' && block.layout) {
+        block.layout.align = 'left';
+      }
       if (block.type === 'hero') {
         if (!block.layout.hero_variant) {
           block.layout.hero_variant = resolveHeroVariant(block);

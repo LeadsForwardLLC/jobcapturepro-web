@@ -2469,6 +2469,32 @@
 .conversion-section .rankings-header {
   text-align: left;
   margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+}
+
+.conversion-section .rankings-subtitle {
+  font-size: var(--jcp-font-size-lg);
+  color: var(--jcp-color-text-secondary);
+  line-height: var(--jcp-line-height-relaxed);
+  margin: 0 0 var(--jcp-space-md) 0;
+  text-align: left;
+  max-width: none;
+}
+
+.conversion-section .conversion-content .rankings-header,
+.conversion-section .conversion-content .rankings-subtitle,
+.conversion-section .conversion-content .conversion-points,
+.conversion-section .conversion-content .conversion-cta {
+  text-align: left;
+}
+
+.jcp-block-root.jcp-layout-align-center .conversion-content .rankings-header,
+.jcp-block-root.jcp-layout-align-center .conversion-content .rankings-subtitle,
+.jcp-block-root.jcp-layout-align-right .conversion-content .rankings-header,
+.jcp-block-root.jcp-layout-align-right .conversion-content .rankings-subtitle {
+  text-align: left;
 }
 
 .conversion-section .rankings-header h2 {
@@ -2478,13 +2504,6 @@
   margin-bottom: var(--jcp-space-lg);
   line-height: var(--jcp-line-height-tight);
   letter-spacing: -0.02em;
-}
-
-.conversion-section .rankings-subtitle {
-  font-size: var(--jcp-font-size-lg);
-  color: var(--jcp-color-text-secondary);
-  line-height: var(--jcp-line-height-relaxed);
-  margin: 0 0 var(--jcp-space-md) 0;
   text-align: left;
 }
 
@@ -2558,6 +2577,8 @@
 
 .conversion-cta {
   margin-top: var(--jcp-space-lg);
+  display: flex;
+  justify-content: flex-start;
 }
 
 .conversion-cta-btn {
@@ -2714,23 +2735,6 @@
 
   .conversion-image-wrapper {
     max-width: 100%;
-  }
-
-  .conversion-section .rankings-header {
-    text-align: center;
-  }
-
-  .conversion-section .rankings-subtitle {
-    text-align: center;
-  }
-
-  .conversion-intro-text {
-    text-align: center;
-  }
-
-  .conversion-cta {
-    display: flex;
-    justify-content: center;
   }
 }
 
