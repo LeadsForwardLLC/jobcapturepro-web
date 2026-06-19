@@ -54,9 +54,9 @@
   );
 
   const isEditingActive = () => {
+    if (document.body.classList.contains('jcp-inline-editing')) return true;
     if (!api) return false;
-    if (typeof api.editing === 'function' && api.editing()) return true;
-    return document.body.classList.contains('jcp-inline-editing');
+    return typeof api.editing === 'function' && api.editing();
   };
 
   const getMediaPaths = (el) => {
@@ -955,6 +955,14 @@
     markMediaHitAreas();
     bindMediaSlots();
     bindColumnSwap();
+  };
+
+  window.jcpOpenMediaEditor = (el, e) => {
+    if (e?.preventDefault) e.preventDefault();
+    if (e?.stopPropagation) e.stopPropagation();
+    if (!api || !isEditingActive()) return false;
+    openPopover(el);
+    return false;
   };
 
   window.JCP_INIT_PAGE_MEDIA_EDITOR = init;

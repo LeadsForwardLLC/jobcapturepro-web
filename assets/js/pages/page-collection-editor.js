@@ -433,8 +433,9 @@
       if (item.tagName === 'LI') btn.classList.add('jcp-collection-remove--list-item');
       btn.setAttribute('aria-label', 'Remove item');
       btn.title = 'Remove';
-      btn.textContent = '×';
-      item.appendChild(btn);
+    btn.textContent = '×';
+    btn.setAttribute('onclick', 'return window.jcpCollectionRemoveClick&&window.jcpCollectionRemoveClick(this,event)');
+    item.appendChild(btn);
     }
     const container = item.closest('[data-jcp-array]');
     bindRemoveButton(btn, container);
@@ -469,6 +470,7 @@
       btn = document.createElement('button');
       btn.className = 'jcp-collection-add';
       btn.textContent = addButtonLabel(container);
+      btn.setAttribute('onclick', 'return window.jcpCollectionAddClick&&window.jcpCollectionAddClick(this,event)');
       container.appendChild(btn);
     }
     bindAddButton(btn, container);
@@ -487,9 +489,9 @@
   };
 
   const isEditingActive = () => {
+    if (document.body.classList.contains('jcp-inline-editing')) return true;
     if (!api) return false;
-    if (typeof api.editing === 'function' && api.editing()) return true;
-    return document.body.classList.contains('jcp-inline-editing');
+    return typeof api.editing === 'function' && api.editing();
   };
 
   const refreshCollections = () => {
@@ -512,6 +514,35 @@
     window.JCP_SYNC_COLLECTIONS_FROM_CONTENT = syncCollectionsFromContent;
 
     if (isEditingActive()) refreshCollections();
+  };
+
+  window.jcpCollectionAddClick = (btn, e) => {
+    if (e?.preventDefault) e.preventDefault();
+    if (e?.stopPropagation) e.stopPropagation();
+    if (!api || !isEditingActive()) return false;
+    const container = btn?.closest?.('[data-jcp-array]');
+    const basePath = container ? arrayPathFrom(container) : '';
+    if (container && basePath) addArrayItem(container, basePath);
+    return false;
+  };
+
+  window.jcpCollectionRemoveClick = (btn, e) => {
+    if (e?.preventDefault) e.preventDefault();
+    if (e?.stopPropagation) e.stopPropagation();
+    if (!api || !isEditingActive()) return false;
+    if (btn?.classList?.contains('jcp-collection-remove--optional')) {
+      const slot = btn.closest('[data-jcp-optional]');
+      if (slot) removeOptional(slot);
+      return false;
+    }
+    const item = btn?.closest?.('[data-jcp-array-item]');
+    const container = item?.closest?.('[data-jcp-array]');
+    const basePath = container ? arrayPathFrom(container) : '';
+    if (item && container && basePath) {
+      const index = parseInt(item.getAttribute('data-jcp-array-item') || item.dataset.jcpArrayItem, 10);
+      if (!Number.isNaN(index)) removeArrayItem(container, basePath, index);
+    }
+    return false;
   };
 
   if (window.__JCP_EDITOR_API__) init(window.__JCP_EDITOR_API__);

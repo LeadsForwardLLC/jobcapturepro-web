@@ -1287,27 +1287,29 @@
   applyLayoutToDom();
   applyMediaPositionToDom();
 
-  if (typeof window.JCP_INIT_PAGE_MEDIA_EDITOR === 'function') {
-    const editorApi = {
-      getPath,
-      setPath,
-      recordChange,
-      collectFromDom,
-      registry,
-      applyMediaPositionToDom,
-      editing: () => editing,
-      strings: cfg.strings || {},
-      get flatContent() { return flatContent; },
-      get pageDocument() { return pageDocument; },
-    };
-    window.__JCP_EDITOR_API__ = editorApi;
-    if (typeof window.JCP_INIT_COLLECTION_EDITOR === 'function') {
-      window.JCP_INIT_COLLECTION_EDITOR(editorApi);
-    }
+  const editorApi = {
+    getPath,
+    setPath,
+    recordChange,
+    collectFromDom,
+    registry,
+    applyMediaPositionToDom,
+    editing: () => editing,
+    strings: cfg.strings || {},
+    get flatContent() { return flatContent; },
+    get pageDocument() { return pageDocument; },
+  };
+  window.__JCP_EDITOR_API__ = editorApi;
+
+  const initSubEditors = () => {
     if (typeof window.JCP_INIT_PAGE_MEDIA_EDITOR === 'function') {
       window.JCP_INIT_PAGE_MEDIA_EDITOR(editorApi);
     }
-  }
+    if (typeof window.JCP_INIT_COLLECTION_EDITOR === 'function') {
+      window.JCP_INIT_COLLECTION_EDITOR(editorApi);
+    }
+  };
+  initSubEditors();
 
   if (new URLSearchParams(window.location.search).get('jcp_edit') === '1') {
     enableEditing();
@@ -1322,7 +1324,11 @@
     indexBlockSections();
     applyCleanLinesToDom();
     applyMediaPositionToDom();
-    if (editing) refreshEditorChrome();
+    initSubEditors();
+    if (editing) {
+      refreshEditorChrome();
+      requestAnimationFrame(refreshEditorChrome);
+    }
     if (structureOpen) renderBlockList();
   });
 })();

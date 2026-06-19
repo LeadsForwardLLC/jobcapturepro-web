@@ -67,7 +67,7 @@ function jcp_niche_array_item_attr( int $index ): void {
 function jcp_niche_collection_remove_btn( bool $list_item = false ): void {
 	$class = 'jcp-collection-remove' . ( $list_item ? ' jcp-collection-remove--list-item' : '' );
 	printf(
-		'<button type="button" class="%1$s" aria-label="%2$s" title="%3$s" tabindex="-1">×</button>',
+		'<button type="button" class="%1$s" aria-label="%2$s" title="%3$s" tabindex="-1" onclick="return window.jcpCollectionRemoveClick&amp;&amp;window.jcpCollectionRemoveClick(this,event)">×</button>',
 		esc_attr( $class ),
 		esc_attr__( 'Remove item', 'jcp-core' ),
 		esc_attr__( 'Remove', 'jcp-core' )
@@ -84,7 +84,7 @@ function jcp_niche_collection_add_btn( string $label = '' ): void {
 		$label = __( '+ Add item', 'jcp-core' );
 	}
 	printf(
-		'<button type="button" class="jcp-collection-add" tabindex="-1">%s</button>',
+		'<button type="button" class="jcp-collection-add" tabindex="-1" onclick="return window.jcpCollectionAddClick&amp;&amp;window.jcpCollectionAddClick(this,event)">%s</button>',
 		esc_html( $label )
 	);
 }

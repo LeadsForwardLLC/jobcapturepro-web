@@ -237,6 +237,9 @@ function jcp_media_render_slot( array $config ): void {
 			$path,
 			$slot_attrs
 		);
+		if ( function_exists( 'jcp_niche_user_can_inline_edit' ) && jcp_niche_user_can_inline_edit() ) {
+			echo ' onclick="return window.jcpOpenMediaEditor&amp;&amp;window.jcpOpenMediaEditor(this,event)"';
+		}
 		?>
 	>
 		<?php if ( is_callable( $phone_render ) ) : ?>
