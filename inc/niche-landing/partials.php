@@ -172,7 +172,7 @@ function jcp_niche_render_core_mechanic_strip( array $items, string $path_prefix
 		return;
 	}
 	?>
-	<div class="directory-meta jcp-core-mechanic-meta">
+	<div class="directory-meta jcp-core-mechanic-meta"<?php if ( $path_prefix !== '' ) { jcp_niche_array_attr( $path_prefix ); } ?>>
 		<?php foreach ( $normalized as $i => $item ) : ?>
 			<?php
 			$raw = $items[ $i ] ?? [];
@@ -187,7 +187,7 @@ function jcp_niche_render_core_mechanic_strip( array $items, string $path_prefix
 			$class  = (string) ( $item['css_class'] ?? '' );
 			$combined = (string) ( $item['label'] ?? '' );
 			?>
-			<div class="meta-item<?php echo $class !== '' ? ' ' . esc_attr( $class ) : ''; ?>">
+			<div class="meta-item jcp-collection-item<?php echo $class !== '' ? ' ' . esc_attr( $class ) : ''; ?>"<?php if ( $path_prefix !== '' ) { jcp_niche_array_item_attr( (int) $i ); } ?>>
 				<div class="meta-label">
 					<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="meta-icon" alt="" width="20" height="20" />
 					<strong>
@@ -201,8 +201,10 @@ function jcp_niche_render_core_mechanic_strip( array $items, string $path_prefix
 				<?php if ( $detail !== '' ) : ?>
 					<span class="meta-detail"<?php if ( $base !== '' ) { jcp_niche_editable_attr( $base . '.detail' ); } ?>><?php echo esc_html( $detail ); ?></span>
 				<?php endif; ?>
+				<?php if ( $path_prefix !== '' ) { jcp_niche_collection_remove_btn(); } ?>
 			</div>
 		<?php endforeach; ?>
+		<?php if ( $path_prefix !== '' ) { jcp_niche_collection_add_btn( __( '+ Add stat', 'jcp-core' ) ); } ?>
 	</div>
 	<?php
 }

@@ -137,6 +137,9 @@ function jcp_block_layout_classes( array $layout, string $type ): string {
  * @return array<string, bool>
  */
 function jcp_block_layout_options( string $type ): array {
+	if ( in_array( $type, [ 'core_mechanic', 'breadcrumb' ], true ) ) {
+		return [];
+	}
 	if ( $type === 'hero' ) {
 		return [
 			'hero_variant'   => true,

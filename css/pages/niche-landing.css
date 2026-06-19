@@ -705,7 +705,8 @@ body.jcp-inline-editing .jcp-niche-tags > li.jcp-collection-item {
 body.jcp-inline-editing .timeline-step.jcp-collection-item,
 body.jcp-inline-editing .ranking-factor-card.jcp-collection-item,
 body.jcp-inline-editing .conversion-point.jcp-collection-item,
-body.jcp-inline-editing .faq-item.jcp-collection-item {
+body.jcp-inline-editing .faq-item.jcp-collection-item,
+body.jcp-inline-editing .meta-item.jcp-collection-item {
   overflow: visible !important;
 }
 

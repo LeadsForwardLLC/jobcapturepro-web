@@ -36,6 +36,11 @@
       stat_number: '100%',
       stat_label: 'Label',
     }),
+    core_mechanic: () => ({
+      value: '0',
+      label: 'stat',
+      detail: 'Description',
+    }),
   };
 
   const isStringArrayPath = (basePath) => {
@@ -57,6 +62,7 @@
     if (container.classList.contains('jcp-niche-checklist')) return '+ Add item';
     if (container.classList.contains('jcp-niche-tags')) return '+ Add tag';
     if (container.classList.contains('conversion-points')) return '+ Add point';
+    if (container.classList.contains('jcp-core-mechanic-meta')) return '+ Add stat';
     if (container.classList.contains('ranking-factors-grid') || container.classList.contains('guarantees-grid')) return '+ Add card';
     return '+ Add item';
   };
@@ -140,6 +146,32 @@
       </div>`;
   };
 
+  const STAT_BADGE_CLASSES = ['meta-stat-photo', 'meta-stat-channels', 'meta-stat-busywork'];
+  const STAT_BADGE_ICONS = ['camera', 'map', 'clock'];
+
+  const buildStatBadge = (basePath, index, data) => {
+    const path = `${basePath}.${index}`;
+    const value = String(data?.value ?? '');
+    const label = String(data?.label ?? '');
+    const detail = String(data?.detail ?? '');
+    const cssClass = data?.css_class || STAT_BADGE_CLASSES[index % STAT_BADGE_CLASSES.length];
+    const icon = data?.icon || STAT_BADGE_ICONS[index % STAT_BADGE_ICONS.length];
+    const labelHtml = value || label
+      ? `<span data-jcp-path="${path}.value">${esc(value)}</span>${label ? `<span data-jcp-path="${path}.label">${esc(` ${label}`)}</span>` : ''}`
+      : esc(`${value} ${label}`.trim());
+    const detailHtml = detail
+      ? `<span class="meta-detail" data-jcp-path="${path}.detail">${esc(detail)}</span>`
+      : '';
+    return `
+      <div class="meta-item jcp-collection-item ${cssClass}" data-jcp-array-item="${index}">
+        <div class="meta-label">
+          <img src="${iconUrl(icon)}" class="meta-icon" alt="" width="20" height="20" />
+          <strong>${labelHtml}</strong>
+        </div>
+        ${detailHtml}
+      </div>`;
+  };
+
   const buildConversionPoint = (basePath, index, text) => `
     <div class="conversion-point" data-jcp-array-item="${index}">
       <div class="conversion-point-icon">${CHECK_SVG}</div>
@@ -196,6 +228,7 @@
       return '';
     }
     if (basePath === 'faq.items') return buildFaqItem(index, data);
+    if (basePath === 'core_mechanic') return buildStatBadge(basePath, index, data);
     if (basePath === 'how_it_works.steps') return buildTimelineStep(basePath, index, data);
     if (basePath === 'who_its_for.audiences' && container.classList.contains('guarantees-grid')) {
       return buildGuaranteeCard(basePath, index, data);

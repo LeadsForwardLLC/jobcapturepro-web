@@ -69,7 +69,11 @@
     final_cta: { headline: 'Ready to get started?', subheadline: '', cta_primary: { label: 'Start free trial', url: '' }, cta_secondary: { label: 'See how it works', url: '/demo' } },
     cta_band: { cta_primary: { label: 'Get started', url: '' }, band_key: 'cta_band_1' },
     breadcrumb: {},
-    core_mechanic: [],
+    core_mechanic: [
+      { value: '1', label: 'photo', detail: 'Proof created instantly' },
+      { value: '4', label: 'channels', detail: 'Google, website, social, directory' },
+      { value: '0', label: 'busywork', detail: 'Nothing new for your crew' },
+    ],
     commission: {},
     partners: {},
     share: {},
@@ -371,6 +375,9 @@
     }
     if (type === 'demo_preview' || type === 'conversion') {
       return { media_position: true };
+    }
+    if (type === 'core_mechanic') {
+      return {};
     }
     return { align: true, width: true };
   };
