@@ -99,6 +99,25 @@ function jcp_niche_is_content_page( ?int $post_id = null ): bool {
  * @param int                  $post_id Post ID.
  */
 function jcp_page_resolve_kind( array $content, int $post_id ): string {
+	if ( $post_id > 0 ) {
+		$post = get_post( $post_id );
+		if ( $post instanceof WP_Post ) {
+			if ( $post->post_type === 'jcp_niche_landing' ) {
+				return 'industry';
+			}
+			if ( $post->post_type === 'page' ) {
+				if ( get_page_template_slug( $post_id ) === 'page-referral-program.php' || $post->post_name === 'referral-program' ) {
+					return 'referral';
+				}
+				if ( get_page_template_slug( $post_id ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === $post_id ) {
+					return 'home';
+				}
+				if ( jcp_page_uses_block_template( $post_id ) ) {
+					return 'marketing';
+				}
+			}
+		}
+	}
 	if ( ! empty( $content['page_kind'] ) ) {
 		return (string) $content['page_kind'];
 	}
@@ -110,21 +129,6 @@ function jcp_page_resolve_kind( array $content, int $post_id ): string {
 	}
 	if ( $post_id <= 0 ) {
 		return 'industry';
-	}
-	$post = get_post( $post_id );
-	if ( $post instanceof WP_Post ) {
-		if ( $post->post_type === 'jcp_niche_landing' ) {
-			return 'industry';
-		}
-		if ( get_page_template_slug( $post_id ) === 'page-referral-program.php' || $post->post_name === 'referral-program' ) {
-			return 'referral';
-		}
-		if ( get_page_template_slug( $post_id ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === $post_id ) {
-			return 'home';
-		}
-		if ( jcp_page_uses_block_template( $post_id ) ) {
-			return 'marketing';
-		}
 	}
 	return 'marketing';
 }

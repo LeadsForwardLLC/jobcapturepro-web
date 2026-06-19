@@ -17,9 +17,33 @@ function jcp_niche_e( string $text ): void {
 /**
  * Resolve page kind for breadcrumb parent link.
  *
+ * Uses the WordPress post (type + template) first so imported JSON cannot
+ * force an Industries trail on a JCP Block Page.
+ *
  * @param array<string, mixed> $c Content.
  */
 function jcp_niche_breadcrumb_page_kind( array $c ): string {
+	$post_id = get_queried_object_id();
+	if ( $post_id > 0 ) {
+		$post = get_post( $post_id );
+		if ( $post instanceof WP_Post ) {
+			if ( $post->post_type === 'jcp_niche_landing' ) {
+				return 'industry';
+			}
+			if ( $post->post_type === 'page' ) {
+				if ( get_page_template_slug( $post_id ) === 'page-referral-program.php' || $post->post_name === 'referral-program' ) {
+					return 'referral';
+				}
+				if ( get_page_template_slug( $post_id ) === 'page-home.php' || (int) get_option( 'page_on_front' ) === $post_id ) {
+					return 'home';
+				}
+				if ( function_exists( 'jcp_page_uses_block_template' ) && jcp_page_uses_block_template( $post_id ) ) {
+					return 'marketing';
+				}
+			}
+		}
+	}
+
 	if ( ! empty( $c['page_kind'] ) ) {
 		return (string) $c['page_kind'];
 	}
@@ -47,6 +71,12 @@ function jcp_niche_breadcrumb_current_label( array $c ): string {
 	}
 	if ( ! empty( $c['niche_label'] ) ) {
 		return (string) $c['niche_label'];
+	}
+	if ( is_singular() ) {
+		$title = get_the_title();
+		if ( $title !== '' ) {
+			return $title;
+		}
 	}
 	return '';
 }
