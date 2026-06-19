@@ -710,6 +710,38 @@ body.jcp-inline-editing .meta-item.jcp-collection-item {
   overflow: visible !important;
 }
 
+/* Stat row — keep horizontal layout in edit mode (global add btn is width:100%) */
+body.jcp-inline-editing .jcp-core-mechanic-meta {
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--jcp-space-xl);
+}
+
+body.jcp-inline-editing .jcp-core-mechanic-meta > .meta-item.jcp-collection-item {
+  flex: 1 1 10rem;
+  min-width: 9rem;
+  max-width: 16rem;
+  padding-top: 2rem;
+  padding-right: 2rem;
+  box-sizing: border-box;
+}
+
+body.jcp-inline-editing .jcp-core-mechanic-meta > .jcp-collection-add {
+  flex: 0 1 10rem;
+  width: auto;
+  min-width: 9rem;
+  max-width: 12rem;
+  min-height: 6rem;
+  margin-top: 0;
+  align-self: stretch;
+}
+
+body.jcp-inline-editing .jcp-core-mechanic-embed .jcp-core-mechanic-meta > .jcp-collection-add,
+body.jcp-inline-editing .jcp-core-mechanic-strip .jcp-core-mechanic-meta > .jcp-collection-add {
+  flex: 0 1 10rem;
+}
+
 body.jcp-inline-editing .ranking-factor-card {
   overflow: visible !important;
 }

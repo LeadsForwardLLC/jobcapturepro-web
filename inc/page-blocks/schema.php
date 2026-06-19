@@ -564,10 +564,15 @@ function jcp_page_merge_flat_into_blocks( array $doc, array $flat ): array {
 			? (string) $block['legacy_key']
 			: ( $def['legacy_key'] ?? $type );
 		if ( $key && isset( $flat[ $key ] ) && is_array( $flat[ $key ] ) ) {
-			$doc['blocks'][ $i ]['props'] = jcp_page_merge_props_deep(
-				$block['props'] ?? [],
-				$flat[ $key ]
-			);
+			// Stat row props are the array itself — replace wholesale so add/remove persist.
+			if ( $type === 'core_mechanic' ) {
+				$doc['blocks'][ $i ]['props'] = array_values( $flat[ $key ] );
+			} else {
+				$doc['blocks'][ $i ]['props'] = jcp_page_merge_props_deep(
+					$block['props'] ?? [],
+					$flat[ $key ]
+				);
+			}
 		}
 	}
 

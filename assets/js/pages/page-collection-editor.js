@@ -36,17 +36,25 @@
       stat_number: '100%',
       stat_label: 'Label',
     }),
-    core_mechanic: () => ({
+    core_mechanic: (index = 0) => ({
       value: '0',
       label: 'stat',
       detail: 'Description',
+      icon: STAT_BADGE_ICONS[index % STAT_BADGE_ICONS.length],
+      css_class: STAT_BADGE_CLASSES[index % STAT_BADGE_CLASSES.length],
     }),
   };
 
+  const OBJECT_ARRAY_PATHS = new Set(['core_mechanic']);
+
   const isStringArrayPath = (basePath) => {
+    if (OBJECT_ARRAY_PATHS.has(basePath)) return false;
     if (ARRAY_DEFAULTS[basePath] && typeof ARRAY_DEFAULTS[basePath]() === 'string') return true;
     return /\.(?:lines|team_already|turns_into|job_types|bullets|points)$/.test(basePath);
   };
+
+  const STAT_BADGE_CLASSES = ['meta-stat-photo', 'meta-stat-channels', 'meta-stat-busywork'];
+  const STAT_BADGE_ICONS = ['camera', 'map', 'clock'];
 
   const arrayDefaultFactory = (basePath) => {
     if (ARRAY_DEFAULTS[basePath]) return ARRAY_DEFAULTS[basePath];
@@ -145,9 +153,6 @@
         </div>
       </div>`;
   };
-
-  const STAT_BADGE_CLASSES = ['meta-stat-photo', 'meta-stat-channels', 'meta-stat-busywork'];
-  const STAT_BADGE_ICONS = ['camera', 'map', 'clock'];
 
   const buildStatBadge = (basePath, index, data) => {
     const path = `${basePath}.${index}`;

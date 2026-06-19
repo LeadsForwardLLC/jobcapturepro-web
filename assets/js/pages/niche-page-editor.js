@@ -654,6 +654,7 @@
   const recordChange = () => {
     if (suppressRecord) return;
     collectFromDom();
+    syncListBlockPropsFromFlat();
     const snap = snapshot();
     if (historyIndex >= 0 && statesEqual(snap, history[historyIndex])) {
       updateDirtyState();
@@ -1092,6 +1093,46 @@
     return /^\d+$/.test(path.slice(basePath.length + 1));
   };
 
+  const isObjectArrayItemPath = (el) => {
+    const path = el.getAttribute('data-jcp-path');
+    if (!path) return false;
+    return /^core_mechanic\.\d+\.(?:value|label|detail)$/.test(path);
+  };
+
+  const collectObjectArraysFromDom = () => {
+    document.querySelectorAll('[data-jcp-array="core_mechanic"]').forEach((container) => {
+      const basePath = 'core_mechanic';
+      const items = [...container.querySelectorAll(':scope > [data-jcp-array-item]')];
+      const arr = items.map((item) => {
+        const index = item.getAttribute('data-jcp-array-item');
+        const readField = (field) => {
+          const el = item.querySelector(`[data-jcp-path="${basePath}.${index}.${field}"]`);
+          return (el?.textContent || '').trim();
+        };
+        const prev = getPath(flatContent, `${basePath}.${index}`) || {};
+        const value = readField('value');
+        const label = readField('label');
+        const detail = readField('detail');
+        return {
+          ...(typeof prev === 'object' && prev ? prev : {}),
+          value,
+          label,
+          detail,
+        };
+      });
+      setPath(flatContent, basePath, arr);
+    });
+  };
+
+  const syncListBlockPropsFromFlat = () => {
+    (pageDocument.blocks || []).forEach((block) => {
+      if (!block || block.type !== 'core_mechanic') return;
+      const key = blockLegacyKey(block);
+      if (!key || !Array.isArray(flatContent[key])) return;
+      block.props = JSON.parse(JSON.stringify(flatContent[key]));
+    });
+  };
+
   const collectStringArraysFromDom = () => {
     const readArrayItemText = (item) => {
       const textEl = item.querySelector('.jcp-step-checklist__text, .jcp-checklist-item__text');
@@ -1102,7 +1143,7 @@
 
     document.querySelectorAll('[data-jcp-array]').forEach((container) => {
       const basePath = container.dataset.jcpArray;
-      if (!basePath) return;
+      if (!basePath || basePath === 'core_mechanic') return;
       const items = [...container.querySelectorAll(':scope > [data-jcp-array-item]')];
       if (!items.length) {
         setPath(flatContent, basePath, []);
@@ -1123,7 +1164,7 @@
 
   const collectFromDom = () => {
     document.querySelectorAll('[data-jcp-path]').forEach((el) => {
-      if (isStringArrayItemPath(el)) return;
+      if (isStringArrayItemPath(el) || isObjectArrayItemPath(el)) return;
       const path = el.getAttribute('data-jcp-path');
       if (!path) return;
       const raw = (el.textContent || '').trim();
@@ -1135,6 +1176,7 @@
       if (!path) return;
       setPath(flatContent, path, el.getAttribute('href') || '');
     });
+    collectObjectArraysFromDom();
     collectStringArraysFromDom();
   };
 
@@ -1256,6 +1298,7 @@
   saveBtn.addEventListener('click', async () => {
     if (saveBtn.disabled) return;
     collectFromDom();
+    syncListBlockPropsFromFlat();
     statusEl.textContent = 'Saving…';
     saveBtn.disabled = true;
     const res = await fetch(cfg.restUrl, {
