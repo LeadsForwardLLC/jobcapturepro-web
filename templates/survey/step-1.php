@@ -15,7 +15,7 @@ $demo_btn      = 'Next step';
     <p class="survey-subtitle">
       <?php echo esc_html( $demo_subhead ); ?>
     </p>
-    <div class="survey-note survey-note--desktop">
+    <div class="survey-note survey-note--desktop hide-mobile-survey">
       <svg class="survey-note-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="4" width="20" height="14" rx="2" ry="2"></rect>
         <line x1="2" y1="20" x2="22" y2="20"></line>

@@ -26,15 +26,16 @@ if ( $demo_mode ) {
 	return;
 }
 
-// Survey view: add body class and render survey template.
-add_filter(
-	'body_class',
-	function ( $classes ) {
-		$classes[] = 'survey-only';
-		return $classes;
-	}
-);
-
-get_header();
-get_template_part( 'templates/survey/wrapper' );
-get_footer();
+// Survey: minimal document shell (no site header/footer) for full-screen takeover.
+?><!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<?php wp_head(); ?>
+</head>
+<body <?php body_class( 'survey-only' ); ?>>
+<?php get_template_part( 'templates/survey/wrapper' ); ?>
+<?php wp_footer(); ?>
+</body>
+</html>

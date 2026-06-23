@@ -8,8 +8,8 @@
 $logo_url = esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCapturePro-Logo-Dark.png' );
 ?>
 <div class="survey-overlay">
-  <button class="survey-close" id="surveyClose" aria-label="<?php esc_attr_e( 'Close', 'jcp-core' ); ?>">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <button class="survey-close" id="surveyClose" type="button" aria-label="<?php esc_attr_e( 'Close demo', 'jcp-core' ); ?>">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
       <path d="M18 6L6 18M6 6l12 12"/>
     </svg>
   </button>

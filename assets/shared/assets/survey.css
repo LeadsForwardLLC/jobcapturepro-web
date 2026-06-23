@@ -1946,3 +1946,221 @@ input::-webkit-textfield-decoration-container {
   }
 }
 
+/* =========================================================
+   MOBILE: full-screen survey + deck takeover (≤768px)
+========================================================= */
+
+@media (max-width: 768px) {
+  body.survey-only {
+    min-height: 100dvh;
+    min-height: 100vh;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .survey-overlay {
+    padding: 0;
+    background: #ffffff;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .survey-overlay::before {
+    display: none;
+  }
+
+  .survey-close {
+    top: max(10px, env(safe-area-inset-top, 0px));
+    right: max(10px, env(safe-area-inset-right, 0px));
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    border-width: 2px;
+    z-index: 10002;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+  }
+
+  .survey-close svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .survey-card {
+    width: 100%;
+    max-width: none;
+    min-height: 100dvh;
+    min-height: 100vh;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding:
+      max(58px, calc(env(safe-area-inset-top, 0px) + 50px))
+      max(16px, env(safe-area-inset-right, 0px))
+      max(20px, env(safe-area-inset-bottom, 0px))
+      max(16px, env(safe-area-inset-left, 0px));
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .survey-card::before {
+    display: none;
+  }
+
+  .survey-brand {
+    display: none;
+  }
+
+  .hide-mobile-survey,
+  .survey-note--desktop,
+  .survey-desktop-handoff {
+    display: none !important;
+  }
+
+  .survey-progress {
+    position: fixed;
+    top: max(16px, env(safe-area-inset-top, 0px));
+    left: max(16px, env(safe-area-inset-left, 0px));
+    right: 72px;
+    margin: 0;
+    z-index: 10001;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .survey-progress .stepper-step {
+    pointer-events: auto;
+  }
+
+  .survey-progress #surveyProgressText {
+    font-size: 12px;
+    font-weight: 800;
+    color: #374151;
+  }
+
+  .survey-stepper .stepper-step {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .survey-head {
+    margin-bottom: 12px;
+  }
+
+  .survey-title {
+    font-size: 26px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+
+  .survey-subtitle {
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+
+  .survey-eyebrow {
+    font-size: 11px;
+    padding: 5px 12px;
+    margin-bottom: 10px;
+  }
+
+  .survey-step.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .survey-actions-row {
+    margin-top: auto;
+    padding-top: 16px;
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 28%);
+    z-index: 2;
+  }
+
+  .survey-btn {
+    min-height: 52px;
+    font-size: 17px;
+  }
+
+  .survey-deck.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .survey-deck .deck {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .deck-slides {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+
+  .deck-slide h2 {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .deck-lead {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .deck-flow-card {
+    padding: 12px;
+  }
+
+  .deck-flow-title {
+    font-size: 14px;
+  }
+
+  .deck-flow-sub {
+    font-size: 12px;
+  }
+
+  .deck-top {
+    flex-shrink: 0;
+  }
+
+  .deck-actions {
+    position: sticky;
+    bottom: 0;
+    flex-shrink: 0;
+    margin-top: auto;
+    padding: 12px 0 max(4px, env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 24%);
+    z-index: 2;
+  }
+
+  .deck-actions .btn-control {
+    flex: 1 1 auto;
+    min-height: 48px;
+    font-size: 15px;
+  }
+
+  .deck-actions .btn-control.primary {
+    flex: 1.4 1 auto;
+  }
+
+  .deck-skip {
+    font-size: 12px;
+  }
+}
+
