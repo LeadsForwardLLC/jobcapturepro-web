@@ -38,6 +38,97 @@
 
   const getValue = (id) => (document.getElementById(id)?.value || '').trim();
 
+  const PROGRESS_KEY = 'jcp_survey_progress';
+  const RETURN_URL_KEY = 'jcp_survey_return_url';
+
+  const getFormSnapshot = () => ({
+    businessName: getValue('businessName'),
+    niche: getValue('niche'),
+    firstName: getValue('firstName'),
+    lastName: getValue('lastName'),
+    email: getValue('email'),
+    goals: Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || []).map((input) => input.value),
+  });
+
+  const applyFormSnapshot = (form) => {
+    if (!form || typeof form !== 'object') return;
+    const setField = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && val != null && String(val).trim() !== '') {
+        el.value = val;
+      }
+    };
+    setField('businessName', form.businessName);
+    setField('niche', form.niche);
+    setField('firstName', form.firstName);
+    setField('lastName', form.lastName);
+    setField('email', form.email);
+    if (goalsWrap && Array.isArray(form.goals)) {
+      goalsWrap.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        cb.checked = form.goals.indexOf(cb.value) !== -1;
+      });
+      enforceGoalLimit();
+    }
+  };
+
+  const saveSurveyProgress = () => {
+    const phase = deckSection?.classList.contains('active') ? 'deck' : 'form';
+    try {
+      localStorage.setItem(
+        PROGRESS_KEY,
+        JSON.stringify({
+          phase,
+          currentIndex,
+          deckIndex,
+          form: getFormSnapshot(),
+          updatedAt: Date.now(),
+        })
+      );
+    } catch (e) {
+      // no-op
+    }
+  };
+
+  const clearSurveyProgress = () => {
+    try {
+      localStorage.removeItem(PROGRESS_KEY);
+    } catch (e) {
+      // no-op
+    }
+  };
+
+  const hasSavedProgress = () => {
+    try {
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      if (!raw) return false;
+      const parsed = JSON.parse(raw);
+      return Boolean(parsed && typeof parsed === 'object');
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const rememberReturnUrl = () => {
+    try {
+      if (sessionStorage.getItem(RETURN_URL_KEY)) return;
+      const ref = document.referrer || '';
+      const home = `${baseUrl}/`;
+      if (ref && !ref.includes('/demo')) {
+        sessionStorage.setItem(RETURN_URL_KEY, ref);
+      } else {
+        sessionStorage.setItem(RETURN_URL_KEY, home);
+      }
+    } catch (e) {
+      // no-op
+    }
+  };
+
+  let saveProgressTimer;
+  const scheduleSaveProgress = () => {
+    clearTimeout(saveProgressTimer);
+    saveProgressTimer = setTimeout(saveSurveyProgress, 280);
+  };
+
   const buildPersonalizedDemoUrl = () => {
     const url = new URL(getDemoRunBase());
     url.searchParams.set('mode', 'run');
@@ -61,6 +152,7 @@
       const params = new URLSearchParams(window.location.search || '');
       if (params.get('mode') === 'run') return false;
       if (params.get('forceSurvey') === '1') return false; // escape hatch
+      if (hasSavedProgress()) return false;
       const raw = localStorage.getItem('demoUser');
       if (!raw) return false;
       const demoUser = JSON.parse(raw);
@@ -249,6 +341,7 @@
     currentIndex = index;
     updateProgress();
     updateDesktopHandoff();
+    saveSurveyProgress();
   };
 
   const clearRankTimers = () => {
@@ -309,13 +402,14 @@
         resetRankState();
       }
     }
+    saveSurveyProgress();
   };
 
-  const showDeck = () => {
+  const showDeck = (startIndex = 0) => {
     steps.forEach((step) => step.classList.remove('active'));
     deckSection?.classList.add('active');
     progressWrap?.classList.add('is-hidden');
-    deckIndex = 0;
+    deckIndex = Math.min(Math.max(0, startIndex), Math.max(0, deckSlides.length - 1));
     setDeckUI();
 
     // First slide: if they selected a business type, swap "job" for "[type] job"
@@ -329,6 +423,7 @@
       }
     }
     updateDesktopHandoff();
+    saveSurveyProgress();
   };
 
   const validateStep1 = () => {
@@ -447,6 +542,7 @@
       email,
     }));
     saveSurveyPrefillForEarlyAccess();
+    clearSurveyProgress();
 
     const viewedUrl = (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.rest_viewed_url) || `${baseUrl}/wp-json/jcp/v1/demo-viewed-submit`;
     try {
@@ -550,19 +646,41 @@
   document.getElementById('email')?.addEventListener('input', (e) => {
     e.target.classList.remove('is-error');
     setHandoffStatus('');
+    scheduleSaveProgress();
   });
 
   ['firstName', 'lastName', 'businessName', 'niche'].forEach((id) => {
-    document.getElementById(id)?.addEventListener('input', () => setHandoffStatus(''));
-    document.getElementById(id)?.addEventListener('change', () => setHandoffStatus(''));
+    const el = document.getElementById(id);
+    el?.addEventListener('input', () => {
+      setHandoffStatus('');
+      scheduleSaveProgress();
+    });
+    el?.addEventListener('change', () => {
+      setHandoffStatus('');
+      scheduleSaveProgress();
+    });
+  });
+
+  goalsWrap?.addEventListener('change', () => {
+    enforceGoalLimit();
+    scheduleSaveProgress();
   });
 
   window.addEventListener('resize', updateDesktopHandoff);
 
-  goalsWrap?.addEventListener('change', enforceGoalLimit);
-
   const closeSurvey = () => {
-    window.location.href = `${baseUrl}/`;
+    saveSurveyProgress();
+    let returnUrl = `${baseUrl}/`;
+    try {
+      returnUrl = sessionStorage.getItem(RETURN_URL_KEY) || returnUrl;
+    } catch (e) {
+      // no-op
+    }
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.location.href = returnUrl;
   };
 
   closeBtn?.addEventListener('click', closeSurvey);
@@ -574,9 +692,40 @@
 
   enforceGoalLimit();
   hydrateRankName();
+  rememberReturnUrl();
   prefillFromEarlyAccess();
+
+  const params = new URLSearchParams(window.location.search || '');
+  if (params.get('forceSurvey') === '1') {
+    clearSurveyProgress();
+  }
+
+  let restored = null;
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if (raw && params.get('forceSurvey') !== '1') {
+      restored = JSON.parse(raw);
+    }
+  } catch (e) {
+    restored = null;
+  }
+
+  if (restored && restored.form) {
+    applyFormSnapshot(restored.form);
+  }
+
   surveyTrack('demo_started', null, getSurveyFormMetadata());
-  showStep(0);
+
+  if (restored && restored.phase === 'deck' && deckSlides.length) {
+    const deckStart = Number.isFinite(restored.deckIndex) ? restored.deckIndex : 0;
+    showDeck(deckStart);
+  } else if (restored && Number.isFinite(restored.currentIndex)) {
+    const stepStart = Math.min(Math.max(0, restored.currentIndex), steps.length - 1);
+    showStep(stepStart);
+  } else {
+    showStep(0);
+  }
+
   updateDesktopHandoff();
   }
 
