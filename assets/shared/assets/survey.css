@@ -61,12 +61,18 @@ body.survey-only #jcp-app {
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   background: #ffffff;
+  color: #111827;
   display: grid;
   place-items: center;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   z-index: 10;
+}
+
+.survey-close svg {
+  color: #111827;
+  stroke: #111827;
 }
 
 .survey-close:hover {
