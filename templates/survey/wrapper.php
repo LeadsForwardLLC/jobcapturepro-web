@@ -32,5 +32,6 @@ $logo_url = esc_url( 'https://jobcapturepro.com/wp-content/uploads/2025/11/JobCa
     <?php get_template_part( 'templates/survey/step-2' ); ?>
     <?php get_template_part( 'templates/survey/step-3' ); ?>
     <?php get_template_part( 'templates/survey/deck' ); ?>
+    <?php get_template_part( 'templates/survey/desktop-handoff' ); ?>
   </div>
 </div>

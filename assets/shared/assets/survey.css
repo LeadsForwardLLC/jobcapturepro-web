@@ -173,6 +173,71 @@ body.survey-only #jcp-app {
   color: #6b7280;
 }
 .survey-note .muted{ color:#6b7280; font-weight:700; margin-left:6px; }
+.survey-note-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.45;
+}
+.survey-note-detail {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Mobile: send demo link to desktop */
+.survey-desktop-handoff {
+  display: none;
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+.survey-desktop-handoff[hidden] {
+  display: none !important;
+}
+.survey-desktop-handoff-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #9a3412;
+}
+.survey-desktop-handoff-text {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #7c2d12;
+  font-weight: 600;
+}
+.survey-desktop-handoff-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.survey-btn-handoff {
+  width: auto;
+  flex: 1 1 140px;
+  padding: 14px 16px;
+  font-size: 15px;
+}
+.survey-desktop-handoff-status {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #166534;
+  font-weight: 700;
+  min-height: 1.4em;
+}
+.survey-desktop-handoff-status.is-error {
+  color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .survey-desktop-handoff:not([hidden]) {
+    display: block;
+  }
+}
 
 /* Inline email + button */
 .survey-inline{

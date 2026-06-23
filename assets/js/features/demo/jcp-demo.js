@@ -145,6 +145,16 @@ function _jcpIsPrototype() {
 const isPrototype = _jcpIsPrototype();
 const isDemoMode = window.JCP_IS_DEMO_MODE === true;
 
+const MOBILE_DEMO_MQ = '(max-width: 768px)';
+
+function isMobileViewport() {
+  return window.matchMedia(MOBILE_DEMO_MQ).matches;
+}
+
+function isMobileDemoRun() {
+  return isDemoMode && !isPrototype && isMobileViewport();
+}
+
 // Features disabled in demo mode
 const demoRestrictions = {
   profileAccess: true,      // Profile button/navigation
@@ -334,12 +344,14 @@ function getDemoUserFromUrl() {
   try {
     const params = new URLSearchParams(window.location.search);
     const name = params.get('name') || params.get('first_name');
+    const lastName = params.get('last_name');
     const business = params.get('business') || params.get('company');
     const niche = params.get('niche') || params.get('business_type');
     const email = params.get('email');
-    if (name || business || niche || email) {
+    if (name || lastName || business || niche || email) {
       return {
         firstName: decodeURIComponent(name || '').trim() || demoUser.firstName,
+        lastName: decodeURIComponent(lastName || '').trim() || demoUser.lastName,
         businessName: decodeURIComponent(business || '').trim() || demoUser.businessName,
         niche: decodeURIComponent(niche || '').trim() || demoUser.niche,
         email: decodeURIComponent(email || '').trim() || ''
@@ -897,8 +909,10 @@ function applyFocalPoint() {
     social: $('focus-social')
   };
 
+  const mobileOutcome = isMobileDemoRun() && ['step5', 'step6'].includes(tour.stepKey);
+
 // PERMANENTLY DISABLE GUIDED DIMMING
-if (state.guideDisabled || state.isFinalStep) {
+if ((state.guideDisabled || state.isFinalStep) && !mobileOutcome) {
   document.body.classList.remove('show-website', 'show-social');
 
   document
@@ -941,23 +955,39 @@ if (state.guideDisabled || state.isFinalStep) {
       focus(zones.website);
   }
     // Mobile visibility control (responsive guided mode)
-    document.body.classList.toggle(
-      'show-website',
-      ['step4', 'step6'].includes(tour.stepKey)
-    );
-
-    document.body.classList.toggle(
-      'show-social',
-      tour.stepKey === 'step5'
-    );
+    const mobileRun = isMobileDemoRun();
+    let showWebsite = ['step4', 'step6'].includes(tour.stepKey);
+    let showSocial = tour.stepKey === 'step5';
+    if (mobileRun) {
+      showWebsite = tour.stepKey === 'step6';
+      showSocial = tour.stepKey === 'step5';
+    }
+    document.body.classList.toggle('show-website', showWebsite);
+    document.body.classList.toggle('show-social', showSocial);
 }
 
 function applyMobileMode() {
-  const isMobile = window.matchMedia('(max-width: 820px)').matches;
+  const isMobile = isMobileViewport();
   document.body.classList.toggle('is-mobile-mode', isMobile);
 
+  const usePhoneShell = isPrototype || (isDemoMode && isMobile);
+  document.body.classList.toggle('jcp-phone-shell', usePhoneShell);
+  document.documentElement.classList.toggle('jcp-demo-run-mobile', isDemoMode && isMobile);
+
   const stepper = $('mobile-stepper');
-  if (stepper) stepper.style.display = isMobile ? 'flex' : 'none';
+  if (stepper) {
+    const showStepper = isDemoMode && isMobile && !isPrototype;
+    stepper.style.display = showStepper ? 'flex' : 'none';
+  }
+
+  updateMobileStepperLabel();
+}
+
+function updateMobileStepperLabel() {
+  const btn = $('btnMobileNext');
+  if (!btn || !isMobileDemoRun()) return;
+  const label = tour.stepKey ? getNextLabelForStep(tour.stepKey) : 'Next →';
+  btn.textContent = label;
 }
 
 /* =========================================================
@@ -1046,6 +1076,7 @@ function setTourStep(stepKey) {
     jcpDemoTrack('demo_step_viewed', stepNum);
   }
   updateTourNextLabel(getNextLabelForStep(stepKey));
+  updateMobileStepperLabel();
   // Disable back buttons during guided steps (prevents breaking the flow) — skip on prototype
   if (!isPrototype) {
     lockBackButtons(['step2','step3','step4','step5'].includes(stepKey));
@@ -1087,6 +1118,7 @@ function setTourStep(stepKey) {
     });
 
   updateTourFloating();
+  applyFocalPoint();
 }
 
 function getNextLabelForStep(stepKey) {
@@ -2584,6 +2616,7 @@ function init() {
 
   // Prototype page: start on app home screen, no tour, no Start Demo; all controls active
   if (isPrototype) {
+    document.body.classList.add('jcp-phone-shell');
     document.querySelectorAll('.app-screen').forEach((s) => s.classList.remove('active'));
     const homeScreen = document.getElementById('home-screen');
     if (homeScreen) homeScreen.classList.add('active');
