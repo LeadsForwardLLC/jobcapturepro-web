@@ -147,6 +147,22 @@ function jcp_core_is_demo_run_request(): bool {
 }
 
 /**
+ * Whether the current request is the demo survey (not ?mode=run).
+ *
+ * @return bool
+ */
+function jcp_core_is_demo_survey_request(): bool {
+    if ( isset( $_GET['mode'] ) && $_GET['mode'] === 'run' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        return false;
+    }
+    $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+    if ( $path === 'demo' ) {
+        return true;
+    }
+    return is_page_template( 'page-demo.php' );
+}
+
+/**
  * Get page detection for conditional enqueuing
  *
  * @return array Associative array of page booleans

@@ -245,6 +245,22 @@ function jcp_core_redirect_stray_demo_run_requests(): void {
 add_action( 'template_redirect', 'jcp_core_redirect_stray_demo_run_requests', 2 );
 
 /**
+ * Keep /demo/ survey HTML out of full-page cache so deploys show immediately.
+ *
+ * @return void
+ */
+function jcp_core_bypass_demo_survey_page_cache(): void {
+    if ( ! jcp_core_is_demo_survey_request() ) {
+        return;
+    }
+    if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+        define( 'DONOTCACHEPAGE', true );
+    }
+    nocache_headers();
+}
+add_action( 'template_redirect', 'jcp_core_bypass_demo_survey_page_cache', 0 );
+
+/**
  * Fallback template routing for non-WordPress pages
  * Allows /demo, /pricing, etc. to render even if pages don't exist in WordPress.
  * Directory and company are handled by rewrite + template_include above (not 404).
