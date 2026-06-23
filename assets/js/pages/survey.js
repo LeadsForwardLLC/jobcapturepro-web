@@ -21,6 +21,9 @@
   const rankNumTop = document.getElementById('surveyRankNumTop');
   const rankNumMid = document.getElementById('surveyRankNumMid');
   const rankNumYou = document.getElementById('surveyRankNumYou');
+  const handoffEl = document.getElementById('surveyDesktopHandoff');
+  const handoffStatusEl = document.getElementById('surveyDesktopHandoffStatus');
+  const shareDemoBtn = document.getElementById('surveyShareDemoLink');
 
   const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
     ? window.JCP_CONFIG.baseUrl
@@ -90,6 +93,86 @@
 
   const getValue = (id) => (document.getElementById(id)?.value || '').trim();
 
+  const isMobileSurvey = () => window.matchMedia('(max-width: 768px)').matches;
+
+  const buildPersonalizedDemoUrl = () => {
+    const params = new URLSearchParams();
+    params.set('mode', 'run');
+    const firstName = getValue('firstName');
+    const lastName = getValue('lastName');
+    const business = getValue('businessName');
+    const niche = getValue('niche');
+    const email = getValue('email');
+    if (firstName) params.set('name', firstName);
+    if (lastName) params.set('last_name', lastName);
+    if (business) params.set('business', business);
+    if (niche) params.set('niche', niche);
+    if (email) params.set('email', email);
+    return `${baseUrl}/demo/?${params.toString()}`;
+  };
+
+  const setHandoffStatus = (message, isError) => {
+    if (!handoffStatusEl) return;
+    handoffStatusEl.textContent = message || '';
+    handoffStatusEl.classList.toggle('is-error', Boolean(isError));
+  };
+
+  const updateDesktopHandoff = () => {
+    if (!handoffEl) return;
+    const deckActive = deckSection?.classList.contains('active');
+    const show = isMobileSurvey() && (currentIndex === 2 || deckActive);
+    handoffEl.hidden = !show;
+    if (shareDemoBtn) {
+      shareDemoBtn.hidden = typeof navigator.share !== 'function';
+    }
+    if (!show) {
+      setHandoffStatus('');
+    }
+  };
+
+  const copyDemoLink = async () => {
+    const url = buildPersonalizedDemoUrl();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const input = document.createElement('textarea');
+        input.value = url;
+        input.setAttribute('readonly', '');
+        input.style.position = 'absolute';
+        input.style.left = '-9999px';
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+      setHandoffStatus('Link copied. Paste it in a text or email on your computer.');
+      surveyTrack('demo_link_copied', null, { company: getValue('businessName') });
+    } catch (err) {
+      setHandoffStatus('Could not copy automatically. Long-press the address bar and copy the page URL.', true);
+    }
+  };
+
+  const shareDemoLink = async () => {
+    const url = buildPersonalizedDemoUrl();
+    if (typeof navigator.share !== 'function') {
+      copyDemoLink();
+      return;
+    }
+    try {
+      await navigator.share({
+        title: 'JobCapturePro Demo',
+        text: 'Open this on your computer for the full interactive demo.',
+        url,
+      });
+      setHandoffStatus('Link shared. Open it on a desktop or laptop when you are ready.');
+      surveyTrack('demo_link_shared', null, { company: getValue('businessName') });
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+      copyDemoLink();
+    }
+  };
+
   // Prefill survey from Early Access form submission (localStorage key: jcp_demo_survey_prefill).
   const prefillFromEarlyAccess = () => {
     try {
@@ -158,6 +241,7 @@
     progressWrap?.classList.remove('is-hidden');
     currentIndex = index;
     updateProgress();
+    updateDesktopHandoff();
   };
 
   const clearRankTimers = () => {
@@ -237,6 +321,7 @@
         titleEl.textContent = 'Every completed ' + label + ' job should help you win the next one.';
       }
     }
+    updateDesktopHandoff();
   };
 
   const validateStep1 = () => {
@@ -370,7 +455,7 @@
       console.warn('JCP Demo Survey: viewed submit failed', err);
     }
 
-    window.location.href = `${baseUrl}/demo/?mode=run`;
+    window.location.href = buildPersonalizedDemoUrl();
   };
 
   const hydrateRankName = () => {
@@ -433,6 +518,14 @@
       }
       launchDemo();
     }
+
+    if (action === 'copy-demo-link') {
+      copyDemoLink();
+    }
+
+    if (action === 'share-demo-link') {
+      shareDemoLink();
+    }
   });
 
   stepButtons.forEach((btn) => {
@@ -449,7 +542,15 @@
 
   document.getElementById('email')?.addEventListener('input', (e) => {
     e.target.classList.remove('is-error');
+    setHandoffStatus('');
   });
+
+  ['firstName', 'lastName', 'businessName', 'niche'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('input', () => setHandoffStatus(''));
+    document.getElementById(id)?.addEventListener('change', () => setHandoffStatus(''));
+  });
+
+  window.addEventListener('resize', updateDesktopHandoff);
 
   goalsWrap?.addEventListener('change', enforceGoalLimit);
 
@@ -469,6 +570,7 @@
   prefillFromEarlyAccess();
   surveyTrack('demo_started', null, getSurveyFormMetadata());
   showStep(0);
+  updateDesktopHandoff();
   }
 
   if (document.readyState === 'loading') {

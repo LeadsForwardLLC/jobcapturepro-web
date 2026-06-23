@@ -11,6 +11,13 @@
 $demo_mode = isset( $_GET['mode'] ) && $_GET['mode'] === 'run'; // phpcs:ignore
 
 if ( $demo_mode ) {
+	add_filter(
+		'body_class',
+		function ( $classes ) {
+			$classes[] = 'jcp-demo-run';
+			return $classes;
+		}
+	);
 	get_header();
 	?>
 	<div id="jcp-app" data-jcp-page="demo"></div>

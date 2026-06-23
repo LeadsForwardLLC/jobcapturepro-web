@@ -2907,3 +2907,181 @@ body .tour-float.final-step .tour-arrow {
 }
 
 
+/* ===============================
+   PHONE SHELL (prototype + mobile demo)
+   Single source: edit here, both surfaces update.
+=============================== */
+
+body.jcp-phone-shell .right-panel,
+body.jcp-phone-shell .tour-dock,
+body.jcp-phone-shell #tour-float,
+body.jcp-phone-shell #tour-bubble,
+body.jcp-phone-shell #post-demo-panel,
+body.jcp-phone-shell #post-demo-bubble,
+body.jcp-phone-shell #directory-hint,
+body.jcp-phone-shell .demo-mode-indicator {
+  display: none !important;
+}
+
+body.jcp-prototype-page .mobile-stepper {
+  display: none !important;
+}
+
+body.jcp-phone-shell .demo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+  gap: 0;
+}
+
+body.jcp-phone-shell .phone-wrapper {
+  margin: 0 auto;
+}
+
+body.jcp-prototype-page {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* ===============================
+   MOBILE DEMO RUN (guided, ≤768px)
+=============================== */
+
+body.is-mobile-mode.jcp-phone-shell .demo-container {
+  padding-bottom: 88px;
+  min-height: calc(100vh - 56px);
+}
+
+body.is-mobile-mode.jcp-phone-shell .iphone-frame {
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 200px);
+}
+
+body.is-mobile-mode.jcp-phone-shell .iphone-frame .screen {
+  max-height: calc(100vh - 224px);
+  overflow-y: auto;
+}
+
+body.is-mobile-mode.jcp-phone-shell .mobile-stepper {
+  display: flex !important;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid #e5e7eb;
+  z-index: 80;
+  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08);
+}
+
+body.is-mobile-mode.jcp-phone-shell .mobile-stepper .btn-full {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Tour tooltip: compact, above stepper (guided demo only) */
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #tour-float {
+  display: block !important;
+  position: fixed !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  top: auto !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: none !important;
+  z-index: 70 !important;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #tour-float.is-hidden {
+  display: none !important;
+}
+
+body.is-mobile-mode.jcp-phone-shell #tour-bubble {
+  max-width: 100%;
+}
+
+/* Outcome overlays: reuse right-panel content full-screen */
+body.is-mobile-mode.jcp-phone-shell.show-website .right-panel,
+body.is-mobile-mode.jcp-phone-shell.show-social .right-panel {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow-y: auto;
+  background: #f3f4f6;
+  padding: 16px 16px calc(88px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+body.is-mobile-mode.jcp-phone-shell.show-website .website-col,
+body.is-mobile-mode.jcp-phone-shell.show-social .social-col {
+  display: block !important;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+body.is-mobile-mode.jcp-phone-shell.show-website .social-col {
+  display: none !important;
+}
+
+body.is-mobile-mode.jcp-phone-shell.show-social .website-col {
+  display: none !important;
+}
+
+body.is-mobile-mode.jcp-phone-shell.show-website .tour-dock-right,
+body.is-mobile-mode.jcp-phone-shell.show-social .tour-dock-right {
+  display: block !important;
+  position: static;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto 12px;
+}
+
+body.is-mobile-mode.jcp-phone-shell.show-website .panel-header,
+body.is-mobile-mode.jcp-phone-shell.show-social .panel-header {
+  margin-bottom: 12px;
+}
+
+body.is-mobile-mode.jcp-phone-shell.show-website .phone-wrapper,
+body.is-mobile-mode.jcp-phone-shell.show-social .phone-wrapper {
+  opacity: 0.35;
+  pointer-events: none;
+  transform: scale(0.92);
+  transform-origin: top center;
+  max-height: 120px;
+  overflow: hidden;
+}
+
+/* Post-demo panel on mobile demo */
+body.is-mobile-mode.jcp-phone-shell #post-demo-panel.active {
+  display: flex !important;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: rgba(15, 23, 42, 0.55);
+}
+
+body.is-mobile-mode.jcp-phone-shell #post-demo-panel .post-demo-card {
+  max-height: 85vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 480px;
+}
+

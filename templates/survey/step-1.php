@@ -15,14 +15,17 @@ $demo_btn      = 'Next step';
     <p class="survey-subtitle">
       <?php echo esc_html( $demo_subhead ); ?>
     </p>
-    <div class="survey-note">
+    <div class="survey-note survey-note--desktop">
       <svg class="survey-note-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="4" width="20" height="14" rx="2" ry="2"></rect>
         <line x1="2" y1="20" x2="22" y2="20"></line>
         <line x1="16" y1="4" x2="16" y2="2"></line>
         <line x1="8" y1="4" x2="8" y2="2"></line>
       </svg>
-      <strong>Best viewed on desktop or laptop.</strong>
+      <div class="survey-note-copy">
+        <strong><?php esc_html_e( 'Works on mobile or desktop.', 'jcp-core' ); ?></strong>
+        <span class="survey-note-detail"><?php esc_html_e( 'On your phone, you’ll get a guided walkthrough. On a computer, you get the full side-by-side demo. Same experience, optimized for your screen.', 'jcp-core' ); ?></span>
+      </div>
     </div>
   </div>
 
