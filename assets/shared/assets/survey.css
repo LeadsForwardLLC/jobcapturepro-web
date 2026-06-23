@@ -65,8 +65,8 @@ body.survey-only #jcp-app {
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
   z-index: 10;
 }
 
@@ -76,8 +76,10 @@ body.survey-only #jcp-app {
 }
 
 .survey-close:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: none;
+  box-shadow: none;
 }
 
 /* =====================================
@@ -102,12 +104,14 @@ body.survey-only #jcp-app {
   background: #FF503E;
   border-color: #FF503E;
   color: #fff;
-  box-shadow: 0 10px 30px rgba(255,80,62,0.25);
+  box-shadow: none;
 }
 
 .btn-control.primary:hover {
-  filter: brightness(0.97);
-  transform: translateY(-1px);
+  background: #e94836;
+  border-color: #e94836;
+  filter: none;
+  transform: none;
 }
 
 /* Brand header */
@@ -257,10 +261,14 @@ body.survey-only #jcp-app {
   padding: 16px 16px;
   border-radius: 16px;
   background:#111827;
-  box-shadow: 0 10px 30px rgba(17,24,39,0.15);
+  border: 2px solid #111827;
+  box-shadow: none;
 }
 .survey-btn.secondary:hover{
-  filter: brightness(0.98);
+  background: #1f2937;
+  border-color: #1f2937;
+  filter: none;
+  transform: none;
 }
 
 /* Micro helper text */
@@ -354,7 +362,7 @@ body.survey-only #jcp-app {
   height: 100%;
   width: 33.333%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ff503e, #ff8a3d);
+  background: #ff503e;
   transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -461,22 +469,24 @@ body.survey-only #jcp-app {
 .survey-btn {
   width: 100%;
   padding: 18px 18px;
-  background: linear-gradient(135deg, #ff503e, #ff7a3d);
+  background: #ff503e;
   color: #fff;
   font-size: 16px;
-  font-weight: 900;
-  border: none;
-  border-radius: 16px;
+  font-weight: 800;
+  border: 2px solid #ff503e;
+  border-radius: 14px;
   cursor: pointer;
   margin-top: 6px;
-  box-shadow: 0 16px 40px rgba(255,80,62,0.35);
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .survey-btn:hover {
-  filter: brightness(0.97);
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(255,80,62,0.30);
+  background: #e94836;
+  border-color: #e94836;
+  filter: none;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Lists */
@@ -2009,7 +2019,7 @@ input::-webkit-textfield-decoration-container {
     border-radius: 14px;
     border-width: 2px;
     z-index: 10002;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+    box-shadow: none;
   }
 
   .survey-close svg {
@@ -2123,20 +2133,27 @@ input::-webkit-textfield-decoration-container {
     flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
+    gap: 0;
+  }
+
+  .survey-form {
+    flex: 0 0 auto;
   }
 
   .survey-actions-row {
-    margin-top: auto;
-    padding-top: 16px;
-    position: sticky;
-    bottom: max(56px, calc(env(safe-area-inset-bottom, 0px) + 44px));
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 32%);
-    z-index: 2;
+    margin-top: 24px;
+    margin-bottom: max(72px, calc(env(safe-area-inset-bottom, 0px) + 56px));
+    padding-top: 0;
+    position: static;
+    flex-shrink: 0;
+    background: transparent;
+    z-index: 1;
   }
 
   .survey-btn {
     min-height: 52px;
     font-size: 17px;
+    margin-top: 0;
   }
 
   .survey-deck.active {
@@ -2210,7 +2227,7 @@ input::-webkit-textfield-decoration-container {
   }
 
   .deck-progress-bar {
-    background: linear-gradient(90deg, #ff503e, #ff8a3d);
+    background: #ff503e;
   }
 
   .deck-progress-meta {
@@ -2237,13 +2254,12 @@ input::-webkit-textfield-decoration-container {
   }
 
   .deck-actions {
-    position: sticky;
-    bottom: max(56px, calc(env(safe-area-inset-bottom, 0px) + 44px));
+    position: static;
     flex-shrink: 0;
-    margin-top: auto;
-    padding: 12px 0 8px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 32%);
-    z-index: 2;
+    margin-top: 24px;
+    padding: 0 0 8px;
+    background: transparent;
+    z-index: 1;
   }
 
   .deck-actions .btn-control {
