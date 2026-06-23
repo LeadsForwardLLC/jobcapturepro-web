@@ -18,6 +18,7 @@
   const deckProgressText = document.getElementById('deckProgressText');
   const deckLaunchBtn = document.getElementById('deckLaunchBtn');
   const deckNextBtn = document.getElementById('deckNextBtn');
+  const deckPrevBtn = document.getElementById('deckPrevBtn');
   const deckSkipHeader = document.getElementById('deckSkipHeader');
   const rankName = document.getElementById('surveyRankName');
   const rankList = document.getElementById('surveyRankList');
@@ -419,6 +420,9 @@
     const isLast = deckIndex === total - 1;
     if (deckLaunchBtn) deckLaunchBtn.classList.toggle('is-hidden', !isLast);
     if (deckNextBtn) deckNextBtn.classList.toggle('is-hidden', isLast);
+    if (deckPrevBtn) {
+      deckPrevBtn.classList.toggle('is-hidden', isMobileSurvey() || deckIndex === 0);
+    }
 
     if (rankList) {
       const isRankSlide = deckIndex === 3;

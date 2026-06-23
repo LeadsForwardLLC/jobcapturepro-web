@@ -375,10 +375,10 @@ $icon_globe = esc_url( jcp_core_icon( 'globe' ) );
     </div>
 
     <div class="deck-actions">
-      <button class="btn-control" data-action="prev">← Back</button>
+      <button class="btn-control" data-action="prev" id="deckPrevBtn">← Back</button>
       <button class="btn-control" data-action="next" id="deckNextBtn">Next</button>
       <button class="btn-control primary is-hidden" data-action="launch" id="deckLaunchBtn">
-        Launch the live demo →
+        Launch demo →
       </button>
     </div>
   </div>
