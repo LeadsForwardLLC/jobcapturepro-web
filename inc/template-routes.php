@@ -209,6 +209,42 @@ function jcp_core_redirect_retired_routes(): void {
 add_action( 'template_redirect', 'jcp_core_redirect_retired_routes', 1 );
 
 /**
+ * Keep /demo/?mode=run on the demo route (avoid canonical redirect to unrelated permalinks).
+ *
+ * @param string|false $redirect_url  Canonical redirect URL.
+ * @param string       $requested_url Requested URL.
+ * @return string|false
+ */
+function jcp_core_prevent_demo_run_canonical_redirect( $redirect_url, $requested_url ) {
+    if ( ! isset( $_GET['mode'] ) || $_GET['mode'] !== 'run' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        return $redirect_url;
+    }
+    $path = trim( (string) parse_url( $requested_url, PHP_URL_PATH ), '/' );
+    if ( $path === 'demo' || str_ends_with( $path, '/demo' ) ) {
+        return false;
+    }
+    return $redirect_url;
+}
+add_filter( 'redirect_canonical', 'jcp_core_prevent_demo_run_canonical_redirect', 10, 2 );
+
+/**
+ * If ?mode=run lands on a non-demo permalink, send to /demo/ with the same params.
+ *
+ * @return void
+ */
+function jcp_core_redirect_stray_demo_run_requests(): void {
+    if ( is_admin() || jcp_core_is_demo_run_request() ) {
+        return;
+    }
+    if ( ! isset( $_GET['mode'] ) || $_GET['mode'] !== 'run' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        return;
+    }
+    wp_safe_redirect( jcp_core_demo_run_url( jcp_core_demo_run_query_args() ), 302 );
+    exit;
+}
+add_action( 'template_redirect', 'jcp_core_redirect_stray_demo_run_requests', 2 );
+
+/**
  * Fallback template routing for non-WordPress pages
  * Allows /demo, /pricing, etc. to render even if pages don't exist in WordPress.
  * Directory and company are handled by rewrite + template_include above (not 404).
