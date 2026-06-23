@@ -26,8 +26,33 @@
   const shareDemoBtn = document.getElementById('surveyShareDemoLink');
 
   const baseUrl = window.JCP_CONFIG && window.JCP_CONFIG.baseUrl
-    ? window.JCP_CONFIG.baseUrl
+    ? window.JCP_CONFIG.baseUrl.replace(/\/$/, '')
     : window.location.origin;
+
+  const getDemoRunBase = () => {
+    if (typeof window.JCP_DEMO_SURVEY !== 'undefined' && window.JCP_DEMO_SURVEY.demo_run_url) {
+      return window.JCP_DEMO_SURVEY.demo_run_url;
+    }
+    return new URL('/demo/', window.location.origin).href;
+  };
+
+  const getValue = (id) => (document.getElementById(id)?.value || '').trim();
+
+  const buildPersonalizedDemoUrl = () => {
+    const url = new URL(getDemoRunBase());
+    url.searchParams.set('mode', 'run');
+    const firstName = getValue('firstName');
+    const lastName = getValue('lastName');
+    const business = getValue('businessName');
+    const niche = getValue('niche');
+    const email = getValue('email');
+    if (firstName) url.searchParams.set('name', firstName);
+    if (lastName) url.searchParams.set('last_name', lastName);
+    if (business) url.searchParams.set('business', business);
+    if (niche) url.searchParams.set('niche', niche);
+    if (email) url.searchParams.set('email', email);
+    return url.href;
+  };
 
   // If they've already completed the demo form before, skip the form + slides and go straight to run-demo.
   // (We can only check localStorage client-side.)
@@ -53,7 +78,7 @@
   })();
 
   if (shouldAutoRun) {
-    window.location.replace(`${baseUrl}/demo/?mode=run`);
+    window.location.replace(buildPersonalizedDemoUrl());
     return;
   }
 
@@ -91,25 +116,7 @@
     } catch (e) {}
   }
 
-  const getValue = (id) => (document.getElementById(id)?.value || '').trim();
-
   const isMobileSurvey = () => window.matchMedia('(max-width: 768px)').matches;
-
-  const buildPersonalizedDemoUrl = () => {
-    const params = new URLSearchParams();
-    params.set('mode', 'run');
-    const firstName = getValue('firstName');
-    const lastName = getValue('lastName');
-    const business = getValue('businessName');
-    const niche = getValue('niche');
-    const email = getValue('email');
-    if (firstName) params.set('name', firstName);
-    if (lastName) params.set('last_name', lastName);
-    if (business) params.set('business', business);
-    if (niche) params.set('niche', niche);
-    if (email) params.set('email', email);
-    return `${baseUrl}/demo/?${params.toString()}`;
-  };
 
   const setHandoffStatus = (message, isError) => {
     if (!handoffStatusEl) return;

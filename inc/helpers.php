@@ -97,6 +97,56 @@ function jcp_core_icon( string $icon_name ): string {
 }
 
 /**
+ * Canonical URL for launching the interactive demo (?mode=run).
+ *
+ * @param array<string, string> $args Optional query arguments.
+ * @return string
+ */
+function jcp_core_demo_run_url( array $args = [] ): string {
+    $url = home_url( '/demo/' );
+    if ( $args !== [] ) {
+        $url = add_query_arg( $args, $url );
+    }
+    return $url;
+}
+
+/**
+ * Sanitized query args allowed on demo run URLs.
+ *
+ * @return array<string, string>
+ */
+function jcp_core_demo_run_query_args(): array {
+    $allowed = [ 'mode', 'name', 'first_name', 'last_name', 'business', 'company', 'niche', 'business_type', 'email', 'forceSurvey' ];
+    $out     = [ 'mode' => 'run' ];
+    foreach ( $allowed as $key ) {
+        if ( ! isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            continue;
+        }
+        $val = wp_unslash( $_GET[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ( is_string( $val ) && $val !== '' ) {
+            $out[ $key ] = sanitize_text_field( $val );
+        }
+    }
+    return $out;
+}
+
+/**
+ * Whether the current request is already on a valid demo run route.
+ *
+ * @return bool
+ */
+function jcp_core_is_demo_run_request(): bool {
+    if ( ! isset( $_GET['mode'] ) || $_GET['mode'] !== 'run' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        return false;
+    }
+    $path = trim( (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH ), '/' );
+    if ( $path === 'demo' ) {
+        return true;
+    }
+    return is_page_template( 'page-demo.php' );
+}
+
+/**
  * Get page detection for conditional enqueuing
  *
  * @return array Associative array of page booleans
