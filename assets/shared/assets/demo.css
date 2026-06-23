@@ -39,7 +39,7 @@
         }
 
         .btn:hover:not(:disabled) {
-          transform: translateY(-1px);
+          transform: none;
         }
 
         .btn-primary {
@@ -144,26 +144,27 @@
           border: 2px solid #e5e7eb;
 
           transition:
-            transform 0.15s ease,
             background 0.15s ease,
-            box-shadow 0.15s ease;
+            border-color 0.15s ease;
         }
 
         .btn-control:hover {
           background: #f9fafb;
-          transform: translateY(-1px);
+          transform: none;
         }
 
         .btn-control.primary {
           background: #FF503E;
           color: #ffffff;
           border-color: #FF503E;
-          box-shadow: 0 10px 30px rgba(255,80,62,0.25);
+          box-shadow: none;
         }
 
         .btn-control.primary:hover {
-          filter: brightness(0.96);
-          box-shadow: 0 16px 40px rgba(255,80,62,0.30);
+          background: #e94836;
+          border-color: #e94836;
+          filter: none;
+          box-shadow: none;
         }
 
         /* Lucide icon system */
@@ -921,8 +922,8 @@
         }
 
         .fab.is-sheet-open {
-            transform: translateY(-2px) scale(0.98);
-            box-shadow: 0 7px 18px rgba(255, 80, 62, 0.28);
+            transform: none;
+            box-shadow: none;
         }
 
         /* Content Area */
@@ -1214,7 +1215,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255,80,62,0.25);
+            box-shadow: none;
             margin: -20px auto 0;
         }
 
@@ -1265,8 +1266,8 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255,80,62,0.25);
-            transition: all 0.2s;
+            box-shadow: none;
+            transition: background 0.2s;
         }
 
 .upload-btn .lucide-icon {
@@ -1277,8 +1278,9 @@
 }
 
         .upload-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 16px rgba(255,80,62,0.35);
+            background: #e94836;
+            transform: none;
+            box-shadow: none;
         }
 
         .photo-grid {
@@ -2980,7 +2982,7 @@ body.is-mobile-mode.jcp-phone-shell .mobile-stepper {
   background: rgba(255, 255, 255, 0.98);
   border-top: 1px solid #e5e7eb;
   z-index: 80;
-  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 body.is-mobile-mode.jcp-phone-shell .mobile-stepper .btn-full {
