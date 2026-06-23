@@ -2204,7 +2204,7 @@ input::-webkit-textfield-decoration-container {
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 12px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
   .deck-slide h2 {
@@ -2388,37 +2388,35 @@ input::-webkit-textfield-decoration-container {
   }
 
   .deck-actions {
-    position: static;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(3px + env(safe-area-inset-bottom, 0px));
     flex-shrink: 0;
-    margin-top: 20px;
-    margin-bottom: 12px;
-    padding: 0;
-    background: transparent;
-    z-index: 1;
+    margin: 0;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    z-index: 10002;
     flex-direction: column;
-    gap: 10px;
+    gap: 0;
   }
 
   .deck-actions .btn-control {
     flex: 1 1 auto;
     width: 100%;
-    min-height: 48px;
-    font-size: 15px;
+    min-height: 52px;
+    font-size: 16px;
     box-shadow: none;
   }
 
   .deck-actions .btn-control.primary {
     flex: 1 1 auto;
-    order: 3;
+    order: 1;
   }
 
   .deck-actions .btn-control[data-action="prev"] {
-    order: 2;
-    background: transparent;
-    border-color: transparent;
-    color: #64748b;
-    font-weight: 600;
-    min-height: 40px;
+    display: none;
   }
 
   .deck-actions .btn-control[data-action="next"] {
