@@ -3339,7 +3339,9 @@ body.jcp-guided-demo:not(.is-mobile-mode) .demo-container {
 
 body.jcp-guided-demo .mobile-stepper {
   display: flex !important;
-  flex-direction: column;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
   gap: 10px;
   position: fixed;
   left: 0;
@@ -3646,10 +3648,94 @@ body.jcp-guided-demo #post-demo-panel.active {
   justify-content: center;
   padding: 20px;
   background: rgba(15, 23, 42, 0.55);
+  z-index: 100;
 }
 
 body.jcp-guided-demo #post-demo-panel .post-demo-card--simple {
   width: min(400px, 100%);
   max-height: none;
+}
+
+body.jcp-guided-demo .mobile-stepper-body {
+  hyphens: none;
+  -webkit-hyphens: none;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Desktop guided demo — minimalist phone + full coach chrome */
+body.jcp-desktop-guided {
+  background: #f3f4f6 !important;
+}
+
+body.jcp-desktop-guided.demo-run-only #jcp-app {
+  background: transparent;
+}
+
+body.jcp-desktop-guided .demo-container {
+  min-height: calc(100vh - var(--jcp-mobile-top) - var(--jcp-mobile-bottom));
+  padding-top: var(--jcp-mobile-top);
+  align-content: center;
+}
+
+body.jcp-desktop-guided .mobile-demo-shell {
+  display: block !important;
+}
+
+body.jcp-desktop-guided .mobile-demo-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: linear-gradient(to bottom, #f3f4f6 80%, rgba(243, 244, 246, 0));
+  padding-bottom: 10px;
+}
+
+body.jcp-desktop-guided .mobile-demo-step {
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+}
+
+body.jcp-desktop-guided .mobile-demo-top-actions {
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+
+body.jcp-desktop-guided .mobile-stepper {
+  gap: 12px !important;
+  padding: 14px 24px 22px !important;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  box-shadow: 0 -16px 48px rgba(15, 23, 42, 0.1) !important;
+}
+
+body.jcp-desktop-guided .mobile-stepper-copy {
+  display: flex !important;
+}
+
+body.jcp-desktop-guided .mobile-stepper-grab,
+body.jcp-desktop-guided .mobile-stepper-progress {
+  display: block;
+}
+
+body.jcp-desktop-guided .mobile-stepper .btn-full {
+  min-height: 52px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+body.jcp-desktop-guided .mobile-guide-pill {
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+body.jcp-desktop-guided .mobile-spotlight {
+  z-index: 76;
+}
+
+body.jcp-review-modal-open .mobile-stepper,
+body.jcp-review-modal-open .mobile-demo-shell,
+body.jcp-review-modal-open .guided-coach-backdrop,
+body.jcp-review-modal-open .mobile-guide-pill {
+  opacity: 0;
+  pointer-events: none;
 }
 

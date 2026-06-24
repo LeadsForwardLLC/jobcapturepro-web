@@ -974,11 +974,16 @@ function applyMobileMode() {
   document.body.classList.toggle('jcp-phone-shell', usePhoneShell);
   document.documentElement.classList.toggle('jcp-demo-run-mobile', isDemoMode && isMobile);
   document.body.classList.toggle('jcp-guided-demo', isGuidedDemoRun());
+  document.body.classList.toggle('jcp-desktop-guided', isGuidedDemoRun() && !isMobileViewport());
   document.body.classList.toggle('demo-run-only', isDemoMode);
 
   const stepper = $('mobile-stepper');
   if (stepper) {
-    stepper.style.display = isGuidedDemoRun() ? 'flex' : 'none';
+    if (isGuidedDemoRun()) {
+      stepper.style.display = 'flex';
+    } else {
+      stepper.style.display = 'none';
+    }
   }
 
   updateGuidedCoachBackdrop();
@@ -2259,10 +2264,12 @@ async function publishToSocial() {
 
 function openReviewDialog() {
   $('review-modal')?.classList.add('active');
+  document.body.classList.add('jcp-review-modal-open');
 }
 
 function closeReviewDialog() {
   $('review-modal')?.classList.remove('active');
+  document.body.classList.remove('jcp-review-modal-open');
 }
 
 function populateDemoReviewModal() {
@@ -2286,6 +2293,8 @@ function populateDemoReviewModal() {
 function openDemoReviewModal() {
   populateDemoReviewModal();
   $('review-modal')?.classList.add('active');
+  document.body.classList.add('jcp-review-modal-open');
+  setMobileGuideCollapsed(true);
 }
 
 async function confirmDemoReviewSend() {
@@ -2298,6 +2307,9 @@ async function confirmDemoReviewSend() {
   await wait(900);
 
   closeReviewDialog();
+  if (tour.stepKey === 'step5') {
+    setMobileGuideCollapsed(false);
+  }
   if (sendBtn) {
     sendBtn.disabled = false;
     sendBtn.textContent = 'Send request';
