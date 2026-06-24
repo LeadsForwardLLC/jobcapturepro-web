@@ -155,6 +155,10 @@ function isMobileDemoRun() {
   return isDemoMode && !isPrototype && isMobileViewport();
 }
 
+function isGuidedDemoRun() {
+  return isDemoMode && !isPrototype;
+}
+
 // Features disabled in demo mode
 const demoRestrictions = {
   profileAccess: true,      // Profile button/navigation
@@ -211,7 +215,7 @@ function showDemoRestrictionTooltip(element, message = 'This action is disabled 
  * Apply demo mode restrictions to UI elements
  */
 function applyDemoRestrictions() {
-  if (!isDemoMode || isMobileDemoRun()) return;
+  if (!isDemoMode || isGuidedDemoRun()) return;
   
   // Add demo mode indicator
   const indicator = document.createElement('div');
@@ -519,12 +523,12 @@ const demoGuideContent = {
   step5: {
     pill: 'Step 5',
     title: 'Request a review',
-    body: 'Now send a review request.'
+    body: 'Send the automated review request — it includes photos from this job.'
   },
   step6: {
-    pill: 'Final Step',
-    title: 'View your listing in the directory',
-    body: 'Your completed job unlocks your verified directory listing. Click to view how customers see you.'
+    pill: 'Final step',
+    title: 'You\'re ready to grow',
+    body: 'Every completed job can drive more calls automatically. Start free whenever you\'re ready.'
   }
 };
 
@@ -909,49 +913,30 @@ function applyFocalPoint() {
     social: $('focus-social')
   };
 
-  const mobileOutcome = isMobileDemoRun() && ['step5', 'step6'].includes(tour.stepKey);
-
-  if (isMobileDemoRun()) {
+  if (isGuidedDemoRun()) {
     document.querySelectorAll('.is-dimmed, .is-focused').forEach((el) => {
       el.classList.remove('is-dimmed', 'is-focused');
     });
+    document.body.classList.remove('show-website', 'show-social');
 
-    const showWebsite = tour.stepKey === 'step6';
-    const showSocial = tour.stepKey === 'step5';
-    document.body.classList.toggle('show-website', showWebsite);
-    document.body.classList.toggle('show-social', showSocial);
-
-    if ((state.guideDisabled || state.isFinalStep) && !mobileOutcome) {
-      document.body.classList.remove('show-website', 'show-social');
+    if (state.guideDisabled || state.isFinalStep) {
       hideMobileSpotlight();
       return;
     }
 
-    if (!mobileOutcome) {
-      positionMobileSpotlight();
-    } else {
-      hideMobileSpotlight();
-    }
+    positionMobileSpotlight();
     return;
   }
 
-// PERMANENTLY DISABLE GUIDED DIMMING
-if ((state.guideDisabled || state.isFinalStep) && !mobileOutcome) {
-  document.body.classList.remove('show-website', 'show-social');
-
-  document
-    .querySelectorAll('.is-dimmed, .is-focused')
-    .forEach(el => {
-      el.classList.remove('is-dimmed');
-      el.classList.remove('is-focused');
+  if (state.guideDisabled || state.isFinalStep) {
+    document.body.classList.remove('show-website', 'show-social');
+    document.querySelectorAll('.is-dimmed, .is-focused').forEach((el) => {
+      el.classList.remove('is-dimmed', 'is-focused');
     });
+    return;
+  }
 
-  return;
-}
-
-
-  // Default behavior
-  Object.values(zones).forEach(el => {
+  Object.values(zones).forEach((el) => {
     if (!el) return;
     el.classList.add('is-dimmed');
     el.classList.remove('is-focused');
@@ -970,24 +955,15 @@ if ((state.guideDisabled || state.isFinalStep) && !mobileOutcome) {
     case 'step4':
       focus(zones.phone);
       break;
-
     case 'step5':
       focus(zones.social);
       break;
-
     default:
       focus(zones.website);
   }
-    // Mobile visibility control (responsive guided mode)
-    const mobileRun = isMobileDemoRun();
-    let showWebsite = ['step4', 'step6'].includes(tour.stepKey);
-    let showSocial = tour.stepKey === 'step5';
-    if (mobileRun) {
-      showWebsite = tour.stepKey === 'step6';
-      showSocial = tour.stepKey === 'step5';
-    }
-    document.body.classList.toggle('show-website', showWebsite);
-    document.body.classList.toggle('show-social', showSocial);
+
+  document.body.classList.toggle('show-website', ['step4', 'step6'].includes(tour.stepKey));
+  document.body.classList.toggle('show-social', tour.stepKey === 'step5');
 }
 
 function applyMobileMode() {
@@ -997,15 +973,23 @@ function applyMobileMode() {
   const usePhoneShell = isPrototype || (isDemoMode && isMobile);
   document.body.classList.toggle('jcp-phone-shell', usePhoneShell);
   document.documentElement.classList.toggle('jcp-demo-run-mobile', isDemoMode && isMobile);
+  document.body.classList.toggle('jcp-guided-demo', isGuidedDemoRun());
   document.body.classList.toggle('demo-run-only', isDemoMode);
 
   const stepper = $('mobile-stepper');
   if (stepper) {
-    const showStepper = isDemoMode && isMobile && !isPrototype;
-    stepper.style.display = showStepper ? 'flex' : 'none';
+    stepper.style.display = isGuidedDemoRun() ? 'flex' : 'none';
   }
 
+  updateGuidedCoachBackdrop();
   syncMobileGuideChrome();
+}
+
+function updateGuidedCoachBackdrop() {
+  const backdrop = $('guidedCoachBackdrop');
+  if (!backdrop) return;
+  const show = isGuidedDemoRun() && !mobileGuideCollapsed && !state.isFinalStep;
+  backdrop.hidden = !show;
 }
 
 let mobileGuideCollapsed = false;
@@ -1017,7 +1001,7 @@ function hideMobileSpotlight() {
 
 function positionMobileSpotlight() {
   const ring = $('mobileSpotlight');
-  if (!ring || !isMobileDemoRun() || mobileGuideCollapsed || tour.isHidden || state.guideDisabled) {
+  if (!ring || !isGuidedDemoRun() || mobileGuideCollapsed || tour.isHidden || state.guideDisabled || state.isFinalStep) {
     hideMobileSpotlight();
     return;
   }
@@ -1044,7 +1028,8 @@ function setMobileGuideCollapsed(collapsed) {
   const stepper = $('mobile-stepper');
   const pill = $('mobileGuidePill');
   if (stepper) stepper.classList.toggle('is-collapsed', collapsed);
-  if (pill) pill.hidden = !collapsed;
+  if (pill) pill.hidden = !collapsed || state.isFinalStep;
+  updateGuidedCoachBackdrop();
   if (collapsed) {
     hideMobileSpotlight();
   } else {
@@ -1058,8 +1043,9 @@ function toggleMobileGuideCollapse() {
 
 function syncMobileGuideChrome() {
   const shell = $('mobile-demo-shell');
-  if (!isMobileDemoRun()) {
+  if (!isGuidedDemoRun()) {
     shell?.setAttribute('hidden', '');
+    updateGuidedCoachBackdrop();
     return;
   }
   shell?.removeAttribute('hidden');
@@ -1084,11 +1070,12 @@ function syncMobileGuideChrome() {
 
   updateMobileStepperLabel();
   positionMobileSpotlight();
+  updateGuidedCoachBackdrop();
 }
 
 function updateMobileStepperLabel() {
   const btn = $('btnMobileNext');
-  if (!btn || !isMobileDemoRun()) return;
+  if (!btn || !isGuidedDemoRun()) return;
   const label = tour.stepKey ? getNextLabelForStep(tour.stepKey) : 'Next →';
   btn.textContent = label;
   btn.style.display = tour.stepKey === 'step1' ? 'none' : '';
@@ -1117,7 +1104,7 @@ const tour = {
 
 
 function showTour() {
-  if (isMobileDemoRun()) {
+  if (isGuidedDemoRun()) {
     syncMobileGuideChrome();
     $('tour-float')?.classList.add('is-hidden');
     $('tour-bubble')?.classList.add('is-hidden');
@@ -1142,7 +1129,7 @@ function showTour() {
 }
 
 function minimizeTour() {
-  if (isMobileDemoRun()) {
+  if (isGuidedDemoRun()) {
     toggleMobileGuideCollapse();
     return;
   }
@@ -1186,7 +1173,7 @@ function setTourStep(stepKey) {
       tourEl.classList.toggle('final-step', state.isFinalStep);
     }
   tour.stepKey = stepKey;
-  if (isMobileDemoRun()) {
+  if (isGuidedDemoRun()) {
     setMobileGuideCollapsed(false);
   }
   const stepNum = stepKey && stepKey.match(/^step(\d)$/) ? parseInt(stepKey.slice(-1), 10) : null;
@@ -1242,12 +1229,12 @@ function setTourStep(stepKey) {
 function getNextLabelForStep(stepKey) {
   if (stepKey === 'step4') return 'Publish →';
   if (stepKey === 'step5') return 'Send Review →';
-  if (stepKey === 'step6') return 'View Directory →';
+  if (stepKey === 'step6') return 'Get Started Free';
   return 'Next →';
 }
 
 function updateTourFloating() {
-  if (isMobileDemoRun()) {
+  if (isGuidedDemoRun()) {
     syncMobileGuideChrome();
     return;
   }
@@ -1293,7 +1280,7 @@ function updateTourFloating() {
 }
 
 function positionTourNear() {
-  if (isMobileDemoRun()) return;
+  if (isGuidedDemoRun()) return;
 
   const floatEl = $('tour-float');
   const arrow = $('tour-arrow');
@@ -2192,7 +2179,16 @@ websiteContainer.insertAdjacentHTML(
     // MARK AS PUBLISHED
     state.hasPublished = true;
 
-    // EXIT GUIDED MODE PERMANENTLY
+    if (isGuidedDemoRun()) {
+      await runGuidedPublishSequence();
+      setScreen('edit-screen');
+      setTourStep('step5');
+      updateTourFloating();
+      applyFocalPoint();
+      return;
+    }
+
+    // EXIT GUIDED MODE PERMANENTLY (legacy non-guided path)
     state.guideDisabled = true;
 
     // Publish to social
@@ -2210,6 +2206,31 @@ websiteContainer.insertAdjacentHTML(
 
     // CRITICAL: force tooltip + layout refresh
     updateTourFloating();
+}
+
+async function runGuidedPublishSequence() {
+  const overlay = $('demoPublishOverlay');
+  const items = overlay ? [...overlay.querySelectorAll('.demo-publish-item')] : [];
+  if (!overlay || !items.length) {
+    await publishToSocial();
+    return;
+  }
+
+  overlay.classList.add('active');
+  document.body.classList.add('jcp-publish-modal-open');
+  items.forEach((item) => item.classList.remove('is-done'));
+
+  for (let i = 0; i < items.length; i++) {
+    await wait(380);
+    items[i].classList.add('is-done');
+    if (i === 1) {
+      await publishToSocial();
+    }
+  }
+
+  await wait(650);
+  overlay.classList.remove('active');
+  document.body.classList.remove('jcp-publish-modal-open');
 }
 
 async function publishToSocial() {
@@ -2242,6 +2263,94 @@ function openReviewDialog() {
 
 function closeReviewDialog() {
   $('review-modal')?.classList.remove('active');
+}
+
+function populateDemoReviewModal() {
+  const checkin = getCurrentCheckinForReview();
+  const title = checkin?.title || 'Water Heater Replacement';
+  const address = checkin?.address || '105 Walnut St';
+  const location = checkin?.location || 'Austin, TX';
+  const imgSrc = checkin?.image || demoPhotos[0];
+
+  safeText('demoReviewTitle', title);
+  safeText('demoReviewLocation', `${address}, ${location}`);
+  const photo = $('demoReviewPhoto');
+  if (photo) photo.src = imgSrc;
+
+  const message = $('demoReviewMessage');
+  if (message) {
+    message.value = 'We loved working with you! If you have a moment to leave a review, it would mean a lot to us.';
+  }
+}
+
+function openDemoReviewModal() {
+  populateDemoReviewModal();
+  $('review-modal')?.classList.add('active');
+}
+
+async function confirmDemoReviewSend() {
+  const sendBtn = $('btnDemoReviewSend');
+  if (sendBtn) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+  }
+
+  await wait(900);
+
+  closeReviewDialog();
+  if (sendBtn) {
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'Send request';
+  }
+
+  await completeGuidedReviewFlow();
+}
+
+async function completeGuidedReviewFlow() {
+  state.metrics.reviews++;
+  safeText('metric-reviews', String(state.metrics.reviews));
+
+  document.getElementById('review-empty')?.remove();
+
+  setScreen('home-screen');
+  renderHomeCheckins();
+  showDemoReviewToast();
+
+  await wait(1400);
+
+  hideDemoReviewToast();
+  showDemoReviewReceivedCard();
+
+  lockBackButtons(false);
+  document.querySelectorAll('.is-disabled').forEach((el) => {
+    el.classList.remove('is-disabled');
+    el.disabled = false;
+  });
+
+  setTourStep('step6');
+  applyFocalPoint();
+  syncMobileGuideChrome();
+}
+
+function showDemoReviewToast() {
+  const toast = $('demoReviewToast');
+  if (!toast) return;
+  toast.hidden = false;
+  toast.classList.add('is-visible');
+}
+
+function hideDemoReviewToast() {
+  const toast = $('demoReviewToast');
+  if (!toast) return;
+  toast.classList.remove('is-visible');
+  setTimeout(() => { toast.hidden = true; }, 300);
+}
+
+function showDemoReviewReceivedCard() {
+  const card = $('demoReviewReceived');
+  if (!card) return;
+  card.hidden = false;
+  card.classList.add('is-visible');
 }
 
 function buildDirectoryPreview() {
@@ -2278,7 +2387,12 @@ function unlockDirectoryButton() {
 }
 
 async function sendReviewRequest() {
-  // Remove empty state
+  if (isGuidedDemoRun()) {
+    openDemoReviewModal();
+    return;
+  }
+
+  // Legacy path (non-guided)
   document.getElementById('review-empty')?.remove();
 
   // Metrics
@@ -2338,21 +2452,6 @@ async function sendReviewRequest() {
       window.location.href = jcpBuildOnboardingUrl(jcpDemoOnboardingHandoffQuery('demo_header_complete'));
     };
   }
-
-  // Reveal header "View Demo Directory" button AFTER demo finishes
-  const btnViewDir = document.getElementById('btnViewDirectory');
-  if (btnViewDir) {
-    btnViewDir.classList.remove('is-hidden');
-    btnViewDir.onclick = function() {
-      jcpDemoTrack('cta_clicked', null, { cta: 'view_main_directory' });
-      openDirectoryProfileFromDemo();
-    };
-  }
-
-  // Let them digest, then show post-demo panel
-  setTimeout(() => {
-    showPostDemoPanel();
-  }, 900);
 }
 
 
@@ -2467,8 +2566,8 @@ function deleteArchivedCheckin() {
 }
 
 function goToRequestReview() {
-  if (isDemoMode && tour.stepKey === 'step5') {
-    sendReviewRequest();
+  if (isGuidedDemoRun() && tour.stepKey === 'step5') {
+    openDemoReviewModal();
     return;
   }
   const checkin = getCurrentCheckinForReview();
@@ -2585,11 +2684,11 @@ function advanceDemo() {
       break;
 
     case 'step5':
-      sendReviewRequest();
+      openDemoReviewModal();
       break;
 
     case 'step6':
-      openDirectoryProfileFromDemo();
+      showPostDemoPanel();
       break;
 
     default:
@@ -2636,6 +2735,8 @@ function wireControls() {
 
   $('mobileGuideMinimize')?.addEventListener('click', () => toggleMobileGuideCollapse());
   $('mobileGuidePill')?.addEventListener('click', () => setMobileGuideCollapsed(false));
+  $('guidedCoachBackdrop')?.addEventListener('click', () => setMobileGuideCollapsed(true));
+  $('btnDemoReviewSend')?.addEventListener('click', () => confirmDemoReviewSend());
 
   $('btnStartDemo')?.addEventListener('click', () => {
     $('btnStartDemo')?.classList.remove('wiggle-attention');
@@ -2889,8 +2990,8 @@ function showPostDemoPanel() {
   const panel = document.getElementById('post-demo-panel');
   if (!panel) return;
 
-  const bubble = document.getElementById('post-demo-bubble');
-  bubble?.classList.add('is-hidden');
+  document.getElementById('post-demo-bubble')?.classList.add('is-hidden');
+  setMobileGuideCollapsed(true);
 
   panel.classList.add('active');
   jcpDemoTrack('post_demo_modal_shown');
@@ -2910,61 +3011,13 @@ function showPostDemoPanel() {
     }
   } catch (e) {}
 
-  const navBtn = document.getElementById('dynamicBackBtn');
-  if (navBtn) {
-    navBtn.style.display = 'inline-flex';
-    navBtn.setAttribute('href', `${baseUrl}/directory/`);
-    const label = navBtn.querySelector('span');
-    if (label) {
-      label.textContent = 'View the Directory';
-    }
-    const icon = navBtn.querySelector('svg');
-    if (icon) {
-      icon.innerHTML = '<path d="M12 22s8-4 8-10a8 8 0 1 0-16 0c0 6 8 10 8 10Z"/><circle cx="12" cy="12" r="3"/>';
-    }
-  }
+  hideMobileSpotlight();
+  document.getElementById('tour-float')?.classList.add('is-hidden');
+  document.getElementById('tour-bubble')?.classList.add('is-hidden');
+  updateGuidedCoachBackdrop();
 
-  const mobileNavBtn = document.getElementById('mobileDynamicBackBtn');
-  if (mobileNavBtn) {
-    mobileNavBtn.style.display = 'inline-flex';
-    mobileNavBtn.setAttribute('href', `${baseUrl}/directory/`);
-    const label = mobileNavBtn.querySelector('span');
-    if (label) {
-      label.textContent = 'View the Directory';
-    }
-    const icon = mobileNavBtn.querySelector('svg');
-    if (icon) {
-      icon.innerHTML = '<path d="M12 22s8-4 8-10a8 8 0 1 0-16 0c0 6 8 10 8 10Z"/><circle cx="12" cy="12" r="3"/>';
-    }
-  }
-
-  // Keep final tour tooltip visible above modal
-  if (state.isFinalStep) {
-    tour.isHidden = false;
-    tour.isMinimized = false;
-
-    const tourEl = document.getElementById('tour-float');
-    if (tourEl) tourEl.classList.remove('is-hidden');
-
-    // Force re-anchor under "View Demo Directory"
-    requestAnimationFrame(() => {
-      updateTourFloating();
-    });
-  }
-
-  // Remove dimming
-  document.querySelectorAll('.is-dimmed').forEach(el => {
-    el.classList.remove('is-dimmed');
-  });
-
-  // Close on overlay click
   panel.addEventListener('click', postDemoOverlayClose);
-
-  // Close on ESC
   document.addEventListener('keydown', postDemoEscClose);
-
-  document.getElementById('directory-hint')?.classList.remove('is-hidden');
-
 }
 
 function hidePostDemoPanel() {
@@ -3053,10 +3106,10 @@ function wirePostDemoPanel() {
   }
 
   document
-    .getElementById('viewDirectoryFromSales')
-    ?.addEventListener('click', function() {
-      jcpDemoTrack('cta_clicked', null, { cta: 'view_directory' });
-      openDirectoryProfileFromDemo();
+    .getElementById('btnReplayDemo')
+    ?.addEventListener('click', () => {
+      jcpDemoTrack('cta_clicked', null, { cta: 'replay_demo' });
+      window.location.reload();
     });
 }
 
@@ -3111,6 +3164,7 @@ window.regenerateDescription = regenerateDescription;
 window.saveCheckin = saveCheckin;
 window.openReviewDialog = openReviewDialog;
 window.closeReviewDialog = closeReviewDialog;
+window.confirmDemoReviewSend = confirmDemoReviewSend;
 window.sendReviewRequest = sendReviewRequest;
 window.openCheckinForEdit = openCheckinForEdit;
 window.advanceDemo = advanceDemo;

@@ -197,7 +197,7 @@ function jcp_core_enqueue_assets(): void {
             wp_add_inline_script( 'jcp-core-demo', 'window.JCP_IS_DEMO_MODE = true;', 'before' );
             wp_add_inline_script(
                 'jcp-core-demo',
-                "(function(){function a(){var m=window.matchMedia('(max-width:1024px)').matches;if(!m)return;document.documentElement.classList.add('jcp-demo-run-mobile');document.body.classList.add('is-mobile-mode','jcp-phone-shell','demo-run-only');}if(document.body)a();else document.addEventListener('DOMContentLoaded',a);})();",
+                "(function(){function a(){if(window.JCP_IS_DEMO_MODE!==true)return;document.body.classList.add('jcp-guided-demo','demo-run-only');var m=window.matchMedia('(max-width:1024px)').matches;if(!m)return;document.documentElement.classList.add('jcp-demo-run-mobile');document.body.classList.add('is-mobile-mode','jcp-phone-shell');}if(document.body)a();else document.addEventListener('DOMContentLoaded',a);})();",
                 'before'
             );
         } else {
