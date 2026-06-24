@@ -581,8 +581,40 @@
         </div> <!-- /right-panel -->
     </div>
 
+<div class="mobile-spotlight" id="mobileSpotlight" aria-hidden="true"></div>
+
+<div class="mobile-demo-shell" id="mobile-demo-shell" hidden>
+  <div class="mobile-demo-top">
+    <span class="mobile-demo-step" id="mobileDemoStep">1/6</span>
+    <div class="mobile-demo-top-actions">
+      <button type="button" class="mobile-guide-minimize" id="mobileGuideMinimize" aria-label="Minimize guide">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14"/></svg>
+      </button>
+      <button type="button" class="mobile-demo-close" id="mobileDemoClose" aria-label="Exit demo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="mobile-guide-pill" id="mobileGuidePill" hidden>
+  <span class="mobile-guide-pill-dot" aria-hidden="true"></span>
+  <span id="mobileGuidePillText">Step 1</span>
+</button>
+
 <div class="mobile-stepper" id="mobile-stepper" style="display:none;">
-<button class="btn btn-primary btn-full" id="btnMobileNext">Next →</button>
+  <div class="mobile-stepper-grab" aria-hidden="true"></div>
+  <div class="mobile-stepper-copy">
+    <span class="mobile-stepper-eyebrow" id="mobileStepEyebrow">Step 1</span>
+    <p class="mobile-stepper-title" id="mobileStepTitle">Start the demo</p>
+    <p class="mobile-stepper-body" id="mobileStepBody">Tap Start Demo to begin.</p>
+  </div>
+  <button class="btn btn-primary btn-full" id="btnMobileNext" type="button">Next →</button>
+  <div class="mobile-stepper-progress" aria-hidden="true">
+    <span class="mobile-stepper-progress-fill" id="mobileStepProgressFill"></span>
+  </div>
 </div>
 
 <!-- FINAL POST-DEMO SALES PANEL -->

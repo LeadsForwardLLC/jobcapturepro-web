@@ -250,7 +250,7 @@ add_action( 'template_redirect', 'jcp_core_redirect_stray_demo_run_requests', 2 
  * @return void
  */
 function jcp_core_bypass_demo_survey_page_cache(): void {
-    if ( ! jcp_core_is_demo_survey_request() ) {
+    if ( ! jcp_core_is_demo_survey_request() && ! jcp_core_is_demo_run_request() ) {
         return;
     }
     if ( ! defined( 'DONOTCACHEPAGE' ) ) {
@@ -259,6 +259,24 @@ function jcp_core_bypass_demo_survey_page_cache(): void {
     nocache_headers();
 }
 add_action( 'template_redirect', 'jcp_core_bypass_demo_survey_page_cache', 0 );
+
+/**
+ * Critical CSS for mobile demo run — applies before JS so no flash of old chrome.
+ *
+ * @return void
+ */
+function jcp_core_demo_run_critical_css(): void {
+    if ( ! jcp_core_is_demo_run_request() ) {
+        return;
+    }
+    echo '<style id="jcp-demo-run-critical">';
+    echo '@media(max-width:1024px){';
+    echo 'body.jcp-demo-run #tour-float,body.jcp-demo-run #tour-bubble,body.jcp-demo-run .tour-dock{display:none!important}';
+    echo 'body.jcp-demo-run,body.jcp-demo-run #jcp-app{min-height:100dvh;background:#fff;margin:0;padding:0}';
+    echo '}';
+    echo '</style>';
+}
+add_action( 'wp_head', 'jcp_core_demo_run_critical_css', 1 );
 
 /**
  * Fallback template routing for non-WordPress pages

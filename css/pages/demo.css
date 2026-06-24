@@ -1,7 +1,7 @@
 /* Shared demo styles are enqueued separately (assets/shared/assets/demo.css) for correct URLs on live. */
 
 /* =========================================================
-   DEMO PAGE - MOBILE NAVIGATION FIX
+   DEMO PAGE - MOBILE NAVIGATION FIX (survey / non-run)
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -31,30 +31,29 @@
 }
 
 /* =========================================================
-   MOBILE DEMO RUN — immersive app shell
+   DEMO RUN — minimal full-viewport shell
 ========================================================= */
 
-html.jcp-demo-run-mobile body.jcp-demo-run {
-  overflow-x: hidden;
+body.demo-run-only {
+  min-height: 100dvh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
 }
 
-html.jcp-demo-run-mobile body.jcp-demo-run footer,
-html.jcp-demo-run-mobile body.jcp-demo-run .jcp-top-banner {
-  display: none !important;
+body.demo-run-only #jcp-app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100dvh;
+  min-height: 100vh;
 }
 
-html.jcp-demo-run-mobile body.jcp-demo-run .directory-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
-}
-
-html.jcp-demo-run-mobile body.jcp-demo-run .directory-header .header-nav,
-html.jcp-demo-run-mobile body.jcp-demo-run .directory-header .header-actions .btn:not(#btnNext):not(#btnReset) {
-  display: none !important;
-}
-
-html.jcp-demo-run-mobile body.jcp-demo-run #jcp-app {
-  min-height: calc(100vh - 56px);
+@media (max-width: 1024px) {
+  html.jcp-demo-run-mobile body.demo-run-only,
+  body.jcp-demo-run.demo-run-only {
+    overflow: hidden;
+  }
 }

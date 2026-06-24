@@ -145,7 +145,7 @@ function _jcpIsPrototype() {
 const isPrototype = _jcpIsPrototype();
 const isDemoMode = window.JCP_IS_DEMO_MODE === true;
 
-const MOBILE_DEMO_MQ = '(max-width: 768px)';
+const MOBILE_DEMO_MQ = '(max-width: 1024px)';
 
 function isMobileViewport() {
   return window.matchMedia(MOBILE_DEMO_MQ).matches;
@@ -211,7 +211,7 @@ function showDemoRestrictionTooltip(element, message = 'This action is disabled 
  * Apply demo mode restrictions to UI elements
  */
 function applyDemoRestrictions() {
-  if (!isDemoMode) return;
+  if (!isDemoMode || isMobileDemoRun()) return;
   
   // Add demo mode indicator
   const indicator = document.createElement('div');
@@ -499,7 +499,7 @@ const demoGuideContent = {
   step1: {
     pill: 'Step 1',
     title: 'Start the demo',
-    body: 'Click “Start Demo” to run the walkthrough.'
+    body: 'Tap “Start Demo” above to begin the walkthrough.'
   },
   step2: {
     pill: 'Step 2',
@@ -911,6 +911,30 @@ function applyFocalPoint() {
 
   const mobileOutcome = isMobileDemoRun() && ['step5', 'step6'].includes(tour.stepKey);
 
+  if (isMobileDemoRun()) {
+    document.querySelectorAll('.is-dimmed, .is-focused').forEach((el) => {
+      el.classList.remove('is-dimmed', 'is-focused');
+    });
+
+    const showWebsite = tour.stepKey === 'step6';
+    const showSocial = tour.stepKey === 'step5';
+    document.body.classList.toggle('show-website', showWebsite);
+    document.body.classList.toggle('show-social', showSocial);
+
+    if ((state.guideDisabled || state.isFinalStep) && !mobileOutcome) {
+      document.body.classList.remove('show-website', 'show-social');
+      hideMobileSpotlight();
+      return;
+    }
+
+    if (!mobileOutcome) {
+      positionMobileSpotlight();
+    } else {
+      hideMobileSpotlight();
+    }
+    return;
+  }
+
 // PERMANENTLY DISABLE GUIDED DIMMING
 if ((state.guideDisabled || state.isFinalStep) && !mobileOutcome) {
   document.body.classList.remove('show-website', 'show-social');
@@ -973,6 +997,7 @@ function applyMobileMode() {
   const usePhoneShell = isPrototype || (isDemoMode && isMobile);
   document.body.classList.toggle('jcp-phone-shell', usePhoneShell);
   document.documentElement.classList.toggle('jcp-demo-run-mobile', isDemoMode && isMobile);
+  document.body.classList.toggle('demo-run-only', isDemoMode);
 
   const stepper = $('mobile-stepper');
   if (stepper) {
@@ -980,7 +1005,85 @@ function applyMobileMode() {
     stepper.style.display = showStepper ? 'flex' : 'none';
   }
 
+  syncMobileGuideChrome();
+}
+
+let mobileGuideCollapsed = false;
+
+function hideMobileSpotlight() {
+  const ring = $('mobileSpotlight');
+  if (ring) ring.style.display = 'none';
+}
+
+function positionMobileSpotlight() {
+  const ring = $('mobileSpotlight');
+  if (!ring || !isMobileDemoRun() || mobileGuideCollapsed || tour.isHidden || state.guideDisabled) {
+    hideMobileSpotlight();
+    return;
+  }
+
+  const selector = tour.anchors[tour.stepKey];
+  const target = selector ? document.querySelector(selector) : null;
+  if (!target || target.offsetParent === null) {
+    hideMobileSpotlight();
+    return;
+  }
+
+  const pad = 10;
+  const r = target.getBoundingClientRect();
+  ring.style.display = 'block';
+  ring.style.top = `${Math.round(r.top - pad)}px`;
+  ring.style.left = `${Math.round(r.left - pad)}px`;
+  ring.style.width = `${Math.round(r.width + pad * 2)}px`;
+  ring.style.height = `${Math.round(r.height + pad * 2)}px`;
+}
+
+function setMobileGuideCollapsed(collapsed) {
+  mobileGuideCollapsed = collapsed;
+  document.body.classList.toggle('jcp-mobile-guide-collapsed', collapsed);
+  const stepper = $('mobile-stepper');
+  const pill = $('mobileGuidePill');
+  if (stepper) stepper.classList.toggle('is-collapsed', collapsed);
+  if (pill) pill.hidden = !collapsed;
+  if (collapsed) {
+    hideMobileSpotlight();
+  } else {
+    positionMobileSpotlight();
+  }
+}
+
+function toggleMobileGuideCollapse() {
+  setMobileGuideCollapsed(!mobileGuideCollapsed);
+}
+
+function syncMobileGuideChrome() {
+  const shell = $('mobile-demo-shell');
+  if (!isMobileDemoRun()) {
+    shell?.setAttribute('hidden', '');
+    return;
+  }
+  shell?.removeAttribute('hidden');
+
+  const stepKey = tour.stepKey;
+  const step = stepKey ? demoGuideContent[stepKey] : null;
+  const stepNum = stepKey && /^step(\d)$/.test(stepKey) ? parseInt(stepKey.slice(-1), 10) : null;
+  const total = 6;
+
+  if (stepNum) {
+    safeText('mobileDemoStep', `${stepNum}/${total}`);
+    const fill = $('mobileStepProgressFill');
+    if (fill) fill.style.width = `${(stepNum / total) * 100}%`;
+  }
+
+  if (step) {
+    safeText('mobileStepEyebrow', step.pill);
+    safeText('mobileStepTitle', step.title);
+    safeText('mobileStepBody', step.body);
+    safeText('mobileGuidePillText', step.pill);
+  }
+
   updateMobileStepperLabel();
+  positionMobileSpotlight();
 }
 
 function updateMobileStepperLabel() {
@@ -988,6 +1091,7 @@ function updateMobileStepperLabel() {
   if (!btn || !isMobileDemoRun()) return;
   const label = tour.stepKey ? getNextLabelForStep(tour.stepKey) : 'Next →';
   btn.textContent = label;
+  btn.style.display = tour.stepKey === 'step1' ? 'none' : '';
 }
 
 /* =========================================================
@@ -1013,6 +1117,13 @@ const tour = {
 
 
 function showTour() {
+  if (isMobileDemoRun()) {
+    syncMobileGuideChrome();
+    $('tour-float')?.classList.add('is-hidden');
+    $('tour-bubble')?.classList.add('is-hidden');
+    return;
+  }
+
   const el = $('tour-float');
   const bubble = $('tour-bubble');
   if (!el || !bubble) return;
@@ -1031,6 +1142,10 @@ function showTour() {
 }
 
 function minimizeTour() {
+  if (isMobileDemoRun()) {
+    toggleMobileGuideCollapse();
+    return;
+  }
   if (state.isFinalStep) return;
 
   const el = $('tour-float');
@@ -1071,6 +1186,9 @@ function setTourStep(stepKey) {
       tourEl.classList.toggle('final-step', state.isFinalStep);
     }
   tour.stepKey = stepKey;
+  if (isMobileDemoRun()) {
+    setMobileGuideCollapsed(false);
+  }
   const stepNum = stepKey && stepKey.match(/^step(\d)$/) ? parseInt(stepKey.slice(-1), 10) : null;
   if (stepNum >= 1 && stepNum <= 5) {
     jcpDemoTrack('demo_step_viewed', stepNum);
@@ -1129,6 +1247,11 @@ function getNextLabelForStep(stepKey) {
 }
 
 function updateTourFloating() {
+  if (isMobileDemoRun()) {
+    syncMobileGuideChrome();
+    return;
+  }
+
   if (tour.isHidden || tour.isMinimized) return;
 
   const step = demoGuideContent[tour.stepKey];
@@ -1170,6 +1293,8 @@ function updateTourFloating() {
 }
 
 function positionTourNear() {
+  if (isMobileDemoRun()) return;
+
   const floatEl = $('tour-float');
   const arrow = $('tour-arrow');
   if (!floatEl || !arrow) return;
@@ -2504,6 +2629,14 @@ function wireControls() {
 
   $('btnMobileNext')?.addEventListener('click', () => advanceDemo());
 
+  $('mobileDemoClose')?.addEventListener('click', () => {
+    const returnUrl = sessionStorage.getItem('jcp_survey_return_url') || '/demo/';
+    window.location.href = returnUrl;
+  });
+
+  $('mobileGuideMinimize')?.addEventListener('click', () => toggleMobileGuideCollapse());
+  $('mobileGuidePill')?.addEventListener('click', () => setMobileGuideCollapsed(false));
+
   $('btnStartDemo')?.addEventListener('click', () => {
     $('btnStartDemo')?.classList.remove('wiggle-attention');
     goToHome();
@@ -2586,7 +2719,10 @@ function init() {
 
   // Mobile mode
   applyMobileMode();
-  window.addEventListener('resize', applyMobileMode);
+  window.addEventListener('resize', () => {
+    applyMobileMode();
+    positionMobileSpotlight();
+  });
 
   // Greeting
   const greeting = document.querySelector('.greeting');
