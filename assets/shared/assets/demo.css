@@ -2954,59 +2954,284 @@ body.jcp-prototype-page {
 }
 
 /* ===============================
-   MOBILE DEMO RUN (guided, ≤768px)
+   MOBILE DEMO RUN (guided, ≤1024px) — full-bleed app + coach sheet
 =============================== */
 
-body.is-mobile-mode.jcp-phone-shell .demo-container {
-  padding-bottom: 88px;
-  min-height: calc(100vh - 56px);
+@media (max-width: 1024px) {
+  body.jcp-demo-run #tour-float,
+  body.jcp-demo-run #tour-bubble,
+  body.jcp-demo-run .tour-dock,
+  body.jcp-demo-run .demo-mode-indicator {
+    display: none !important;
+  }
 }
 
-body.is-mobile-mode.jcp-phone-shell .iphone-frame {
-  width: min(360px, calc(100vw - 32px));
-  max-height: calc(100vh - 200px);
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) {
+  --jcp-mobile-top: max(52px, calc(env(safe-area-inset-top, 0px) + 44px));
+  --jcp-mobile-bottom: calc(168px + env(safe-area-inset-bottom, 0px));
 }
 
-body.is-mobile-mode.jcp-phone-shell .iphone-frame .screen {
-  max-height: calc(100vh - 224px);
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page).jcp-mobile-guide-collapsed {
+  --jcp-mobile-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .demo-container {
+  padding: 0;
+  padding-top: var(--jcp-mobile-top);
+  padding-bottom: var(--jcp-mobile-bottom);
+  min-height: 100dvh;
+  min-height: 100vh;
+  justify-content: flex-start;
+  background: #ffffff;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .phone-wrapper {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .iphone-frame {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .iphone-frame .notch {
+  display: none;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .iphone-frame .screen {
+  max-height: none;
+  min-height: calc(100dvh - var(--jcp-mobile-top) - var(--jcp-mobile-bottom));
+  border-radius: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
 }
 
-body.is-mobile-mode.jcp-phone-shell .mobile-stepper {
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #login-screen .app-header {
+  display: none;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #login-screen .login-subtitle::after {
+  content: none;
+}
+
+/* Spotlight ring on focal control */
+.mobile-spotlight {
+  position: fixed;
+  z-index: 75;
+  display: none;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 80, 62, 0.95);
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.58);
+  pointer-events: none;
+  transition:
+    top 0.35s cubic-bezier(0.2, 0.9, 0.2, 1),
+    left 0.35s cubic-bezier(0.2, 0.9, 0.2, 1),
+    width 0.35s cubic-bezier(0.2, 0.9, 0.2, 1),
+    height 0.35s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .btn-primary#btnStartDemo,
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #fabNewCheckin,
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #submit-btn,
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #btnSavePublish,
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #btnRequestReview {
+  position: relative;
+  z-index: 76;
+}
+
+/* Top chrome */
+.mobile-demo-shell {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 90;
+  pointer-events: none;
+}
+
+.mobile-demo-shell[hidden] {
+  display: none !important;
+}
+
+.mobile-demo-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding:
+    max(10px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    8px
+    max(16px, env(safe-area-inset-left, 0px));
+  pointer-events: auto;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 70%, rgba(255, 255, 255, 0));
+}
+
+.mobile-demo-step {
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.02em;
+}
+
+.mobile-demo-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-guide-minimize,
+.mobile-demo-close {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-guide-minimize:active,
+.mobile-demo-close:active {
+  background: #f9fafb;
+}
+
+/* Collapsed coach pill */
+.mobile-guide-pill {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 85;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 80, 62, 0.25);
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-guide-pill[hidden] {
+  display: none !important;
+}
+
+.mobile-guide-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ff503e;
+  flex-shrink: 0;
+}
+
+/* Bottom coach sheet */
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .mobile-stepper {
   display: flex !important;
+  flex-direction: column;
+  gap: 12px;
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.98);
-  border-top: 1px solid #e5e7eb;
+  padding:
+    8px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+  border-top: none;
   z-index: 80;
-  box-shadow: none;
+  box-shadow: 0 -12px 32px rgba(15, 23, 42, 0.08);
+  transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.2s ease;
 }
 
-body.is-mobile-mode.jcp-phone-shell .mobile-stepper .btn-full {
-  max-width: 480px;
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .mobile-stepper.is-collapsed {
+  transform: translateY(110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mobile-stepper-grab {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  margin: 0 auto 4px;
+}
+
+.mobile-stepper-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-stepper-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ff503e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.mobile-stepper-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.mobile-stepper-body {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.45;
+}
+
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .mobile-stepper .btn-full {
   width: 100%;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
+  min-height: 52px;
+  border-radius: 12px;
+  background: #ff503e;
+  border: none;
+  box-shadow: none;
+  font-size: 17px;
+  font-weight: 700;
 }
 
-/* Tour tooltip: compact, above stepper (guided demo only) */
-body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #tour-float {
-  display: block !important;
-  position: fixed !important;
-  left: 16px !important;
-  right: 16px !important;
-  bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
-  top: auto !important;
-  transform: none !important;
-  width: auto !important;
-  max-width: none !important;
-  z-index: 70 !important;
+body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .mobile-stepper .btn-full:active {
+  background: #e64838;
 }
 
-body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #tour-float.is-hidden {
-  display: none !important;
+.mobile-stepper-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: #f3f4f6;
+}
+
+.mobile-stepper-progress-fill {
+  display: block;
+  height: 100%;
+  width: 16.666%;
+  background: #ff503e;
+  transition: width 0.25s ease;
 }
 
 body.is-mobile-mode.jcp-phone-shell #tour-bubble {
