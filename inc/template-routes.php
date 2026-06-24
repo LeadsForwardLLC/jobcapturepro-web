@@ -270,9 +270,10 @@ function jcp_core_demo_run_critical_css(): void {
         return;
     }
     echo '<style id="jcp-demo-run-critical">';
-    echo '@media(max-width:1024px){';
     echo 'body.jcp-demo-run #tour-float,body.jcp-demo-run #tour-bubble,body.jcp-demo-run .tour-dock{display:none!important}';
     echo 'body.jcp-demo-run,body.jcp-demo-run #jcp-app{min-height:100dvh;background:#fff;margin:0;padding:0}';
+    echo '@media(max-width:1024px){';
+    echo 'body.jcp-demo-run .right-panel{display:none!important}';
     echo '}';
     echo '</style>';
 }

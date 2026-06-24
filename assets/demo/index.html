@@ -77,6 +77,23 @@
                                 </div>
                             </div>
                             <div class="home-checkin-list" id="home-checkin-list"></div>
+
+                            <div class="demo-review-toast" id="demoReviewToast" hidden>
+                              <span class="demo-review-toast-icon" aria-hidden="true">✉️</span>
+                              <div>
+                                <strong>Review request sent</strong>
+                                <span>Automated SMS with job photos</span>
+                              </div>
+                            </div>
+
+                            <div class="demo-review-received" id="demoReviewReceived" hidden>
+                              <div class="demo-review-received-stars" aria-hidden="true">★★★★★</div>
+                              <div>
+                                <strong>New 5-star review</strong>
+                                <p>"Great service — fast and professional!"</p>
+                                <small>Arrived automatically after your request</small>
+                              </div>
+                            </div>
                         </div>
                         <div class="tab-bar">
                             <button class="tab-item active">
@@ -446,13 +463,36 @@
 
         <!-- Review Request Modal -->
         <div class="modal-overlay" id="review-modal">
-            <div class="modal">
-                <h3><img src="../../shared/assets/icons/lucide/mail.svg" class="lucide-icon lucide-icon-sm" alt=""> Send Review Request</h3>
-                <p>Send an automated review request to the customer with photos from this job.</p>
-                <div class="modal-actions">
-                    <button class="btn btn-ghost" onclick="closeReviewDialog()">Cancel</button>
-                    <button class="btn btn-primary" onclick="sendReviewRequest()"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send</button>
+            <div class="modal modal--review-demo">
+                <h3>Send review request</h3>
+                <p class="modal-sub">Automated when the job wraps up — includes photos from this check-in.</p>
+                <div class="demo-review-job" id="demoReviewJob">
+                    <img id="demoReviewPhoto" src="" alt="" width="72" height="72" loading="lazy">
+                    <div class="demo-review-job-copy">
+                        <strong id="demoReviewTitle">Water Heater Replacement</strong>
+                        <span id="demoReviewLocation">105 Walnut St, Austin, TX</span>
+                    </div>
                 </div>
+                <textarea class="input-field" id="demoReviewMessage" rows="3" placeholder="Add a personal note (optional)"></textarea>
+                <p class="demo-review-auto-note">Runs automatically on every completed job — no chasing customers.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-ghost" type="button" onclick="closeReviewDialog()">Cancel</button>
+                    <button class="btn btn-primary" type="button" id="btnDemoReviewSend"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send request</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-publish-overlay" id="demoPublishOverlay" aria-hidden="true">
+            <div class="demo-publish-card">
+                <h3 class="demo-publish-title">Publishing everywhere</h3>
+                <p class="demo-publish-sub">Your job is going live across every channel.</p>
+                <ul class="demo-publish-list">
+                    <li class="demo-publish-item"><span class="demo-publish-check" aria-hidden="true"></span>Published on your website</li>
+                    <li class="demo-publish-item"><span class="demo-publish-check" aria-hidden="true"></span>Posted to Facebook</li>
+                    <li class="demo-publish-item"><span class="demo-publish-check" aria-hidden="true"></span>Job live on Google Business</li>
+                    <li class="demo-publish-item"><span class="demo-publish-check" aria-hidden="true"></span>Added to JobCapturePro directory</li>
+                    <li class="demo-publish-item"><span class="demo-publish-check" aria-hidden="true"></span>Map pin updated</li>
+                </ul>
             </div>
         </div>
 
@@ -582,6 +622,7 @@
     </div>
 
 <div class="mobile-spotlight" id="mobileSpotlight" aria-hidden="true"></div>
+<div class="guided-coach-backdrop" id="guidedCoachBackdrop" hidden></div>
 
 <div class="mobile-demo-shell" id="mobile-demo-shell" hidden>
   <div class="mobile-demo-top">
@@ -619,53 +660,29 @@
 
 <!-- FINAL POST-DEMO SALES PANEL -->
 <div id="post-demo-panel" class="post-demo-panel">
-  <div class="post-demo-card">
+  <div class="post-demo-card post-demo-card--simple">
 
     <button
       class="post-demo-x"
       id="postDemoX"
       type="button"
       aria-label="Close"
-      style="position:absolute;top:14px;right:14px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#6b7280;"
     >
       <img src="../../shared/assets/icons/lucide/x.svg" class="lucide-icon lucide-icon-sm" alt="">
     </button>
 
-    <div class="post-demo-hero">
-      <small>Live demo complete</small>
-      <h2>This is how JobCapturePro turns jobs into revenue</h2>
-      <p class="post-demo-hero-subline">Everything you just saw was built from real job activity.</p>
-    </div>
-
-    <p class="post-demo-result">
-      Every completed job now works as a local SEO signal that drives visibility and inbound leads automatically.
-    </p>
+    <h2 class="post-demo-simple-title">This is how JobCapturePro turns jobs into revenue</h2>
 
     <div class="post-demo-actions">
       <a class="btn btn-primary post-demo-primary-cta" href="https://app.jobcapturepro.com/onboarding?sessionId=75ad8454-312e-4224-95b7-8f48f5cd0277&amp;step=1&amp;utm_source=jobcapturepro.com&amp;utm_medium=website&amp;utm_campaign=onboarding&amp;utm_content=demo_static_assets">
-        <span class="post-demo-cta-main">Get started →</span>
-        <span class="post-demo-cta-note">Create your JobCapturePro account (free tier available).</span>
+        Get Started Free
       </a>
-
-      <button class="btn btn-secondary" id="viewDirectoryFromSales" type="button">
-        View your listing in the directory
-      </button>
+      <p class="post-demo-note">No credit card required</p>
+      <button class="btn btn-secondary" id="btnReplayDemo" type="button">Replay demo</button>
     </div>
-
-    <p class="post-demo-social-proof">Join contractors using JobCapturePro to turn jobs into inbound leads.</p>
 
   </div>
 </div>
-
-<button
-  class="tour-bubble is-hidden"
-  id="post-demo-bubble"
-  type="button"
-  aria-label="Open results"
->
-  <img src="../../shared/assets/icons/lucide/trending-up.svg" class="lucide-icon lucide-icon-sm" alt="">
-  <span>Results</span>
-</button>
 
 <button
   class="tour-bubble is-hidden"
