@@ -1006,10 +1006,79 @@ function updateGuidedCoachBackdrop() {
 }
 
 let mobileGuideCollapsed = false;
+let spotlightSequenceTimers = [];
+let step3SpotlightPhase = null;
+
+function clearSpotlightSequence() {
+  spotlightSequenceTimers.forEach((id) => clearTimeout(id));
+  spotlightSequenceTimers = [];
+  step3SpotlightPhase = null;
+}
 
 function hideMobileSpotlight() {
   const ring = $('mobileSpotlight');
   if (ring) ring.style.display = 'none';
+  clearSpotlightSequence();
+}
+
+function positionSpotlightOnElement(target, pad = 10) {
+  const ring = $('mobileSpotlight');
+  if (!ring || !target || target.offsetParent === null) return false;
+
+  const r = target.getBoundingClientRect();
+  ring.style.display = 'block';
+  ring.style.top = `${Math.round(r.top - pad)}px`;
+  ring.style.left = `${Math.round(r.left - pad)}px`;
+  ring.style.width = `${Math.round(r.width + pad * 2)}px`;
+  ring.style.height = `${Math.round(r.height + pad * 2)}px`;
+  return true;
+}
+
+function scheduleSpotlightSequence(fn, delayMs) {
+  const id = setTimeout(fn, delayMs);
+  spotlightSequenceTimers.push(id);
+  return id;
+}
+
+function runStep3SpotlightSequence() {
+  if (!isGuidedDemoRun() || tour.stepKey !== 'step3' || mobileGuideCollapsed || state.isFinalStep) {
+    return;
+  }
+
+  const camera = $('btnAddPhotoCamera');
+  const submit = $('submit-btn');
+  if (!camera || !submit) return;
+
+  clearSpotlightSequence();
+
+  if (state.photoCount >= 1) {
+    step3SpotlightPhase = 'submit';
+    positionSpotlightOnElement(submit);
+    return;
+  }
+
+  const showCamera = () => {
+    if (tour.stepKey !== 'step3' || state.photoCount >= 1) return;
+    step3SpotlightPhase = 'camera';
+    positionSpotlightOnElement(camera);
+  };
+
+  const showSubmit = () => {
+    if (tour.stepKey !== 'step3' || state.photoCount >= 1) return;
+    step3SpotlightPhase = 'submit';
+    positionSpotlightOnElement(submit);
+  };
+
+  const loopSequence = () => {
+    if (tour.stepKey !== 'step3' || state.photoCount >= 1 || mobileGuideCollapsed) return;
+    showCamera();
+    scheduleSpotlightSequence(() => {
+      showSubmit();
+      scheduleSpotlightSequence(loopSequence, 2200);
+    }, 1400);
+  };
+
+  loopSequence();
 }
 
 function positionMobileSpotlight() {
@@ -1019,6 +1088,31 @@ function positionMobileSpotlight() {
     return;
   }
 
+  if (tour.stepKey === 'step3' && state.currentScreen === 'new-screen') {
+    const submit = $('submit-btn');
+    const camera = $('btnAddPhotoCamera');
+
+    if (state.photoCount >= 1) {
+      clearSpotlightSequence();
+      if (submit) positionSpotlightOnElement(submit);
+      return;
+    }
+
+    if (step3SpotlightPhase === 'camera' && camera) {
+      positionSpotlightOnElement(camera);
+      return;
+    }
+    if (step3SpotlightPhase === 'submit' && submit) {
+      positionSpotlightOnElement(submit);
+      return;
+    }
+
+    runStep3SpotlightSequence();
+    return;
+  }
+
+  clearSpotlightSequence();
+
   const selector = tour.anchors[tour.stepKey];
   const target = selector ? document.querySelector(selector) : null;
   if (!target || target.offsetParent === null) {
@@ -1026,13 +1120,7 @@ function positionMobileSpotlight() {
     return;
   }
 
-  const pad = 10;
-  const r = target.getBoundingClientRect();
-  ring.style.display = 'block';
-  ring.style.top = `${Math.round(r.top - pad)}px`;
-  ring.style.left = `${Math.round(r.left - pad)}px`;
-  ring.style.width = `${Math.round(r.width + pad * 2)}px`;
-  ring.style.height = `${Math.round(r.height + pad * 2)}px`;
+  positionSpotlightOnElement(target);
 }
 
 function setMobileGuideCollapsed(collapsed) {
@@ -1180,6 +1268,7 @@ function closeTour() {
 
 function setTourStep(stepKey) {
   const tourEl = document.getElementById('tour-float');
+  const prevStepKey = tour.stepKey;
   state.isFinalStep = stepKey === 'step6';
   const bubble = document.getElementById('tour-bubble');
 
@@ -1194,6 +1283,9 @@ function setTourStep(stepKey) {
     document.body.dataset.tourStep = stepKey;
   } else {
     delete document.body.dataset.tourStep;
+  }
+  if (prevStepKey === 'step3' && stepKey !== 'step3') {
+    clearSpotlightSequence();
   }
   if (isGuidedDemoRun()) {
     setMobileGuideCollapsed(false);
@@ -1897,6 +1989,9 @@ function addPhotos() {
 
   updateSubmitButtonState();
   syncAttentionAnimations();
+  if (isGuidedDemoRun() && tour.stepKey === 'step3') {
+    positionMobileSpotlight();
+  }
 }
 
 function updateSubmitButtonState() {
