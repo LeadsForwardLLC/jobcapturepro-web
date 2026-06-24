@@ -3619,11 +3619,21 @@ body.jcp-publish-modal-open .guided-coach-backdrop {
 }
 
 .post-demo-simple-title {
-  margin: 8px 0 20px;
+  margin: 8px 0 12px;
   font-size: 24px;
   font-weight: 800;
   line-height: 1.2;
   color: #111827;
+}
+
+.post-demo-simple-body {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5563;
+  hyphens: none;
+  -webkit-hyphens: none;
+  overflow-wrap: break-word;
 }
 
 .post-demo-card--simple .post-demo-primary-cta {
