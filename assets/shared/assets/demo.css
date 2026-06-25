@@ -3820,7 +3820,7 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin: 12px 0 10px;
+  margin: 12px 0 14px;
 }
 
 .demo-outcomes-dot {
@@ -3839,34 +3839,33 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   transform: scale(1.15);
 }
 
-.demo-outcomes-modal__actions {
+.demo-outcomes-modal__footer {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
 }
 
-.demo-outcomes-modal__actions .btn {
-  flex: 1;
+.demo-outcomes-modal__footer .btn-full {
+  margin: 0;
 }
 
-.demo-outcomes-modal__back {
-  flex: 0 0 auto !important;
-}
-
-.demo-outcomes-modal__skip {
-  margin-top: 8px;
+.demo-outcomes-modal__call {
+  display: block;
   width: 100%;
   border: none;
   background: transparent;
   color: #6b7280;
   font-size: 13px;
   font-weight: 600;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
-  padding: 6px;
+  padding: 6px 0 2px;
 }
 
-.demo-outcomes-modal__skip:hover {
-  color: #ff503e;
+.demo-outcomes-modal__call:hover {
+  color: #374151;
 }
 
 body.jcp-outcomes-modal-open .mobile-stepper {
@@ -3875,7 +3874,8 @@ body.jcp-outcomes-modal-open .mobile-stepper {
 
 body.is-mobile-mode.jcp-phone-shell.jcp-outcomes-modal-open .demo-outcomes-modal {
   align-items: flex-end;
-  padding: 12px 12px calc(var(--jcp-stepper-height, 168px) + 8px);
+  padding: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   z-index: 91;
 }
 
@@ -3885,7 +3885,7 @@ body.is-mobile-mode.jcp-phone-shell.jcp-outcomes-modal-open .demo-outcomes-modal
 }
 
 body.jcp-guided-demo:not(.is-mobile-mode).jcp-outcomes-modal-open .demo-outcomes-modal {
-  padding-bottom: calc(var(--jcp-mobile-bottom, 148px) + 16px);
+  padding: 20px;
 }
 
 body.jcp-guided-demo:not(.is-mobile-mode) .demo-outcomes-modal__card {

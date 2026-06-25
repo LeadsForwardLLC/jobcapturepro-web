@@ -541,7 +541,7 @@ const demoGuideContent = {
   step6: {
     pill: 'Final step',
     title: 'See everything that published',
-    body: 'Swipe through real examples from this job. Tap Get Started Free when you are ready.',
+    body: 'Swipe the dots to explore what happened automatically for this job.',
     interactHint: ''
   }
 };
@@ -1124,18 +1124,25 @@ function updateMobileLayoutMetrics() {
   document.documentElement.style.setProperty('--jcp-stepper-height', `${height}px`);
 }
 
+function getDemoSalesPhoneHref() {
+  const raw =
+    (window.JCP_ONBOARDING && window.JCP_ONBOARDING.salesPhone) ||
+    (window.JCP_CONFIG && window.JCP_CONFIG.salesPhone) ||
+    '';
+  const digits = String(raw).replace(/[^\d+]/g, '');
+  if (digits) return `tel:${digits}`;
+  return `${(baseUrl || '').replace(/\/$/, '')}/contact/`;
+}
+
 function updateMobileStepperLabel() {
   const btn = $('btnMobileNext');
   const hint = $('mobileStepInteractHint');
   if (!btn || !isGuidedDemoRun()) return;
 
-  let label = tour.stepKey ? getNextLabelForStep(tour.stepKey) : 'Next →';
-  if (tour.stepKey === 'step6' && outcomesSlideshow.isOpen) {
-    label = outcomesSlideshow.index >= outcomesSlideshow.total - 1 ? 'Get Started Free' : 'Next →';
-  }
+  const label = tour.stepKey ? getNextLabelForStep(tour.stepKey) : 'Next →';
   btn.textContent = label;
 
-  const hideNext = tour.stepKey !== 'step6';
+  const hideNext = tour.stepKey !== 'step6' || outcomesSlideshow.isOpen;
   btn.style.display = hideNext ? 'none' : '';
 
   if (hint) {
@@ -2621,23 +2628,6 @@ function updateOutcomesSlideshowUi() {
 
   safeText('demoOutcomesSlideCounter', `${index + 1} of ${total}`);
   safeText('demoOutcomesSlideLabel', OUTCOMES_SLIDE_LABELS[index] || '');
-
-  const prev = $('demoOutcomesPrev');
-  const next = $('demoOutcomesNext');
-  const finish = $('demoOutcomesFinish');
-  if (prev) prev.hidden = index === 0;
-  if (next) next.hidden = index >= total - 1;
-  if (finish) finish.hidden = index < total - 1;
-
-  const mobileNext = $('btnMobileNext');
-  if (mobileNext && isGuidedDemoRun() && tour.stepKey === 'step6') {
-    mobileNext.textContent = index >= total - 1 ? 'Get Started Free' : 'Next →';
-  }
-
-  const skip = $('demoOutcomesSkipCta');
-  if (skip) skip.hidden = index >= total - 1;
-
-  syncMobileGuideChrome();
 }
 
 function setOutcomesSlide(index, { trackAnalytics = true } = {}) {
@@ -2663,13 +2653,14 @@ function openOutcomesSlideshow() {
   modal.hidden = false;
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('jcp-outcomes-modal-open');
-  setMobileGuideCollapsed(false);
+  setMobileGuideCollapsed(true);
   updateMobileLayoutMetrics();
   hideMobileSpotlight();
   updateGuidedCoachBackdrop();
   jcpDemoTrack('demo_outcomes_opened', 6);
 
   requestAnimationFrame(() => modal.classList.add('is-visible'));
+  syncMobileGuideChrome();
 }
 
 function closeOutcomesSlideshow() {
@@ -2681,6 +2672,7 @@ function closeOutcomesSlideshow() {
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('jcp-outcomes-modal-open');
+  syncMobileGuideChrome();
 }
 
 function finishOutcomesSlideshow() {
@@ -2694,12 +2686,15 @@ function wireOutcomesSlideshow() {
   if (!modal || modal.dataset.bound === '1') return;
   modal.dataset.bound = '1';
 
+  const callCta = $('demoOutcomesCallCta');
+  if (callCta) callCta.href = getDemoSalesPhoneHref();
+
   $('demoOutcomesModalClose')?.addEventListener('click', closeOutcomesSlideshow);
   $('demoOutcomesModalBackdrop')?.addEventListener('click', closeOutcomesSlideshow);
-  $('demoOutcomesPrev')?.addEventListener('click', () => setOutcomesSlide(outcomesSlideshow.index - 1));
-  $('demoOutcomesNext')?.addEventListener('click', () => setOutcomesSlide(outcomesSlideshow.index + 1));
-  $('demoOutcomesFinish')?.addEventListener('click', finishOutcomesSlideshow);
-  $('demoOutcomesSkipCta')?.addEventListener('click', finishOutcomesSlideshow);
+  $('demoOutcomesStartCta')?.addEventListener('click', finishOutcomesSlideshow);
+  callCta?.addEventListener('click', () => {
+    jcpDemoTrack('cta_clicked', null, { cta: 'call_now', source: 'demo_outcomes_modal' });
+  });
 
   $('demoOutcomesDots')?.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-slide]');
@@ -3155,14 +3150,10 @@ function advanceDemo() {
       break;
 
     case 'step6':
-      if (outcomesSlideshow.isOpen) {
-        if (outcomesSlideshow.index < outcomesSlideshow.total - 1) {
-          setOutcomesSlide(outcomesSlideshow.index + 1);
-        } else {
-          finishOutcomesSlideshow();
-        }
-      } else {
+      if (!outcomesSlideshow.isOpen) {
         openOutcomesSlideshow();
+      } else {
+        finishOutcomesSlideshow();
       }
       break;
 
