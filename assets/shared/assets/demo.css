@@ -3714,7 +3714,7 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   height: 36px;
   border-radius: 50%;
   background: #ff503e;
-  color: #ffffff;
+  color: #ffffff !important;
   font-weight: 800;
   font-size: 14px;
   display: inline-flex;
@@ -3738,7 +3738,7 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   margin: 0;
 }
 
-.outcomes-social-card__head span {
+.outcomes-social-card__head > div span {
   font-size: 10px;
   color: #6b7280;
   line-height: 1.15;
@@ -3873,7 +3873,7 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 .outcomes-preview--directory .company-avatar,
 .outcomes-demo-avatar {
   background: #ff503e !important;
-  color: #ffffff;
+  color: #ffffff !important;
   box-shadow: none;
 }
 
