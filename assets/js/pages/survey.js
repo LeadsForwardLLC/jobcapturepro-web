@@ -44,6 +44,8 @@
 
   const PROGRESS_KEY = 'jcp_survey_progress';
   const RETURN_URL_KEY = 'jcp_survey_return_url';
+  const INTAKE_COMPLETE_KEY = 'jcp_demo_intake_complete';
+  const DEMO_SESSION_KEY = 'jcp_demo_session_id';
 
   const getFormSnapshot = () => ({
     businessName: getValue('businessName'),
@@ -133,14 +135,32 @@
     saveProgressTimer = setTimeout(saveSurveyProgress, 280);
   };
 
-  const buildPersonalizedDemoUrl = () => {
+  const getStoredDemoUser = () => {
+    try {
+      const raw = localStorage.getItem('demoUser');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const markDemoIntakeComplete = () => {
+    try {
+      sessionStorage.setItem(INTAKE_COMPLETE_KEY, '1');
+    } catch (e) {
+      // no-op
+    }
+  };
+
+  const buildPersonalizedDemoUrl = (storedUser) => {
     const url = new URL(getDemoRunBase());
     url.searchParams.set('mode', 'run');
-    const firstName = getValue('firstName');
-    const lastName = getValue('lastName');
-    const business = getValue('businessName');
-    const niche = getValue('niche');
-    const email = getValue('email');
+    const source = storedUser && typeof storedUser === 'object' ? storedUser : getFormSnapshot();
+    const firstName = (source.firstName || '').trim();
+    const lastName = (source.lastName || '').trim();
+    const business = (source.businessName || '').trim();
+    const niche = (source.niche || '').trim();
+    const email = (source.email || '').trim();
     if (firstName) url.searchParams.set('name', firstName);
     if (lastName) url.searchParams.set('last_name', lastName);
     if (business) url.searchParams.set('business', business);
@@ -149,32 +169,33 @@
     return url.href;
   };
 
-  // If they've already completed the demo form before, skip the form + slides and go straight to run-demo.
-  // (We can only check localStorage client-side.)
-  const shouldAutoRun = (() => {
+  const shouldSkipSurveyForReturningUser = () => {
     try {
       const params = new URLSearchParams(window.location.search || '');
       if (params.get('mode') === 'run') return false;
-      if (params.get('forceSurvey') === '1') return false; // escape hatch
+      if (params.get('forceSurvey') === '1') return false;
       if (hasSavedProgress()) return false;
-      const raw = localStorage.getItem('demoUser');
-      if (!raw) return false;
-      const demoUser = JSON.parse(raw);
+
+      const demoUser = getStoredDemoUser();
       if (!demoUser || typeof demoUser !== 'object') return false;
+
+      const hasBusiness = Boolean((demoUser.businessName || '').trim());
       const hasIdentity = Boolean(
-        (demoUser.firstName || '').trim() &&
-        (demoUser.lastName || '').trim() &&
-        (demoUser.email || '').trim()
+        (demoUser.email || '').trim() ||
+        ((demoUser.firstName || '').trim() && (demoUser.lastName || '').trim())
       );
-      const hasSession = Boolean((localStorage.getItem('jcp_demo_session_id') || '').trim());
-      return hasIdentity && hasSession;
+      if (!hasBusiness || !hasIdentity) return false;
+
+      const intakeDone = sessionStorage.getItem(INTAKE_COMPLETE_KEY) === '1';
+      const hasSession = Boolean((sessionStorage.getItem(DEMO_SESSION_KEY) || '').trim());
+      return intakeDone || hasSession;
     } catch (e) {
       return false;
     }
-  })();
+  };
 
-  if (shouldAutoRun) {
-    window.location.replace(buildPersonalizedDemoUrl());
+  if (shouldSkipSurveyForReturningUser()) {
+    window.location.replace(buildPersonalizedDemoUrl(getStoredDemoUser()));
     return;
   }
 
@@ -185,12 +206,11 @@
   const rankBox = document.getElementById('surveyRankBox');
 
   function getSurveySessionId() {
-    const key = 'jcp_demo_session_id';
     try {
-      let id = sessionStorage.getItem(key);
+      let id = sessionStorage.getItem(DEMO_SESSION_KEY);
       if (!id) {
         id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-        sessionStorage.setItem(key, id);
+        sessionStorage.setItem(DEMO_SESSION_KEY, id);
       }
       return id;
     } catch (e) {
@@ -621,6 +641,8 @@
     const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || [])
       .map((input) => input.value);
 
+    markDemoIntakeComplete();
+
     try {
       localStorage.removeItem('demoReturnState');
       localStorage.removeItem('directoryDemoListing');
@@ -796,6 +818,11 @@
   const params = new URLSearchParams(window.location.search || '');
   if (params.get('forceSurvey') === '1') {
     clearSurveyProgress();
+    try {
+      sessionStorage.removeItem(INTAKE_COMPLETE_KEY);
+    } catch (e) {
+      // no-op
+    }
   }
 
   let restored = null;

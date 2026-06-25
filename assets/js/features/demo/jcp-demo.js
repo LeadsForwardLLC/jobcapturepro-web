@@ -311,13 +311,23 @@ if (isDemoMode) {
   document.head.appendChild(hide);
 }
 
-function getDemoSessionId() {
-  const key = 'jcp_demo_session_id';
+const DEMO_INTAKE_COMPLETE_KEY = 'jcp_demo_intake_complete';
+const DEMO_SESSION_KEY = 'jcp_demo_session_id';
+
+function markDemoIntakeComplete() {
   try {
-    let id = sessionStorage.getItem(key);
+    sessionStorage.setItem(DEMO_INTAKE_COMPLETE_KEY, '1');
+  } catch (e) {
+    // no-op
+  }
+}
+
+function getDemoSessionId() {
+  try {
+    let id = sessionStorage.getItem(DEMO_SESSION_KEY);
     if (!id) {
       id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-      sessionStorage.setItem(key, id);
+      sessionStorage.setItem(DEMO_SESSION_KEY, id);
     }
     return id;
   } catch (e) {
@@ -2810,6 +2820,7 @@ function completeDemoConversion() {
   }
   hideOutcomesCtaDock();
   state.isFinalStep = true;
+  markDemoIntakeComplete();
   showPostDemoPanel();
 }
 
@@ -3503,6 +3514,7 @@ function wireControls() {
   });
 
   $('mobileDemoClose')?.addEventListener('click', () => {
+    markDemoIntakeComplete();
     const returnUrl = sessionStorage.getItem('jcp_survey_return_url') || '/demo/';
     window.location.href = returnUrl;
   });
@@ -3676,6 +3688,8 @@ function init() {
     return;
   }
 
+  markDemoIntakeComplete();
+
   // Tour start (after DOM paints)
   setTimeout(() => {
     jcpDemoTrack('demo_run_started');
@@ -3802,6 +3816,7 @@ function hidePostDemoPanel() {
   const bubble = document.getElementById('post-demo-bubble');
   if (!panel || !bubble) return;
 
+  markDemoIntakeComplete();
   panel.classList.remove('active');
   document.body.classList.remove('jcp-post-demo-open');
   if (state.isFinalStep && tour.stepKey === 'step6') {
