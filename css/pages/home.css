@@ -17,13 +17,15 @@
   max-width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .jcp-marketing {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* Hero background overlay: soft gradient from slightly transparent to white */
@@ -51,7 +53,8 @@
   background-position: 0 50% !important;
   background-repeat: repeat-x !important;
   animation: backgroundScroll 60s linear infinite !important;
-  overflow: hidden !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
 }
 
 /* Mobile: compact space above H1 (header offset lives on body) */
@@ -136,8 +139,34 @@
 .jcp-hero-primary-cta {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: var(--jcp-space-xs);
+}
+
+@media (min-width: 769px) {
+  .jcp-hero-primary-cta {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .jcp-home .jcp-hero-primary-cta {
+    width: 100%;
+    max-width: 100%;
+    align-items: stretch;
+  }
+
+  .jcp-home .jcp-hero-primary-cta .btn,
+  .jcp-home .jcp-hero .directory-cta-row .btn {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    align-self: stretch;
+  }
+
+  .jcp-home .jcp-hero .directory-cta-row {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 .jcp-hero-cta-microcopy {
   font-size: var(--jcp-font-size-sm);
@@ -272,7 +301,7 @@
   padding: var(--jcp-space-6xl) 0;
 }
 
-.jcp-home .jcp-section:first-child {
+.jcp-home .jcp-section:first-child:not(.jcp-hero) {
   padding-top: var(--jcp-space-4xl);
 }
 

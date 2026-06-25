@@ -2083,6 +2083,7 @@ input::-webkit-textfield-decoration-container {
     height: 100vh;
     max-height: 100dvh;
     max-height: 100vh;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 66px);
     padding-bottom: 0;
   }
 
@@ -2243,14 +2244,14 @@ input::-webkit-textfield-decoration-container {
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding-top: 2px;
+    padding-top: 12px;
     padding-bottom: calc(var(--deck-footer-h) + 12px);
   }
 
   .deck-slide h2 {
     font-size: 22px;
     line-height: 1.2;
-    margin-top: 0;
+    margin-top: 4px;
     margin-bottom: 6px;
     padding-right: 0;
   }

@@ -36,6 +36,9 @@
   background-position: 0% 50%;
   background-repeat: repeat-x;
   animation: backgroundScroll 120s linear infinite;
+  /* Clip animated bg only; full overflow:hidden traps vertical scroll on iOS */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 @keyframes backgroundScroll {
@@ -460,14 +463,18 @@
 
   .jcp-hero-primary-cta {
     width: 100%;
+    max-width: 100%;
     align-items: stretch;
   }
 
   .jcp-hero-primary-cta .btn,
-  .directory-cta-row > .btn {
+  .directory-cta-row > .btn,
+  .directory-cta-row .btn {
     width: 100%;
+    max-width: 100%;
     justify-content: center;
     min-height: 52px;
+    box-sizing: border-box;
   }
 
   .jcp-hero-cta-microcopy {
@@ -588,14 +595,14 @@
   overflow: visible;
 }
 
-/* Standard page template: compact top padding for first section (match other page heroes) */
-.jcp-marketing > .jcp-section:first-of-type {
-  padding-top: calc(72px + var(--jcp-space-2xl)) !important;
+/* Standard page template: extra top pad for first section (body already offsets fixed header) */
+.jcp-marketing:not(.jcp-home) > .jcp-section:first-of-type {
+  padding-top: var(--jcp-space-2xl) !important;
 }
 
 @media (max-width: 768px) {
-  .jcp-marketing > .jcp-section:first-of-type {
-    padding-top: calc(72px + var(--jcp-space-md)) !important;
+  .jcp-marketing:not(.jcp-home) > .jcp-section:first-of-type {
+    padding-top: var(--jcp-space-lg) !important;
   }
 }
 

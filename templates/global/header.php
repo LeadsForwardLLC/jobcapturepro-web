@@ -63,4 +63,14 @@ $body_classes = 'jcp-global-nav-active' . ( $show_top_banner ? ' has-top-banner'
   <?php endif; ?>
   <?php get_template_part( 'templates/partials/nav' ); ?>
   </div>
+  <script>
+  (function () {
+    var stack = document.getElementById('jcpHeaderStack');
+    if (!stack) return;
+    var height = Math.ceil(stack.getBoundingClientRect().height);
+    if (height > 0) {
+      document.documentElement.style.setProperty('--jcp-header-stack-height', height + 'px');
+    }
+  })();
+  </script>
   <div class="jcp-shell">

@@ -1120,14 +1120,14 @@ function syncMobileGuideChrome() {
 function updateMobileLayoutMetrics() {
   if (!isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
   const stepper = $('mobile-stepper');
-  let height = 168;
+  let height = 140;
   if (stepper && !stepper.classList.contains('is-collapsed')) {
     const style = window.getComputedStyle(stepper);
     if (style.display !== 'none' && style.visibility !== 'hidden') {
       height = Math.ceil(stepper.getBoundingClientRect().height);
     }
   } else {
-    height = 72;
+    height = 64;
   }
   document.documentElement.style.setProperty('--jcp-stepper-height', `${height}px`);
 }
@@ -2918,6 +2918,9 @@ function wireOutcomesSlideshow() {
 
 function getDemoAppScrollParents() {
   const screen = document.querySelector('.iphone-frame .screen');
+  if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode')) {
+    return screen ? [screen] : [];
+  }
   const activeApp = document.querySelector('.app-screen.active');
   const contentArea = activeApp?.querySelector('.content-area');
   const parents = [];
@@ -2938,29 +2941,22 @@ function getMobileStepperTop() {
   return stepper.getBoundingClientRect().top;
 }
 
-function scrollGuidedControlIntoView(target, extraGap = 20) {
+function scrollGuidedControlIntoView(target, extraGap = 10) {
   if (!target || !isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
+
+  const screen = document.querySelector('.iphone-frame .screen');
+  if (!screen) return;
 
   const stepperTop = getMobileStepperTop();
   const targetRect = target.getBoundingClientRect();
-  const desiredBottom = stepperTop - extraGap;
+  const screenRect = screen.getBoundingClientRect();
+  const maxVisibleBottom = stepperTop - extraGap;
 
-  getDemoAppScrollParents().forEach((scrollParent) => {
-    const parentRect = scrollParent.getBoundingClientRect();
-    const visibleBottom = Math.min(parentRect.bottom, desiredBottom) - extraGap;
-
-    if (targetRect.bottom > visibleBottom) {
-      scrollParent.scrollBy({
-        top: targetRect.bottom - visibleBottom,
-        behavior: 'smooth',
-      });
-    } else if (targetRect.top < parentRect.top + 12) {
-      scrollParent.scrollBy({
-        top: targetRect.top - parentRect.top - 12,
-        behavior: 'smooth',
-      });
-    }
-  });
+  if (targetRect.bottom > maxVisibleBottom) {
+    screen.scrollTop += targetRect.bottom - maxVisibleBottom;
+  } else if (targetRect.top < screenRect.top + 8) {
+    screen.scrollTop += targetRect.top - screenRect.top - 8;
+  }
 }
 
 function scrollGuidedStepTarget(stepKey) {
@@ -2978,12 +2974,29 @@ function scrollGuidedStepTarget(stepKey) {
 
   updateMobileLayoutMetrics();
   requestAnimationFrame(run);
-  setTimeout(run, 400);
-  setTimeout(run, 950);
+  setTimeout(run, 280);
 }
 
-function scrollDemoTargetIntoView(target, extraGap = 16) {
+function scrollDemoTargetIntoView(target, extraGap = 12) {
   if (!target) return;
+  const screen = document.querySelector('.iphone-frame .screen');
+  if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode') && screen) {
+    const stepperTop = getMobileStepperTop();
+    const targetRect = target.getBoundingClientRect();
+    const screenRect = screen.getBoundingClientRect();
+    const maxVisibleBottom = stepperTop - extraGap;
+
+    if (targetRect.bottom > maxVisibleBottom) {
+      screen.scrollTop += targetRect.bottom - maxVisibleBottom;
+      return;
+    }
+
+    if (targetRect.top < screenRect.top + 8) {
+      screen.scrollTop += targetRect.top - screenRect.top - 8;
+    }
+    return;
+  }
+
   const stepperTop = getMobileStepperTop();
 
   getDemoAppScrollParents().forEach((scrollParent) => {
@@ -3769,6 +3782,7 @@ function showPostDemoPanel() {
   hideMobileSpotlight();
   document.getElementById('tour-float')?.classList.add('is-hidden');
   document.getElementById('tour-bubble')?.classList.add('is-hidden');
+  document.body.classList.add('jcp-post-demo-open');
   updateGuidedCoachBackdrop();
 
   panel.addEventListener('click', postDemoOverlayClose);
@@ -3781,6 +3795,7 @@ function hidePostDemoPanel() {
   if (!panel || !bubble) return;
 
   panel.classList.remove('active');
+  document.body.classList.remove('jcp-post-demo-open');
   if (state.isFinalStep && tour.stepKey === 'step6') {
     bubble.classList.remove('is-hidden');
   } else {

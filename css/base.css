@@ -177,7 +177,7 @@
 
 html {
   color-scheme: light;
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: smooth;
   scroll-padding-top: var(--jcp-header-stack-height, var(--jcp-header-height));
   -webkit-text-size-adjust: 100%;
@@ -190,7 +190,7 @@ body {
   color: #111827;
   background: #ffffff;
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: auto;
   width: 100%;
   max-width: 100vw;
@@ -207,9 +207,8 @@ body.admin-bar .jcp-header-stack {
   top: var(--jcp-adminbar-offset, 0px);
 }
 
-body.has-top-banner {
-  --jcp-header-stack-height: calc(var(--jcp-header-height) + 40px);
-}
+/* Header stack height is measured by jcp-earlybird-banner.js (and inline header script).
+   Do not set --jcp-header-stack-height on body — it overrides the JS value inherited from :root. */
 
 body.admin-bar {
   --jcp-adminbar-offset: 32px;
@@ -247,10 +246,16 @@ img {
   .jcp-container,
   .jcp-shell,
   .jcp-page,
-  .jcp-marketing,
+  .jcp-marketing {
+    min-width: 0;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
   .jcp-section {
     min-width: 0;
-    overflow-x: hidden;
+    /* Avoid overflow-x:hidden here — on iOS it forces overflow-y:auto and traps page scroll */
+    overflow: visible;
   }
 
   .jcp-container {
@@ -259,7 +264,8 @@ img {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow-x: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .btn,
