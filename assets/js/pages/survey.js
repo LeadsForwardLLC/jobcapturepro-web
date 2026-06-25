@@ -653,9 +653,11 @@
     const firstName = getValue('firstName');
     const lastName = getValue('lastName');
     const email = getValue('email');
+    const businessName = getValue('businessName');
+    const niche = getValue('niche');
     localStorage.setItem('demoUser', JSON.stringify({
-      businessName: getValue('businessName'),
-      niche: getValue('niche'),
+      businessName,
+      niche,
       goals,
       firstName,
       lastName,
@@ -670,7 +672,14 @@
         fetch(viewedUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ first_name: firstName, last_name: lastName, email }),
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            company: businessName,
+            business_type: niche,
+            demo_goals: goals,
+          }),
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
       ]);

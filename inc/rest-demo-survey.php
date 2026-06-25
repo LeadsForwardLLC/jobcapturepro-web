@@ -94,11 +94,104 @@ function jcp_core_register_demo_survey_rest_routes(): void {
                     return is_email( $value );
                 },
             ],
+            'company'        => [
+                'required'          => false,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'business_type'  => [
+                'required'          => false,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'service_area'   => [
+                'required'          => false,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'demo_goals'     => [
+                'required'          => false,
+                'type'              => 'array',
+                'items'             => [ 'type' => 'string' ],
+            ],
         ],
     ] );
 }
 
 add_action( 'rest_api_init', 'jcp_core_register_demo_survey_rest_routes' );
+
+/**
+ * Normalize demo contact fields for GHL webhook payloads.
+ *
+ * @param array<string, mixed> $params Request params.
+ * @return array{first_name: string, last_name: string, email: string, phone: string, company: string, business_type: string, service_area: string, use_case: string}
+ */
+function jcp_demo_ghl_normalize_contact_params( array $params ): array {
+    $first_name    = isset( $params['first_name'] ) ? trim( (string) $params['first_name'] ) : '';
+    $last_name     = isset( $params['last_name'] ) ? trim( (string) $params['last_name'] ) : '';
+    $email         = isset( $params['email'] ) ? trim( (string) $params['email'] ) : '';
+    $phone         = isset( $params['phone'] ) ? trim( (string) $params['phone'] ) : '';
+    $company       = isset( $params['company'] ) ? trim( (string) $params['company'] ) : '';
+    $business_type = isset( $params['business_type'] ) ? trim( (string) $params['business_type'] ) : '';
+    $service_area  = isset( $params['service_area'] ) ? trim( (string) $params['service_area'] ) : '';
+
+    $demo_goals = $params['demo_goals'] ?? [];
+    if ( ! is_array( $demo_goals ) ) {
+        $demo_goals = [];
+    }
+    $demo_goals = array_filter( array_map( static function ( $goal ) {
+        return trim( (string) $goal );
+    }, $demo_goals ) );
+
+    $business_type_label = function_exists( 'jcp_core_early_access_business_type_label' )
+        ? jcp_core_early_access_business_type_label( $business_type )
+        : $business_type;
+    if ( $business_type_label === '' ) {
+        $business_type_label = $business_type;
+    }
+
+    return [
+        'first_name'    => $first_name,
+        'last_name'     => $last_name,
+        'email'         => $email,
+        'phone'         => $phone,
+        'company'       => $company,
+        'business_type' => $business_type_label,
+        'service_area'  => $service_area,
+        'use_case'      => implode( ', ', $demo_goals ),
+    ];
+}
+
+/**
+ * Build application/x-www-form-urlencoded GHL webhook body with contact + event + optional tags.
+ *
+ * @param string               $event  GHL Event value.
+ * @param array<string, mixed> $params Contact request params.
+ * @param string[]             $tags   Optional tags.
+ */
+function jcp_demo_ghl_build_webhook_body( string $event, array $params, array $tags = [] ): string {
+    $contact = jcp_demo_ghl_normalize_contact_params( $params );
+    $scalar  = [
+        JCP_GHL_KEY_EVENT         => $event,
+        JCP_GHL_KEY_FIRST_NAME    => $contact['first_name'],
+        JCP_GHL_KEY_LAST_NAME     => $contact['last_name'],
+        JCP_GHL_KEY_EMAIL         => $contact['email'],
+        JCP_GHL_KEY_PHONE         => $contact['phone'],
+        JCP_GHL_KEY_COMPANY       => $contact['company'],
+        JCP_GHL_KEY_BUSINESS_TYPE => $contact['business_type'],
+        JCP_GHL_KEY_SERVICE_AREA  => $contact['service_area'],
+        JCP_GHL_KEY_USE_CASE      => $contact['use_case'],
+    ];
+    $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
+    foreach ( $tags as $tag ) {
+        $tag = trim( (string) $tag );
+        if ( $tag === '' ) {
+            continue;
+        }
+        $body .= '&Tags%5B%5D=' . rawurlencode( $tag );
+    }
+    return $body;
+}
 
 /**
  * Build application/x-www-form-urlencoded body for Demo Survey GHL webhook.
@@ -108,43 +201,7 @@ add_action( 'rest_api_init', 'jcp_core_register_demo_survey_rest_routes' );
  * @return string
  */
 function jcp_core_build_demo_survey_ghl_body( array $params ): string {
-    $first_name    = isset( $params['first_name'] ) ? trim( (string) $params['first_name'] ) : '';
-    $last_name     = isset( $params['last_name'] ) ? trim( (string) $params['last_name'] ) : '';
-    $email         = isset( $params['email'] ) ? trim( (string) $params['email'] ) : '';
-    $phone         = isset( $params['phone'] ) ? trim( (string) $params['phone'] ) : '';
-    $company       = isset( $params['company'] ) ? trim( (string) $params['company'] ) : '';
-    $business_type = isset( $params['business_type'] ) ? trim( (string) $params['business_type'] ) : '';
-    $service_area  = isset( $params['service_area'] ) ? trim( (string) $params['service_area'] ) : '';
-    $demo_goals    = isset( $params['demo_goals'] ) && is_array( $params['demo_goals'] )
-        ? array_filter( array_map( 'trim', $params['demo_goals'] ) )
-        : [];
-
-    $business_type_label = function_exists( 'jcp_core_early_access_business_type_label' )
-        ? jcp_core_early_access_business_type_label( $business_type )
-        : $business_type;
-    if ( $business_type_label === '' ) {
-        $business_type_label = $business_type;
-    }
-
-    $scalar = [
-        JCP_GHL_KEY_EVENT          => 'demo-opt-in',
-        JCP_GHL_KEY_FIRST_NAME     => $first_name,
-        JCP_GHL_KEY_LAST_NAME      => $last_name,
-        JCP_GHL_KEY_EMAIL          => $email,
-        JCP_GHL_KEY_PHONE          => $phone,
-        JCP_GHL_KEY_COMPANY        => $company,
-        JCP_GHL_KEY_BUSINESS_TYPE  => $business_type_label,
-        JCP_GHL_KEY_SERVICE_AREA   => $service_area,
-        JCP_GHL_KEY_USE_CASE       => implode( ', ', $demo_goals ),
-    ];
-    $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
-
-    $tags = [ 'demo-completed', 'demo-interest' ];
-    foreach ( $tags as $tag ) {
-        $body .= '&Tags%5B%5D=' . rawurlencode( $tag );
-    }
-
-    return $body;
+    return jcp_demo_ghl_build_webhook_body( 'demo-opt-in', $params, [ 'demo-completed', 'demo-interest' ] );
 }
 
 /**
@@ -209,23 +266,47 @@ function jcp_core_demo_survey_submit_handler( \WP_REST_Request $request ): \WP_R
 
 /**
  * Build application/x-www-form-urlencoded body for "viewed demo" hit (same webhook, Event=demo-viewed).
- * GHL can branch on Event: if "demo-viewed" → Find Contact by Email → Add Tag "demo-viewed".
  *
- * @param string $first_name First name.
- * @param string $last_name  Last name.
- * @param string $email      Email.
+ * @param array<string, mixed> $params Contact request params.
  * @return string
  */
-function jcp_core_build_demo_viewed_ghl_body( string $first_name, string $last_name, string $email ): string {
-    $scalar = [
-        JCP_GHL_KEY_EVENT      => 'demo-viewed',
-        JCP_GHL_KEY_FIRST_NAME => $first_name,
-        JCP_GHL_KEY_LAST_NAME  => $last_name,
-        JCP_GHL_KEY_EMAIL      => $email,
+function jcp_core_build_demo_viewed_ghl_body( array $params ): string {
+    return jcp_demo_ghl_build_webhook_body( 'demo-viewed', $params, [ 'demo-viewed' ] );
+}
+
+/**
+ * Build contact params for GHL from a REST request (with metadata fallbacks).
+ *
+ * @param \WP_REST_Request     $request  REST request.
+ * @param array<string, mixed>|null $metadata Optional event metadata.
+ * @return array<string, mixed>
+ */
+function jcp_demo_ghl_contact_params_from_request( \WP_REST_Request $request, $metadata = null ): array {
+    $params = [
+        'first_name'    => $request->get_param( 'first_name' ),
+        'last_name'     => $request->get_param( 'last_name' ),
+        'email'         => $request->get_param( 'email' ),
+        'company'       => $request->get_param( 'company' ),
+        'business_type' => $request->get_param( 'business_type' ),
+        'service_area'  => $request->get_param( 'service_area' ),
+        'demo_goals'    => $request->get_param( 'demo_goals' ),
     ];
-    $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
-    $body .= '&Tags%5B%5D=' . rawurlencode( 'demo-viewed' );
-    return $body;
+
+    if ( ! is_array( $metadata ) ) {
+        return $params;
+    }
+
+    if ( trim( (string) $params['company'] ) === '' && ! empty( $metadata['company'] ) ) {
+        $params['company'] = $metadata['company'];
+    }
+    if ( trim( (string) $params['business_type'] ) === '' && ! empty( $metadata['business_type'] ) ) {
+        $params['business_type'] = $metadata['business_type'];
+    }
+    if ( ( ! is_array( $params['demo_goals'] ) || empty( $params['demo_goals'] ) ) && ! empty( $metadata['demo_goals'] ) && is_array( $metadata['demo_goals'] ) ) {
+        $params['demo_goals'] = $metadata['demo_goals'];
+    }
+
+    return $params;
 }
 
 /**
@@ -308,54 +389,34 @@ function jcp_demo_ghl_milestone_is_first_for_session( string $session_id, string
 /**
  * Build GHL webhook body for a demo milestone (find-contact branches in GHL Demo Start workflow).
  *
- * @param string   $event      GHL Event value.
- * @param string   $email      Contact email.
- * @param string   $first_name First name.
- * @param string   $last_name  Last name.
- * @param string[] $tags       Tags to include in payload.
+ * @param string               $event  GHL Event value.
+ * @param array<string, mixed> $params Contact request params.
+ * @param string[]             $tags   Tags to include in payload.
  */
-function jcp_demo_ghl_build_milestone_body( string $event, string $email, string $first_name, string $last_name, array $tags ): string {
-    $scalar = [
-        JCP_GHL_KEY_EVENT      => $event,
-        JCP_GHL_KEY_EMAIL      => $email,
-        JCP_GHL_KEY_FIRST_NAME => $first_name,
-        JCP_GHL_KEY_LAST_NAME  => $last_name,
-    ];
-    $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
-    foreach ( $tags as $tag ) {
-        $tag = trim( (string) $tag );
-        if ( $tag === '' ) {
-            continue;
-        }
-        $body .= '&Tags%5B%5D=' . rawurlencode( $tag );
-    }
-    return $body;
+function jcp_demo_ghl_build_milestone_body( string $event, array $params, array $tags ): string {
+    return jcp_demo_ghl_build_webhook_body( $event, $params, $tags );
 }
 
 /**
  * Forward a demo analytics milestone to the Demo Survey GHL webhook when mapped.
  *
- * @param string     $session_id Session ID.
- * @param string     $event_type Analytics event type.
- * @param array|null $metadata   Event metadata.
- * @param string     $email      Contact email.
- * @param string     $first_name First name.
- * @param string     $last_name  Last name.
+ * @param string               $session_id      Session ID.
+ * @param string               $event_type      Analytics event type.
+ * @param array|null           $metadata        Event metadata.
+ * @param array<string, mixed> $contact_params  Contact fields for GHL.
  */
 function jcp_demo_ghl_maybe_forward_demo_milestone(
     string $session_id,
     string $event_type,
     $metadata,
-    string $email,
-    string $first_name,
-    string $last_name
+    array $contact_params
 ): void {
     if ( ! defined( 'JCP_GHL_DEMO_SURVEY_WEBHOOK_URL' ) ) {
         return;
     }
 
-    $email = trim( $email );
-    if ( $email === '' || ! is_email( $email ) ) {
+    $contact = jcp_demo_ghl_normalize_contact_params( $contact_params );
+    if ( $contact['email'] === '' || ! is_email( $contact['email'] ) ) {
         return;
     }
 
@@ -370,9 +431,7 @@ function jcp_demo_ghl_maybe_forward_demo_milestone(
 
     $body_string = jcp_demo_ghl_build_milestone_body(
         $mapping['event'],
-        $email,
-        trim( $first_name ),
-        trim( $last_name ),
+        $contact_params,
         $mapping['tags']
     );
 
@@ -389,7 +448,12 @@ function jcp_demo_ghl_maybe_forward_demo_milestone(
 
     if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
         $code = wp_remote_retrieve_response_code( $response );
-        error_log( 'JCP Demo GHL milestone: event=' . $mapping['event'] . ' email=' . $email . ' http=' . (string) $code );
+        error_log(
+            'JCP Demo GHL milestone: event=' . $mapping['event']
+            . ' email=' . $contact['email']
+            . ' company=' . $contact['company']
+            . ' http=' . (string) $code
+        );
     }
 }
 
@@ -411,7 +475,17 @@ function jcp_core_demo_viewed_submit_handler( \WP_REST_Request $request ): \WP_R
         );
     }
 
-    $body_string = jcp_core_build_demo_viewed_ghl_body( $first_name, $last_name, $email );
+    $body_string = jcp_core_build_demo_viewed_ghl_body(
+        [
+            'first_name'    => $first_name,
+            'last_name'     => $last_name,
+            'email'         => $email,
+            'company'       => $request->get_param( 'company' ),
+            'business_type' => $request->get_param( 'business_type' ),
+            'service_area'  => $request->get_param( 'service_area' ),
+            'demo_goals'    => $request->get_param( 'demo_goals' ),
+        ]
+    );
 
     $response = wp_remote_post(
         JCP_GHL_DEMO_SURVEY_WEBHOOK_URL,

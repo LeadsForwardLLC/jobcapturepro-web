@@ -343,6 +343,9 @@ function getDemoContactPayload() {
       email: String(user.email).trim(),
       first_name: String(user.firstName || '').trim(),
       last_name: String(user.lastName || '').trim(),
+      company: String(user.businessName || '').trim(),
+      business_type: String(user.niche || '').trim(),
+      demo_goals: Array.isArray(user.goals) ? user.goals : undefined,
     };
   } catch (e) {
     return {};

@@ -142,6 +142,21 @@ function jcp_demo_analytics_register_rest_route(): void {
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
+            'company'      => [
+                'required'          => false,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'business_type' => [
+                'required'          => false,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'demo_goals'   => [
+                'required' => false,
+                'type'     => 'array',
+                'items'    => [ 'type' => 'string' ],
+            ],
         ],
     ] );
 }
@@ -211,16 +226,21 @@ function jcp_demo_analytics_handle_event( \WP_REST_Request $request ) {
     jcp_demo_analytics_upsert_session_from_event( $session_id, $event_type, $metadata, $meta_json );
 
     if ( function_exists( 'jcp_demo_ghl_maybe_forward_demo_milestone' ) ) {
-        $email      = trim( (string) $request->get_param( 'email' ) );
-        $first_name = trim( (string) $request->get_param( 'first_name' ) );
-        $last_name  = trim( (string) $request->get_param( 'last_name' ) );
+        $contact_params = function_exists( 'jcp_demo_ghl_contact_params_from_request' )
+            ? jcp_demo_ghl_contact_params_from_request( $request, is_array( $metadata ) ? $metadata : null )
+            : [
+                'first_name'    => $request->get_param( 'first_name' ),
+                'last_name'     => $request->get_param( 'last_name' ),
+                'email'         => $request->get_param( 'email' ),
+                'company'       => $request->get_param( 'company' ),
+                'business_type' => $request->get_param( 'business_type' ),
+                'demo_goals'    => $request->get_param( 'demo_goals' ),
+            ];
         jcp_demo_ghl_maybe_forward_demo_milestone(
             $session_id,
             $event_type,
             is_array( $metadata ) ? $metadata : null,
-            $email,
-            $first_name,
-            $last_name
+            $contact_params
         );
     }
 
