@@ -3140,6 +3140,117 @@ body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) #btnRequestReview {
 }
 
 /* Bottom coach sheet */
+body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.mobile-stepper-step {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.01em;
+}
+
+.mobile-stepper-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-stepper-hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ff503e;
+  line-height: 1.35;
+}
+
+.mobile-stepper-hint[hidden] {
+  display: none !important;
+}
+
+.create-sheet-item__demo-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.create-sheet-item.is-demo-disabled .create-sheet-item__desc {
+  opacity: 0.65;
+}
+
+/* Step 6 outcomes recap */
+.demo-outcomes {
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
+.demo-outcomes-eyebrow {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.demo-outcomes-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.demo-outcomes .demo-publish-list {
+  margin: 0;
+  padding: 0;
+}
+
+.demo-review-received--recap {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+.demo-review-received-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-review-received-head strong {
+  margin: 0;
+}
+
+.demo-review-received--recap .demo-review-received-stars {
+  font-size: 13px;
+}
+
+.demo-review-received-photo {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.demo-review-received--recap p {
+  font-size: 13px;
+  font-style: italic;
+}
+
 body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page) .mobile-stepper {
   display: flex !important;
   flex-direction: column;
@@ -3688,8 +3799,12 @@ body.jcp-desktop-guided .demo-container {
   align-content: center;
 }
 
+body.jcp-guided-demo:not(.is-mobile-mode) .mobile-stepper-header {
+  padding: 0 4px;
+}
+
 body.jcp-desktop-guided .mobile-demo-shell {
-  display: block !important;
+  display: none !important;
 }
 
 body.jcp-desktop-guided .mobile-demo-top {

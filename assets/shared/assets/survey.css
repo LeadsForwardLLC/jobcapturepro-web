@@ -1185,6 +1185,18 @@ select.survey-input {
 .deck-tile:nth-child(3) { animation-delay: 0.4s; }
 .deck-tile:nth-child(4) { animation-delay: 0.6s; }
 
+.deck-slide--channels.is-sequencing .deck-tile {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.deck-slide--channels.is-sequencing .deck-tile.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .tile-icon {
   display: inline-flex;
   align-items: center;
@@ -2069,6 +2081,15 @@ input::-webkit-textfield-decoration-container {
     -webkit-overflow-scrolling: touch;
   }
 
+  .survey-card:has(.survey-deck.active) {
+    overflow: hidden;
+    height: 100dvh;
+    height: 100vh;
+    max-height: 100dvh;
+    max-height: 100vh;
+    padding-bottom: 0;
+  }
+
   .survey-card::before {
     display: none;
   }
@@ -2210,7 +2231,7 @@ input::-webkit-textfield-decoration-container {
     flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
-    --deck-footer-h: calc(76px + env(safe-area-inset-bottom, 0px) + 3px);
+    --deck-footer-h: calc(84px + env(safe-area-inset-bottom, 0px) + 3px);
   }
 
   .survey-deck .deck {
@@ -2231,17 +2252,36 @@ input::-webkit-textfield-decoration-container {
   }
 
   .deck-slide h2 {
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1.2;
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     padding-right: 0;
   }
 
   .deck-lead {
-    font-size: 15px;
-    line-height: 1.5;
-    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+
+  .deck-slide--intro .deck-flow {
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 0;
+  }
+
+  .deck-slide--intro .deck-flow-card {
+    padding: 10px 12px;
+  }
+
+  .deck-slide--intro .deck-flow-title {
+    font-size: 13px;
+  }
+
+  .deck-slide--intro .deck-flow-sub {
+    font-size: 12px;
+    line-height: 1.35;
   }
 
   .deck-flow {
@@ -2315,6 +2355,34 @@ input::-webkit-textfield-decoration-container {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     margin-top: 10px;
+  }
+
+  .deck-slide--channels .deck-tiles {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .deck-slide--channels .deck-tile {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+
+  .deck-slide--channels .tile-icon {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 6px;
+  }
+
+  .deck-slide--channels .tile-icon img {
+    width: 18px;
+    height: 18px;
   }
 
   .deck-tile {

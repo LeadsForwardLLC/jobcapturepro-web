@@ -511,32 +511,38 @@ const demoGuideContent = {
   step1: {
     pill: 'Step 1',
     title: 'Start the demo',
-    body: 'Tap “Start Demo” above to begin the walkthrough.'
+    body: 'Tap Start Demo above. You will walk through the real workflow step by step.',
+    interactHint: 'Tap the highlighted Start Demo button.'
   },
   step2: {
     pill: 'Step 2',
     title: 'Tap + to create a check-in',
-    body: 'This is what your tech does on each job. One quick check-in powers everything.'
+    body: 'This is what your tech does on each job. One quick check-in powers everything.',
+    interactHint: 'Tap the + button, then choose New Check-in.'
   },
   step3: {
     pill: 'Step 3',
     title: 'Add a photo, then submit',
-    body: 'Photos alone generate the job content. Add one photo and press “Submit”.'
+    body: 'Photos generate the job content. Add one photo, then tap Submit.',
+    interactHint: 'Tap the camera, add a photo, then tap Submit.'
   },
   step4: {
     pill: 'Step 4',
     title: 'Publish the job',
-    body: 'Tap “Save & Publish” to push this job to your website + Google + Facebook.'
+    body: 'Tap Save & Publish to push this job to your website, Google, and Facebook.',
+    interactHint: 'Tap Save & Publish to continue.'
   },
   step5: {
     pill: 'Step 5',
     title: 'Request a review',
-    body: 'Send the automated review request — it includes photos from this job.'
+    body: 'Review requests go out automatically. Tap Request Review to preview it.',
+    interactHint: 'Tap Request Review to preview the automatic send.'
   },
   step6: {
     pill: 'Final step',
     title: 'One job. Full automation.',
-    body: 'Every finished job can drive more calls — without extra work. Tap below to start free.'
+    body: 'Every finished job can drive more calls without extra work. Tap below to start free.',
+    interactHint: ''
   }
 };
 
@@ -1059,13 +1065,10 @@ function toggleMobileGuideCollapse() {
 }
 
 function syncMobileGuideChrome() {
-  const shell = $('mobile-demo-shell');
   if (!isGuidedDemoRun()) {
-    shell?.setAttribute('hidden', '');
     updateGuidedCoachBackdrop();
     return;
   }
-  shell?.removeAttribute('hidden');
 
   const stepKey = tour.stepKey;
   const step = stepKey ? demoGuideContent[stepKey] : null;
@@ -1073,13 +1076,12 @@ function syncMobileGuideChrome() {
   const total = 6;
 
   if (stepNum) {
-    safeText('mobileDemoStep', `${stepNum}/${total}`);
+    safeText('mobileDemoStep', `Step ${stepNum} of ${total}`);
     const fill = $('mobileStepProgressFill');
     if (fill) fill.style.width = `${(stepNum / total) * 100}%`;
   }
 
   if (step) {
-    safeText('mobileStepEyebrow', step.pill);
     safeText('mobileStepTitle', step.title);
     safeText('mobileStepBody', step.body);
     safeText('mobileGuidePillText', step.pill);
@@ -1092,10 +1094,21 @@ function syncMobileGuideChrome() {
 
 function updateMobileStepperLabel() {
   const btn = $('btnMobileNext');
+  const hint = $('mobileStepInteractHint');
   if (!btn || !isGuidedDemoRun()) return;
+
   const label = tour.stepKey ? getNextLabelForStep(tour.stepKey) : 'Next →';
   btn.textContent = label;
-  btn.style.display = tour.stepKey === 'step1' ? 'none' : '';
+
+  const hideNext = tour.stepKey !== 'step6';
+  btn.style.display = hideNext ? 'none' : '';
+
+  if (hint) {
+    const step = tour.stepKey ? demoGuideContent[tour.stepKey] : null;
+    const hintText = step?.interactHint || '';
+    hint.textContent = hintText;
+    hint.hidden = !hideNext || !hintText;
+  }
 }
 
 /* =========================================================
@@ -1204,6 +1217,7 @@ function setTourStep(stepKey) {
   }
   updateTourNextLabel(getNextLabelForStep(stepKey));
   updateMobileStepperLabel();
+  syncCreateSheetDemoState();
   // Disable back buttons during guided steps (prevents breaking the flow) — skip on prototype
   if (!isPrototype) {
     lockBackButtons(['step2','step3','step4','step5'].includes(stepKey));
@@ -1773,9 +1787,21 @@ function openCreateActionSheet() {
   $('fabNewCheckin')?.classList.remove('fab-attention', 'fab-glow');
   document.querySelectorAll('.fab').forEach((el) => el.classList.add('is-sheet-open'));
 
+  syncCreateSheetDemoState();
   overlay.classList.add('is-open');
   sheet.classList.add('is-open');
   overlay.setAttribute('aria-hidden', 'false');
+}
+
+function syncCreateSheetDemoState() {
+  const reviewBtn = $('create-action-review');
+  const demoNote = $('createReviewDemoNote');
+  if (!reviewBtn) return;
+
+  const disabled = isGuidedDemoRun() && tour.stepKey === 'step2';
+  reviewBtn.classList.toggle('is-demo-disabled', disabled);
+  reviewBtn.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+  if (demoNote) demoNote.hidden = !disabled;
 }
 
 function closeCreateActionSheet() {
@@ -1790,6 +1816,10 @@ function closeCreateActionSheet() {
 }
 
 function handleCreateAction(action) {
+  if (action === 'review' && isGuidedDemoRun() && tour.stepKey === 'step2') {
+    showDemoRestrictionTooltip($('create-action-review'), 'Send review request is not available in the demo');
+    return;
+  }
   closeCreateActionSheet();
   if (action === 'review') {
     goToReviewRequestOptions('home-screen');
@@ -2243,7 +2273,7 @@ async function runGuidedPublishSequence() {
   items.forEach((item) => item.classList.remove('is-done'));
 
   for (let i = 0; i < items.length; i++) {
-    await wait(380);
+    await wait(580);
     items[i].classList.add('is-done');
     if (i === 1) {
       await publishToSocial();
@@ -2330,7 +2360,7 @@ async function confirmDemoReviewSend() {
   }
   if (sendBtn) {
     sendBtn.disabled = false;
-    sendBtn.textContent = 'Send request';
+    sendBtn.textContent = 'Send';
   }
 
   await completeGuidedReviewFlow();
@@ -2388,17 +2418,31 @@ async function showDemoOutcomesRecap() {
   if (screenEl) screenEl.scrollTop = 0;
 
   for (let i = 0; i < DEMO_OUTCOME_ITEMS.length; i++) {
-    await wait(260);
+    await wait(520);
     const li = document.createElement('li');
-    li.className = 'demo-outcomes-item is-done';
-    li.innerHTML = `<span class="demo-outcomes-check" aria-hidden="true"></span><span>${DEMO_OUTCOME_ITEMS[i]}</span>`;
+    li.className = 'demo-publish-item';
+    li.innerHTML = `<span class="demo-publish-check" aria-hidden="true"></span>${DEMO_OUTCOME_ITEMS[i]}`;
     list.appendChild(li);
+    requestAnimationFrame(() => li.classList.add('is-done'));
   }
 
-  await wait(480);
+  await wait(560);
   if (review) {
+    const checkin = getCurrentCheckinForReview();
+    const photo = $('demoReviewReceivedPhoto');
+    if (photo) {
+      photo.src = checkin?.image || demoPhotos[0] || '';
+      photo.alt = checkin?.title || 'Completed check-in';
+    }
     review.hidden = false;
     requestAnimationFrame(() => review.classList.add('is-visible'));
+  }
+
+  await wait(400);
+  const scrollParent = contentArea || screenEl;
+  if (scrollParent && panel) {
+    const top = Math.max(0, panel.offsetTop - 16);
+    scrollParent.scrollTo({ top, behavior: 'smooth' });
   }
 }
 

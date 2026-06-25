@@ -71,7 +71,7 @@
 
                             <div class="empty-state">
                                 <h3>Start capturing proof</h3>
-                                <p>Take a few photos → submit → automatically published everywhere.</p>
+                                <p>Take a few photos, submit, and get published everywhere.</p>
                                 <div class="empty-hint">
                                     <span>Tap <strong>+</strong> to create a check-in</span>
                                 </div>
@@ -81,14 +81,15 @@
                             <div class="demo-outcomes" id="demoOutcomes" hidden>
                               <p class="demo-outcomes-eyebrow">Automations completed</p>
                               <h3 class="demo-outcomes-title">This job ran on autopilot</h3>
-                              <ul class="demo-outcomes-list" id="demoOutcomesList" aria-live="polite"></ul>
+                              <ul class="demo-outcomes-list demo-publish-list" id="demoOutcomesList" aria-live="polite"></ul>
                               <div class="demo-review-received demo-review-received--recap" id="demoReviewReceived" hidden>
-                                <div class="demo-review-received-stars" aria-hidden="true">★★★★★</div>
-                                <div>
+                                <div class="demo-review-received-head">
+                                  <div class="demo-review-received-stars" aria-hidden="true">★★★★★</div>
                                   <strong>New 5-star review</strong>
-                                  <p>"Great service — fast and professional!"</p>
-                                  <small>Arrived right after your request</small>
                                 </div>
+                                <img class="demo-review-received-photo" id="demoReviewReceivedPhoto" src="" alt="" width="280" height="160" loading="lazy">
+                                <p>"Great service, fast and very professional!"</p>
+                                <small>Arrived right after your request</small>
                               </div>
                             </div>
                         </div>
@@ -444,6 +445,7 @@
                         <span class="create-sheet-item__text-wrap">
                             <span class="create-sheet-item__title">Send Review Request</span>
                             <span class="create-sheet-item__desc">Ask a customer for a review by SMS or email.</span>
+                            <span class="create-sheet-item__demo-note" id="createReviewDemoNote" hidden>Not available in demo</span>
                         </span>
                         <img src="../../shared/assets/icons/lucide/arrow-right.svg" class="lucide-icon lucide-icon-sm" alt="" aria-hidden="true">
                     </button>
@@ -461,8 +463,8 @@
         <!-- Review Request Modal -->
         <div class="modal-overlay" id="review-modal">
             <div class="modal modal--review-demo">
-                <h3>Send review request</h3>
-                <p class="modal-sub">Runs automatically on every completed job</p>
+                <h3>Review request</h3>
+                <p class="modal-sub">This runs automatically after every job. Preview only, nothing for your crew to do.</p>
                 <div class="demo-review-job" id="demoReviewJob">
                     <img id="demoReviewPhoto" src="" alt="" width="72" height="72" loading="lazy">
                     <div class="demo-review-job-copy">
@@ -473,7 +475,7 @@
                 <textarea class="input-field" id="demoReviewMessage" rows="3" placeholder="Add a personal note (optional)"></textarea>
                 <div class="modal-actions">
                     <button class="btn btn-ghost" type="button" onclick="closeReviewDialog()">Cancel</button>
-                    <button class="btn btn-primary" type="button" id="btnDemoReviewSend"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send request</button>
+                    <button class="btn btn-primary" type="button" id="btnDemoReviewSend"><img src="../../shared/assets/icons/lucide/send.svg" class="lucide-icon lucide-icon-sm" alt=""> Send</button>
                 </div>
             </div>
         </div>
@@ -620,10 +622,15 @@
 <div class="mobile-spotlight" id="mobileSpotlight" aria-hidden="true"></div>
 <div class="guided-coach-backdrop" id="guidedCoachBackdrop" hidden></div>
 
-<div class="mobile-demo-shell" id="mobile-demo-shell" hidden>
-  <div class="mobile-demo-top">
-    <span class="mobile-demo-step" id="mobileDemoStep">1/6</span>
-    <div class="mobile-demo-top-actions">
+<button type="button" class="mobile-guide-pill" id="mobileGuidePill" hidden>
+  <span class="mobile-guide-pill-dot" aria-hidden="true"></span>
+  <span id="mobileGuidePillText">Step 1</span>
+</button>
+
+<div class="mobile-stepper" id="mobile-stepper" style="display:none;">
+  <div class="mobile-stepper-header">
+    <span class="mobile-stepper-step" id="mobileDemoStep">Step 1 of 6</span>
+    <div class="mobile-stepper-header-actions">
       <button type="button" class="mobile-guide-minimize" id="mobileGuideMinimize" aria-label="Minimize guide">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14"/></svg>
       </button>
@@ -634,19 +641,11 @@
       </button>
     </div>
   </div>
-</div>
-
-<button type="button" class="mobile-guide-pill" id="mobileGuidePill" hidden>
-  <span class="mobile-guide-pill-dot" aria-hidden="true"></span>
-  <span id="mobileGuidePillText">Step 1</span>
-</button>
-
-<div class="mobile-stepper" id="mobile-stepper" style="display:none;">
   <div class="mobile-stepper-grab" aria-hidden="true"></div>
   <div class="mobile-stepper-copy">
-    <span class="mobile-stepper-eyebrow" id="mobileStepEyebrow">Step 1</span>
     <p class="mobile-stepper-title" id="mobileStepTitle">Start the demo</p>
     <p class="mobile-stepper-body" id="mobileStepBody">Tap Start Demo to begin.</p>
+    <p class="mobile-stepper-hint" id="mobileStepInteractHint" hidden>Follow the highlight to continue.</p>
   </div>
   <button class="btn btn-primary btn-full" id="btnMobileNext" type="button">Next →</button>
   <div class="mobile-stepper-progress" aria-hidden="true">
@@ -668,7 +667,7 @@
     </button>
 
     <h2 class="post-demo-simple-title">Turn every job into more calls</h2>
-    <p class="post-demo-simple-body">Your crew checks in once. JobCapturePro publishes everywhere and collects reviews — so you win more work without chasing follow-ups.</p>
+    <p class="post-demo-simple-body">Your crew checks in once. JobCapturePro publishes everywhere and collects reviews so you win more work without chasing follow ups.</p>
 
     <div class="post-demo-actions">
       <a class="btn btn-primary post-demo-primary-cta" href="https://app.jobcapturepro.com/onboarding?sessionId=75ad8454-312e-4224-95b7-8f48f5cd0277&amp;step=1&amp;utm_source=jobcapturepro.com&amp;utm_medium=website&amp;utm_campaign=onboarding&amp;utm_content=demo_static_assets">

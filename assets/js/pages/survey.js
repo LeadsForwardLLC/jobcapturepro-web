@@ -181,6 +181,8 @@
   let currentIndex = 0;
   let deckIndex = 0;
   let rankTimers = [];
+  let channelTimers = [];
+  const rankBox = document.getElementById('surveyRankBox');
 
   function getSurveySessionId() {
     const key = 'jcp_demo_session_id';
@@ -386,6 +388,36 @@
     setRankNums(1, 2, 3);
   };
 
+  const clearChannelTimers = () => {
+    if (!channelTimers.length) return;
+    channelTimers.forEach((id) => clearTimeout(id));
+    channelTimers = [];
+  };
+
+  const resetChannelTiles = () => {
+    const slide = deckSlides.find((el) => el.classList.contains('deck-slide--channels'));
+    if (!slide) return;
+    slide.classList.remove('is-sequencing');
+    slide.querySelectorAll('.deck-tile').forEach((tile) => tile.classList.remove('is-visible'));
+  };
+
+  const runChannelsSequence = () => {
+    const slide = deckSlides.find((el) => el.classList.contains('deck-slide--channels'));
+    if (!slide) return;
+    const tiles = [...slide.querySelectorAll('.deck-tile')];
+    if (!tiles.length) return;
+
+    clearChannelTimers();
+    resetChannelTiles();
+    slide.classList.add('is-sequencing');
+
+    tiles.forEach((tile, idx) => {
+      channelTimers.push(setTimeout(() => {
+        tile.classList.add('is-visible');
+      }, 180 + idx * 420));
+    });
+  };
+
   const runRankSequence = () => {
     if (!rankList) return;
     resetRankState();
@@ -399,6 +431,29 @@
       rankList.classList.add('promote-step-2');
       setRankNums(2, 3, 1);
     }, 1250));
+  };
+
+  const runRankSlideSequence = () => {
+    if (!rankList) return;
+    resetRankState();
+    clearRankTimers();
+
+    if (!isMobileSurvey()) {
+      runRankSequence();
+      return;
+    }
+
+    rankTimers.push(setTimeout(() => {
+      const scrollEl = deckSlidesWrap;
+      if (scrollEl && rankBox) {
+        const top = rankBox.getBoundingClientRect().top
+          - scrollEl.getBoundingClientRect().top
+          + scrollEl.scrollTop
+          - 8;
+        scrollEl.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      }
+      rankTimers.push(setTimeout(() => runRankSequence(), 650));
+    }, 3000));
   };
 
   const setDeckUI = () => {
@@ -424,15 +479,26 @@
       deckPrevBtn.classList.toggle('is-hidden', isMobileSurvey() || deckIndex === 0);
     }
 
+    if (deckSlidesWrap) deckSlidesWrap.scrollTop = 0;
+
     if (rankList) {
       const isRankSlide = deckIndex === 3;
       clearRankTimers();
       if (isRankSlide) {
-        runRankSequence();
+        runRankSlideSequence();
       } else {
         resetRankState();
       }
     }
+
+    const isChannelsSlide = deckIndex === 4;
+    clearChannelTimers();
+    if (isChannelsSlide) {
+      runChannelsSequence();
+    } else {
+      resetChannelTiles();
+    }
+
     saveSurveyProgress();
   };
 
