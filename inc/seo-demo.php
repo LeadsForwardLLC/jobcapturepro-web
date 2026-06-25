@@ -66,79 +66,72 @@ function jcp_core_demo_default_description(): string {
 }
 
 /**
- * Attach demo SEO filters (noindex + title/description/canonical).
+ * Resolve the demo page title (Rank Math meta, page title, or default).
+ *
+ * @return string
+ */
+function jcp_core_get_demo_document_title(): string {
+	$page = jcp_core_get_demo_page();
+	if ( $page ) {
+		foreach ( [ 'rank_math_title', '_rank_math_title' ] as $meta_key ) {
+			$rank_math_title = trim( (string) get_post_meta( $page->ID, $meta_key, true ) );
+			if ( $rank_math_title !== '' ) {
+				return wp_strip_all_tags( $rank_math_title );
+			}
+		}
+
+		$page_title = get_the_title( $page );
+		if ( is_string( $page_title ) && $page_title !== '' ) {
+			return $page_title;
+		}
+	}
+
+	return jcp_core_demo_default_title();
+}
+
+/**
+ * Full browser title: page title + site name.
+ *
+ * @return string
+ */
+function jcp_core_get_demo_full_document_title(): string {
+	return jcp_core_get_demo_document_title() . ' - ' . get_bloginfo( 'name' );
+}
+
+/**
+ * Resolve demo meta description.
+ *
+ * @return string
+ */
+function jcp_core_get_demo_meta_description(): string {
+	$page = jcp_core_get_demo_page();
+	if ( $page ) {
+		foreach ( [ 'rank_math_description', '_rank_math_description' ] as $meta_key ) {
+			$description = trim( (string) get_post_meta( $page->ID, $meta_key, true ) );
+			if ( $description !== '' ) {
+				return $description;
+			}
+		}
+	}
+
+	return jcp_core_demo_default_description();
+}
+
+/**
+ * Clear 404 state and prime the demo page query before SEO plugins run.
  *
  * @return void
  */
-function jcp_core_apply_demo_seo(): void {
+function jcp_core_bootstrap_demo_request(): void {
 	if ( ! jcp_core_is_demo_request() ) {
 		return;
 	}
 
-	$canonical = home_url( '/demo/' );
+	global $wp_query;
 
-	add_filter(
-		'rank_math/frontend/robots',
-		static function () {
-			return [
-				'index'  => 'noindex',
-				'follow' => 'nofollow',
-			];
-		},
-		99
-	);
-
-	if ( ! defined( 'RANK_MATH_VERSION' ) ) {
-		add_action(
-			'wp_head',
-			static function () {
-				echo '<meta name="robots" content="noindex, nofollow">' . "\n";
-			},
-			0
-		);
-	}
-
-	add_filter(
-		'rank_math/frontend/canonical',
-		static function () use ( $canonical ) {
-			return $canonical;
-		},
-		10
-	);
-
-	$page = jcp_core_get_demo_page();
-	if ( $page ) {
-		return;
-	}
-
-	$title       = jcp_core_demo_default_title();
-	$description = jcp_core_demo_default_description();
-	$site_name   = get_bloginfo( 'name' );
-
-	add_filter(
-		'document_title_parts',
-		static function ( $parts ) use ( $title ) {
-			$parts['title'] = $title;
-			return $parts;
-		},
-		999
-	);
-
-	add_filter(
-		'rank_math/frontend/title',
-		static function () use ( $title, $site_name ) {
-			return $title . ' - ' . $site_name;
-		},
-		99
-	);
-
-	add_filter(
-		'rank_math/frontend/description',
-		static function () use ( $description ) {
-			return $description;
-		},
-		99
-	);
+	$wp_query->is_404 = false;
+	status_header( 200 );
+	jcp_core_prime_demo_page_query();
 }
 
 /**
@@ -171,4 +164,83 @@ function jcp_core_prime_demo_page_query(): void {
 	setup_postdata( $page );
 }
 
-add_action( 'template_redirect', 'jcp_core_apply_demo_seo', 5 );
+/**
+ * Attach demo SEO filters (noindex + title/description/canonical).
+ *
+ * @return void
+ */
+function jcp_core_apply_demo_seo(): void {
+	if ( ! jcp_core_is_demo_request() ) {
+		return;
+	}
+
+	$canonical   = home_url( '/demo/' );
+	$title       = jcp_core_get_demo_document_title();
+	$full_title  = jcp_core_get_demo_full_document_title();
+	$description = jcp_core_get_demo_meta_description();
+
+	add_filter(
+		'pre_get_document_title',
+		static function () use ( $full_title ) {
+			return $full_title;
+		},
+		999
+	);
+
+	add_filter(
+		'document_title_parts',
+		static function ( $parts ) use ( $title ) {
+			$parts['title'] = $title;
+			return $parts;
+		},
+		999
+	);
+
+	add_filter(
+		'rank_math/frontend/title',
+		static function () use ( $full_title ) {
+			return $full_title;
+		},
+		999
+	);
+
+	add_filter(
+		'rank_math/frontend/description',
+		static function () use ( $description ) {
+			return $description;
+		},
+		999
+	);
+
+	add_filter(
+		'rank_math/frontend/canonical',
+		static function () use ( $canonical ) {
+			return $canonical;
+		},
+		999
+	);
+
+	add_filter(
+		'rank_math/frontend/robots',
+		static function () {
+			return [
+				'index'  => 'noindex',
+				'follow' => 'nofollow',
+			];
+		},
+		999
+	);
+
+	if ( ! defined( 'RANK_MATH_VERSION' ) ) {
+		add_action(
+			'wp_head',
+			static function () {
+				echo '<meta name="robots" content="noindex, nofollow">' . "\n";
+			},
+			0
+		);
+	}
+}
+
+add_action( 'template_redirect', 'jcp_core_bootstrap_demo_request', 0 );
+add_action( 'template_redirect', 'jcp_core_apply_demo_seo', 1 );

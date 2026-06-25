@@ -28,6 +28,7 @@
  * @return void
  */
 function jcp_core_register_directory_routes(): void {
+    add_rewrite_rule( '^demo/?$', 'index.php?jcp_route=demo', 'top' );
     add_rewrite_rule( '^directory/?$', 'index.php?jcp_route=directory', 'top' );
     add_rewrite_rule( '^directory/([^/]+)/?$', 'index.php?jcp_route=company&jcp_company_slug=$matches[1]', 'top' );
     add_rewrite_rule( '^company/?$', 'index.php?jcp_route=company', 'top' );
@@ -55,10 +56,7 @@ function jcp_core_directory_route_template_redirect(): void {
     $route = get_query_var( 'jcp_route', '' );
 
     if ( $route === 'demo' ) {
-        global $wp_query;
-        $wp_query->is_404 = false;
-        status_header( 200 );
-        jcp_core_prime_demo_page_query();
+        jcp_core_bootstrap_demo_request();
         return;
     }
 
@@ -154,6 +152,21 @@ add_action( 'init', 'jcp_core_register_directory_routes' );
 add_filter( 'query_vars', 'jcp_core_register_route_query_var' );
 add_action( 'template_redirect', 'jcp_core_directory_route_template_redirect' );
 add_filter( 'template_include', 'jcp_core_directory_route_template_include', 5 );
+
+/**
+ * Flush rewrite rules once after deploy when route definitions change.
+ *
+ * @return void
+ */
+function jcp_core_maybe_flush_route_rewrites(): void {
+    $version = '2026-05-20-demo-route';
+    if ( get_option( 'jcp_core_route_rewrite_version' ) === $version ) {
+        return;
+    }
+    flush_rewrite_rules( false );
+    update_option( 'jcp_core_route_rewrite_version', $version, false );
+}
+add_action( 'init', 'jcp_core_maybe_flush_route_rewrites', 99 );
 
 /**
  * Force prototype templates by route path.
@@ -337,7 +350,7 @@ function jcp_core_fallback_template_routes(): void {
     status_header( 200 );
 
     if ( $path_segment === 'demo' ) {
-        jcp_core_prime_demo_page_query();
+        jcp_core_bootstrap_demo_request();
     }
 
     $route_titles = [
