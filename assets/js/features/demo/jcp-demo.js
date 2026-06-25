@@ -1260,6 +1260,7 @@ function setTourStep(stepKey) {
 
   updateTourFloating();
   applyFocalPoint();
+  scrollGuidedStepTarget(stepKey);
 }
 
 function getNextLabelForStep(stepKey) {
@@ -2400,6 +2401,58 @@ function hideDemoOutcomes() {
   }
   const list = $('demoOutcomesList');
   if (list) list.innerHTML = '';
+}
+
+function getMobileStepperTop() {
+  const stepper = $('mobile-stepper');
+  if (!stepper || stepper.classList.contains('is-collapsed')) {
+    return window.innerHeight - 72;
+  }
+  const style = window.getComputedStyle(stepper);
+  if (style.display === 'none' || style.visibility === 'hidden') {
+    return window.innerHeight - 72;
+  }
+  return stepper.getBoundingClientRect().top;
+}
+
+function scrollGuidedControlIntoView(target, extraGap = 24) {
+  if (!target || !isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
+
+  const targetRect = target.getBoundingClientRect();
+  const desiredBottom = getMobileStepperTop() - extraGap;
+
+  if (targetRect.bottom > desiredBottom) {
+    window.scrollBy({
+      top: targetRect.bottom - desiredBottom,
+      behavior: 'smooth',
+    });
+  }
+
+  scrollDemoTargetIntoView(target, extraGap);
+}
+
+function scrollGuidedStepTarget(stepKey) {
+  if (!isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
+  if (!stepKey || stepKey === 'step6') return;
+
+  const selector = tour.anchors[stepKey];
+  const target = selector ? document.querySelector(selector) : null;
+  if (!target) return;
+
+  const run = () => {
+    if (stepKey === 'step2') {
+      const screen = document.querySelector('.iphone-frame .screen');
+      if (screen) {
+        screen.scrollTo({ top: screen.scrollHeight, behavior: 'smooth' });
+      }
+    }
+    scrollGuidedControlIntoView(target);
+    positionMobileSpotlight();
+  };
+
+  requestAnimationFrame(run);
+  setTimeout(run, 400);
+  setTimeout(run, 950);
 }
 
 function getDemoHomeScrollParent() {

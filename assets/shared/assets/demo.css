@@ -3262,6 +3262,20 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   color: #9ca3af;
 }
 
+body.is-mobile-mode.jcp-guided-demo[data-tour-step="step2"] #home-screen {
+  height: auto;
+  min-height: 100%;
+  padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+}
+
+body.is-mobile-mode.jcp-guided-demo[data-tour-step="step2"] #home-screen .content-area {
+  scroll-padding-bottom: 24px;
+}
+
+body.is-mobile-mode.jcp-guided-demo[data-tour-step="step2"] .iphone-frame .screen {
+  scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px));
+}
+
 body.is-mobile-mode.jcp-guided-demo[data-tour-step="step6"] #home-screen .content-area {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
