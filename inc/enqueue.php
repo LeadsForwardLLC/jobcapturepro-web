@@ -188,13 +188,14 @@ function jcp_core_enqueue_assets(): void {
     // Demo page - same UI as prototype but with restrictions
     if ( $pages['is_demo'] ) {
         $demo_mode = isset( $_GET['mode'] ) && $_GET['mode'] === 'run'; // phpcs:ignore
+        jcp_core_enqueue_script( 'jcp-core-attribution', 'js/core/jcp-attribution.js', [] );
         jcp_core_enqueue_style( 'jcp-core-demo-shared', 'assets/shared/assets/demo.css' );
         jcp_core_enqueue_style( 'jcp-core-demo', 'css/pages/demo.css', [ 'jcp-core-demo-shared' ] );
         if ( $demo_mode ) {
             jcp_core_enqueue_style( 'jcp-core-leaflet', 'demo/leaflet/leaflet.css', [ 'jcp-core-demo' ] );
             jcp_core_enqueue_style( 'jcp-core-directory-cards', 'assets/directory/directory.css', [ 'jcp-core-demo' ] );
             jcp_core_enqueue_script( 'jcp-core-leaflet', 'demo/leaflet/leaflet.js', [ $render_handle ] );
-            jcp_core_enqueue_script( 'jcp-core-demo', 'js/features/demo/jcp-demo.js', [ 'jcp-core-leaflet' ] );
+            jcp_core_enqueue_script( 'jcp-core-demo', 'js/features/demo/jcp-demo.js', [ 'jcp-core-leaflet', 'jcp-core-attribution' ] );
             wp_localize_script( 'jcp-core-demo', 'JCP_DEMO_EVENT', [
                 'rest_url' => rest_url( 'jcp/v1/demo-event' ),
             ] );
@@ -208,7 +209,7 @@ function jcp_core_enqueue_assets(): void {
         } else {
             jcp_core_enqueue_style( 'jcp-core-survey-shared', 'assets/shared/assets/survey.css' );
             jcp_core_enqueue_style( 'jcp-core-survey', 'css/pages/survey.css', [ 'jcp-core-demo', 'jcp-core-survey-shared' ] );
-            jcp_core_enqueue_script( 'jcp-core-survey', 'js/pages/survey.js', [ $render_handle ] );
+            jcp_core_enqueue_script( 'jcp-core-survey', 'js/pages/survey.js', [ $render_handle, 'jcp-core-attribution' ] );
             wp_localize_script( 'jcp-core-survey', 'JCP_DEMO_SURVEY', [
                 'rest_url'        => rest_url( 'jcp/v1/demo-survey-submit' ),
                 'rest_viewed_url' => rest_url( 'jcp/v1/demo-viewed-submit' ),

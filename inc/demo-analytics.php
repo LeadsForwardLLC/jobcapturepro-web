@@ -157,7 +157,7 @@ function jcp_demo_analytics_register_rest_route(): void {
                 'type'     => 'array',
                 'items'    => [ 'type' => 'string' ],
             ],
-        ],
+        ] + ( function_exists( 'jcp_demo_ghl_attribution_rest_args' ) ? jcp_demo_ghl_attribution_rest_args() : [] ),
     ] );
 }
 

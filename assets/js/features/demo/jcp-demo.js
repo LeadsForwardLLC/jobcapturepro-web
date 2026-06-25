@@ -339,6 +339,9 @@ function getDemoContactPayload() {
   try {
     const user = JSON.parse(localStorage.getItem('demoUser') || 'null');
     if (!user || !user.email) return {};
+    const attribution = window.JCPLeadAttribution && typeof window.JCPLeadAttribution.getPayload === 'function'
+      ? window.JCPLeadAttribution.getPayload()
+      : {};
     return {
       email: String(user.email).trim(),
       first_name: String(user.firstName || '').trim(),
@@ -346,6 +349,7 @@ function getDemoContactPayload() {
       company: String(user.businessName || '').trim(),
       business_type: String(user.niche || '').trim(),
       demo_goals: Array.isArray(user.goals) ? user.goals : undefined,
+      ...attribution,
     };
   } catch (e) {
     return {};

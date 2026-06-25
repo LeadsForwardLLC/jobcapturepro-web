@@ -42,6 +42,12 @@
 
   const getValue = (id) => (document.getElementById(id)?.value || '').trim();
 
+  const getAttributionPayload = () => (
+    window.JCPLeadAttribution && typeof window.JCPLeadAttribution.getPayload === 'function'
+      ? window.JCPLeadAttribution.getPayload()
+      : {}
+  );
+
   const PROGRESS_KEY = 'jcp_survey_progress';
   const RETURN_URL_KEY = 'jcp_survey_return_url';
   const INTAKE_COMPLETE_KEY = 'jcp_demo_intake_complete';
@@ -228,7 +234,8 @@
           session_id: getSurveySessionId(),
           event_type: eventType,
           step_number: stepNumber != null ? stepNumber : undefined,
-          metadata: metadata || undefined
+          metadata: metadata || undefined,
+          ...getAttributionPayload(),
         })
       }).catch(function() {});
     } catch (e) {}
@@ -627,6 +634,7 @@
             company: getValue('businessName'),
             business_type: getValue('niche'),
             demo_goals: goals,
+            ...getAttributionPayload(),
           }),
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
@@ -679,6 +687,7 @@
             company: businessName,
             business_type: niche,
             demo_goals: goals,
+            ...getAttributionPayload(),
           }),
         }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),

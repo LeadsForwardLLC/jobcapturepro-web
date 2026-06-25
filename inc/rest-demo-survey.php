@@ -68,7 +68,7 @@ function jcp_core_register_demo_survey_rest_routes(): void {
                 'type'              => 'array',
                 'items'             => [ 'type' => 'string' ],
             ],
-        ],
+        ] + jcp_demo_ghl_attribution_rest_args(),
     ] );
 
     register_rest_route( 'jcp/v1', '/demo-viewed-submit', [
@@ -114,11 +114,65 @@ function jcp_core_register_demo_survey_rest_routes(): void {
                 'type'              => 'array',
                 'items'             => [ 'type' => 'string' ],
             ],
-        ],
+        ] + jcp_demo_ghl_attribution_rest_args(),
     ] );
 }
 
 add_action( 'rest_api_init', 'jcp_core_register_demo_survey_rest_routes' );
+
+/**
+ * REST args for lead attribution fields (UTMs, landing page, referrer).
+ *
+ * @return array<string, array<string, mixed>>
+ */
+function jcp_demo_ghl_attribution_rest_args(): array {
+    return [
+        'utm_source'   => [
+            'required'          => false,
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        ],
+        'utm_medium'   => [
+            'required'          => false,
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        ],
+        'utm_campaign' => [
+            'required'          => false,
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        ],
+        'utm_content'  => [
+            'required'          => false,
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        ],
+        'landing_page' => [
+            'required'          => false,
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        ],
+        'referrer'     => [
+            'required'          => false,
+            'type'              => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+        ],
+    ];
+}
+
+/**
+ * Merge attribution fields from a REST request into a params array.
+ *
+ * @param array<string, mixed> $params  Existing params.
+ * @param \WP_REST_Request     $request REST request.
+ * @return array<string, mixed>
+ */
+function jcp_demo_ghl_merge_attribution_from_request( array $params, \WP_REST_Request $request ): array {
+    foreach ( array_keys( jcp_demo_ghl_attribution_rest_args() ) as $key ) {
+        $params[ $key ] = $request->get_param( $key );
+    }
+    return $params;
+}
 
 /**
  * Normalize demo contact fields for GHL webhook payloads.
@@ -159,6 +213,12 @@ function jcp_demo_ghl_normalize_contact_params( array $params ): array {
         'business_type' => $business_type_label,
         'service_area'  => $service_area,
         'use_case'      => implode( ', ', $demo_goals ),
+        'utm_source'    => isset( $params['utm_source'] ) ? trim( (string) $params['utm_source'] ) : '',
+        'utm_medium'    => isset( $params['utm_medium'] ) ? trim( (string) $params['utm_medium'] ) : '',
+        'utm_campaign'  => isset( $params['utm_campaign'] ) ? trim( (string) $params['utm_campaign'] ) : '',
+        'utm_content'   => isset( $params['utm_content'] ) ? trim( (string) $params['utm_content'] ) : '',
+        'landing_page'  => isset( $params['landing_page'] ) ? trim( (string) $params['landing_page'] ) : '',
+        'referrer'      => isset( $params['referrer'] ) ? trim( (string) $params['referrer'] ) : '',
     ];
 }
 
@@ -181,6 +241,12 @@ function jcp_demo_ghl_build_webhook_body( string $event, array $params, array $t
         JCP_GHL_KEY_BUSINESS_TYPE => $contact['business_type'],
         JCP_GHL_KEY_SERVICE_AREA  => $contact['service_area'],
         JCP_GHL_KEY_USE_CASE      => $contact['use_case'],
+        JCP_GHL_KEY_UTM_SOURCE    => $contact['utm_source'],
+        JCP_GHL_KEY_UTM_MEDIUM    => $contact['utm_medium'],
+        JCP_GHL_KEY_UTM_CAMPAIGN  => $contact['utm_campaign'],
+        JCP_GHL_KEY_UTM_CONTENT   => $contact['utm_content'],
+        JCP_GHL_KEY_LANDING_PAGE  => $contact['landing_page'],
+        JCP_GHL_KEY_REFERRER      => $contact['referrer'],
     ];
     $body = http_build_query( $scalar, '', '&', PHP_QUERY_RFC3986 );
     foreach ( $tags as $tag ) {
@@ -221,16 +287,19 @@ function jcp_core_demo_survey_submit_handler( \WP_REST_Request $request ): \WP_R
         );
     }
 
-    $params = [
-        'first_name'    => $first_name,
-        'last_name'     => $request->get_param( 'last_name' ),
-        'email'         => $email,
-        'phone'         => $request->get_param( 'phone' ),
-        'company'       => $request->get_param( 'company' ),
-        'business_type' => $request->get_param( 'business_type' ),
-        'service_area'  => $request->get_param( 'service_area' ),
-        'demo_goals'    => $request->get_param( 'demo_goals' ),
-    ];
+    $params = jcp_demo_ghl_merge_attribution_from_request(
+        [
+            'first_name'    => $first_name,
+            'last_name'     => $request->get_param( 'last_name' ),
+            'email'         => $email,
+            'phone'         => $request->get_param( 'phone' ),
+            'company'       => $request->get_param( 'company' ),
+            'business_type' => $request->get_param( 'business_type' ),
+            'service_area'  => $request->get_param( 'service_area' ),
+            'demo_goals'    => $request->get_param( 'demo_goals' ),
+        ],
+        $request
+    );
 
     $body_string = jcp_core_build_demo_survey_ghl_body( $params );
 
@@ -282,15 +351,18 @@ function jcp_core_build_demo_viewed_ghl_body( array $params ): string {
  * @return array<string, mixed>
  */
 function jcp_demo_ghl_contact_params_from_request( \WP_REST_Request $request, $metadata = null ): array {
-    $params = [
-        'first_name'    => $request->get_param( 'first_name' ),
-        'last_name'     => $request->get_param( 'last_name' ),
-        'email'         => $request->get_param( 'email' ),
-        'company'       => $request->get_param( 'company' ),
-        'business_type' => $request->get_param( 'business_type' ),
-        'service_area'  => $request->get_param( 'service_area' ),
-        'demo_goals'    => $request->get_param( 'demo_goals' ),
-    ];
+    $params = jcp_demo_ghl_merge_attribution_from_request(
+        [
+            'first_name'    => $request->get_param( 'first_name' ),
+            'last_name'     => $request->get_param( 'last_name' ),
+            'email'         => $request->get_param( 'email' ),
+            'company'       => $request->get_param( 'company' ),
+            'business_type' => $request->get_param( 'business_type' ),
+            'service_area'  => $request->get_param( 'service_area' ),
+            'demo_goals'    => $request->get_param( 'demo_goals' ),
+        ],
+        $request
+    );
 
     if ( ! is_array( $metadata ) ) {
         return $params;
@@ -476,15 +548,18 @@ function jcp_core_demo_viewed_submit_handler( \WP_REST_Request $request ): \WP_R
     }
 
     $body_string = jcp_core_build_demo_viewed_ghl_body(
-        [
-            'first_name'    => $first_name,
-            'last_name'     => $last_name,
-            'email'         => $email,
-            'company'       => $request->get_param( 'company' ),
-            'business_type' => $request->get_param( 'business_type' ),
-            'service_area'  => $request->get_param( 'service_area' ),
-            'demo_goals'    => $request->get_param( 'demo_goals' ),
-        ]
+        jcp_demo_ghl_merge_attribution_from_request(
+            [
+                'first_name'    => $first_name,
+                'last_name'     => $last_name,
+                'email'         => $email,
+                'company'       => $request->get_param( 'company' ),
+                'business_type' => $request->get_param( 'business_type' ),
+                'service_area'  => $request->get_param( 'service_area' ),
+                'demo_goals'    => $request->get_param( 'demo_goals' ),
+            ],
+            $request
+        )
     );
 
     $response = wp_remote_post(
