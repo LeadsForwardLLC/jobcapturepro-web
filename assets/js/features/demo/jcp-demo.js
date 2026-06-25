@@ -2504,7 +2504,7 @@ function getOutcomesJobContext() {
   const address = checkin?.address || '105 Walnut St';
   const location = checkin?.location || 'Austin, TX';
   const title = checkin?.title || 'Water Heater Replacement';
-  const summary = checkin?.summary || excerptText(descriptions[0], 22);
+  const summary = checkin?.summary || excerptText(descriptions[0], 16);
   const nicheLabel = demoUser.niche
     ? demoUser.niche.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
     : 'Plumbing';
@@ -2536,7 +2536,9 @@ function buildOutcomesSlideHtml(index, ctx) {
   const business = e(ctx.businessName);
   const address = e(ctx.address);
   const location = e(ctx.location);
-  const summary = e(ctx.summary);
+  const webSummary = e(excerptText(ctx.summary, 8));
+  const socialSummary = e(excerptText(ctx.summary, 12));
+  const gbpSummary = e(excerptText(ctx.summary, 10));
   const niche = e(ctx.nicheLabel);
   const slug = e(ctx.slug);
   const first = e(ctx.firstName);
@@ -2564,7 +2566,7 @@ function buildOutcomesSlideHtml(index, ctx) {
                   <div>
                     <strong>${title}</strong>
                     <span>${address}, ${location}</span>
-                    <p>${summary}</p>
+                    <p>${webSummary}</p>
                     <em>Published just now</em>
                   </div>
                 </div>
@@ -2584,7 +2586,7 @@ function buildOutcomesSlideHtml(index, ctx) {
                   <span>Just now · ${location}</span>
                 </div>
               </div>
-              <p class="outcomes-social-card__copy">${summary}</p>
+              <p class="outcomes-social-card__copy">${socialSummary}</p>
               <img class="outcomes-social-card__photo" src="${img}" alt="" width="400" height="220" loading="lazy">
               <div class="outcomes-social-card__reactions">
                 <span>👍 Like</span><span>💬 Comment</span><span>↗ Share</span>
@@ -2604,7 +2606,7 @@ function buildOutcomesSlideHtml(index, ctx) {
               </div>
               <img class="outcomes-gbp-card__photo" src="${img}" alt="" width="400" height="200" loading="lazy">
               <h4>${title} completed in ${location}</h4>
-              <p>${summary}</p>
+              <p>${gbpSummary}</p>
               <span class="outcomes-gbp-card__meta">Posted automatically · Verified job</span>
             </div>
           </div>

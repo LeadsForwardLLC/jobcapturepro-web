@@ -3478,21 +3478,29 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 999px;
-  background: #f3f4f6;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #111827;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0;
   z-index: 2;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.demo-outcomes-modal__close:active {
+  background: #f9fafb;
 }
 
 .demo-outcomes-modal__header {
-  padding-right: 36px;
-  margin-bottom: 12px;
+  padding-right: 48px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .demo-outcomes-modal__eyebrow {
@@ -3526,17 +3534,18 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 }
 
 .demo-outcomes-modal__viewport {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
-  border-radius: 16px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
 .demo-outcomes-modal__track {
   display: flex;
   height: 100%;
+  align-items: stretch;
   transition: transform 0.38s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
@@ -3544,14 +3553,18 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   flex: 0 0 100%;
   min-width: 100%;
   height: 100%;
-  padding: 12px;
+  padding: 0 2px 4px;
   box-sizing: border-box;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .outcomes-preview {
-  height: 100%;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3560,11 +3573,11 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 /* Slide 1: website */
 .outcomes-browser {
   width: 100%;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  background: transparent;
+  border-radius: 0;
+  border: none;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: none;
 }
 
 .outcomes-browser__bar {
@@ -3639,6 +3652,20 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   font-size: 10px;
   line-height: 1.35;
   color: #4b5563;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Slide 2: social */
+.outcomes-social-card {
+  width: 100%;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  padding: 0;
+  box-shadow: none;
 }
 
 .outcomes-job-card em {
@@ -3646,16 +3673,6 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
   font-style: normal;
   font-weight: 600;
   color: #ff503e;
-}
-
-/* Slide 2: social */
-.outcomes-social-card {
-  width: 100%;
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  padding: 12px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
 }
 
 .outcomes-social-card__head {
@@ -3690,16 +3707,20 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 }
 
 .outcomes-social-card__copy {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-size: 11px;
-  line-height: 1.4;
+  line-height: 1.35;
   color: #374151;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .outcomes-social-card__photo {
   width: 100%;
   height: auto;
-  max-height: 140px;
+  max-height: 112px;
   object-fit: cover;
   border-radius: 10px;
   display: block;
@@ -3707,9 +3728,9 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 
 .outcomes-social-card__reactions {
   display: flex;
-  gap: 14px;
-  margin-top: 10px;
-  padding-top: 10px;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid #f3f4f6;
   font-size: 10px;
   color: #6b7280;
@@ -3718,11 +3739,11 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 /* Slide 3: Google Business */
 .outcomes-gbp-card {
   width: 100%;
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  padding: 12px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  padding: 0;
+  box-shadow: none;
 }
 
 .outcomes-gbp-card__brand {
@@ -3742,25 +3763,33 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 .outcomes-gbp-card__photo {
   width: 100%;
   height: auto;
-  max-height: 130px;
+  max-height: 100px;
   object-fit: cover;
   border-radius: 10px;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .outcomes-gbp-card h4 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: 12px;
   font-weight: 800;
   color: #111827;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .outcomes-gbp-card p {
   margin: 0;
   font-size: 10px;
-  line-height: 1.4;
+  line-height: 1.35;
   color: #4b5563;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .outcomes-gbp-card__meta {
@@ -3825,11 +3854,11 @@ body.jcp-guided-demo:not(.jcp-prototype-page) .mobile-stepper-header {
 /* Slide 5: review with job thumbnail */
 .outcomes-review-card {
   width: 100%;
-  background: linear-gradient(180deg, #fff7f5 0%, #ffffff 100%);
-  border: 1px solid #fecaca;
-  border-radius: 14px;
-  padding: 14px;
-  box-shadow: 0 10px 28px rgba(255, 80, 62, 0.1);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .outcomes-review-card__stars {
@@ -3987,26 +4016,106 @@ body.jcp-outcomes-cta-dock .mobile-stepper-progress {
   color: #374151;
 }
 
+body.is-mobile-mode.jcp-outcomes-modal-open .demo-outcomes-modal {
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(12px, env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-right, 0px))
+    max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px))
+    max(12px, env(safe-area-inset-left, 0px));
+  z-index: 10100;
+}
+
+body.is-mobile-mode.jcp-outcomes-modal-open .demo-outcomes-modal__card {
+  width: 100%;
+  max-width: 420px;
+  max-height: min(88dvh, 640px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+body.is-mobile-mode.jcp-outcomes-modal-open .demo-outcomes-modal__close {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top, 0px));
+  right: max(10px, env(safe-area-inset-right, 0px));
+  z-index: 10101;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__track {
+  height: auto;
+  min-height: 0;
+  align-items: center;
+}
+
+body.is-mobile-mode .demo-outcomes-slide {
+  height: auto;
+  min-height: 0;
+  padding: 0;
+}
+
+body.is-mobile-mode .outcomes-preview {
+  height: auto;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+body.is-mobile-mode .outcomes-social-card__photo {
+  max-height: 96px;
+}
+
+body.is-mobile-mode .outcomes-gbp-card__photo {
+  max-height: 84px;
+}
+
+body.is-mobile-mode .outcomes-job-card img {
+  width: 72px;
+  height: 54px;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__dots {
+  margin: 10px 0 12px;
+  flex-shrink: 0;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__footer {
+  flex-shrink: 0;
+}
+
 body.is-mobile-mode.jcp-phone-shell.jcp-outcomes-modal-open .demo-outcomes-modal {
-  align-items: flex-end;
-  padding: 12px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(12px, env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-right, 0px))
+    max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px))
+    max(12px, env(safe-area-inset-left, 0px));
+  z-index: 10100;
 }
 
 body.is-mobile-mode.jcp-phone-shell.jcp-outcomes-modal-open .demo-outcomes-modal__card {
   width: 100%;
-  max-height: min(62vh, 520px);
+  max-width: 420px;
+  max-height: min(88dvh, 640px);
 }
 
 body.is-mobile-mode.jcp-phone-shell .demo-outcomes-modal__viewport {
-  flex: 0 1 auto;
-  max-height: min(46vh, 360px);
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
 }
 
 body.is-mobile-mode.jcp-phone-shell .demo-outcomes-modal__track {
   height: auto;
-  align-items: stretch;
+  align-items: center;
 }
 
 body.is-mobile-mode.jcp-phone-shell .demo-outcomes-slide {
@@ -4014,11 +4123,28 @@ body.is-mobile-mode.jcp-phone-shell .demo-outcomes-slide {
   min-height: 0;
 }
 
-body.is-mobile-mode.jcp-phone-shell .outcomes-preview {
-  height: auto;
-  min-height: 0;
-  align-items: flex-start;
-  justify-content: flex-start;
+body.is-mobile-mode .outcomes-preview--directory {
+  gap: 8px;
+}
+
+body.is-mobile-mode .outcomes-preview--directory .directory-card {
+  padding: 12px;
+}
+
+body.is-mobile-mode .outcomes-preview--directory .card-name {
+  font-size: 15px;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__title {
+  font-size: 18px;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__header {
+  margin-bottom: 8px;
+}
+
+body.is-mobile-mode .demo-outcomes-modal__card {
+  padding: 16px 16px 12px;
 }
 
 body.jcp-guided-demo:not(.is-mobile-mode).jcp-outcomes-modal-open .demo-outcomes-modal {
