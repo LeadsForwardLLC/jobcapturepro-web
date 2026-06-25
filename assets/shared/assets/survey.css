@@ -1197,6 +1197,46 @@ select.survey-input {
   transform: translateY(0);
 }
 
+@media (max-width: 768px) {
+  .survey-deck .deck-slide--channels .deck-tiles {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: unset !important;
+    gap: 10px;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .survey-deck .deck-slide--channels .deck-tile {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+    animation: none !important;
+    transform: none;
+  }
+
+  .survey-deck .deck-slide--channels .tile-icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 !important;
+    flex-shrink: 0;
+  }
+
+  .survey-deck .deck-slide--channels .tile-icon img {
+    width: 22px;
+    height: 22px;
+  }
+}
+
 .tile-icon {
   display: inline-flex;
   align-items: center;
@@ -2359,30 +2399,35 @@ input::-webkit-textfield-decoration-container {
 
   .deck-slide--channels .deck-tiles {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
+    flex-direction: column;
+    gap: 10px;
     margin-top: 12px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
+    overflow: visible;
   }
 
   .deck-slide--channels .deck-tile {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 10px 6px;
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
   }
 
   .deck-slide--channels .tile-icon {
-    width: 34px;
-    height: 34px;
-    margin-bottom: 6px;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    flex-shrink: 0;
   }
 
   .deck-slide--channels .tile-icon img {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
 
   .deck-tile {

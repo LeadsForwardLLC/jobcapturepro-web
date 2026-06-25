@@ -501,7 +501,7 @@ const LOCATION_STORAGE_KEY = 'jcp_active_location_id';
 ---------------------------- */
 const DEMO_OUTCOME_ITEMS = [
   'Published on your website',
-  'Posted to Facebook',
+  'Posted to social media',
   'Live on Google Business',
   'Added to JobCapturePro directory',
   'Review request sent',
@@ -529,8 +529,8 @@ const demoGuideContent = {
   step4: {
     pill: 'Step 4',
     title: 'Publish the job',
-    body: 'Tap Save & Publish to push this job to your website, Google, and Facebook.',
-    interactHint: 'Tap Save & Publish to continue.'
+    body: 'Tap Publish Everywhere to push this job to your website, Google, social media and directory.',
+    interactHint: 'Tap Publish Everywhere to continue.'
   },
   step5: {
     pill: 'Step 5',
@@ -2402,6 +2402,53 @@ function hideDemoOutcomes() {
   if (list) list.innerHTML = '';
 }
 
+function getDemoHomeScrollParent() {
+  const contentArea = document.querySelector('#home-screen .content-area');
+  const screenEl = document.querySelector('.iphone-frame .screen');
+  if (contentArea && contentArea.scrollHeight > contentArea.clientHeight + 4) {
+    return contentArea;
+  }
+  return screenEl || contentArea;
+}
+
+function getMobileStepperInset() {
+  const stepper = $('mobile-stepper');
+  if (!stepper || stepper.classList.contains('is-collapsed')) return 0;
+  const style = window.getComputedStyle(stepper);
+  if (style.display === 'none' || style.visibility === 'hidden') return 0;
+  return stepper.getBoundingClientRect().height + 12;
+}
+
+function scrollDemoTargetIntoView(target, extraGap = 16) {
+  if (!target) return;
+  const parents = [
+    document.querySelector('#home-screen .content-area'),
+    document.querySelector('.iphone-frame .screen'),
+  ].filter(Boolean);
+  const stepperInset = getMobileStepperInset();
+
+  parents.forEach((scrollParent) => {
+    const parentRect = scrollParent.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const visibleBottom = parentRect.bottom - stepperInset - extraGap;
+
+    if (targetRect.bottom > visibleBottom) {
+      scrollParent.scrollTo({
+        top: scrollParent.scrollTop + (targetRect.bottom - visibleBottom),
+        behavior: 'smooth',
+      });
+      return;
+    }
+
+    if (targetRect.top < parentRect.top + 12) {
+      scrollParent.scrollTo({
+        top: Math.max(0, scrollParent.scrollTop + (targetRect.top - parentRect.top) - 12),
+        behavior: 'smooth',
+      });
+    }
+  });
+}
+
 async function showDemoOutcomesRecap() {
   const panel = $('demoOutcomes');
   const list = $('demoOutcomesList');
@@ -2412,10 +2459,8 @@ async function showDemoOutcomesRecap() {
   panel.hidden = false;
   panel.classList.add('is-visible');
 
-  const contentArea = document.querySelector('#home-screen .content-area');
-  const screenEl = document.querySelector('.iphone-frame .screen');
-  if (contentArea) contentArea.scrollTop = 0;
-  if (screenEl) screenEl.scrollTop = 0;
+  const scrollParent = getDemoHomeScrollParent();
+  if (scrollParent) scrollParent.scrollTop = 0;
 
   for (let i = 0; i < DEMO_OUTCOME_ITEMS.length; i++) {
     await wait(520);
@@ -2424,6 +2469,11 @@ async function showDemoOutcomesRecap() {
     li.innerHTML = `<span class="demo-publish-check" aria-hidden="true"></span>${DEMO_OUTCOME_ITEMS[i]}`;
     list.appendChild(li);
     requestAnimationFrame(() => li.classList.add('is-done'));
+
+    if (i === 2) {
+      await wait(120);
+      scrollDemoTargetIntoView(list);
+    }
   }
 
   await wait(560);
@@ -2438,12 +2488,10 @@ async function showDemoOutcomesRecap() {
     requestAnimationFrame(() => review.classList.add('is-visible'));
   }
 
-  await wait(400);
-  const scrollParent = contentArea || screenEl;
-  if (scrollParent && panel) {
-    const top = Math.max(0, panel.offsetTop - 16);
-    scrollParent.scrollTo({ top, behavior: 'smooth' });
-  }
+  await wait(500);
+  scrollDemoTargetIntoView(review || panel, 20);
+  await wait(700);
+  scrollDemoTargetIntoView(review || panel, 20);
 }
 
 function buildDirectoryPreview() {
