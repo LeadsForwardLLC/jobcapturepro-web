@@ -1317,11 +1317,7 @@ function setTourStep(stepKey) {
   updateTourFloating();
   applyFocalPoint();
   if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode') && stepKey !== 'step6') {
-    const screen = document.querySelector('.iphone-frame .screen');
-    if (screen) screen.scrollTop = 0;
-    const activeApp = document.querySelector('.app-screen.active');
-    const contentArea = activeApp?.querySelector('.content-area');
-    if (contentArea) contentArea.scrollTop = 0;
+    resetGuidedMobileScroll();
   }
   scrollGuidedStepTarget(stepKey);
 }
@@ -1544,6 +1540,11 @@ if (screenId === 'edit-screen' && !state.hasPublished) {
 
   // Attention
   syncAttentionAnimations();
+
+  if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode')) {
+    resetGuidedMobileScroll();
+    updateMobileLayoutMetrics();
+  }
 }
 
 /* =========================================================
@@ -2917,16 +2918,35 @@ function wireOutcomesSlideshow() {
 }
 
 function getDemoAppScrollParents() {
-  const screen = document.querySelector('.iphone-frame .screen');
   if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode')) {
-    return screen ? [screen] : [];
+    const activeApp = document.querySelector('.app-screen.active');
+    const contentArea = activeApp?.querySelector('.content-area');
+    const scrollableScreens = new Set([
+      'edit-screen',
+      'new-screen',
+      'request-review-screen',
+      'review-request-options-screen',
+    ]);
+    if (activeApp && scrollableScreens.has(activeApp.id) && contentArea) {
+      return [contentArea];
+    }
+    return [];
   }
+  const screen = document.querySelector('.iphone-frame .screen');
   const activeApp = document.querySelector('.app-screen.active');
   const contentArea = activeApp?.querySelector('.content-area');
   const parents = [];
   if (contentArea) parents.push(contentArea);
   if (screen) parents.push(screen);
   return parents;
+}
+
+function resetGuidedMobileScroll() {
+  if (!isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
+  const screen = document.querySelector('.iphone-frame .screen');
+  if (screen) screen.scrollTop = 0;
+  const contentArea = document.querySelector('.app-screen.active .content-area');
+  if (contentArea) contentArea.scrollTop = 0;
 }
 
 function getMobileStepperTop() {
@@ -2944,18 +2964,19 @@ function getMobileStepperTop() {
 function scrollGuidedControlIntoView(target, extraGap = 10) {
   if (!target || !isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
 
-  const screen = document.querySelector('.iphone-frame .screen');
-  if (!screen) return;
+  const parents = getDemoAppScrollParents();
+  if (!parents.length) return;
 
+  const scrollParent = parents[0];
   const stepperTop = getMobileStepperTop();
   const targetRect = target.getBoundingClientRect();
-  const screenRect = screen.getBoundingClientRect();
-  const maxVisibleBottom = stepperTop - extraGap;
+  const parentRect = scrollParent.getBoundingClientRect();
+  const maxVisibleBottom = Math.min(parentRect.bottom, stepperTop) - extraGap;
 
   if (targetRect.bottom > maxVisibleBottom) {
-    screen.scrollTop += targetRect.bottom - maxVisibleBottom;
-  } else if (targetRect.top < screenRect.top + 8) {
-    screen.scrollTop += targetRect.top - screenRect.top - 8;
+    scrollParent.scrollTop += targetRect.bottom - maxVisibleBottom;
+  } else if (targetRect.top < parentRect.top + 8) {
+    scrollParent.scrollTop += targetRect.top - parentRect.top - 8;
   }
 }
 
@@ -2979,21 +3000,8 @@ function scrollGuidedStepTarget(stepKey) {
 
 function scrollDemoTargetIntoView(target, extraGap = 12) {
   if (!target) return;
-  const screen = document.querySelector('.iphone-frame .screen');
-  if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode') && screen) {
-    const stepperTop = getMobileStepperTop();
-    const targetRect = target.getBoundingClientRect();
-    const screenRect = screen.getBoundingClientRect();
-    const maxVisibleBottom = stepperTop - extraGap;
-
-    if (targetRect.bottom > maxVisibleBottom) {
-      screen.scrollTop += targetRect.bottom - maxVisibleBottom;
-      return;
-    }
-
-    if (targetRect.top < screenRect.top + 8) {
-      screen.scrollTop += targetRect.top - screenRect.top - 8;
-    }
+  if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode')) {
+    scrollGuidedControlIntoView(target, extraGap);
     return;
   }
 

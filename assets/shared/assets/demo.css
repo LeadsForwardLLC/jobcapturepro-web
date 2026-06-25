@@ -3002,11 +3002,13 @@ body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .demo-container {
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .phone-wrapper {
   flex: 1 1 auto;
   min-height: 0;
+  max-height: calc(100dvh - var(--jcp-stepper-height, 140px) - env(safe-area-inset-bottom, 0px));
   width: 100%;
   max-width: none;
   margin: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .iphone-frame {
@@ -3014,12 +3016,14 @@ body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .iphone-frame {
   min-height: 0;
   width: 100%;
   height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   border-radius: 0;
   padding: 0;
   box-shadow: none;
   background: transparent;
+  overflow: hidden;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .iphone-frame .notch {
@@ -3027,7 +3031,7 @@ body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .iphone-frame .notc
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .app-screen {
-  height: auto;
+  height: 100%;
   min-height: 0;
 }
 
@@ -3037,46 +3041,78 @@ body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .iphone-frame .scre
   height: 100%;
   max-height: 100%;
   border-radius: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   padding-bottom: 0;
   box-sizing: border-box;
-  scroll-padding-bottom: calc(var(--jcp-stepper-height, 140px) + env(safe-area-inset-bottom, 0px));
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .app-screen.active {
+  flex: 1 1 auto;
   min-height: 0;
-  height: auto;
-  flex: 0 0 auto;
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
-  padding-bottom: calc(var(--jcp-stepper-height, 140px) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: 0;
+  overflow: hidden;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .app-header {
   padding-top: max(10px, env(safe-area-inset-top, 0px));
   padding-bottom: 10px;
+  flex-shrink: 0;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .content-area {
   flex: 0 1 auto;
   overflow-y: visible;
+  overflow-x: hidden;
   min-height: 0;
   padding: 14px 16px 10px;
+}
+
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #edit-screen.active .content-area,
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #new-screen.active .content-area,
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #request-review-screen.active .content-area,
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #review-request-options-screen.active .content-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .edit-content {
   padding-bottom: 12px;
 }
 
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #home-screen.active {
+  justify-content: flex-start;
+}
+
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #home-screen .content-area {
+  flex: 0 1 auto;
   padding-bottom: 6px;
+  overflow: visible;
+}
+
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #home-screen .greeting,
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #home-screen .action-tiles {
+  display: none;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #home-screen .empty-state {
-  padding: 16px;
+  padding: 14px 16px;
+  margin: 0;
+}
+
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #home-screen .tab-bar {
+  margin-top: auto;
+  flex-shrink: 0;
+  padding: 8px 8px 10px;
 }
 
 body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .action-buttons {
@@ -3088,12 +3124,15 @@ body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .login-container {
   padding: 20px 0 16px;
 }
 
-body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .home-indicator {
-  display: none;
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) #login-screen.active .content-area {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .tab-bar {
-  padding: 8px 8px 10px;
+body.is-mobile-mode.jcp-guided-demo:not(.jcp-prototype-page) .home-indicator {
+  display: none;
 }
 
 body.is-mobile-mode.jcp-phone-shell:not(.jcp-prototype-page):not(.jcp-guided-demo) {
