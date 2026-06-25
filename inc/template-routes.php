@@ -272,6 +272,7 @@ function jcp_core_demo_run_critical_css(): void {
     echo '<style id="jcp-demo-run-critical">';
     echo 'body.jcp-demo-run #tour-float,body.jcp-demo-run #tour-bubble,body.jcp-demo-run .tour-dock{display:none!important}';
     echo 'body.jcp-demo-run,body.jcp-demo-run #jcp-app{min-height:100dvh;background:#fff;margin:0;padding:0}';
+    echo '@media(max-width:1024px){html.jcp-demo-run-mobile,html.jcp-demo-run-mobile body.jcp-demo-run{height:100%;overflow:hidden;overscroll-behavior:none}body.jcp-demo-run #jcp-app{height:100%;min-height:0;max-height:100dvh;overflow:hidden}}';
     echo 'body.jcp-demo-run.jcp-desktop-guided,body.jcp-demo-run.jcp-desktop-guided #jcp-app{background:#f3f4f6}';
     echo '@media(max-width:1024px){';
     echo 'body.jcp-demo-run .right-panel{display:none!important}';

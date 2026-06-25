@@ -1058,6 +1058,7 @@ function setMobileGuideCollapsed(collapsed) {
   } else {
     positionMobileSpotlight();
   }
+  updateMobileLayoutMetrics();
 }
 
 function toggleMobileGuideCollapse() {
@@ -1088,8 +1089,24 @@ function syncMobileGuideChrome() {
   }
 
   updateMobileStepperLabel();
+  updateMobileLayoutMetrics();
   positionMobileSpotlight();
   updateGuidedCoachBackdrop();
+}
+
+function updateMobileLayoutMetrics() {
+  if (!isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
+  const stepper = $('mobile-stepper');
+  let height = 168;
+  if (stepper && !stepper.classList.contains('is-collapsed')) {
+    const style = window.getComputedStyle(stepper);
+    if (style.display !== 'none' && style.visibility !== 'hidden') {
+      height = Math.ceil(stepper.getBoundingClientRect().height);
+    }
+  } else {
+    height = 72;
+  }
+  document.documentElement.style.setProperty('--jcp-stepper-height', `${height}px`);
 }
 
 function updateMobileStepperLabel() {
@@ -1260,6 +1277,13 @@ function setTourStep(stepKey) {
 
   updateTourFloating();
   applyFocalPoint();
+  if (isGuidedDemoRun() && document.body.classList.contains('is-mobile-mode') && stepKey !== 'step6') {
+    const screen = document.querySelector('.iphone-frame .screen');
+    if (screen) screen.scrollTop = 0;
+    const activeApp = document.querySelector('.app-screen.active');
+    const contentArea = activeApp?.querySelector('.content-area');
+    if (contentArea) contentArea.scrollTop = 0;
+  }
   scrollGuidedStepTarget(stepKey);
 }
 
@@ -2403,32 +2427,51 @@ function hideDemoOutcomes() {
   if (list) list.innerHTML = '';
 }
 
+function getDemoAppScrollParents() {
+  const screen = document.querySelector('.iphone-frame .screen');
+  const activeApp = document.querySelector('.app-screen.active');
+  const contentArea = activeApp?.querySelector('.content-area');
+  const parents = [];
+  if (contentArea) parents.push(contentArea);
+  if (screen) parents.push(screen);
+  return parents;
+}
+
 function getMobileStepperTop() {
   const stepper = $('mobile-stepper');
   if (!stepper || stepper.classList.contains('is-collapsed')) {
-    return window.innerHeight - 72;
+    return window.innerHeight;
   }
   const style = window.getComputedStyle(stepper);
   if (style.display === 'none' || style.visibility === 'hidden') {
-    return window.innerHeight - 72;
+    return window.innerHeight;
   }
   return stepper.getBoundingClientRect().top;
 }
 
-function scrollGuidedControlIntoView(target, extraGap = 24) {
+function scrollGuidedControlIntoView(target, extraGap = 20) {
   if (!target || !isGuidedDemoRun() || !document.body.classList.contains('is-mobile-mode')) return;
 
+  const stepperTop = getMobileStepperTop();
   const targetRect = target.getBoundingClientRect();
-  const desiredBottom = getMobileStepperTop() - extraGap;
+  const desiredBottom = stepperTop - extraGap;
 
-  if (targetRect.bottom > desiredBottom) {
-    window.scrollBy({
-      top: targetRect.bottom - desiredBottom,
-      behavior: 'smooth',
-    });
-  }
+  getDemoAppScrollParents().forEach((scrollParent) => {
+    const parentRect = scrollParent.getBoundingClientRect();
+    const visibleBottom = Math.min(parentRect.bottom, desiredBottom) - extraGap;
 
-  scrollDemoTargetIntoView(target, extraGap);
+    if (targetRect.bottom > visibleBottom) {
+      scrollParent.scrollBy({
+        top: targetRect.bottom - visibleBottom,
+        behavior: 'smooth',
+      });
+    } else if (targetRect.top < parentRect.top + 12) {
+      scrollParent.scrollBy({
+        top: targetRect.top - parentRect.top - 12,
+        behavior: 'smooth',
+      });
+    }
+  });
 }
 
 function scrollGuidedStepTarget(stepKey) {
@@ -2440,50 +2483,24 @@ function scrollGuidedStepTarget(stepKey) {
   if (!target) return;
 
   const run = () => {
-    if (stepKey === 'step2') {
-      const screen = document.querySelector('.iphone-frame .screen');
-      if (screen) {
-        screen.scrollTo({ top: screen.scrollHeight, behavior: 'smooth' });
-      }
-    }
     scrollGuidedControlIntoView(target);
     positionMobileSpotlight();
   };
 
+  updateMobileLayoutMetrics();
   requestAnimationFrame(run);
   setTimeout(run, 400);
   setTimeout(run, 950);
 }
 
-function getDemoHomeScrollParent() {
-  const contentArea = document.querySelector('#home-screen .content-area');
-  const screenEl = document.querySelector('.iphone-frame .screen');
-  if (contentArea && contentArea.scrollHeight > contentArea.clientHeight + 4) {
-    return contentArea;
-  }
-  return screenEl || contentArea;
-}
-
-function getMobileStepperInset() {
-  const stepper = $('mobile-stepper');
-  if (!stepper || stepper.classList.contains('is-collapsed')) return 0;
-  const style = window.getComputedStyle(stepper);
-  if (style.display === 'none' || style.visibility === 'hidden') return 0;
-  return stepper.getBoundingClientRect().height + 12;
-}
-
 function scrollDemoTargetIntoView(target, extraGap = 16) {
   if (!target) return;
-  const parents = [
-    document.querySelector('#home-screen .content-area'),
-    document.querySelector('.iphone-frame .screen'),
-  ].filter(Boolean);
-  const stepperInset = getMobileStepperInset();
+  const stepperTop = getMobileStepperTop();
 
-  parents.forEach((scrollParent) => {
+  getDemoAppScrollParents().forEach((scrollParent) => {
     const parentRect = scrollParent.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
-    const visibleBottom = parentRect.bottom - stepperInset - extraGap;
+    const visibleBottom = Math.min(parentRect.bottom, stepperTop) - extraGap;
 
     if (targetRect.bottom > visibleBottom) {
       scrollParent.scrollTo({
@@ -2512,7 +2529,8 @@ async function showDemoOutcomesRecap() {
   panel.hidden = false;
   panel.classList.add('is-visible');
 
-  const scrollParent = getDemoHomeScrollParent();
+  const scrollParent = document.querySelector('.iphone-frame .screen')
+    || document.querySelector('#home-screen .content-area');
   if (scrollParent) scrollParent.scrollTop = 0;
 
   for (let i = 0; i < DEMO_OUTCOME_ITEMS.length; i++) {
@@ -3097,6 +3115,7 @@ function init() {
   applyMobileMode();
   window.addEventListener('resize', () => {
     applyMobileMode();
+    updateMobileLayoutMetrics();
     positionMobileSpotlight();
   });
 

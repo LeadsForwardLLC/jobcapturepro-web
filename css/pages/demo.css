@@ -52,8 +52,16 @@ body.demo-run-only #jcp-app {
 }
 
 @media (max-width: 1024px) {
-  html.jcp-demo-run-mobile body.demo-run-only,
-  body.jcp-demo-run.demo-run-only {
+  html.jcp-demo-run-mobile {
+    height: 100%;
     overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  html.jcp-demo-run-mobile body.demo-run-only,
+  html.jcp-demo-run-mobile body.jcp-demo-run.demo-run-only {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 }
