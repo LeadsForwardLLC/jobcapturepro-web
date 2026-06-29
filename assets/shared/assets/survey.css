@@ -119,6 +119,7 @@ body.survey-only #jcp-app {
 
 /* Field wrapper + labels */
 .survey-field{ display:flex; flex-direction:column; gap:8px; }
+.survey-field--niche-other[hidden]{ display:none; }
 .survey-field label{
   font-weight: 800;
   color:#111827;
@@ -444,6 +445,8 @@ select.survey-input {
 .survey-input:focus {
   border-color: #FF503E;
   box-shadow: 0 0 0 4px rgba(255,80,62,0.15);
+  color: #111827;
+  -webkit-text-fill-color: #111827;
 }
 
 .survey-input.is-error {

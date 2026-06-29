@@ -32,26 +32,24 @@ $demo_btn      = 'Next step';
     <div class="survey-field">
       <label for="niche">Business type</label>
       <select id="niche" class="survey-input" required>
-        <option value="">Select your business type</option>
-        <optgroup label="Popular services">
-          <option value="hvac">HVAC</option>
-          <option value="plumbing">Plumbing</option>
-          <option value="cleaning-services">Cleaning Services</option>
-          <option value="pool-service">Pool Service</option>
-          <option value="roofing">Roofing</option>
-          <option value="remodeling">Remodeling</option>
-          <option value="solar">Solar</option>
-        </optgroup>
-        <optgroup label="More services">
-          <option value="carpet-cleaning">Carpet Cleaning</option>
-          <option value="foundation-repair">Foundation Repair</option>
-          <option value="dumpster-rental">Dumpster Rental</option>
-          <option value="tree-service">Tree Service</option>
-          <option value="deck-builder">Deck Builder</option>
-          <option value="home-inspection">Home Inspection</option>
-          <option value="home-windows">Home Windows</option>
-        </optgroup>
+        <?php
+        if ( function_exists( 'jcp_core_render_business_type_select_options' ) ) {
+            jcp_core_render_business_type_select_options( true );
+        }
+        ?>
       </select>
+    </div>
+
+    <div class="survey-field survey-field--niche-other" id="nicheOtherWrap" hidden>
+      <label for="nicheOther">Describe your business type</label>
+      <input
+        id="nicheOther"
+        type="text"
+        class="survey-input"
+        placeholder="e.g. Mobile detailing"
+        maxlength="120"
+        autocomplete="off"
+      />
     </div>
   </form>
 

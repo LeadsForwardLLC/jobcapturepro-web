@@ -371,33 +371,10 @@ add_action( 'after_switch_theme', 'jcp_demo_analytics_maybe_create_sessions_tabl
  * @return string
  */
 function jcp_demo_analytics_business_type_label( string $value ): string {
-    $map = [
-        'plumbing' => 'Plumbing',
-        'hvac' => 'HVAC',
-        'electrical' => 'Electrical',
-        'roofing' => 'Roofing',
-        'general-contractor' => 'General Contractor',
-        'handyman' => 'Handyman',
-        'remodeling' => 'Remodeling / Renovation',
-        'landscaping' => 'Landscaping',
-        'lawn-care' => 'Lawn care',
-        'tree-service' => 'Tree service',
-        'pest-control' => 'Pest control',
-        'fencing' => 'Fencing',
-        'carpet-cleaning' => 'Carpet cleaning',
-        'house-cleaning' => 'House cleaning',
-        'pressure-washing' => 'Pressure washing',
-        'painting' => 'Painting (interior / exterior)',
-        'flooring' => 'Flooring',
-        'windows-doors' => 'Windows & doors',
-        'insulation' => 'Insulation',
-        'garage-doors' => 'Garage doors',
-        'pool-service' => 'Pool service',
-        'moving-junk' => 'Moving / Junk removal',
-        'other' => 'Other home service',
-    ];
-    $v = trim( $value );
-    return isset( $map[ $v ] ) ? $map[ $v ] : $v;
+    if ( function_exists( 'jcp_core_early_access_business_type_label' ) ) {
+        return jcp_core_early_access_business_type_label( $value );
+    }
+    return $value;
 }
 
 /**

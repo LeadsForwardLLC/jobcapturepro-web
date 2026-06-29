@@ -42,6 +42,54 @@
 
   const getValue = (id) => (document.getElementById(id)?.value || '').trim();
 
+  const BUSINESS_TYPE_OTHER = 'other';
+
+  const syncNicheOtherField = () => {
+    const wrap = document.getElementById('nicheOtherWrap');
+    const otherInput = document.getElementById('nicheOther');
+    const isOther = getValue('niche') === BUSINESS_TYPE_OTHER;
+    if (wrap) wrap.hidden = !isOther;
+    if (otherInput) {
+      otherInput.required = isOther;
+      if (!isOther) otherInput.value = '';
+    }
+  };
+
+  const getBusinessTypeValue = () => {
+    const selected = getValue('niche');
+    if (selected === BUSINESS_TYPE_OTHER) {
+      return getValue('nicheOther');
+    }
+    return selected;
+  };
+
+  const getBusinessTypeLabel = () => {
+    const nicheSelect = document.getElementById('niche');
+    if (!nicheSelect || !nicheSelect.value) return '';
+    if (nicheSelect.value === BUSINESS_TYPE_OTHER) {
+      return getValue('nicheOther');
+    }
+    const option = nicheSelect.options[nicheSelect.selectedIndex];
+    return option ? option.text.trim() : '';
+  };
+
+  const setBusinessTypeFromStored = (storedType) => {
+    const nicheEl = document.getElementById('niche');
+    const nicheOtherEl = document.getElementById('nicheOther');
+    if (!nicheEl || storedType == null) return;
+    const raw = String(storedType).trim();
+    if (!raw) return;
+    const hasOption = Array.from(nicheEl.options).some((opt) => opt.value === raw);
+    if (hasOption) {
+      nicheEl.value = raw;
+      if (nicheOtherEl) nicheOtherEl.value = '';
+    } else {
+      nicheEl.value = BUSINESS_TYPE_OTHER;
+      if (nicheOtherEl) nicheOtherEl.value = raw;
+    }
+    syncNicheOtherField();
+  };
+
   const getAttributionPayload = () => (
     window.JCPLeadAttribution && typeof window.JCPLeadAttribution.getPayload === 'function'
       ? window.JCPLeadAttribution.getPayload()
@@ -56,6 +104,7 @@
   const getFormSnapshot = () => ({
     businessName: getValue('businessName'),
     niche: getValue('niche'),
+    nicheOther: getValue('nicheOther'),
     firstName: getValue('firstName'),
     lastName: getValue('lastName'),
     email: getValue('email'),
@@ -71,7 +120,13 @@
       }
     };
     setField('businessName', form.businessName);
-    setField('niche', form.niche);
+    if (form.niche === BUSINESS_TYPE_OTHER) {
+      setField('niche', BUSINESS_TYPE_OTHER);
+      setField('nicheOther', form.nicheOther);
+    } else if (form.niche) {
+      setBusinessTypeFromStored(form.niche);
+    }
+    syncNicheOtherField();
     setField('firstName', form.firstName);
     setField('lastName', form.lastName);
     setField('email', form.email);
@@ -158,6 +213,15 @@
     }
   };
 
+  const resolveNicheFromSource = (source) => {
+    if (!source || typeof source !== 'object') return getBusinessTypeValue();
+    const select = (source.niche || '').trim();
+    if (select === BUSINESS_TYPE_OTHER) {
+      return (source.nicheOther || '').trim();
+    }
+    return select;
+  };
+
   const buildPersonalizedDemoUrl = (storedUser) => {
     const url = new URL(getDemoRunBase());
     url.searchParams.set('mode', 'run');
@@ -165,7 +229,7 @@
     const firstName = (source.firstName || '').trim();
     const lastName = (source.lastName || '').trim();
     const business = (source.businessName || '').trim();
-    const niche = (source.niche || '').trim();
+    const niche = resolveNicheFromSource(source);
     const email = (source.email || '').trim();
     if (firstName) url.searchParams.set('name', firstName);
     if (lastName) url.searchParams.set('last_name', lastName);
@@ -320,7 +384,7 @@
       const emailEl = document.getElementById('email');
 
       if (businessNameEl && prefill.company != null) businessNameEl.value = prefill.company;
-      if (nicheEl && prefill.business_type != null) nicheEl.value = prefill.business_type;
+      if (prefill.business_type != null) setBusinessTypeFromStored(prefill.business_type);
       if (firstNameEl && prefill.first_name != null) firstNameEl.value = prefill.first_name;
       if (lastNameEl && prefill.last_name != null) lastNameEl.value = prefill.last_name;
       if (emailEl && prefill.email != null) emailEl.value = prefill.email;
@@ -374,7 +438,7 @@
   });
 
   const getSurveyFormMetadata = () => {
-    const meta = { company: getValue('businessName'), business_type: getValue('niche') };
+    const meta = { company: getValue('businessName'), business_type: getBusinessTypeValue() };
     const goals = Array.from(goalsWrap?.querySelectorAll('input[type="checkbox"]:checked') || []).map((input) => input.value);
     if (goals.length) meta.demo_goals = goals;
     return meta;
@@ -539,13 +603,9 @@
 
     // First slide: if they selected a business type, swap "job" for "[type] job"
     const titleEl = document.getElementById('deckSlide1Title');
-    const nicheSelect = document.getElementById('niche');
-    if (titleEl && nicheSelect && nicheSelect.value) {
-      const option = nicheSelect.options[nicheSelect.selectedIndex];
-      const label = option ? option.text.trim() : '';
-      if (label) {
-        titleEl.textContent = 'Every completed ' + label + ' job should help you win the next one.';
-      }
+    const label = getBusinessTypeLabel();
+    if (titleEl && label) {
+      titleEl.textContent = 'Every completed ' + label + ' job should help you win the next one.';
     }
     updateDesktopHandoff();
     saveSurveyProgress();
@@ -553,9 +613,15 @@
 
   const validateStep1 = () => {
     const businessName = getValue('businessName');
-    const niche = getValue('niche');
-    if (!businessName || !niche) {
+    const nicheSelect = getValue('niche');
+    const businessType = getBusinessTypeValue();
+    if (!businessName || !nicheSelect) {
       alert('Please enter your business name and type to continue.');
+      return false;
+    }
+    if (nicheSelect === BUSINESS_TYPE_OTHER && !businessType) {
+      alert('Please describe your business type to continue.');
+      document.getElementById('nicheOther')?.focus();
       return false;
     }
     return true;
@@ -607,7 +673,7 @@
       last_name: getValue('lastName'),
       email: getValue('email'),
       company: getValue('businessName'),
-      business_type: getValue('niche'),
+      business_type: getBusinessTypeValue(),
       demo_goals: goals,
     };
     try {
@@ -632,7 +698,7 @@
             last_name: getValue('lastName'),
             email: getValue('email'),
             company: getValue('businessName'),
-            business_type: getValue('niche'),
+            business_type: getBusinessTypeValue(),
             demo_goals: goals,
             ...getAttributionPayload(),
           }),
@@ -662,7 +728,7 @@
     const lastName = getValue('lastName');
     const email = getValue('email');
     const businessName = getValue('businessName');
-    const niche = getValue('niche');
+    const niche = getBusinessTypeValue();
     localStorage.setItem('demoUser', JSON.stringify({
       businessName,
       niche,
@@ -787,7 +853,7 @@
     scheduleSaveProgress();
   });
 
-  ['firstName', 'lastName', 'businessName', 'niche'].forEach((id) => {
+  ['firstName', 'lastName', 'businessName', 'niche', 'nicheOther'].forEach((id) => {
     const el = document.getElementById(id);
     el?.addEventListener('input', () => {
       setHandoffStatus('');
@@ -798,6 +864,8 @@
       scheduleSaveProgress();
     });
   });
+
+  document.getElementById('niche')?.addEventListener('change', syncNicheOtherField);
 
   goalsWrap?.addEventListener('change', () => {
     enforceGoalLimit();
@@ -855,6 +923,8 @@
 
   if (restored && restored.form) {
     applyFormSnapshot(restored.form);
+  } else {
+    syncNicheOtherField();
   }
 
   surveyTrack('demo_started', null, getSurveyFormMetadata());
