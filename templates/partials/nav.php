@@ -50,8 +50,22 @@ $dir_trust = $dir_url . '/#trust';
       <a href="<?php echo esc_url( $dir_trust ); ?>" class="nav-link"><?php esc_html_e( 'Trust & verification', 'jcp-core' ); ?></a>
     <?php else : ?>
       <a href="<?php echo $home_how; ?>" class="nav-link" data-home-anchor="#how-it-works">How it works</a>
+      <?php
+      if ( function_exists( 'jcp_nav_render_desktop_features_mega' ) ) {
+          jcp_nav_render_desktop_features_mega( $home_features );
+      } else {
+          ?>
       <a href="<?php echo $home_features; ?>" class="nav-link" data-home-anchor="#features">Features</a>
+          <?php
+      }
+      if ( function_exists( 'jcp_nav_render_desktop_trade_mega' ) ) {
+          jcp_nav_render_desktop_trade_mega( $industries_url );
+      } else {
+          ?>
       <a href="<?php echo esc_url( $industries_url ); ?>" class="nav-link" data-page="industries"><?php esc_html_e( 'By Trade', 'jcp-core' ); ?></a>
+          <?php
+      }
+      ?>
       <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>" class="nav-link" data-page="pricing">Pricing</a>
       <div class="nav-dropdown" id="navResourcesDropdown">
         <button type="button" class="nav-dropdown-trigger nav-link" id="navResourcesTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="navResourcesMenu">Resources <svg class="nav-dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -225,6 +239,11 @@ $dir_trust = $dir_url . '/#trust';
           </svg>
           <span>How it works</span>
         </a>
+        <?php
+        if ( function_exists( 'jcp_nav_render_mobile_features_panel' ) ) {
+            jcp_nav_render_mobile_features_panel( $home_features );
+        } else {
+            ?>
         <a href="<?php echo $home_features; ?>" class="mobile-nav-link" data-home-anchor="#features">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="7" height="7"></rect>
@@ -234,6 +253,12 @@ $dir_trust = $dir_url . '/#trust';
           </svg>
           <span>Features</span>
         </a>
+            <?php
+        }
+        if ( function_exists( 'jcp_nav_render_mobile_trade_panel' ) ) {
+            jcp_nav_render_mobile_trade_panel( $industries_url );
+        } else {
+            ?>
         <a href="<?php echo esc_url( $industries_url ); ?>" class="mobile-nav-link" data-page="industries">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 20h20"></path>
@@ -242,6 +267,9 @@ $dir_trust = $dir_url . '/#trust';
           </svg>
           <span><?php esc_html_e( 'By Trade', 'jcp-core' ); ?></span>
         </a>
+            <?php
+        }
+        ?>
         <a href="<?php echo esc_url( home_url( '/pricing' ) ); ?>" class="mobile-nav-link" data-page="pricing">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="2" x2="12" y2="22"></line>
