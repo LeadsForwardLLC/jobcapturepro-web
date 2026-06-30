@@ -1237,46 +1237,63 @@ body.mobile-menu-open .jcp-top-banner {
    NAV MEGA MENUS (desktop) + MOBILE EXPANDING PANELS
    ============================================================ */
 
-body.nav-mega-open::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  top: var(--jcp-mega-panel-top, var(--jcp-header-stack-height, 72px));
-  background: rgba(15, 23, 42, 0.28);
-  backdrop-filter: blur(2px);
-  z-index: 1024;
-  pointer-events: none;
+@media (min-width: 769px) {
+  body.nav-mega-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    top: var(--jcp-mega-panel-top, var(--jcp-header-stack-height, 72px));
+    background: rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(2px);
+    z-index: 1024;
+    pointer-events: none;
+  }
+
+  .jcp-desktop-mega-panels {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .jcp-header-stack > .jcp-desktop-mega-panels .nav-mega-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: var(--jcp-mega-panel-top, var(--jcp-header-stack-height, 72px));
+    z-index: 1025;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.95);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
+    max-height: min(78vh, 720px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.22s ease, visibility 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+  }
+
+  .jcp-header-stack > .jcp-desktop-mega-panels .nav-mega-panel[hidden] {
+    display: block !important;
+  }
+
+  .jcp-header-stack > .jcp-desktop-mega-panels .nav-mega-panel:not([hidden]) {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 }
 
-.nav-mega-panel {
-  position: fixed;
-  left: 0;
-  right: 0;
-  width: 100%;
-  top: var(--jcp-mega-panel-top, var(--jcp-header-stack-height, 72px));
-  z-index: 1025;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(229, 231, 235, 0.95);
-  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
-  max-height: min(78vh, 720px);
-  overflow: auto;
-  overscroll-behavior: contain;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: opacity 0.22s ease, visibility 0.22s ease, transform 0.22s ease;
-}
-
-.nav-mega-panel[hidden] {
-  display: block !important;
-}
-
-.nav-mega.is-open > .nav-mega-panel {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  pointer-events: auto;
+@media (max-width: 768px) {
+  .jcp-desktop-mega-panels {
+    display: none !important;
+  }
 }
 
 .nav-mega-inner {
