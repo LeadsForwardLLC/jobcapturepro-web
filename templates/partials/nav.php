@@ -51,18 +51,14 @@ $dir_trust = $dir_url . '/#trust';
     <?php else : ?>
       <a href="<?php echo $home_how; ?>" class="nav-link" data-home-anchor="#how-it-works">How it works</a>
       <?php
-      if ( function_exists( 'jcp_nav_render_desktop_features_mega_trigger' ) ) {
-          jcp_nav_render_desktop_features_mega_trigger();
-      } elseif ( function_exists( 'jcp_nav_render_desktop_features_mega' ) ) {
+      if ( function_exists( 'jcp_nav_render_desktop_features_mega' ) ) {
           jcp_nav_render_desktop_features_mega( $home_features );
       } else {
           ?>
       <a href="<?php echo $home_features; ?>" class="nav-link" data-home-anchor="#features">Features</a>
           <?php
       }
-      if ( function_exists( 'jcp_nav_render_desktop_trade_mega_trigger' ) ) {
-          jcp_nav_render_desktop_trade_mega_trigger();
-      } elseif ( function_exists( 'jcp_nav_render_desktop_trade_mega' ) ) {
+      if ( function_exists( 'jcp_nav_render_desktop_trade_mega' ) ) {
           jcp_nav_render_desktop_trade_mega( $industries_url );
       } else {
           ?>

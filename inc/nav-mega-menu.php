@@ -277,9 +277,12 @@ function jcp_nav_render_mega_card( array $item, string $variant = 'desktop', boo
 }
 
 /**
- * Desktop mega menu trigger: By Trade.
+ * Desktop mega menu panel: By Trade.
+ *
+ * @param string $industries_url Hub URL.
  */
-function jcp_nav_render_desktop_trade_mega_trigger(): void {
+function jcp_nav_render_desktop_trade_mega( string $industries_url ): void {
+	$items = jcp_nav_get_trade_items();
 	?>
 	<div class="nav-mega nav-dropdown" id="navByTradeMega" data-nav-mega="trade">
 		<button
@@ -294,55 +297,38 @@ function jcp_nav_render_desktop_trade_mega_trigger(): void {
 			<?php esc_html_e( 'By Trade', 'jcp-core' ); ?>
 			<svg class="nav-dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
 		</button>
-	</div>
-	<?php
-}
-
-/**
- * Desktop mega menu panel: By Trade (mounted on header stack).
- *
- * @param string $industries_url Hub URL.
- */
-function jcp_nav_render_desktop_trade_mega_panel( string $industries_url ): void {
-	$items = jcp_nav_get_trade_items();
-	?>
-	<div class="nav-mega-panel" id="navByTradePanel" role="region" aria-labelledby="navByTradeTrigger" data-nav-mega-panel="trade" hidden>
-		<div class="nav-mega-inner">
-			<div class="nav-mega-header">
-				<div class="nav-mega-header-copy">
-					<p class="nav-mega-eyebrow"><?php esc_html_e( 'By Trade', 'jcp-core' ); ?></p>
-					<h2 class="nav-mega-title"><?php esc_html_e( 'Marketing built for how you work', 'jcp-core' ); ?></h2>
-					<p class="nav-mega-lead"><?php esc_html_e( 'See how JobCapturePro turns completed jobs into proof, visibility, and calls for your trade.', 'jcp-core' ); ?></p>
+		<div class="nav-mega-panel" id="navByTradePanel" role="region" aria-labelledby="navByTradeTrigger" hidden>
+			<div class="nav-mega-inner">
+				<div class="nav-mega-header">
+					<div class="nav-mega-header-copy">
+						<p class="nav-mega-eyebrow"><?php esc_html_e( 'By Trade', 'jcp-core' ); ?></p>
+						<h2 class="nav-mega-title"><?php esc_html_e( 'Marketing built for how you work', 'jcp-core' ); ?></h2>
+						<p class="nav-mega-lead"><?php esc_html_e( 'See how JobCapturePro turns completed jobs into proof, visibility, and calls for your trade.', 'jcp-core' ); ?></p>
+					</div>
+					<a class="nav-mega-header-link" href="<?php echo esc_url( $industries_url ); ?>"><?php esc_html_e( 'Browse all trades', 'jcp-core' ); ?> →</a>
 				</div>
-				<a class="nav-mega-header-link" href="<?php echo esc_url( $industries_url ); ?>"><?php esc_html_e( 'Browse all trades', 'jcp-core' ); ?> →</a>
+				<?php if ( ! empty( $items ) ) : ?>
+					<div class="nav-mega-grid nav-mega-grid--trades" role="list">
+						<?php foreach ( $items as $item ) : ?>
+							<?php jcp_nav_render_mega_card( $item, 'desktop', true ); ?>
+						<?php endforeach; ?>
+					</div>
+				<?php else : ?>
+					<p class="nav-mega-empty"><?php esc_html_e( 'Trade pages coming soon.', 'jcp-core' ); ?></p>
+				<?php endif; ?>
 			</div>
-			<?php if ( ! empty( $items ) ) : ?>
-				<div class="nav-mega-grid nav-mega-grid--trades" role="list">
-					<?php foreach ( $items as $item ) : ?>
-						<?php jcp_nav_render_mega_card( $item, 'desktop', true ); ?>
-					<?php endforeach; ?>
-				</div>
-			<?php else : ?>
-				<p class="nav-mega-empty"><?php esc_html_e( 'Trade pages coming soon.', 'jcp-core' ); ?></p>
-			<?php endif; ?>
 		</div>
 	</div>
 	<?php
 }
 
 /**
- * Desktop mega menu trigger + panel (legacy wrapper).
+ * Desktop mega menu panel: Features.
  *
- * @param string $industries_url Hub URL.
+ * @param string $features_url Default features anchor URL.
  */
-function jcp_nav_render_desktop_trade_mega( string $industries_url ): void {
-	jcp_nav_render_desktop_trade_mega_trigger();
-}
-
-/**
- * Desktop mega menu trigger: Features.
- */
-function jcp_nav_render_desktop_features_mega_trigger(): void {
+function jcp_nav_render_desktop_features_mega( string $features_url ): void {
+	$items = jcp_nav_get_feature_items();
 	?>
 	<div class="nav-mega nav-dropdown" id="navFeaturesMega" data-nav-mega="features">
 		<button
@@ -357,49 +343,29 @@ function jcp_nav_render_desktop_features_mega_trigger(): void {
 			<?php esc_html_e( 'Features', 'jcp-core' ); ?>
 			<svg class="nav-dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
 		</button>
-	</div>
-	<?php
-}
-
-/**
- * Desktop mega menu panel: Features (mounted on header stack).
- *
- * @param string $features_url Default features anchor URL.
- */
-function jcp_nav_render_desktop_features_mega_panel( string $features_url ): void {
-	$items = jcp_nav_get_feature_items();
-	?>
-	<div class="nav-mega-panel" id="navFeaturesPanel" role="region" aria-labelledby="navFeaturesTrigger" data-nav-mega-panel="features" hidden>
-		<div class="nav-mega-inner">
-			<div class="nav-mega-header">
-				<div class="nav-mega-header-copy">
-					<p class="nav-mega-eyebrow"><?php esc_html_e( 'Features', 'jcp-core' ); ?></p>
-					<h2 class="nav-mega-title"><?php esc_html_e( 'Proof that compounds across every channel', 'jcp-core' ); ?></h2>
-					<p class="nav-mega-lead"><?php esc_html_e( 'Everything JobCapturePro publishes automatically from the jobs you already complete.', 'jcp-core' ); ?></p>
+		<div class="nav-mega-panel" id="navFeaturesPanel" role="region" aria-labelledby="navFeaturesTrigger" hidden>
+			<div class="nav-mega-inner">
+				<div class="nav-mega-header">
+					<div class="nav-mega-header-copy">
+						<p class="nav-mega-eyebrow"><?php esc_html_e( 'Features', 'jcp-core' ); ?></p>
+						<h2 class="nav-mega-title"><?php esc_html_e( 'Proof that compounds across every channel', 'jcp-core' ); ?></h2>
+						<p class="nav-mega-lead"><?php esc_html_e( 'Everything JobCapturePro publishes automatically from the jobs you already complete.', 'jcp-core' ); ?></p>
+					</div>
+					<a class="nav-mega-header-link" href="<?php echo esc_url( $features_url ); ?>" data-home-anchor="#features"><?php esc_html_e( 'See all features', 'jcp-core' ); ?> →</a>
 				</div>
-				<a class="nav-mega-header-link" href="<?php echo esc_url( $features_url ); ?>" data-home-anchor="#features"><?php esc_html_e( 'See all features', 'jcp-core' ); ?> →</a>
+				<?php if ( ! empty( $items ) ) : ?>
+					<div class="nav-mega-grid nav-mega-grid--features" role="list">
+						<?php foreach ( $items as $item ) : ?>
+							<?php jcp_nav_render_mega_card( $item, 'desktop', true ); ?>
+						<?php endforeach; ?>
+					</div>
+				<?php else : ?>
+					<p class="nav-mega-empty"><?php esc_html_e( 'Feature pages coming soon.', 'jcp-core' ); ?></p>
+				<?php endif; ?>
 			</div>
-			<?php if ( ! empty( $items ) ) : ?>
-				<div class="nav-mega-grid nav-mega-grid--features" role="list">
-					<?php foreach ( $items as $item ) : ?>
-						<?php jcp_nav_render_mega_card( $item, 'desktop', true ); ?>
-					<?php endforeach; ?>
-				</div>
-			<?php else : ?>
-				<p class="nav-mega-empty"><?php esc_html_e( 'Feature pages coming soon.', 'jcp-core' ); ?></p>
-			<?php endif; ?>
 		</div>
 	</div>
 	<?php
-}
-
-/**
- * Desktop mega menu trigger + panel (legacy wrapper).
- *
- * @param string $features_url Default features anchor URL.
- */
-function jcp_nav_render_desktop_features_mega( string $features_url ): void {
-	jcp_nav_render_desktop_features_mega_trigger();
 }
 
 /**

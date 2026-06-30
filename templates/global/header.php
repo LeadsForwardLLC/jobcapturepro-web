@@ -62,22 +62,6 @@ $body_classes = 'jcp-global-nav-active' . ( $show_top_banner ? ' has-top-banner'
     </div>
   <?php endif; ?>
   <?php get_template_part( 'templates/partials/nav' ); ?>
-  <?php
-  $jcp_show_mega_panels = empty( $pages['is_demo'] )
-    && empty( $pages['is_directory'] )
-    && empty( $pages['is_company'] )
-    && ! ( function_exists( 'jcp_is_directory_mode' ) && jcp_is_directory_mode() );
-  if ( $jcp_show_mega_panels && function_exists( 'jcp_nav_render_desktop_features_mega_panel' ) ) :
-    $jcp_home_features    = ! empty( $pages['is_home'] ) ? '#features' : esc_url( home_url( '/#features' ) );
-    $jcp_industries_url   = home_url( '/industries/' );
-    ?>
-  <div class="jcp-mega-panels" id="jcpMegaPanels">
-    <?php
-    jcp_nav_render_desktop_features_mega_panel( $jcp_home_features );
-    jcp_nav_render_desktop_trade_mega_panel( $jcp_industries_url );
-    ?>
-  </div>
-  <?php endif; ?>
   </div>
   <script>
   (function () {
