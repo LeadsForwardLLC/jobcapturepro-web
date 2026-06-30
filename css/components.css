@@ -1400,6 +1400,34 @@ body.mobile-menu-open .jcp-top-banner {
   outline: none;
 }
 
+.nav-mega-card .factor-icon-wrapper.nav-mega-card-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0;
+  border-radius: var(--jcp-radius-md);
+  box-shadow: 0 3px 12px rgba(255, 80, 62, 0.22);
+  flex-shrink: 0;
+}
+
+.nav-mega-card .factor-icon-wrapper.nav-mega-card-icon .factor-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.mobile-mega-card .factor-icon-wrapper.nav-mega-card-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 0;
+  border-radius: var(--jcp-radius-md);
+  box-shadow: 0 3px 12px rgba(255, 80, 62, 0.22);
+  flex-shrink: 0;
+}
+
+.mobile-mega-card .factor-icon-wrapper.nav-mega-card-icon .factor-icon {
+  width: 22px;
+  height: 22px;
+}
+
 .nav-mega-card-thumb {
   width: 72px;
   height: 72px;

@@ -106,7 +106,7 @@ function jcp_nav_get_trade_items(): array {
  * @return array<int, array{label: string, url: string, excerpt: string, image: string, image_alt: string, slug: string}>
  */
 function jcp_nav_get_feature_items(): array {
-	$cached = get_transient( 'jcp_nav_feature_items_v1' );
+	$cached = get_transient( 'jcp_nav_feature_items_v2' );
 	if ( is_array( $cached ) ) {
 		return apply_filters( 'jcp_nav_feature_items', $cached );
 	}
@@ -125,7 +125,7 @@ function jcp_nav_get_feature_items(): array {
 		$benefit_items = [];
 	}
 
-	$visuals = jcp_nav_feature_placeholder_visuals();
+	$benefit_icons = [ 'badge-check', 'map-pin', 'message-square', 'star', 'building-2', 'phone' ];
 	$items   = [];
 	$index   = 0;
 
@@ -138,45 +138,24 @@ function jcp_nav_get_feature_items(): array {
 			continue;
 		}
 		$slug    = sanitize_title( $title );
-		$visual  = $visuals[ $index % count( $visuals ) ];
+		$icon    = ! empty( $item['icon'] ) ? (string) $item['icon'] : ( $benefit_icons[ $index % count( $benefit_icons ) ] ?? 'badge-check' );
 		$feature = jcp_nav_resolve_feature_page( $slug );
 
 		$items[] = [
 			'label'     => $title,
 			'url'       => $feature['url'],
 			'excerpt'   => jcp_nav_trim_intro( (string) ( $item['body'] ?? '' ), 12 ),
-			'image'     => $feature['image'] !== '' ? $feature['image'] : $visual['image'],
+			'icon'      => $icon,
+			'image'     => $feature['image'],
 			'image_alt' => $feature['image_alt'] !== '' ? $feature['image_alt'] : $title,
 			'slug'      => $slug,
 		];
 		++$index;
 	}
 
-	set_transient( 'jcp_nav_feature_items_v1', $items, HOUR_IN_SECONDS );
+	set_transient( 'jcp_nav_feature_items_v2', $items, HOUR_IN_SECONDS );
 
 	return apply_filters( 'jcp_nav_feature_items', $items );
-}
-
-/**
- * Placeholder imagery for features until dedicated pages exist.
- *
- * @return array<int, array{image: string, tone: string}>
- */
-function jcp_nav_feature_placeholder_visuals(): array {
-	return [
-		[
-			'image' => 'https://jobcapturepro.com/wp-content/uploads/2025/11/crew-768x768.jpg',
-			'tone'  => 'ember',
-		],
-		[
-			'image' => 'https://jobcapturepro.com/wp-content/uploads/2025/11/confident-foreman-768x768.jpg',
-			'tone'  => 'ocean',
-		],
-		[
-			'image' => 'https://jobcapturepro.com/wp-content/uploads/2025/11/owner-crew-768x768.jpg',
-			'tone'  => 'forest',
-		],
-	];
 }
 
 /**
@@ -222,6 +201,7 @@ function jcp_nav_resolve_feature_page( string $slug ): array {
  */
 function jcp_nav_clear_mega_menu_cache(): void {
 	delete_transient( 'jcp_nav_trade_items_v1' );
+	delete_transient( 'jcp_nav_feature_items_v2' );
 	delete_transient( 'jcp_nav_feature_items_v1' );
 }
 add_action( 'save_post_jcp_niche_landing', 'jcp_nav_clear_mega_menu_cache' );
@@ -238,6 +218,7 @@ function jcp_nav_render_mega_card( array $item, string $variant = 'desktop', boo
 	$label   = $item['label'] ?? '';
 	$url     = $item['url'] ?? '';
 	$excerpt = $item['excerpt'] ?? '';
+	$icon    = $item['icon'] ?? '';
 	$image   = $item['image'] ?? '';
 	$alt     = $item['image_alt'] ?? $label;
 	$slug    = $item['slug'] ?? sanitize_title( $label );
@@ -248,12 +229,18 @@ function jcp_nav_render_mega_card( array $item, string $variant = 'desktop', boo
 
 	$tag = $variant === 'mobile' ? 'a' : 'a';
 	$class = $variant === 'mobile' ? 'mobile-mega-card' : 'nav-mega-card';
+	$use_icon = $icon !== '' && function_exists( 'jcp_core_icon' );
 	?>
 	<<?php echo esc_html( $tag ); ?>
 		class="<?php echo esc_attr( $class ); ?>"
 		href="<?php echo esc_url( $url ); ?>"
 		data-nav-card-slug="<?php echo esc_attr( $slug ); ?>"
 	>
+		<?php if ( $use_icon ) : ?>
+			<span class="factor-icon-wrapper nav-mega-card-icon" aria-hidden="true">
+				<img src="<?php echo esc_url( jcp_core_icon( $icon ) ); ?>" class="factor-icon" alt="" width="24" height="24" />
+			</span>
+		<?php else : ?>
 		<span class="nav-mega-card-thumb<?php echo $image === '' ? ' nav-mega-card-thumb--placeholder' : ''; ?>" aria-hidden="true">
 			<?php if ( $image !== '' ) : ?>
 				<img src="<?php echo esc_url( $image ); ?>" alt="" loading="lazy" decoding="async" width="72" height="72" />
@@ -266,6 +253,7 @@ function jcp_nav_render_mega_card( array $item, string $variant = 'desktop', boo
 				?></span>
 			<?php endif; ?>
 		</span>
+		<?php endif; ?>
 		<span class="nav-mega-card-body">
 			<strong class="nav-mega-card-title"><?php echo esc_html( $label ); ?></strong>
 			<?php if ( $show_excerpt && $excerpt !== '' ) : ?>
