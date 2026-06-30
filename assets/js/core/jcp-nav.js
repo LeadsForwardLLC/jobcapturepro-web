@@ -81,24 +81,44 @@
     }
   });
 
+  const syncMegaPanelTop = () => {
+    const stack = document.getElementById('jcpHeaderStack');
+    if (!stack) return;
+    const bottom = Math.ceil(stack.getBoundingClientRect().bottom);
+    if (bottom > 0) {
+      document.documentElement.style.setProperty('--jcp-mega-panel-top', `${bottom}px`);
+    }
+  };
+
   const initNavDropdown = (dropdown) => {
     if (!dropdown) return;
 
     const trigger = dropdown.querySelector('.nav-dropdown-trigger');
-    const menu = dropdown.querySelector('.nav-mega-panel, .nav-dropdown-menu');
+    const panelId = trigger ? trigger.getAttribute('aria-controls') : '';
+    const menu = panelId
+      ? document.getElementById(panelId)
+      : dropdown.querySelector('.nav-mega-panel, .nav-dropdown-menu');
     if (!trigger || !menu) return;
 
-    const isMega = dropdown.classList.contains('nav-mega');
+    const isMega = dropdown.classList.contains('nav-mega') || menu.classList.contains('nav-mega-panel');
 
     const open = () => {
       document.querySelectorAll('.nav-mega.is-open, .nav-dropdown.is-open').forEach((other) => {
         if (other === dropdown) return;
         const otherTrigger = other.querySelector('.nav-dropdown-trigger');
-        const otherMenu = other.querySelector('.nav-mega-panel, .nav-dropdown-menu');
+        const otherPanelId = otherTrigger ? otherTrigger.getAttribute('aria-controls') : '';
+        const otherMenu = otherPanelId
+          ? document.getElementById(otherPanelId)
+          : other.querySelector('.nav-mega-panel, .nav-dropdown-menu');
         if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
         if (otherMenu) otherMenu.setAttribute('hidden', '');
         other.classList.remove('is-open');
       });
+      document.querySelectorAll('.nav-mega-panel').forEach((panel) => {
+        if (panel === menu) return;
+        panel.setAttribute('hidden', '');
+      });
+      syncMegaPanelTop();
       trigger.setAttribute('aria-expanded', 'true');
       menu.removeAttribute('hidden');
       dropdown.classList.add('is-open');
@@ -313,6 +333,9 @@
   initMobileMenu();
   initScroll();
   initNavLinks();
+  syncMegaPanelTop();
+  window.addEventListener('resize', syncMegaPanelTop);
+  window.addEventListener('scroll', syncMegaPanelTop, { passive: true });
   initMegaMenus();
   initResourcesDropdown();
 
