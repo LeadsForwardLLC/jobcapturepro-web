@@ -1249,20 +1249,22 @@ body.mobile-menu-open .jcp-top-banner {
     pointer-events: none;
   }
 
-  .jcp-desktop-mega-panels {
+  .jcp-header-stack > .jcp-desktop-mega-panels {
     position: absolute;
-    width: 0;
-    height: 0;
-    overflow: visible;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1025;
     pointer-events: none;
   }
 
   .jcp-header-stack > .jcp-desktop-mega-panels .nav-mega-panel {
-    position: fixed;
+    position: absolute;
+    top: 0;
     left: 0;
     right: 0;
     width: 100%;
-    top: var(--jcp-mega-panel-top, var(--jcp-header-stack-height, 72px));
     z-index: 1025;
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(18px);
@@ -1273,7 +1275,7 @@ body.mobile-menu-open .jcp-top-banner {
     overscroll-behavior: contain;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-8px);
+    transform: translateY(-4px);
     transition: opacity 0.22s ease, visibility 0.22s ease, transform 0.22s ease;
     pointer-events: none;
   }

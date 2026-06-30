@@ -84,7 +84,8 @@
   const syncMegaPanelTop = () => {
     const stack = document.getElementById('jcpHeaderStack');
     if (!stack) return;
-    const bottom = Math.ceil(stack.getBoundingClientRect().bottom);
+    const rect = stack.getBoundingClientRect();
+    const bottom = Math.ceil(rect.bottom);
     if (bottom > 0) {
       document.documentElement.style.setProperty('--jcp-mega-panel-top', `${bottom}px`);
     }
