@@ -36,12 +36,6 @@ get_header();
           <header class="jcp-single-post-header">
             <h1 class="jcp-single-hero-title"><?php echo esc_html( $post_title ); ?></h1>
             <div class="jcp-post-meta jcp-single-hero-meta">
-              <div class="jcp-post-meta-line jcp-post-meta-author-line">
-                <a href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>" class="jcp-post-meta-author" rel="author">
-                  <?php echo get_avatar( get_the_author_meta( 'ID' ), 32, '', get_the_author(), [ 'class' => 'jcp-post-meta-avatar' ] ); ?>
-                  <span class="jcp-post-meta-author-name"><?php echo esc_html( get_the_author() ); ?></span>
-                </a>
-              </div>
               <div class="jcp-post-meta-line jcp-post-meta-details">
                 <time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>" class="jcp-post-date">
                   <?php echo esc_html( get_the_date() ); ?>
@@ -59,9 +53,8 @@ get_header();
                     ?>
                   </span>
                 <?php endif; ?>
-                <span class="jcp-post-meta-sep" aria-hidden="true">·</span>
-                <span class="jcp-post-reading-time"><?php echo esc_html( sprintf( __( '%1$s min read', 'jcp-core' ), (int) $read_mins ) ); ?></span>
               </div>
+              <span class="jcp-post-reading-time"><?php echo esc_html( sprintf( __( '%1$s min read', 'jcp-core' ), (int) $read_mins ) ); ?></span>
             </div>
           </header>
 

@@ -651,6 +651,13 @@
   height: 28px;
 }
 
+.jcp-single-hero-meta .jcp-post-reading-time {
+  display: block;
+  font-size: var(--jcp-font-size-xs);
+  color: var(--jcp-color-text-tertiary);
+  letter-spacing: 0.01em;
+}
+
 .jcp-post-reading-time {
   color: var(--jcp-color-text-secondary);
 }
